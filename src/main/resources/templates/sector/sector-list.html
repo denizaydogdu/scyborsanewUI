@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Sektörler')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Sektörler', 'Piyasa')}"></div>
+
+    <div class="row row-cols-xxl-4 row-cols-lg-3 row-cols-md-2 row-cols-1 g-3">
+        <div class="col" th:each="sector, iterStat : ${sectors}">
+            <a th:href="@{'/sector/' + ${sector.slug}}" class="text-decoration-none">
+                <div class="card card-animate mb-0 h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar-sm flex-shrink-0 me-3">
+                                <span class="avatar-title bg-white text-primary rounded-circle fs-3 border">
+                                    <i th:class="${sector.icon}"></i>
+                                </span>
+                            </div>
+                            <div class="flex-grow-1 overflow-hidden">
+                                <h5 class="card-title mb-1 text-truncate" th:text="${sector.displayName}">Sektor</h5>
+                                <span class="badge bg-soft-info text-info" th:text="${sector.stockCount + ' hisse'}">0 hisse</span>
+                            </div>
+                            <div class="flex-shrink-0 ms-2"
+                                 th:with="absVal=${sector.avgChangePercent >= 0 ? sector.avgChangePercent : -sector.avgChangePercent}">
+                                <span th:class="${sector.avgChangePercent >= 0 ? 'badge bg-success-subtle text-success' : 'badge bg-danger-subtle text-danger'}"
+                                      th:text="${(sector.avgChangePercent >= 0 ? '▲ %' : '▼ %') + #numbers.formatDecimal(absVal, 1, 2)}">
+                                    ▲ %0.00
+                                </span>
+                            </div>
+                        </div>
+                        <p class="text-muted text-truncate mb-0" style="max-height: 2.8em; -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;"
+                           th:text="${sector.description}">Sektor aciklamasi</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Bos durum -->
+    <div class="row" th:if="${#lists.isEmpty(sectors)}">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="ri-pie-chart-line fs-1 text-muted"></i>
+                    <h5 class="mt-3 text-muted">Sektor verisi yuklenemedi</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<th:block layout:fragment="pagejs">
+</th:block>
+</body>
+
+</html>

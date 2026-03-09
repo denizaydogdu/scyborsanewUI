@@ -1,0 +1,138 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="tr" data-layout="vertical" data-topbar="light"
+      data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Scyborsa — BIST Teknik Analiz Platformu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <script th:src="@{/assets/js/layout.js}"></script>
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/custom.min.css}" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-landing fixed-top" id="navbar">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <img th:src="@{/assets/images/logo-dark.png}" class="card-logo card-logo-dark" alt="Scyborsa" height="17">
+                <img th:src="@{/assets/images/logo-light.png}" class="card-logo card-logo-light" alt="Scyborsa" height="17">
+            </a>
+            <div class="d-flex gap-2">
+                <a th:href="@{/login}" class="btn btn-primary">Giriş Yap</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Full Page Layout: Hero + Features + Footer in single viewport -->
+    <div class="d-flex flex-column" style="min-height: 100vh;">
+
+        <!-- Hero Section -->
+        <section class="hero-section pt-5 position-relative" id="hero">
+            <div class="bg-overlay bg-overlay-pattern"></div>
+            <div class="container position-relative" style="z-index: 1;">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-sm-10 col-11">
+                        <div class="text-center" style="padding-top: 80px; padding-bottom: 30px;">
+                            <h1 class="display-6 fw-semibold mb-3 lh-base">
+                                BIST Teknik Analiz <span class="text-success">Platformu</span>
+                            </h1>
+                            <p class="lead text-muted lh-base mb-2">
+                                Gunluk teknik taramalar, piyasa haberleri ve detayli hisse analizi.
+                            </p>
+                            <p class="text-muted fs-13 mb-0 px-2">
+                                <i class="ri-lock-line align-middle me-1"></i>
+                                Kapali platform — erisim yalnizca yetkili kullanicilar icindir.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="flex-grow-1 d-flex align-items-center" id="features">
+            <div class="container py-4">
+                <div class="row g-3 g-lg-4">
+                    <div class="col-lg-4">
+                        <div class="d-flex p-2">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="avatar-sm icon-effect">
+                                    <div class="avatar-title bg-transparent text-success rounded-circle">
+                                        <i class="ri-search-eye-line fs-36"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="fs-16 mb-1">Teknik Taramalar</h5>
+                                <p class="text-muted mb-0 fs-13">
+                                    60'tan fazla gunluk teknik tarama, sinyal bildirimleri.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="d-flex p-2">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="avatar-sm icon-effect">
+                                    <div class="avatar-title bg-transparent text-success rounded-circle">
+                                        <i class="ri-newspaper-line fs-36"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="fs-16 mb-1">Haberler</h5>
+                                <p class="text-muted mb-0 fs-13">
+                                    KAP bildirimleri, piyasa ve dunya haberleri tek ekranda.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="d-flex p-2">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="avatar-sm icon-effect">
+                                    <div class="avatar-title bg-transparent text-success rounded-circle">
+                                        <i class="ri-line-chart-line fs-36"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="fs-16 mb-1">Teknik Analiz</h5>
+                                <p class="text-muted mb-0 fs-13">
+                                    Hisse grafikleri, sektor analizi ve analist tavsiyeleri.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-dark py-3">
+            <div class="container">
+                <div class="text-center">
+                    <p class="mb-0 text-muted fs-13">&copy; <span id="currentYear"></span> Scyborsa</p>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/libs/simplebar/simplebar.min.js}"></script>
+    <script th:src="@{/assets/libs/node-waves/waves.min.js}"></script>
+    <script th:src="@{/assets/libs/feather-icons/feather.min.js}"></script>
+    <script th:src="@{/assets/js/pages/plugins/lord-icon-2.1.0.js}"></script>
+    <script th:src="@{/assets/js/plugins.js}"></script>
+    <script>
+        var yearEl = document.getElementById('currentYear');
+        if (yearEl) { yearEl.textContent = new Date().getFullYear(); }
+    </script>
+</body>
+</html>

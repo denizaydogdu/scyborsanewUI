@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Piyasa Haberleri')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Piyasa Haberleri', 'Haberler')}"></div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Piyasa Haberleri</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th style="width: 200px;">Zaman</th>
+                                <th>Baslik</th>
+                                <th style="width: 80px;">Detay</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item : ${marketNewsResponse != null ? marketNewsResponse.items : {}}">
+                                <td>
+                                    <span class="text-muted" th:text="${item.formattedPublished}">03 Mart 2026 14:30</span>
+                                </td>
+                                <td th:text="${item.title}">Haber Basligi</td>
+                                <td>
+                                    <a th:if="${item.id != null}" th:href="@{/haber/{id}(id=${item.id})}"
+                                       class="btn btn-sm btn-soft-primary">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Bos durum -->
+                    <div class="text-center py-5" th:if="${marketNewsResponse == null or #lists.isEmpty(marketNewsResponse.items)}">
+                        <i class="ri-newspaper-line fs-1 text-muted"></i>
+                        <h5 class="mt-3 text-muted">Haber bulunamadi</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<th:block layout:fragment="pagejs">
+    <script>
+        // 60 saniyede bir sayfa otomatik yenilenir
+        setInterval(function() {
+            window.location.reload();
+        }, 60000);
+    </script>
+</th:block>
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Model Portföy')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Model Portföy', 'Portföy')}"></div>
+
+    <div class="row row-cols-xxl-5 row-cols-lg-3 row-cols-md-2 row-cols-1">
+        <div class="col" th:each="kurum : ${kurumlar}">
+            <div class="card">
+                <div class="card-body text-center py-4">
+                    <img th:src="${kurum.logoUrl != null ? kurum.logoUrl : '/assets/images/brokers/default-broker.png'}"
+                         alt="Kurum Logo" style="width:100px;height:100px"/>
+                    <a href="#!" class="stretched-link">
+                        <h5 class="mt-4" th:text="${kurum.kurumAdi}">Kurum Adı</h5>
+                    </a>
+                    <p class="text-muted mb-0"
+                       th:text="${kurum.hisseSayisi != null ? kurum.hisseSayisi + ' Hisse' : '-'}">0 Hisse</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Boş durum -->
+    <div class="row" th:if="${#lists.isEmpty(kurumlar)}">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="ri-briefcase-line fs-1 text-muted"></i>
+                    <h5 class="mt-3 text-muted">Henüz kurum eklenmemiş</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<th:block layout:fragment="pagejs">
+</th:block>
+</body>
+
+</html>

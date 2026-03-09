@@ -1,0 +1,23 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+	<div th:fragment="footer" th:remove="tag">
+		<footer class="footer">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-sm-6">
+						<span id="footer-year"></span> © Scyborsa.
+						<script>var el=document.getElementById('footer-year');if(el){el.textContent=new Date().getFullYear();}</script>
+					</div>
+					<div class="col-sm-6">
+						<div class="text-sm-end d-none d-sm-block">
+							Borsa Veri Platformu
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+	</div>
+</body>
+
+</html>

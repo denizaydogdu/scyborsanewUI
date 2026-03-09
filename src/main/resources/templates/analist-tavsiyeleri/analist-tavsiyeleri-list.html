@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Analist Tavsiyeleri')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Analist Tavsiyeleri', 'Yatirim')}"></div>
+
+    <!-- Row 1: 3 KPI Cards -->
+    <div class="row">
+        <!-- Toplam Tavsiye -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Toplam Tavsiye</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 id="kpi-total" class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:text="${#lists.size(tavsiyeler)}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-line-chart-line text-primary"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AL Tavsiyesi -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">AL Tavsiyesi</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 id="kpi-al-count" class="fs-22 fw-semibold ff-secondary mb-4 text-success">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-arrow-up-circle-line text-success"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Son Guncelleme -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Son Guncelleme</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 id="kpi-last-date" class="fs-14 fw-semibold ff-secondary mb-4">-</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-calendar-line text-info"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ana Kart: Tavsiye Tablosu -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row align-items-center g-3">
+                        <!-- Sol: Type Tab'lari -->
+                        <div class="col-auto">
+                            <ul class="nav nav-tabs-custom card-header-tabs border-bottom-0" id="typeTabs" role="tablist">
+                                <li class="nav-item"><a class="nav-link active" data-tavsiye-type="ALL" href="javascript:void(0);" role="tab" aria-selected="true">Tumu</a></li>
+                                <li class="nav-item"><a class="nav-link" data-tavsiye-type="AL" href="javascript:void(0);" role="tab" aria-selected="false">AL</a></li>
+                                <li class="nav-item"><a class="nav-link" data-tavsiye-type="TUT" href="javascript:void(0);" role="tab" aria-selected="false">TUT</a></li>
+                                <li class="nav-item"><a class="nav-link" data-tavsiye-type="SAT" href="javascript:void(0);" role="tab" aria-selected="false">SAT</a></li>
+                                <li class="nav-item"><a class="nav-link" data-tavsiye-type="OTHER" href="javascript:void(0);" role="tab" aria-selected="false">Diger</a></li>
+                            </ul>
+                        </div>
+                        <!-- Orta: Arama -->
+                        <div class="col">
+                            <div class="search-box">
+                                <input type="text" class="form-control search" id="searchInput"
+                                       placeholder="Hisse adi veya kodu ile ara..." maxlength="100"
+                                       aria-label="Hisse adi veya kodu ile ara">
+                                <i class="ri-search-line search-icon"></i>
+                            </div>
+                        </div>
+                        <!-- Sag: Araci Kurum + MP Toggle -->
+                        <div class="col-auto d-flex align-items-center gap-2">
+                            <select class="form-select form-select-sm" id="brokerageFilter" style="width: 180px;">
+                                <option value="ALL">Tum Kurumlar</option>
+                                <th:block th:each="b : ${brokerages}">
+                                    <option th:value="${b}" th:text="${b}"></option>
+                                </th:block>
+                            </select>
+                            <span id="filteredCountBadge" class="badge bg-primary fs-12">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Tablo -->
+                    <div class="table-responsive" id="tableContainer">
+                        <table class="table table-striped align-middle mb-0" id="tavsiyeTable">
+                            <thead>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th class="sortable" data-col="stockCode" data-type="text" style="cursor:pointer;">Hisse <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="ratingType" data-type="text" style="width: 130px; cursor:pointer;">Tavsiye <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="targetPrice" data-type="num" style="width: 130px; cursor:pointer;">Hedef Fiyat <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="brokerage" data-type="text" style="width: 160px; cursor:pointer;">Araci Kurum <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="date" data-type="text" style="width: 120px; cursor:pointer;">Tarih <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                            </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="emptyState" class="text-center py-5" style="display:none;">
+                        <i class="ri-line-chart-line fs-1 text-muted"></i>
+                        <h5 class="mt-3 text-muted">Aramaniza uygun tavsiye bulunamadi</h5>
+                    </div>
+
+                    <!-- Sayfalama -->
+                    <div class="d-flex justify-content-between align-items-center mt-3" id="paginationContainer">
+                        <div class="text-muted" id="paginationInfo">0 tavsiye</div>
+                        <nav>
+                            <ul class="pagination pagination-separated mb-0" id="paginationNav">
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<th:block layout:fragment="pagejs">
+    <script th:inline="javascript">
+        window.tavsiyelerData = /*[[${tavsiyeler}]]*/ [];
+        window.stockLogos = /*[[${stockLogos}]]*/ {};
+    </script>
+    <script th:src="@{/js/analist-tavsiyeleri.js}"></script>
+</th:block>
+</body>
+
+</html>

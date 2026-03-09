@@ -1,0 +1,1577 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<head>
+	<th:block layout:fragment="pagetitle">
+		<div th:replace="~{partials/title-meta :: title-meta('Anasayfa')}"></div>
+	</th:block>
+</head>
+
+<body>
+	<section layout:fragment="content">
+		<!-- Toastify-JS yüklenmesini tetikler (plugins.js toast-list attribute'u arar) -->
+		<div toast-list style="display:none"></div>
+		<!-- start page title -->
+		<div th:replace="~{partials/page-title :: page-title('Anasayfa','Scyborsa')}"></div>
+		<!-- end page title -->
+		<div class="row">
+			<div class="col-xxl-3">
+				<div class="card card-height-100">
+					<div class="card-header border-0 align-items-center d-flex">
+						<h4 class="card-title mb-0 flex-grow-1">Piyasa</h4>
+					</div><!-- end cardheader -->
+					<div class="card-body">
+						<div id="portfolio_donut_charts" data-colors='["--vz-primary", "--vz-info", "--vz-warning"]' class="apex-charts" dir="ltr"></div>
+
+						<ul class="list-group list-group-flush border-dashed mb-0 mt-3 pt-2">
+							<li class="list-group-item px-0">
+								<div class="d-flex">
+									<div class="flex-shrink-0 avatar-xs">
+										<span class="avatar-title rounded-circle fw-semibold" style="font-size: 10px; background:transparent; color:#495057; border:1.5px solid #ced4da;">100</span>
+									</div>
+									<div class="flex-grow-1 ms-2">
+										<h6 class="mb-1">BIST 100</h6>
+										<p class="fs-13 mb-0 text-muted"><i class="mdi mdi-circle fs-10 align-middle text-primary me-1"></i>XU100
+										</p>
+									</div>
+									<div class="flex-shrink-0 text-end">
+										<h6 class="mb-1" id="piyasa-xu100-price">--</h6>
+										<p class="fs-13 mb-0" id="piyasa-xu100-change">--</p>
+									</div>
+								</div>
+							</li><!-- end -->
+							<li class="list-group-item px-0">
+								<div class="d-flex">
+									<div class="flex-shrink-0 avatar-xs">
+										<span class="avatar-title rounded-circle fw-semibold" style="font-size: 11px; background:transparent; color:#495057; border:1.5px solid #ced4da;">50</span>
+									</div>
+									<div class="flex-grow-1 ms-2">
+										<h6 class="mb-1">BIST 50</h6>
+										<p class="fs-13 mb-0 text-muted"><i class="mdi mdi-circle fs-10 align-middle text-info me-1"></i>XU050
+										</p>
+									</div>
+									<div class="flex-shrink-0 text-end">
+										<h6 class="mb-1" id="piyasa-xu050-price">--</h6>
+										<p class="fs-13 mb-0" id="piyasa-xu050-change">--</p>
+									</div>
+								</div>
+							</li><!-- end -->
+							<li class="list-group-item px-0 pb-0">
+								<div class="d-flex">
+									<div class="flex-shrink-0 avatar-xs">
+										<span class="avatar-title rounded-circle fw-semibold" style="font-size: 11px; background:transparent; color:#495057; border:1.5px solid #ced4da;">30</span>
+									</div>
+									<div class="flex-grow-1 ms-2">
+										<h6 class="mb-1">BIST 30</h6>
+										<p class="fs-13 mb-0 text-muted"><i class="mdi mdi-circle fs-10 align-middle text-warning me-1"></i>XU030
+										</p>
+									</div>
+									<div class="flex-shrink-0 text-end">
+										<h6 class="mb-1" id="piyasa-xu030-price">--</h6>
+										<p class="fs-13 mb-0" id="piyasa-xu030-change">--</p>
+									</div>
+								</div>
+							</li><!-- end -->
+						</ul><!-- end -->
+					</div><!-- end card body -->
+				</div><!-- end card -->
+			</div><!-- end col -->
+
+			<div class="col-xxl-9 order-xxl-0 order-first">
+				<div class="d-flex flex-column h-100">
+					<div class="row h-100">
+						<div class="col-lg-4 col-md-6" id="sentiment-short">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-sm flex-shrink-0">
+											<span class="avatar-title bg-light text-primary rounded-circle fs-3">
+												<i class="ri-money-dollar-circle-fill align-middle"></i>
+											</span>
+										</div>
+										<div class="flex-grow-1 ms-3">
+											<p class="text-uppercase fw-semibold fs-13 text-muted mb-1">
+												Kısa Vadeli</p>
+											<h4 class=" mb-0">%<span class="counter-value" th:attr="data-target=${sentiment.kisaVadeli}" th:text="${#numbers.formatDecimal(sentiment.kisaVadeli, 1, 1)}">0</span></h4>
+										</div>
+									</div>
+									<div class="progress progress-sm mt-2">
+										<div class="progress-bar" role="progressbar"
+											 th:style="'width:' + ${sentiment.kisaVadeli} + '%; background-color:' + (${sentiment.kisaVadeli >= 70} ? '#0ab39c' : (${sentiment.kisaVadeli >= 50} ? '#f7b84b' : '#f06548'))"
+											 th:attr="aria-valuenow=${sentiment.kisaVadeli}"
+											 aria-valuemin="0" aria-valuemax="100"></div>
+									</div>
+								</div><!-- end card body -->
+							</div><!-- end card -->
+						</div><!-- end col -->
+						<div class="col-lg-4 col-md-6" id="sentiment-medium">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-sm flex-shrink-0">
+											<span class="avatar-title bg-light text-primary rounded-circle fs-3">
+												<i class="ri-arrow-up-circle-fill align-middle"></i>
+											</span>
+										</div>
+										<div class="flex-grow-1 ms-3">
+											<p class="text-uppercase fw-semibold fs-13 text-muted mb-1">
+												Orta Vadeli</p>
+											<h4 class=" mb-0">%<span class="counter-value" th:attr="data-target=${sentiment.ortaVadeli}" th:text="${#numbers.formatDecimal(sentiment.ortaVadeli, 1, 1)}">0</span></h4>
+										</div>
+									</div>
+									<div class="progress progress-sm mt-2">
+										<div class="progress-bar" role="progressbar"
+											 th:style="'width:' + ${sentiment.ortaVadeli} + '%; background-color:' + (${sentiment.ortaVadeli >= 70} ? '#0ab39c' : (${sentiment.ortaVadeli >= 50} ? '#f7b84b' : '#f06548'))"
+											 th:attr="aria-valuenow=${sentiment.ortaVadeli}"
+											 aria-valuemin="0" aria-valuemax="100"></div>
+									</div>
+								</div><!-- end card body -->
+							</div><!-- end card -->
+						</div><!-- end col -->
+						<div class="col-lg-4 col-md-6" id="sentiment-long">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-sm flex-shrink-0">
+											<span class="avatar-title bg-light text-primary rounded-circle fs-3">
+												<i class="ri-arrow-down-circle-fill align-middle"></i>
+											</span>
+										</div>
+										<div class="flex-grow-1 ms-3">
+											<p class="text-uppercase fw-semibold fs-13 text-muted mb-1">Uzun Vadeli</p>
+											<h4 class=" mb-0">%<span class="counter-value" th:attr="data-target=${sentiment.uzunVadeli}" th:text="${#numbers.formatDecimal(sentiment.uzunVadeli, 1, 1)}">0</span></h4>
+										</div>
+									</div>
+									<div class="progress progress-sm mt-2">
+										<div class="progress-bar" role="progressbar"
+											 th:style="'width:' + ${sentiment.uzunVadeli} + '%; background-color:' + (${sentiment.uzunVadeli >= 70} ? '#0ab39c' : (${sentiment.uzunVadeli >= 50} ? '#f7b84b' : '#f06548'))"
+											 th:attr="aria-valuenow=${sentiment.uzunVadeli}"
+											 aria-valuemin="0" aria-valuemax="100"></div>
+									</div>
+								</div><!-- end card body -->
+							</div><!-- end card -->
+						</div><!-- end col -->
+					</div><!-- end row -->
+
+					<div class="row">
+						<div class="col-xl-12">
+							<div class="card">
+								<div class="card-header border-0 align-items-center d-flex">
+									<h4 class="card-title mb-0 flex-grow-1">BIST 100</h4>
+									<!-- TODO: Periyot butonları — canlı veri desteği eklenince açılacak -->
+									<div style="display: none;">
+										<button type="button" class="btn btn-soft-secondary btn-sm">
+											1H
+										</button>
+										<button type="button" class="btn btn-soft-secondary btn-sm">
+											7D
+										</button>
+										<button type="button" class="btn btn-soft-secondary btn-sm">
+											1M
+										</button>
+										<button type="button" class="btn btn-soft-secondary btn-sm">
+											1Y
+										</button>
+										<button type="button" class="btn btn-soft-primary btn-sm">
+											ALL
+										</button>
+									</div>
+								</div><!-- end card header -->
+								<div class="card-body p-0">
+									<div class="bg-soft-light border-top-dashed border border-start-0 border-end-0 border-bottom-dashed py-3 px-4">
+										<div class="row align-items-center">
+											<div class="col-12">
+												<div class="d-flex flex-wrap gap-4 align-items-center" aria-live="polite" aria-atomic="true">
+													<h5 class="fs-19 mb-0" id="bist100-price">--</h5>
+													<p class="fw-medium text-muted mb-0"><span id="bist100-change" class="fs-13 ms-1">--</span>
+													</p>
+													<p class="fw-medium text-muted mb-0">Yüksek <span id="bist100-high" class="text-dark fs-13 ms-1">--</span></p>
+													<p class="fw-medium text-muted mb-0">Düşük <span id="bist100-low" class="text-dark fs-13 ms-1">--</span>
+													</p>
+												</div>
+											</div><!-- end col -->
+										</div><!-- end row -->
+									</div>
+								</div><!-- end cardbody -->
+								<div class="card-body p-0 pb-3">
+									<div id="Market_chart" data-colors='["--vz-success", "--vz-danger"]' class="apex-charts" dir="ltr">
+									</div>
+								</div><!-- end cardbody -->
+							</div><!-- end card -->
+						</div><!-- end col -->
+					</div><!-- end row -->
+				</div>
+			</div><!-- end col -->
+		</div><!-- end row -->
+
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="swiper cryptoSlider">
+					<div class="swiper-wrapper">
+						<!-- 1. XFINK -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Fin. Kir. Faktoring</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xfink-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xfink-change"><span class="text-muted text-uppercase">XFINK</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-primary", "--vz-transparent"]' id="sparkline_xfink" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 2. XAKUR -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Araci Kurumlar</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xakur-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xakur-change"><span class="text-muted text-uppercase">XAKUR</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-info", "--vz-transparent"]' id="sparkline_xakur" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 3. XMADN -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Madencilik</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xmadn-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xmadn-change"><span class="text-muted text-uppercase">XMADN</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-warning", "--vz-transparent"]' id="sparkline_xmadn" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 4. XUTEK -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Teknoloji</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xutek-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xutek-change"><span class="text-muted text-uppercase">XUTEK</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-success", "--vz-transparent"]' id="sparkline_xutek" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 5. XUMAL -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Mali</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xumal-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xumal-change"><span class="text-muted text-uppercase">XUMAL</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-danger", "--vz-transparent"]' id="sparkline_xumal" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 6. XINSA -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Insaat</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xinsa-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xinsa-change"><span class="text-muted text-uppercase">XINSA</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-primary", "--vz-transparent"]' id="sparkline_xinsa" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 7. XKTUM -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Katilim Tum</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xktum-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xktum-change"><span class="text-muted text-uppercase">XKTUM</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-info", "--vz-transparent"]' id="sparkline_xktum" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 8. XYORT -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Menkul Kiymet Y.O.</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xyort-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xyort-change"><span class="text-muted text-uppercase">XYORT</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-warning", "--vz-transparent"]' id="sparkline_xyort" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 9. XGMYO -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">GYO</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xgmyo-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xgmyo-change"><span class="text-muted text-uppercase">XGMYO</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-success", "--vz-transparent"]' id="sparkline_xgmyo" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 10. XMANA -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Metal Ana</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xmana-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xmana-change"><span class="text-muted text-uppercase">XMANA</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-danger", "--vz-transparent"]' id="sparkline_xmana" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 11. XK050 -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Katilim 50</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xk050-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xk050-change"><span class="text-muted text-uppercase">XK050</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-primary", "--vz-transparent"]' id="sparkline_xk050" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 12. XK030 -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Katilim 30</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xk030-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xk030-change"><span class="text-muted text-uppercase">XK030</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-info", "--vz-transparent"]' id="sparkline_xk030" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 13. XBANK -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Banka</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xbank-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xbank-change"><span class="text-muted text-uppercase">XBANK</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-warning", "--vz-transparent"]' id="sparkline_xbank" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 14. XHOLD -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Holding ve Yatirim</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xhold-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xhold-change"><span class="text-muted text-uppercase">XHOLD</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-success", "--vz-transparent"]' id="sparkline_xhold" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 15. XK100 -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Katilim 100</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xk100-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xk100-change"><span class="text-muted text-uppercase">XK100</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-danger", "--vz-transparent"]' id="sparkline_xk100" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 16. XUTUM -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Tum</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xutum-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xutum-change"><span class="text-muted text-uppercase">XUTUM</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-primary", "--vz-transparent"]' id="sparkline_xutum" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 17. XU100 -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">BIST 100</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xu100-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xu100-change"><span class="text-muted text-uppercase">XU100</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-info", "--vz-transparent"]' id="sparkline_xu100" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 18. XGIDA -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Gida</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xgida-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xgida-change"><span class="text-muted text-uppercase">XGIDA</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-warning", "--vz-transparent"]' id="sparkline_xgida" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 19. XUSIN -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Sinai</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xusin-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xusin-change"><span class="text-muted text-uppercase">XUSIN</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-success", "--vz-transparent"]' id="sparkline_xusin" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 20. XTCRT -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Ticaret</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xtcrt-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xtcrt-change"><span class="text-muted text-uppercase">XTCRT</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-danger", "--vz-transparent"]' id="sparkline_xtcrt" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 21. XELKT -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Elektrik</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xelkt-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xelkt-change"><span class="text-muted text-uppercase">XELKT</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-primary", "--vz-transparent"]' id="sparkline_xelkt" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 22. XTEKS -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Tekstil Deri</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xteks-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xteks-change"><span class="text-muted text-uppercase">XTEKS</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-info", "--vz-transparent"]' id="sparkline_xteks" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 23. XKMYA -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Kimya Petrol Plastik</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xkmya-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xkmya-change"><span class="text-muted text-uppercase">XKMYA</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-warning", "--vz-transparent"]' id="sparkline_xkmya" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 24. XMESY -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Metal Esya Makina</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xmesy-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xmesy-change"><span class="text-muted text-uppercase">XMESY</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-success", "--vz-transparent"]' id="sparkline_xmesy" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 25. XILTM -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Iletisim</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xiltm-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xiltm-change"><span class="text-muted text-uppercase">XILTM</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-danger", "--vz-transparent"]' id="sparkline_xiltm" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 26. XBLSM -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Bilisim</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xblsm-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xblsm-change"><span class="text-muted text-uppercase">XBLSM</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-primary", "--vz-transparent"]' id="sparkline_xblsm" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 27. XUHIZ -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Hizmetler</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xuhiz-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xuhiz-change"><span class="text-muted text-uppercase">XUHIZ</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-info", "--vz-transparent"]' id="sparkline_xuhiz" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 28. XSGRT -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Sigorta</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xsgrt-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xsgrt-change"><span class="text-muted text-uppercase">XSGRT</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-warning", "--vz-transparent"]' id="sparkline_xsgrt" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 29. XTRZM -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Turizm</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xtrzm-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xtrzm-change"><span class="text-muted text-uppercase">XTRZM</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-success", "--vz-transparent"]' id="sparkline_xtrzm" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 30. XKAGT -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Orman Kagit Basim</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xkagt-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xkagt-change"><span class="text-muted text-uppercase">XKAGT</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-danger", "--vz-transparent"]' id="sparkline_xkagt" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 31. XTAST -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Tas Toprak</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xtast-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xtast-change"><span class="text-muted text-uppercase">XTAST</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-primary", "--vz-transparent"]' id="sparkline_xtast" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 32. XULAS -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Ulastirma</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xulas-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xulas-change"><span class="text-muted text-uppercase">XULAS</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-info", "--vz-transparent"]' id="sparkline_xulas" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- 33. XSPOR -->
+						<div class="swiper-slide">
+							<div class="card">
+								<div class="card-body">
+									<div class="d-flex align-items-center">
+										<div class="avatar-xs flex-shrink-0">
+											<span class="avatar-title bg-white text-primary rounded-circle border">
+												<i class="ri-line-chart-line"></i>
+											</span>
+										</div>
+										<h6 class="ms-2 mb-0 fs-14">Spor</h6>
+									</div>
+									<div class="row align-items-end g-0">
+										<div class="col-6">
+											<h5 class="mb-1 mt-4" id="swiper-xspor-price">--</h5>
+											<p class="fw-medium mb-0" id="swiper-xspor-change"><span class="text-muted text-uppercase">XSPOR</span></p>
+										</div>
+										<div class="col-6">
+											<div class="apex-charts crypto-widget" data-colors='["--vz-warning", "--vz-transparent"]' id="sparkline_xspor" dir="ltr"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div><!-- end swiper wrapper -->
+				</div><!-- end swiper -->
+			</div><!-- end col -->
+		</div><!-- end row -->
+
+		<!-- TODO: My Currencies + Trading kartları şu an gizli — canlı veri bağlandığında açılacak -->
+		<div class="row" style="display: none;">
+			<div class="col-xl-8">
+				<div class="card card-height-100">
+					<div class="card-header align-items-center d-flex">
+						<h4 class="card-title mb-0 flex-grow-1">My Currencies</h4>
+						<div class="flex-shrink-0">
+							<button class="btn btn-soft-primary btn-sm">24H</button>
+						</div>
+						<div class="flex-shrink-0 ms-2">
+							<div class="dropdown card-header-dropdown">
+								<a class="btn btn-soft-primary btn-sm" role="button" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									Get Report<i class="mdi mdi-chevron-down align-middle ms-1"></i>
+								</a>
+								<div class="dropdown-menu dropdown-menu-end">
+									<a class="dropdown-item" href="#">Download Report</a>
+									<a class="dropdown-item" href="#">Export</a>
+									<a class="dropdown-item" href="#">Import</a>
+								</div>
+							</div>
+						</div>
+					</div><!-- end card header -->
+					<div class="card-body">
+						<div class="table-responsive table-card">
+							<table class="table table-hover table-borderless table-centered align-middle table-nowrap mb-0">
+								<thead class="text-muted bg-soft-light">
+									<tr>
+										<th>Coin Name</th>
+										<th>Price</th>
+										<th>24h Change</th>
+										<th>Total Balance</th>
+										<th>Total Coin</th>
+										<th>Actions</th>
+									</tr>
+								</thead><!-- end thead -->
+								<tbody>
+									<tr>
+										<td>
+											<div class="d-flex align-items-center">
+												<div class="me-2">
+													<img th:src="@{/assets/images/svg/crypto-icons/btc.svg}" alt="" class="avatar-xxs">
+												</div>
+												<div>
+													<h6 class="mb-0">Bitcoin</h6>
+												</div>
+											</div>
+										</td>
+										<td>$48,568.025</td>
+										<td>
+											<h6 class="text-success mb-0"><i class="mdi mdi-trending-up align-middle me-1"></i>5.26
+											</h6>
+										</td>
+										<td>$53,914.025</td>
+										<td>1.25634801</td>
+										<td><a href="apps-crypto-buy-sell.html" class="btn btn-sm btn-soft-secondary">Trade</a></td>
+									</tr><!-- end -->
+									<tr>
+										<td>
+											<div class="d-flex align-items-center">
+												<div class="me-2">
+													<img th:src="@{/assets/images/svg/crypto-icons/ltc.svg}" alt="" class="avatar-xxs">
+												</div>
+												<div>
+													<h6 class="mb-0">Litecoin</h6>
+												</div>
+											</div>
+										</td>
+										<td>$87,142.027</td>
+										<td>
+											<h6 class="text-danger mb-0"><i class="mdi mdi-trending-down align-middle me-1"></i>3.07
+											</h6>
+										</td>
+										<td>$75,854.127</td>
+										<td>2.85472161</td>
+										<td><a href="apps-crypto-buy-sell.html" class="btn btn-sm btn-soft-secondary">Trade</a></td>
+									</tr><!-- end -->
+									<tr>
+										<td>
+											<div class="d-flex align-items-center">
+												<div class="me-2">
+													<img th:src="@{/assets/images/svg/crypto-icons/eth.svg}" alt="" class="avatar-xxs">
+												</div>
+												<div>
+													<h6 class="mb-0">Eathereum</h6>
+												</div>
+											</div>
+										</td>
+										<td>$33,847.961</td>
+										<td>
+											<h6 class="text-success mb-0"><i class="mdi mdi-trending-up align-middle me-1"></i>7.13
+											</h6>
+										</td>
+										<td>$44,152.185</td>
+										<td>1.45612347</td>
+										<td><a href="apps-crypto-buy-sell.html" class="btn btn-sm btn-soft-secondary">Trade</a></td>
+									</tr><!-- end -->
+									<tr>
+										<td>
+											<div class="d-flex align-items-center">
+												<div class="me-2">
+													<img th:src="@{/assets/images/svg/crypto-icons/bnb.svg}" alt="" class="avatar-xxs">
+												</div>
+												<div>
+													<h6 class="mb-0">Binance</h6>
+												</div>
+											</div>
+										</td>
+										<td>$73,654.421</td>
+										<td>
+											<h6 class="text-success mb-0"><i class="mdi mdi-trending-up align-middle me-1"></i>0.97
+											</h6>
+										</td>
+										<td>$48,367.125</td>
+										<td>0.35734601</td>
+										<td><a href="apps-crypto-buy-sell.html" class="btn btn-sm btn-soft-secondary">Trade</a></td>
+									</tr><!-- end -->
+									<tr>
+										<td>
+											<div class="d-flex align-items-center">
+												<div class="me-2">
+													<img th:src="@{/assets/images/svg/crypto-icons/usdt.svg}" alt="" class="avatar-xxs">
+												</div>
+												<div>
+													<h6 class="mb-0">Tether</h6>
+												</div>
+											</div>
+										</td>
+										<td>$66,742.077</td>
+										<td>
+											<h6 class="text-danger mb-0"><i class="mdi mdi-trending-down align-middle me-1"></i>1.08
+											</h6>
+										</td>
+										<td>$53,487.083</td>
+										<td>3.62912570</td>
+										<td><a href="apps-crypto-buy-sell.html" class="btn btn-sm btn-soft-secondary">Trade</a></td>
+									</tr><!-- end -->
+									<tr>
+										<td>
+											<div class="d-flex align-items-center">
+												<div class="me-2">
+													<img th:src="@{/assets/images/svg/crypto-icons/dash.svg}" alt="" class="avatar-xxs">
+												</div>
+												<div>
+													<h6 class="mb-0">Dash</h6>
+												</div>
+											</div>
+										</td>
+										<td>$34,736.209</td>
+										<td>
+											<h6 class="text-success mb-0"><i class="mdi mdi-trending-up align-middle me-1"></i>4.52
+											</h6>
+										</td>
+										<td>$15,203.347</td>
+										<td>1.85412740</td>
+										<td><a href="apps-crypto-buy-sell.html" class="btn btn-sm btn-soft-secondary">Trade</a></td>
+									</tr><!-- end -->
+									<tr>
+										<td>
+											<div class="d-flex align-items-center">
+												<div class="me-2">
+													<img th:src="@{/assets/images/svg/crypto-icons/neo.svg}" alt="" class="avatar-xxs">
+												</div>
+												<div>
+													<h6 class="mb-0">Neo</h6>
+												</div>
+											</div>
+										</td>
+										<td>$56,357.313</td>
+										<td>
+											<h6 class="text-danger mb-0"><i class="mdi mdi-trending-down align-middle me-1"></i>2.87
+											</h6>
+										</td>
+										<td>$61,843.173</td>
+										<td>1.87732061</td>
+										<td><a href="apps-crypto-buy-sell.html" class="btn btn-sm btn-soft-secondary">Trade</a></td>
+									</tr><!-- end -->
+									<tr>
+										<td>
+											<div class="d-flex align-items-center">
+												<div class="me-2">
+													<img th:src="@{/assets/images/svg/crypto-icons/doge.svg}" alt="" class="avatar-xxs">
+												</div>
+												<div>
+													<h6 class="mb-0">Dogecoin</h6>
+												</div>
+											</div>
+										</td>
+										<td>$62,357.649</td>
+										<td>
+											<h6 class="text-success mb-0"><i class="mdi mdi-trending-up align-middle me-1"></i>3.45
+											</h6>
+										</td>
+										<td>$54,843.173</td>
+										<td>0.95632087</td>
+										<td><a href="apps-crypto-buy-sell.html" class="btn btn-sm btn-soft-secondary">Trade</a></td>
+									</tr><!-- end -->
+								</tbody><!-- end tbody -->
+							</table><!-- end table -->
+						</div><!-- end tbody -->
+					</div><!-- end cardbody -->
+				</div><!-- end card -->
+			</div><!-- end col -->
+
+			<div class="col-xl-4">
+				<div class="card card-height-100">
+					<div class="card-header align-items-center border-0 d-flex">
+						<h4 class="card-title mb-0 flex-grow-1">Trading</h4>
+						<div class="flex-shrink-0">
+							<ul class="nav justify-content-end nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
+								<li class="nav-item">
+									<a class="nav-link active" data-bs-toggle="tab" href="#buy-tab" role="tab" aria-selected="false">Buy</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" data-bs-toggle="tab" href="#sell-tab" role="tab" aria-selected="true">Sell</a>
+								</li>
+							</ul><!-- end ul -->
+						</div>
+					</div><!-- end cardheader -->
+					<div class="card-body p-0">
+						<div class="tab-content p-0">
+							<div class="tab-pane active" id="buy-tab" role="tabpanel">
+								<div class="p-3 bg-soft-warning">
+									<div class="float-end ms-2">
+										<h6 class="text-warning mb-0">USD Balance : <span class="text-dark">$12,426.07</span></h6>
+									</div>
+									<h6 class="mb-0 text-danger">Buy Coin</h6>
+								</div>
+								<div class="p-3">
+									<div class="row">
+										<div class="col-6">
+											<div class="mb-3">
+												<label>Currency :</label>
+												<select class="form-select">
+													<option>BTC</option>
+													<option>ETH</option>
+													<option>LTC</option>
+												</select>
+											</div>
+										</div><!-- end col -->
+										<div class="col-6">
+											<div class="mb-3">
+												<label>Payment Method :</label>
+												<select class="form-select">
+													<option>Wallet Balance</option>
+													<option>Credit / Debit Card</option>
+													<option>PayPal</option>
+													<option>Payoneer</option>
+												</select>
+											</div>
+										</div><!-- end col -->
+									</div><!-- end row -->
+									<div>
+										<div class="input-group mb-3">
+											<label class="input-group-text">Amount</label>
+											<input type="text" class="form-control" placeholder="0">
+										</div>
+
+										<div class="input-group mb-3">
+											<label class="input-group-text">Price</label>
+											<input type="text" class="form-control" placeholder="2.045585">
+											<label class="input-group-text">$</label>
+										</div>
+
+										<div class="input-group mb-0">
+											<label class="input-group-text">Total</label>
+											<input type="text" class="form-control" placeholder="2700.16">
+										</div>
+									</div>
+									<div class="mt-3 pt-2">
+										<div class="d-flex mb-2">
+											<div class="flex-grow-1">
+												<p class="mb-0">Transaction Fees<span class="text-muted ms-1 fs-13">(0.05%)</span></p>
+											</div>
+											<div class="flex-shrink-0">
+												<h6 class="mb-0">$1.08</h6>
+											</div>
+										</div>
+										<div class="d-flex mb-2">
+											<div class="flex-grow-1">
+												<p class="mb-0">Minimum Received<span class="text-muted ms-1 fs-13">(2%)</span></p>
+											</div>
+											<div class="flex-shrink-0">
+												<h6 class="mb-0">$7.85</h6>
+											</div>
+										</div>
+										<div class="d-flex">
+											<div class="flex-grow-1">
+												<p class="mb-0">Estimated Rate</p>
+											</div>
+											<div class="flex-shrink-0">
+												<h6 class="mb-0">1 BTC ~ $34572.00</h6>
+											</div>
+										</div>
+									</div>
+									<div class="mt-3 pt-2">
+										<button type="button" class="btn btn-primary w-100">Buy
+											Coin</button>
+									</div>
+								</div>
+							</div><!-- end tabpane -->
+
+							<div class="tab-pane" id="sell-tab" role="tabpanel">
+								<div class="p-3 bg-soft-warning">
+									<div class="float-end ms-2">
+										<h6 class="text-warning mb-0">USD Balance : <span class="text-dark">$12,426.07</span></h6>
+									</div>
+									<h6 class="mb-0 text-danger">Sell Coin</h6>
+								</div>
+								<div class="p-3">
+									<div class="row">
+										<div class="col-6">
+											<div class="mb-3">
+												<label>Currency :</label>
+												<select class="form-select">
+													<option>BTC</option>
+													<option>ETH</option>
+													<option>LTC</option>
+												</select>
+											</div>
+										</div><!-- end col -->
+										<div class="col-6">
+											<div class="mb-3">
+												<label>Email :</label>
+												<input type="email" class="form-control" placeholder="example@email.com">
+											</div>
+										</div><!-- end col -->
+									</div><!-- end row -->
+									<div>
+										<div class="input-group mb-3">
+											<label class="input-group-text">Amount</label>
+											<input type="text" class="form-control" placeholder="0">
+										</div>
+										<div class="input-group mb-3">
+											<label class="input-group-text">Price</label>
+											<input type="text" class="form-control" placeholder="2.045585">
+											<label class="input-group-text">$</label>
+										</div>
+										<div class="input-group mb-0">
+											<label class="input-group-text">Total</label>
+											<input type="text" class="form-control" placeholder="2700.16">
+										</div>
+									</div>
+									<div class="mt-3 pt-2">
+										<div class="d-flex mb-2">
+											<div class="flex-grow-1">
+												<p class="mb-0">Transaction Fees<span class="text-muted ms-1 fs-13">(0.05%)</span></p>
+											</div>
+											<div class="flex-shrink-0">
+												<h6 class="mb-0">$1.08</h6>
+											</div>
+										</div>
+										<div class="d-flex mb-2">
+											<div class="flex-grow-1">
+												<p class="mb-0">Minimum Received<span class="text-muted ms-1 fs-13">(2%)</span></p>
+											</div>
+											<div class="flex-shrink-0">
+												<h6 class="mb-0">$7.85</h6>
+											</div>
+										</div>
+										<div class="d-flex">
+											<div class="flex-grow-1">
+												<p class="mb-0">Estimated Rate</p>
+											</div>
+											<div class="flex-shrink-0">
+												<h6 class="mb-0">1 BTC ~ $34572.00</h6>
+											</div>
+										</div>
+									</div>
+									<div class="mt-3 pt-2">
+										<button type="button" class="btn btn-danger w-100">Sell
+											Coin</button>
+									</div>
+								</div>
+							</div><!-- end tab pane -->
+						</div><!-- end tab pane -->
+					</div><!-- end card body -->
+				</div><!-- end card -->
+			</div><!-- end col -->
+		</div><!-- end row -->
+
+		<div class="row">
+			<!-- En Çok Yükselenler -->
+			<div class="col-xxl-4 col-lg-6">
+				<div class="card card-height-100">
+					<div class="card-header align-items-center d-flex">
+						<h4 class="card-title mb-0 flex-grow-1">En Çok Yükselenler</h4>
+					</div>
+					<div class="card-body p-0">
+						<ul class="list-group list-group-flush border-dashed mb-0" id="top-gainers-list">
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-success-subtle text-success rounded-circle"><i class="ri-arrow-up-line"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-success fs-13 mb-0">--</p></div>
+							</li>
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-success-subtle text-success rounded-circle"><i class="ri-arrow-up-line"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-success fs-13 mb-0">--</p></div>
+							</li>
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-success-subtle text-success rounded-circle"><i class="ri-arrow-up-line"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-success fs-13 mb-0">--</p></div>
+							</li>
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-success-subtle text-success rounded-circle"><i class="ri-arrow-up-line"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-success fs-13 mb-0">--</p></div>
+							</li>
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-success-subtle text-success rounded-circle"><i class="ri-arrow-up-line"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-success fs-13 mb-0">--</p></div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<!-- En Çok Düşenler -->
+			<div class="col-xxl-4 col-lg-6">
+				<div class="card card-height-100">
+					<div class="card-header align-items-center d-flex">
+						<h4 class="card-title mb-0 flex-grow-1">En Çok Düşenler</h4>
+					</div>
+					<div class="card-body p-0">
+						<ul class="list-group list-group-flush border-dashed mb-0" id="top-losers-list">
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-danger-subtle text-danger rounded-circle"><i class="ri-arrow-down-line"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-danger fs-13 mb-0">--</p></div>
+							</li>
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-danger-subtle text-danger rounded-circle"><i class="ri-arrow-down-line"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-danger fs-13 mb-0">--</p></div>
+							</li>
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-danger-subtle text-danger rounded-circle"><i class="ri-arrow-down-line"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-danger fs-13 mb-0">--</p></div>
+							</li>
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-danger-subtle text-danger rounded-circle"><i class="ri-arrow-down-line"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-danger fs-13 mb-0">--</p></div>
+							</li>
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-danger-subtle text-danger rounded-circle"><i class="ri-arrow-down-line"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-danger fs-13 mb-0">--</p></div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<!-- En Çok Hacimliler (mock data) -->
+			<div class="col-xxl-4 col-lg-6">
+				<div class="card card-height-100">
+					<div class="card-header align-items-center d-flex">
+						<h4 class="card-title mb-0 flex-grow-1">En Çok Hacimliler</h4>
+					</div>
+					<div class="card-body p-0">
+						<ul class="list-group list-group-flush border-dashed mb-0" id="top-volume-list">
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-info-subtle text-info rounded-circle"><i class="ri-bar-chart-fill"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-muted fs-13 mb-0">--</p></div>
+							</li>
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-info-subtle text-info rounded-circle"><i class="ri-bar-chart-fill"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-muted fs-13 mb-0">--</p></div>
+							</li>
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-info-subtle text-info rounded-circle"><i class="ri-bar-chart-fill"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-muted fs-13 mb-0">--</p></div>
+							</li>
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-info-subtle text-info rounded-circle"><i class="ri-bar-chart-fill"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-muted fs-13 mb-0">--</p></div>
+							</li>
+							<li class="list-group-item d-flex align-items-center">
+								<div class="flex-shrink-0 avatar-xs"><span class="avatar-title bg-info-subtle text-info rounded-circle"><i class="ri-bar-chart-fill"></i></span></div>
+								<div class="flex-grow-1 ms-3"><h6 class="mb-1">--</h6><p class="text-muted mb-0 fs-13">--</p></div>
+								<div class="flex-shrink-0 text-end"><h6 class="mb-1">--</h6><p class="text-muted fs-13 mb-0">--</p></div>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div><!-- end row -->
+
+		<div class="row">
+			<!-- Haberler -->
+			<div class="col-xxl-4 col-lg-6">
+				<div class="card card-height-100">
+					<div class="card-header align-items-center d-flex">
+						<h4 class="card-title mb-0 flex-grow-1">Haberler</h4>
+						<div>
+							<a th:href="@{/market-news}" class="btn btn-soft-primary btn-sm">Tümü</a>
+						</div>
+					</div>
+					<div class="card-body" id="news-list">
+						<div class="text-center text-muted py-4">
+							<i class="ri-loader-4-line ri-spin fs-24"></i>
+							<p class="mt-2 mb-0">Yükleniyor...</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- KAP Haberleri -->
+			<div class="col-xxl-4 col-lg-6">
+				<div class="card card-height-100">
+					<div class="card-header align-items-center d-flex">
+						<h4 class="card-title mb-0 flex-grow-1">KAP Bildirimleri</h4>
+						<div>
+							<a th:href="@{/kap-news}" class="btn btn-soft-warning btn-sm">Tümü</a>
+						</div>
+					</div>
+					<div class="card-body" id="kap-news-list">
+						<div class="text-center text-muted py-4">
+							<i class="ri-loader-4-line ri-spin fs-24"></i>
+							<p class="mt-2 mb-0">Yükleniyor...</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Dünya Haberleri -->
+			<div class="col-xxl-4 col-lg-6">
+				<div class="card card-height-100">
+					<div class="card-header align-items-center d-flex">
+						<h4 class="card-title mb-0 flex-grow-1">Dünya Haberleri</h4>
+						<div>
+							<a th:href="@{/world-news}" class="btn btn-soft-info btn-sm">Tümü</a>
+						</div>
+					</div>
+					<div class="card-body" id="world-news-list">
+						<div class="text-center text-muted py-4">
+							<i class="ri-loader-4-line ri-spin fs-24"></i>
+							<p class="mt-2 mb-0">Yükleniyor...</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div><!-- end row -->
+	</section>
+
+	<th:block layout:fragment="pagejs">
+		<script th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
+		<script th:src="@{/webjars/stomp-websocket/stomp.min.js}"></script>
+		<script th:src="@{/assets/libs/apexcharts/apexcharts.min.js}"></script>
+		<script th:src="@{/assets/libs/swiper/swiper-bundle.min.js}"></script>
+		<!-- SSR Bridge: dashboard-crypto.init.js'den ONCE yuklenmeli -->
+		<script th:inline="javascript">
+			window.initialSentimentData = /*[[${sentiment}]]*/ {};
+			window.initialIndexData = /*[[${indexPerformances}]]*/ [];
+		</script>
+		<script th:src="@{/assets/js/pages/dashboard-crypto.init.js}"></script>
+		<script th:src="@{/js/sentiment.js}"></script>
+		<script th:src="@{/js/index-swiper.js}"></script>
+	</th:block>
+</body>
+
+</html>

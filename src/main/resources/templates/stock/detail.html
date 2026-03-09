@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta(${stockId})}"></div>
+    </th:block>
+    <style>
+        .score-circle {
+            width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold; cursor: pointer; border: none; transition: transform 0.2s;
+        }
+        .score-circle:hover { transform: scale(1.1); }
+        .score-circle:focus { outline: 2px solid #fff; outline-offset: 2px; }
+        .score-red { background-color: #ff4444; }
+        .score-green { background-color: #00C851; }
+        .score-yellow { background-color: #ffbb33; }
+        .time-header { text-align: center; font-weight: bold; padding: 8px; background-color: #f8f9fa; }
+        .indicator-item {
+            padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;
+        }
+        .indicator-status {
+            width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-left: 10px;
+        }
+        .status-positive { background-color: #00C851; }
+        .status-negative { background-color: #ff4444; }
+        .status-neutral { background-color: #ffbb33; }
+        .needle { transition: transform 0.5s ease-in-out; }
+    </style>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <!-- start page title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0" th:text="${stockId} + ' Detay'"></h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="/">Anasayfa</a></li>
+                        <li class="breadcrumb-item"><a href="#">Hisse Senetleri</a></li>
+                        <li class="breadcrumb-item active" th:text="${stockId}"></li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end page title -->
+
+    <!-- Hisse Bilgi Header -->
+    <div class="row" th:if="${stockLogoid != null}">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-3">
+                            <img th:if="${stockLogoid != null and !stockLogoid.isEmpty()}"
+                                 th:src="@{'/img/stock-logos/' + ${stockLogoid}}"
+                                 class="avatar-md rounded-circle"
+                                 th:alt="${stockId}">
+                            <div th:unless="${stockLogoid != null and !stockLogoid.isEmpty()}"
+                                 class="avatar-md rounded-circle bg-light border d-flex align-items-center justify-content-center">
+                                <span class="fs-18 text-muted fw-semibold" th:text="${#strings.length(stockId) > 4 ? #strings.substring(stockId, 0, 4) : stockId}"></span>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1" th:text="${stockId}">THYAO</h5>
+                            <p class="text-muted mb-0" th:text="${stockDescription}">Turk Hava Yollari A.O.</p>
+                        </div>
+                        <div class="flex-shrink-0 text-end">
+                            <h4 class="mb-1">
+                                <span th:text="${#numbers.formatDecimal(stockPrice, 1, 2)} + ' TL'">150,20 TL</span>
+                            </h4>
+                            <span th:class="${stockChangePercent >= 0 ? 'badge bg-success-subtle text-success' : 'badge bg-danger-subtle text-danger'}">
+                                <i th:class="${stockChangePercent >= 0 ? 'ri-arrow-up-line' : 'ri-arrow-down-line'}"></i>
+                                <span th:text="${'%' + #numbers.formatDecimal(stockChangePercent, 1, 2)}">%2.35</span>
+                            </span>
+                            <p class="text-muted mb-0 mt-1">
+                                <span class="fw-medium">Hacim:</span>
+                                <span th:text="${stockVolume >= 1000000 ? #numbers.formatDecimal(stockVolume / 1000000, 1, 1) + ' Milyon' : #numbers.formatInteger(stockVolume, 1, 'COMMA')}">45,2 Milyon</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analiz + Trend Yonu -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex">
+                <!-- Analiz Tablosu -->
+                <div id="stockAnaliz" class="me-3" style="width: 40%;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title mb-0">Analiz</h4>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Sembol</th>
+                                    <th class="time-header">15 Dk.</th>
+                                    <th class="time-header">30 Dk.</th>
+                                    <th class="time-header">1 Saat</th>
+                                    <th class="time-header">4 Saat</th>
+                                    <th class="time-header">1 Gun</th>
+                                    <th class="time-header">1 Hafta</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td th:text="${stockId}"></td>
+                                    <th:block th:each="period : ${ {'15M','30M','1H','4H','1D','1W'} }">
+                                    <td th:with="pdata=${analysisMap.get(period)}, gc=${pdata != null ? pdata.get('greenCount') : 0}, rc=${pdata != null ? pdata.get('redCount') : 0}">
+                                        <button class="score-circle"
+                                                th:classappend="${(gc > 6) ? ' score-green' : ((gc == 5 or gc == 6) ? ' score-yellow' : ' score-red')}"
+                                                th:text="${(gc > 6) ? gc : ((gc == 5 or gc == 6) ? gc : rc)}"
+                                                onclick="showIndicatorDetails(this)"
+                                                th:data-period="${period}" th:data-symbol="${stockId}">
+                                        </button>
+                                    </td>
+                                    </th:block>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trend Yonu Gauge -->
+                <div id="stockChart" style="width: 60%;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title mb-0">Trend Yonu</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div id="short-term-gauge" style="height: 150px;"></div>
+                                    <p class="text-center mt-2">Kisa Vade</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <div id="medium-term-gauge" style="height: 150px;"></div>
+                                    <p class="text-center mt-2">Orta Vade</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <div id="long-term-gauge" style="height: 150px;"></div>
+                                    <p class="text-center mt-2">Uzun Vade</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TradingView Chart -->
+    <div class="row">
+        <div class="col-xxl-12">
+            <div class="card">
+                <div class="card-body p-0">
+                    <div style="height: calc(100vh - 400px); min-height: 400px;">
+                        <div style="height: 100%; width: 100%;">
+                            <div class="tradingview-widget-container" style="height: 100%; width: 100%;">
+                                <div class="tradingview-widget-container__widget" style="height: 100%; width: 100%;"></div>
+                                <script type="text/javascript"
+                                        src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js"
+                                        async
+                                        th:inline="javascript">
+                                    {
+                                        "autosize": true,
+                                        "symbol": /*[['BIST:' + ${stockId}]]*/ "BIST:THYAO",
+                                        "interval": "D",
+                                        "timezone": "Etc/UTC",
+                                        "theme": "light",
+                                        "style": "1",
+                                        "locale": "tr",
+                                        "allow_symbol_change": false,
+                                        "calendar": false,
+                                        "support_host": "https://www.tradingview.com"
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teknik Gostergeler Tablosu -->
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0">Teknik Gostergeler</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive table-card">
+                        <table class="table align-middle table-nowrap table-striped-columns mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th scope="col">Fiyat</th>
+                                <th scope="col">RSI</th>
+                                <th scope="col">MACD</th>
+                                <th scope="col">MOM</th>
+                                <th scope="col">ADX14</th>
+                                <th scope="col">EMA20</th>
+                                <th scope="col">EMA50</th>
+                                <th scope="col">SMA50</th>
+                                <th scope="col">SMA200</th>
+                                <th scope="col">Ichimoku</th>
+                                <th scope="col">HULLMA</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:if="${NO_TIME != null}" th:each="data : ${NO_TIME.data}">
+                                <!-- Fiyat => d[6] -->
+                                <td th:text="${data.d[6] != null ? data.d[6] : 'N/A'}"></td>
+
+                                <!-- RSI => d[12] -->
+                                <td th:if="${data.d[12] != null}"
+                                    th:with="rsiRaw=${data.d[12]}, rsiFormatted=${#numbers.formatDecimal(data.d[12], 2, 2)}"
+                                    th:class="${rsiRaw > 70 ? 'text-danger' : (rsiRaw < 30 ? 'text-success' : 'text-warning')}">
+                                    <span th:if="${rsiRaw > 70}" class="text-danger">Asiri Alim</span>
+                                    <span th:if="${rsiRaw < 30}" class="text-success">Asiri Satim</span>
+                                    <span th:if="${rsiRaw >= 30 and rsiRaw <= 70}" class="text-warning">Notr</span>
+                                    <br/>
+                                    <span th:text="'RSI: ' + ${rsiFormatted}"></span>
+                                </td>
+                                <td th:if="${data.d[12] == null}">N/A</td>
+
+                                <!-- MACD => d[13], Signal => d[14] -->
+                                <td>
+                                    <div th:if="${data.d[13] != null and data.d[14] != null}">
+                                        <i th:class="${data.d[13] > data.d[14] ? 'mdi mdi-trending-up text-success align-middle me-1' : 'mdi mdi-trending-down text-danger align-middle me-1'}"></i>
+                                        <div th:with="macdLevel=${#numbers.formatDecimal(data.d[13], 2, 2)}, macdSignal=${#numbers.formatDecimal(data.d[14], 2, 2)}">
+                                            <span th:text="'Level: ' + ${macdLevel}"></span><br/>
+                                            <span th:text="'Signal: ' + ${macdSignal}"></span>
+                                        </div>
+                                    </div>
+                                    <div th:if="${data.d[13] == null or data.d[14] == null}">N/A</div>
+                                </td>
+
+                                <!-- MOMENTUM => d[15] -->
+                                <td th:if="${data.d[15] != null}"
+                                    th:with="momentum=${data.d[15]}"
+                                    th:class="${momentum >= 0 ? 'text-success' : 'text-danger'}">
+                                    <span th:with="momentumFormatted=${#numbers.formatDecimal(momentum, 2, 2)}"
+                                          th:class="${momentum >= 0 ? 'text-success' : 'text-danger'}"
+                                          th:text="${momentumFormatted}"></span>
+                                </td>
+                                <td th:if="${data.d[15] == null}">N/A</td>
+
+                                <!-- ADX14 => d[16] -->
+                                <td>
+                                    <span th:if="${data.d[16] != null}"
+                                          th:with="adxRaw=${data.d[16]}, adx=${#numbers.formatDecimal(data.d[16], 2, 2)}"
+                                          th:class="${adxRaw >= 25 ? 'text-success' : 'text-danger'}">
+                                        <span th:text="${adx}"></span><br/>
+                                        <span th:if="${adxRaw >= 25}" class="text-success">(Trend Guclu)</span>
+                                        <span th:if="${adxRaw < 25}" class="text-danger">(Trend Zayif)</span>
+                                    </span>
+                                    <span th:if="${data.d[16] == null}">N/A</span>
+                                </td>
+
+                                <!-- EMA20 => d[17] -->
+                                <td>
+                                    <span th:if="${data.d[17] != null and data.d[6] != null}"
+                                          th:with="price=${data.d[6]}, ema20Val=${#numbers.formatDecimal(data.d[17], 2, 2)}, ema20Raw=${data.d[17]}"
+                                          th:class="${price > ema20Raw ? 'text-success' : 'text-danger'}">
+                                        <span th:text="${ema20Val}"></span><br/>
+                                        <span th:if="${price > ema20Raw}" class="text-success">(Fiyat Uzerinde)</span>
+                                        <span th:if="${price <= ema20Raw}" class="text-danger">(Fiyat Altinda)</span>
+                                    </span>
+                                    <span th:if="${data.d[17] == null or data.d[6] == null}">N/A</span>
+                                </td>
+
+                                <!-- EMA50 => d[18] -->
+                                <td>
+                                    <span th:if="${data.d[18] != null and data.d[6] != null}"
+                                          th:with="price=${data.d[6]}, ema50Val=${#numbers.formatDecimal(data.d[18], 2, 2)}, ema50Raw=${data.d[18]}"
+                                          th:class="${price > ema50Raw ? 'text-success' : 'text-danger'}">
+                                        <span th:text="${ema50Val}"></span><br/>
+                                        <span th:if="${price > ema50Raw}" class="text-success">(Fiyat Uzerinde)</span>
+                                        <span th:if="${price <= ema50Raw}" class="text-danger">(Fiyat Altinda)</span>
+                                    </span>
+                                    <span th:if="${data.d[18] == null or data.d[6] == null}">N/A</span>
+                                </td>
+
+                                <!-- SMA50 => d[19] -->
+                                <td>
+                                    <span th:if="${data.d[19] != null and data.d[6] != null}"
+                                          th:with="price=${data.d[6]}, sma50Val=${#numbers.formatDecimal(data.d[19], 2, 2)}, sma50Raw=${data.d[19]}"
+                                          th:class="${price > sma50Raw ? 'text-success' : 'text-danger'}">
+                                        <span th:text="${sma50Val}"></span><br/>
+                                        <span th:if="${price > sma50Raw}" class="text-success">(Fiyat Uzerinde)</span>
+                                        <span th:if="${price <= sma50Raw}" class="text-danger">(Fiyat Altinda)</span>
+                                    </span>
+                                    <span th:if="${data.d[19] == null or data.d[6] == null}">N/A</span>
+                                </td>
+
+                                <!-- SMA200 => d[20] -->
+                                <td>
+                                    <span th:if="${data.d[20] != null and data.d[6] != null}"
+                                          th:with="price=${data.d[6]}, sma200Val=${#numbers.formatDecimal(data.d[20], 2, 2)}, sma200Raw=${data.d[20]}"
+                                          th:class="${price > sma200Raw ? 'text-success' : 'text-danger'}">
+                                        <span th:text="${sma200Val}"></span><br/>
+                                        <span th:if="${price > sma200Raw}" class="text-success">(Fiyat Uzerinde)</span>
+                                        <span th:if="${price <= sma200Raw}" class="text-danger">(Fiyat Altinda)</span>
+                                    </span>
+                                    <span th:if="${data.d[20] == null or data.d[6] == null}">N/A</span>
+                                </td>
+
+                                <!-- Ichimoku => d[21]=CLine, d[22]=BLine -->
+                                <td th:if="${data.d[21] != null and data.d[22] != null and data.d[6] != null}"
+                                    th:with="price=${data.d[6]}, cLineVal=${#numbers.formatDecimal(data.d[21], 2, 2)}, bLineVal=${#numbers.formatDecimal(data.d[22], 2, 2)}, cRaw=${data.d[21]}, bRaw=${data.d[22]}"
+                                    th:class="${(price > cRaw and price > bRaw) ? 'text-success' : ((price < cRaw and price < bRaw) ? 'text-danger' : 'text-warning')}">
+                                    <span th:text="'CLine: ' + ${cLineVal}"></span><br/>
+                                    <span th:text="'BLine: ' + ${bLineVal}"></span>
+                                </td>
+                                <td th:if="${data.d[21] == null or data.d[22] == null or data.d[6] == null}">N/A</td>
+
+                                <!-- HULLMA => d[23] -->
+                                <td>
+                                    <span th:if="${data.d[23] != null and data.d[6] != null}"
+                                          th:with="price=${data.d[6]}, hullmaVal=${#numbers.formatDecimal(data.d[23], 2, 2)}, hullmaRaw=${data.d[23]}"
+                                          th:class="${price > hullmaRaw ? 'text-success' : 'text-danger'}">
+                                        <span th:text="${hullmaVal}"></span><br/>
+                                        <span th:if="${price > hullmaRaw}" class="text-success">(Fiyat Uzerinde)</span>
+                                        <span th:if="${price <= hullmaRaw}" class="text-danger">(Fiyat Altinda)</span>
+                                    </span>
+                                    <span th:if="${data.d[23] == null or data.d[6] == null}">N/A</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analist Tavsiyeleri -->
+    <div class="row" th:if="${analistTavsiyeleri != null and !analistTavsiyeleri.isEmpty()}">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <h5 class="card-title mb-0 flex-grow-1">Analist Tavsiyeleri</h5>
+                    <div class="flex-shrink-0">
+                        <span class="badge bg-primary-subtle text-primary me-1" th:text="${toplamTavsiye + ' Tavsiye'}">12 Tavsiye</span>
+                        <span class="badge bg-success-subtle text-success me-1" th:text="${alSayisi + ' Al'}">8 Al</span>
+                        <span class="badge bg-info-subtle text-info" th:text="'Ort. Hedef: ' + ${#numbers.formatDecimal(ortalamaHedefFiyat, 1, 2)} + ' TL'">Ort. Hedef: 180,50 TL</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Kurum</th>
+                                    <th>Tavsiye</th>
+                                    <th>Hedef Fiyat</th>
+                                    <th>Tarih</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="tavsiye : ${analistTavsiyeleri}">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img th:if="${tavsiye.brokerage != null and tavsiye.brokerage.logo != null}"
+                                                 th:src="'/img/brokerage-logos/' + ${tavsiye.brokerage.logo.substring(tavsiye.brokerage.logo.lastIndexOf('/') + 1)}"
+                                                 class="avatar-xs rounded-circle me-2"
+                                                 th:alt="${tavsiye.brokerage.title}">
+                                            <span th:text="${tavsiye.brokerage != null ? tavsiye.brokerage.title : 'Bilinmiyor'}">Kurum Adi</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${tavsiye.ratingType != null and tavsiye.ratingType.equalsIgnoreCase('al') ? 'bg-success-subtle text-success' :
+                                                  (tavsiye.ratingType != null and tavsiye.ratingType.equalsIgnoreCase('tut') ? 'bg-warning-subtle text-warning' :
+                                                  (tavsiye.ratingType != null and tavsiye.ratingType.equalsIgnoreCase('sat') ? 'bg-danger-subtle text-danger' :
+                                                  (tavsiye.ratingType != null and tavsiye.ratingType.equalsIgnoreCase('endekse paralel') ? 'bg-info-subtle text-info' :
+                                                  (tavsiye.ratingType != null and tavsiye.ratingType.toUpperCase().contains('ENDEKS') and tavsiye.ratingType.toUpperCase().contains('UST') ? 'bg-primary-subtle text-primary' :
+                                                  (tavsiye.ratingType != null and tavsiye.ratingType.toUpperCase().contains('ENDEKS') and tavsiye.ratingType.toUpperCase().contains('ALT') ? 'bg-danger-subtle text-danger' :
+                                                  'bg-secondary-subtle text-secondary')))))}"
+                                              th:text="${tavsiye.ratingType != null ? tavsiye.ratingType.toUpperCase() : '-'}">AL</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${tavsiye.targetPrice != null and tavsiye.targetPrice > 0}"
+                                              th:text="${#numbers.formatDecimal(tavsiye.targetPrice, 1, 2) + ' TL'}">180,50 TL</span>
+                                        <span th:unless="${tavsiye.targetPrice != null and tavsiye.targetPrice > 0}"
+                                              class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted" th:text="${tavsiye.date}">2024-03-15</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3 text-end">
+                        <a th:href="@{'/analist-tavsiyeleri/' + ${stockId}}" class="btn btn-soft-primary btn-sm">
+                            Tumunu Gor <i class="ri-arrow-right-line"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AKD Tablosu -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">AKD</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5 style="color: #00C851;">Alicilar</h5>
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Kurum</th>
+                                    <th>Adet</th>
+                                    <th>%</th>
+                                    <th>Maliyet</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>Ak</td>
+                                    <td>158,922</td>
+                                    <td>37.23</td>
+                                    <td>20.582</td>
+                                </tr>
+                                <tr>
+                                    <td>Yapi Kr.</td>
+                                    <td>124,299</td>
+                                    <td>29.12</td>
+                                    <td>20.586</td>
+                                </tr>
+                                <tr>
+                                    <td>BofA</td>
+                                    <td>99,512</td>
+                                    <td>23.31</td>
+                                    <td>20.663</td>
+                                </tr>
+                                <tr>
+                                    <td>ING</td>
+                                    <td>12,050</td>
+                                    <td>2.82</td>
+                                    <td>20.661</td>
+                                </tr>
+                                <tr>
+                                    <td>Phillip</td>
+                                    <td>11,245</td>
+                                    <td>2.63</td>
+                                    <td>20.675</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-warning">Diger</td>
+                                    <td>20,810</td>
+                                    <td>4.88</td>
+                                    <td>20.662</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 style="color: #ff0000;">Saticilar</h5>
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Kurum</th>
+                                    <th>Adet</th>
+                                    <th>%</th>
+                                    <th>Maliyet</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>Gedik</td>
+                                    <td>-89,984</td>
+                                    <td>21.08</td>
+                                    <td>20.592</td>
+                                </tr>
+                                <tr>
+                                    <td>QNB</td>
+                                    <td>-67,589</td>
+                                    <td>15.83</td>
+                                    <td>20.596</td>
+                                </tr>
+                                <tr>
+                                    <td>Vakif</td>
+                                    <td>-48,432</td>
+                                    <td>11.35</td>
+                                    <td>20.569</td>
+                                </tr>
+                                <tr>
+                                    <td>Trive</td>
+                                    <td>-48,054</td>
+                                    <td>11.26</td>
+                                    <td>20.549</td>
+                                </tr>
+                                <tr>
+                                    <td>Garanti</td>
+                                    <td>-33,158</td>
+                                    <td>7.77</td>
+                                    <td>20.611</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-warning">Diger</td>
+                                    <td>-139,621</td>
+                                    <td>32.71</td>
+                                    <td>20.665</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-4">
+                            <h5 style="color: #007bff;">Toplam</h5>
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Kurum</th>
+                                    <th>Adet</th>
+                                    <th>%</th>
+                                    <th>Maliyet</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>Is</td>
+                                    <td>815,573</td>
+                                    <td>25.03</td>
+                                    <td>20.642</td>
+                                </tr>
+                                <tr>
+                                    <td>BofA</td>
+                                    <td>413,378</td>
+                                    <td>12.69</td>
+                                    <td>20.620</td>
+                                </tr>
+                                <tr>
+                                    <td>Yapi Kr.</td>
+                                    <td>389,487</td>
+                                    <td>11.95</td>
+                                    <td>20.666</td>
+                                </tr>
+                                <tr>
+                                    <td>Ak</td>
+                                    <td>300,912</td>
+                                    <td>9.24</td>
+                                    <td>20.593</td>
+                                </tr>
+                                <tr>
+                                    <td>QNB</td>
+                                    <td>188,133</td>
+                                    <td>5.77</td>
+                                    <td>20.634</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-warning">Diger</td>
+                                    <td>1,150,775</td>
+                                    <td>35.32</td>
+                                    <td>20.614</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Takas Tablosu -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Takas</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Kurum</th>
+                                    <th>Adet</th>
+                                    <th>%</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>Is</td>
+                                    <td>34.878.558</td>
+                                    <td>24,68%</td>
+                                </tr>
+                                <tr>
+                                    <td>Yat. Fon.</td>
+                                    <td>19.199.336</td>
+                                    <td>13,58%</td>
+                                </tr>
+                                <tr>
+                                    <td>Garanti</td>
+                                    <td>10.784.588</td>
+                                    <td>7,63%</td>
+                                </tr>
+                                <tr>
+                                    <td>Ak</td>
+                                    <td>7.530.636</td>
+                                    <td>5,33%</td>
+                                </tr>
+                                <tr>
+                                    <td>Vakif</td>
+                                    <td>7.412.589</td>
+                                    <td>5,24%</td>
+                                </tr>
+                                <tr>
+                                    <td>Yapi Kr.</td>
+                                    <td>6.884.208</td>
+                                    <td>4,87%</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-warning">Diger</td>
+                                    <td>26.884.208</td>
+                                    <td>4,87%</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indicator Details Modal -->
+    <div class="modal fade" id="indicatorDetailsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Gosterge Detaylari</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="indicator-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<th:block layout:fragment="pagejs">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var shortTermSignal = /*[[${recommendShortTime}]]*/ "Nötr";
+        var mediumTermSignal = /*[[${recommendMiddleTime}]]*/ "Nötr";
+        var longTermSignal = /*[[${recommendLongTime}]]*/ "Nötr";
+        var periodIndicatorData = /*[[${analysisMap}]]*/ {};
+        /*]]>*/
+    </script>
+
+    <script th:src="@{/assets/js/pages/stock_detail_gauge_component.js}"></script>
+
+    <script>
+        function showIndicatorDetails(buttonEl) {
+            var modal = document.getElementById('indicatorDetailsModal');
+            var indicatorList = modal.querySelector('.indicator-list');
+            if (!indicatorList) return;
+            var period = buttonEl.getAttribute('data-period');
+            var symbol = buttonEl.getAttribute('data-symbol');
+            var indicators = periodIndicatorData[period].indicators;
+            var modalTitle = modal.querySelector('.modal-title');
+            if (modalTitle) {
+                modalTitle.textContent = symbol + " - " + period + " Gosterge Detaylari";
+            }
+            indicatorList.textContent = '';
+            if (Array.isArray(indicators)) {
+                indicators.forEach(function(ind) {
+                    var item = document.createElement('div');
+                    item.className = 'indicator-item';
+
+                    var nameSpan = document.createElement('span');
+                    nameSpan.textContent = ind.name;
+                    item.appendChild(nameSpan);
+
+                    var statusSpan = document.createElement('span');
+                    var statusClass = 'status-neutral';
+                    if (ind.status === 'positive') statusClass = 'status-positive';
+                    else if (ind.status === 'negative') statusClass = 'status-negative';
+                    statusSpan.className = 'indicator-status ' + statusClass;
+                    item.appendChild(statusSpan);
+
+                    indicatorList.appendChild(item);
+                });
+            }
+            var bsModal = new bootstrap.Modal(modal);
+            bsModal.show();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var modal = document.getElementById('indicatorDetailsModal');
+            modal.addEventListener('hidden.bs.modal', function() {
+                if (document.activeElement && modal.contains(document.activeElement)) {
+                    document.activeElement.blur();
+                }
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

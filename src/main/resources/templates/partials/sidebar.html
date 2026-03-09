@@ -1,0 +1,225 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<body>
+	<div th:fragment="sidebar" th:remove="tag">
+		<!-- ========== App Menu ========== -->
+		<div class="app-menu navbar-menu">
+			<!-- LOGO -->
+			<div class="navbar-brand-box">
+				<!-- Dark Logo-->
+				<a href="/dashboard" class="logo logo-dark">
+					<span class="logo-sm">
+						<img th:src="@{/assets/images/logo-sm.png}" alt="" height="22">
+					</span>
+					<span class="logo-lg">
+						<img th:src="@{/assets/images/logo-dark.png}" alt="" height="17">
+					</span>
+				</a>
+				<!-- Light Logo-->
+				<a href="/dashboard" class="logo logo-light">
+					<span class="logo-sm">
+						<img th:src="@{/assets/images/logo-sm.png}" alt="" height="22">
+					</span>
+					<span class="logo-lg">
+						<img th:src="@{/assets/images/logo-light.png}" alt="" height="17">
+					</span>
+				</a>
+				<button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
+					<i class="ri-record-circle-line"></i>
+				</button>
+			</div>
+
+			<div id="scrollbar">
+				<div class="container-fluid">
+
+					<div id="two-column-menu">
+					</div>
+					<ul class="navbar-nav" id="navbar-nav">
+						<li class="menu-title"><span data-key="t-menu">Menu</span></li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="/dashboard">
+								<i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">Anasayfa</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#sidebarStocks" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarStocks">
+								<i class="ri-stock-line"></i> <span>Hisse Senetleri</span>
+							</a>
+							<div class="collapse menu-dropdown" id="sidebarStocks">
+								<ul class="nav nav-sm flex-column">
+									<li class="nav-item">
+										<a href="/tum-hisseler" class="nav-link">Tüm Hisseler</a>
+									</li>
+									<li class="nav-item">
+										<a href="/bist100" class="nav-link">BIST 100</a>
+									</li>
+									<li class="nav-item">
+										<a href="/bist50" class="nav-link">BIST 50</a>
+									</li>
+									<li class="nav-item">
+										<a href="/bist30" class="nav-link">BIST 30</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#sidebarHaberler" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarHaberler">
+								<i class="ri-newspaper-line"></i> <span>Haberler</span>
+							</a>
+							<div class="collapse menu-dropdown" id="sidebarHaberler">
+								<ul class="nav nav-sm flex-column">
+									<li class="nav-item">
+										<a href="/kap-news" class="nav-link">KAP</a>
+									</li>
+									<li class="nav-item">
+										<a href="/market-news" class="nav-link">Piyasa Haberleri</a>
+									</li>
+									<li class="nav-item">
+										<a href="/world-news" class="nav-link">Dünya Haberleri</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="/sektorler">
+								<i class="ri-pie-chart-line"></i> <span>Sektörler</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="/fonlar">
+								<i class="ri-funds-line"></i> <span>Fonlar</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="/analist-tavsiyeleri">
+								<i class="ri-line-chart-line"></i> <span>Analist Tavsiyeleri</span>
+							</a>
+						</li>
+
+						<li class="menu-title"><span>Yakında</span></li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="/analistler">
+								<i class="ri-user-star-line"></i> <span>Analistler</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#">
+								<i class="ri-wallet-3-line"></i> <span>Portföy</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#">
+								<i class="ri-flow-chart"></i> <span>Akışım</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#">
+								<i class="ri-robot-line"></i> <span>Yapay Zeka Asistanı</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#">
+								<i class="ri-search-eye-line"></i> <span>Hisse Tarama</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#">
+								<i class="ri-file-list-3-line"></i> <span>Bilançolar</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#">
+								<i class="ri-bar-chart-box-line"></i> <span>Formasyonlar</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#">
+								<i class="ri-newspaper-line"></i> <span>SCYBorsa Haberler</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#">
+								<i class="ri-bit-coin-line"></i> <span>Kripto</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#">
+								<i class="ri-exchange-dollar-line"></i> <span>Döviz Kurları</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#">
+								<i class="ri-shield-star-line"></i> <span>KGS Skorları</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#">
+								<i class="ri-calendar-event-line"></i> <span>Ekonomik Takvim</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="#">
+								<i class="ri-scan-line"></i> <span>Taramalar</span>
+							</a>
+						</li>
+
+						<li class="menu-title" sec:authorize="hasRole('ROLE_ADMIN')"><span>Yönetim</span></li>
+						<li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
+							<a class="nav-link menu-link" href="#sidebarBackoffice" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarBackoffice">
+								<i class="ri-shield-user-line"></i> <span>Yönetim Paneli</span>
+							</a>
+							<div class="collapse menu-dropdown" id="sidebarBackoffice">
+								<ul class="nav nav-sm flex-column">
+									<li class="nav-item">
+										<a href="/backoffice" class="nav-link">Dashboard</a>
+									</li>
+									<li class="nav-item">
+										<a href="/backoffice/hisseler" class="nav-link">Hisse Yönetimi</a>
+									</li>
+									<li class="nav-item">
+										<a href="/backoffice/analistler" class="nav-link">Analistler</a>
+									</li>
+									<li class="nav-item">
+										<a href="/backoffice/kurumlar" class="nav-link">Kurumlar</a>
+									</li>
+									<li class="nav-item">
+										<a href="/backoffice/taramalar" class="nav-link">Tarama Sonuçları</a>
+									</li>
+									<li class="nav-item">
+										<a href="/backoffice/kullanicilar" class="nav-link">Kullanıcılar</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+
+					</ul>
+				</div>
+			</div>
+
+			<div class="sidebar-background"></div>
+		</div>
+		<!-- Left Sidebar End -->
+		<div class="vertical-overlay"></div>
+	</div>
+</body>
+
+</html>

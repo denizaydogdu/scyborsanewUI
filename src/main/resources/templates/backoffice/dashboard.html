@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Backoffice Dashboard')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Dashboard', 'Yönetim')}"></div>
+
+    <!-- Flash messages -->
+    <div class="row" th:if="${successMsg}">
+        <div class="col-12">
+            <div class="alert alert-success alert-dismissible fade show" role="alert" th:text="${successMsg}"></div>
+        </div>
+    </div>
+    <div class="row" th:if="${errorMsg}">
+        <div class="col-12">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" th:text="${errorMsg}"></div>
+        </div>
+    </div>
+
+    <!-- Row 1: Hisse + Analist KPI -->
+    <div class="row">
+        <!-- Toplam Hisse -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Toplam Hisse</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:text="${stats != null and stats.stocks != null ? stats.stocks.total : 0}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-primary-subtle rounded fs-3">
+                                <i class="ri-database-2-line text-primary"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aktif Hisse -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Aktif Hisse</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:text="${stats != null and stats.stocks != null ? stats.stocks.active : 0}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-success-subtle rounded fs-3">
+                                <i class="ri-checkbox-circle-line text-success"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Yasakli Hisse -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Yasakli Hisse</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:text="${stats != null and stats.stocks != null ? stats.stocks.banned : 0}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-danger-subtle rounded fs-3">
+                                <i class="ri-close-circle-line text-danger"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analist Sayisi -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Analist Sayisi</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:text="${stats != null and stats.content != null ? stats.content.analistCount : 0}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-info-subtle rounded fs-3">
+                                <i class="ri-user-star-line text-info"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 2: Kurum + Screener + Telegram + Sektor KPI -->
+    <div class="row">
+        <!-- Kurum Sayisi -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Kurum Sayisi</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:text="${stats != null and stats.content != null ? stats.content.kurumCount : 0}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-warning-subtle rounded fs-3">
+                                <i class="ri-briefcase-line text-warning"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bugun Tarama -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Bugun Tarama</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:text="${stats != null and stats.screener != null ? stats.screener.todayTotal : 0}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-primary-subtle rounded fs-3">
+                                <i class="ri-search-eye-line text-primary"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Telegram Gonderim -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Telegram Gonderim</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:text="${stats != null and stats.screener != null ? stats.screener.telegramSent : 0}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-success-subtle rounded fs-3">
+                                <i class="ri-send-plane-line text-success"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sektor Sayisi -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Sektor Sayisi</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:text="${stats != null and stats.content != null ? stats.content.sektorCount : 0}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-info-subtle rounded fs-3">
+                                <i class="ri-pie-chart-line text-info"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 3: Sistem Bilgileri + Hizli Erisim -->
+    <div class="row">
+        <!-- Sistem Bilgileri -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="ri-server-line me-2"></i>Sistem Bilgileri</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="fw-medium">Uptime</td>
+                                    <td th:if="${stats != null and stats.system != null}"
+                                        th:text="${(stats.system.uptimeMs / 3600000) + ' saat ' + ((stats.system.uptimeMs % 3600000) / 60000) + ' dk'}">-</td>
+                                    <td th:unless="${stats != null and stats.system != null}">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-medium">Heap Kullanimi</td>
+                                    <td th:if="${stats != null and stats.system != null}"
+                                        th:text="${(stats.system.usedHeapBytes / 1048576) + ' MB / ' + (stats.system.maxHeapBytes / 1048576) + ' MB'}">-</td>
+                                    <td th:unless="${stats != null and stats.system != null}">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-medium">Aktif Profil</td>
+                                    <td th:if="${stats != null and stats.system != null}"
+                                        th:text="${stats.system.activeProfile}">-</td>
+                                    <td th:unless="${stats != null and stats.system != null}">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-medium">Telegram</td>
+                                    <td th:if="${stats != null and stats.screener != null}">
+                                        <span th:if="${stats.screener.telegramEnabled}" class="badge bg-success-subtle text-success">Aktif</span>
+                                        <span th:unless="${stats.screener.telegramEnabled}" class="badge bg-danger-subtle text-danger">Pasif</span>
+                                    </td>
+                                    <td th:unless="${stats != null and stats.screener != null}">
+                                        <span class="badge bg-secondary-subtle text-secondary">Bilinmiyor</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hizli Erisim -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="ri-links-line me-2"></i>Hizli Erisim</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="/backoffice/hisseler" class="list-group-item list-group-item-action">
+                            <i class="ri-stock-line me-2"></i> Hisse Yonetimi
+                        </a>
+                        <a href="/backoffice/analistler" class="list-group-item list-group-item-action">
+                            <i class="ri-user-star-line me-2"></i> Analist Yonetimi
+                        </a>
+                        <a href="/backoffice/kurumlar" class="list-group-item list-group-item-action">
+                            <i class="ri-briefcase-line me-2"></i> Kurum Yonetimi
+                        </a>
+                        <a href="/backoffice/taramalar" class="list-group-item list-group-item-action">
+                            <i class="ri-search-eye-line me-2"></i> Tarama Sonuclari
+                        </a>
+                        <a href="/" class="list-group-item list-group-item-action">
+                            <i class="ri-home-line me-2"></i> Ana Sayfa
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<th:block layout:fragment="pagejs">
+</th:block>
+</body>
+
+</html>

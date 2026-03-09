@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Hisse Yönetimi')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Hisse Yönetimi', 'Yönetim')}"></div>
+
+    <!-- Flash messages -->
+    <div class="row" th:if="${successMsg}">
+        <div class="col-12">
+            <div class="alert alert-success alert-dismissible fade show" role="alert" th:text="${successMsg}"></div>
+        </div>
+    </div>
+    <div class="row" th:if="${errorMsg}">
+        <div class="col-12">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" th:text="${errorMsg}"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h5 class="card-title mb-0 flex-grow-1">Hisseler</h5>
+                        <!-- Filter buttons -->
+                        <div class="d-flex gap-2">
+                            <a th:href="@{/backoffice/hisseler(filtre='all')}"
+                               th:classappend="${aktifFilter == 'all' or aktifFilter == null ? 'btn-primary' : 'btn-soft-primary'}"
+                               class="btn btn-sm">Tumu</a>
+                            <a th:href="@{/backoffice/hisseler(filtre='aktif')}"
+                               th:classappend="${aktifFilter == 'aktif' ? 'btn-success' : 'btn-soft-success'}"
+                               class="btn btn-sm">Aktif</a>
+                            <a th:href="@{/backoffice/hisseler(filtre='yasakli')}"
+                               th:classappend="${aktifFilter == 'yasakli' ? 'btn-danger' : 'btn-soft-danger'}"
+                               class="btn btn-sm">Yasakli</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Empty state -->
+                    <div th:if="${hisseler == null or #lists.isEmpty(hisseler)}" class="text-center py-5">
+                        <i class="ri-stock-line fs-1 text-muted"></i>
+                        <h5 class="mt-3 text-muted">Hisse bulunamadi</h5>
+                    </div>
+
+                    <!-- Table -->
+                    <div th:unless="${hisseler == null or #lists.isEmpty(hisseler)}" class="table-responsive">
+                        <table class="table table-bordered table-nowrap align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Hisse Kodu</th>
+                                    <th>Durum</th>
+                                    <th>Yasak Nedeni</th>
+                                    <th>Islem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="hisse, iter : ${hisseler}">
+                                    <td th:text="${iter.count}">1</td>
+                                    <td th:text="${hisse.stockName}">THYAO</td>
+                                    <td>
+                                        <span th:if="${hisse.isBanned}" class="badge bg-danger-subtle text-danger">Yasakli</span>
+                                        <span th:unless="${hisse.isBanned}" class="badge bg-success-subtle text-success">Aktif</span>
+                                    </td>
+                                    <td th:text="${hisse.bannedSituation != null ? hisse.bannedSituation : '-'}">-</td>
+                                    <td>
+                                        <button th:unless="${hisse.isBanned}" type="button" class="btn btn-sm btn-soft-danger"
+                                                data-bs-toggle="modal" data-bs-target="#yasaklaModal"
+                                                th:data-stock-name="${hisse.stockName}">Yasakla</button>
+                                        <form th:if="${hisse.isBanned}" th:action="@{'/backoffice/hisseler/' + ${hisse.stockName} + '/yasakkaldir'}" method="post" style="display:inline">
+                                            <button type="submit" class="btn btn-sm btn-soft-success">Yasak Kaldir</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<th:block layout:fragment="modal">
+    <!-- Yasakla Modal -->
+    <div class="modal fade" id="yasaklaModal" tabindex="-1" aria-labelledby="yasaklaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="yasaklaForm" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="yasaklaModalLabel">Hisse Yasakla</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Hisse: <strong id="yasaklaStockName"></strong></p>
+                        <div class="mb-3">
+                            <label class="form-label">Yasak Nedeni</label>
+                            <input type="text" name="neden" class="form-control" required placeholder="Yasaklama nedeni girin">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Iptal</button>
+                        <button type="submit" class="btn btn-danger">Yasakla</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="pagejs">
+    <script>
+        var yasaklaModal = document.getElementById('yasaklaModal');
+        if (yasaklaModal) {
+            yasaklaModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var stockName = button.getAttribute('data-stock-name');
+                document.getElementById('yasaklaStockName').textContent = stockName;
+                document.getElementById('yasaklaForm').action = '/backoffice/hisseler/' + stockName + '/yasakla';
+            });
+        }
+    </script>
+</th:block>
+</body>
+
+</html>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Haber Detay')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <!-- Breadcrumb -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0" th:text="${haber != null ? haber.title : 'Haber Bulunamadi'}">Haber Detay</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/market-news">Haberler</a></li>
+                        <li class="breadcrumb-item active">Detay</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Haber Detay Kart -->
+    <div class="row" th:if="${haber != null}">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h5 class="card-title mb-1" th:text="${haber.title}">Baslik</h5>
+                            <div class="text-muted">
+                                <span th:if="${haber.publishedFormatted}" th:text="${haber.publishedFormatted}">Tarih</span>
+                                <span class="badge bg-primary-subtle text-primary ms-2"
+                                      th:if="${haber.provider}" th:text="${haber.provider}">Provider</span>
+                                <span class="badge bg-info-subtle text-info ms-2"
+                                      th:if="${haber.newsType}" th:text="${haber.newsType}">Type</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Kisa ozet (Matriks/Reuters) -->
+                    <div th:if="${haber.shortDescription != null}" class="alert alert-info mb-3">
+                        <p class="mb-0" th:text="${haber.shortDescription}">Kisa ozet</p>
+                    </div>
+
+                    <!-- Detay icerik (HTML) -->
+                    <div th:if="${haber.detailContent != null}" class="haber-content" th:utext="${haber.detailContent}">
+                        Haber icerigi
+                    </div>
+
+                    <!-- Haber icerik tablolari icin stil -->
+                    <style>
+                        .haber-content table {
+                            width: 100%;
+                            margin-bottom: 1rem;
+                            border-collapse: collapse;
+                        }
+                        .haber-content table td,
+                        .haber-content table th {
+                            padding: 0.5rem 0.75rem;
+                            border: 1px solid #e9ebec;
+                            vertical-align: top;
+                        }
+                        .haber-content table tr:nth-child(even) {
+                            background-color: #f3f6f9;
+                        }
+                        .haber-content p {
+                            margin-bottom: 0.75rem;
+                            line-height: 1.7;
+                        }
+                    </style>
+
+                    <!-- Icerik henuz yuklenmedi -->
+                    <div th:if="${haber.fetched == false and haber.detailContent == null}" class="text-center py-4">
+                        <i class="ri-loader-4-line fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">Icerik henuz yuklenmedi. Lutfen birkac dakika sonra tekrar deneyin.</p>
+                    </div>
+
+                    <!-- Icerik mevcut degil -->
+                    <div th:if="${haber.fetched == true and haber.detailContent == null and haber.shortDescription == null}" class="text-center py-4">
+                        <i class="ri-article-line fs-1 text-muted"></i>
+                        <p class="text-muted mt-2">Bu haber icin detay icerik mevcut degil.</p>
+                    </div>
+
+                    <!-- KAP bildirimi linki -->
+                    <div th:if="${haber.originalKapUrl != null and (haber.originalKapUrl.startsWith('https://kap.org.tr') or haber.originalKapUrl.startsWith('http://kap.org.tr'))}" class="mt-3">
+                        <a th:href="${haber.originalKapUrl}" target="_blank" rel="noopener noreferrer"
+                           class="btn btn-soft-primary btn-sm">
+                            <i class="ri-external-link-line me-1"></i> KAP Bildirimi
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a th:href="${haber.newsType == 'KAP' ? '/kap-news' : (haber.newsType == 'MARKET' ? '/market-news' : '/world-news')}"
+                       class="btn btn-soft-secondary btn-sm">
+                        <i class="ri-arrow-left-line me-1"></i> Geri Don
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Haber bulunamadi -->
+    <div class="row" th:if="${haber == null}">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="ri-newspaper-line display-4 text-muted"></i>
+                    <h5 class="mt-3">Haber Bulunamadi</h5>
+                    <p class="text-muted">Bu haber henuz sistemimizde mevcut degil.</p>
+                    <a href="/market-news" class="btn btn-soft-primary btn-sm">
+                        <i class="ri-arrow-left-line me-1"></i> Haberlere Don
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+
+</html>

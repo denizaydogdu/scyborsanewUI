@@ -1,0 +1,15 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<body>
+	<div th:fragment="title-meta(title)" th:remove="tag">
+		<meta charset="utf-8" />
+		<title th:text="${title} + ' | Scyborsa'"></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta content="Borsa Veri Platformu" name="description" />
+		<meta content="Scyborsa" name="author" />
+		<!-- App favicon -->
+		<link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+	</div>
+</body>
+
+</html>

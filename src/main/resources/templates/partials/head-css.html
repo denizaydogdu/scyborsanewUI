@@ -1,0 +1,20 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+	<div th:fragment="head-css" th:remove="tag">
+		<!-- Layout config Js -->
+		<script th:src="@{/assets/js/layout.js}"></script>
+		<!-- Bootstrap Css -->
+		<link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+		<!-- Icons Css -->
+		<link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
+		<!-- App Css-->
+		<link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+		<!-- custom Css-->
+		<link th:href="@{/assets/css/custom.min.css}" rel="stylesheet" type="text/css" />
+		<!-- Swiper Css -->
+		<link th:href="@{/assets/libs/swiper/swiper-bundle.min.css}" rel="stylesheet" type="text/css" />
+	</div>
+</body>
+
+</html>

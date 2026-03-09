@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta(${stockCode} + ' - Analist Tavsiyeleri')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <!-- Breadcrumb -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0" th:text="${stockCode} + ' Analist Tavsiyeleri'">PETKM Analist Tavsiyeleri</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">Yatirim</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/analist-tavsiyeleri}">Analist Tavsiyeleri</a></li>
+                        <li class="breadcrumb-item active" th:text="${stockCode}">PETKM</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 1: 4 KPI Cards -->
+    <div class="row">
+        <!-- Toplam Tavsiye -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Toplam Tavsiye</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:text="${ozet['toplamTavsiye']}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-line-chart-line text-primary"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AL Sayisi -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">AL Sayisi</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4 text-success"
+                                th:text="${ozet['alSayisi']}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-arrow-up-circle-line text-success"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ortalama Hedef Fiyat -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Ort. Hedef Fiyat</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4">
+                                <span th:if="${ozet['ortalamaHedefFiyat'] != null and ozet['ortalamaHedefFiyat'] > 0}"
+                                      th:text="${#numbers.formatDecimal(ozet['ortalamaHedefFiyat'], 1, 'COMMA', 2, 'POINT')} + ' &#8378;'">0,00</span>
+                                <span th:if="${ozet['ortalamaHedefFiyat'] == null or ozet['ortalamaHedefFiyat'] == 0}">-</span>
+                            </h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-money-dollar-circle-line text-warning"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Son Guncelleme -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Son Guncelleme</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-14 fw-semibold ff-secondary mb-4"
+                                th:text="${ozet['sonGuncelleme'] != null ? #strings.substring(ozet['sonGuncelleme'], 8, 10) + '.' + #strings.substring(ozet['sonGuncelleme'], 5, 7) + '.' + #strings.substring(ozet['sonGuncelleme'], 0, 4) : '-'}">-</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-calendar-line text-info"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 2: Tavsiye Tablosu -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <span th:text="${stockCode}">PETKM</span> Analist Tavsiyeleri
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>Araci Kurum</th>
+                                <th style="width: 130px;">Tavsiye</th>
+                                <th style="width: 130px;">Hedef Fiyat</th>
+                                <th style="width: 120px;">Tarih</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="tavsiye, iterStat : ${tavsiyeler}">
+                                <!-- # -->
+                                <td th:text="${iterStat.count}">1</td>
+
+                                <!-- Araci Kurum (logo + shortTitle) -->
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img th:if="${tavsiye.brokerage != null and tavsiye.brokerage.logo != null}"
+                                             th:src="'/img/brokerage-logos/' + ${tavsiye.brokerage.logo.substring(tavsiye.brokerage.logo.lastIndexOf('/') + 1)}"
+                                             th:alt="${tavsiye.brokerage.shortTitle}"
+                                             style="width: 20px; height: 20px; object-fit: contain;"
+                                             class="me-2 rounded"
+                                             onerror="this.style.display='none'"/>
+                                        <span class="fs-13"
+                                              th:text="${tavsiye.brokerage != null ? (tavsiye.brokerage.shortTitle != null ? tavsiye.brokerage.shortTitle : tavsiye.brokerage.title) : '-'}">Kurum</span>
+                                    </div>
+                                </td>
+
+                                <!-- Tavsiye (badge) -->
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${tavsiye.ratingType != null and tavsiye.ratingType.equalsIgnoreCase('al') ? 'bg-success-subtle text-success' :
+                                              (tavsiye.ratingType != null and tavsiye.ratingType.equalsIgnoreCase('tut') ? 'bg-warning-subtle text-warning' :
+                                              (tavsiye.ratingType != null and tavsiye.ratingType.equalsIgnoreCase('sat') ? 'bg-danger-subtle text-danger' :
+                                              (tavsiye.ratingType != null and tavsiye.ratingType.equalsIgnoreCase('endekse paralel') ? 'bg-info-subtle text-info' :
+                                              (tavsiye.ratingType != null and tavsiye.ratingType.toUpperCase().contains('ENDEKS') and tavsiye.ratingType.toUpperCase().contains('UST') ? 'bg-primary-subtle text-primary' :
+                                              (tavsiye.ratingType != null and tavsiye.ratingType.toUpperCase().contains('ENDEKS') and tavsiye.ratingType.toUpperCase().contains('ALT') ? 'bg-danger-subtle text-danger' :
+                                              'bg-secondary-subtle text-secondary')))))}"
+                                          th:text="${tavsiye.ratingType != null ? tavsiye.ratingType.toUpperCase() : '-'}">AL</span>
+                                </td>
+
+                                <!-- Hedef Fiyat -->
+                                <td class="fw-semibold">
+                                    <span th:if="${tavsiye.targetPrice != null}"
+                                          th:text="${#numbers.formatDecimal(tavsiye.targetPrice, 1, 'COMMA', 2, 'POINT')} + ' &#8378;'">0,00</span>
+                                    <span th:if="${tavsiye.targetPrice == null}">-</span>
+                                </td>
+
+                                <!-- Tarih (dd.MM.yyyy) -->
+                                <td>
+                                    <span th:if="${tavsiye.date != null and tavsiye.date.length() >= 10}"
+                                          th:text="${#strings.substring(tavsiye.date, 8, 10) + '.' + #strings.substring(tavsiye.date, 5, 7) + '.' + #strings.substring(tavsiye.date, 0, 4)}">01.01.2026</span>
+                                    <span th:if="${tavsiye.date == null or tavsiye.date.length() < 10}">-</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Empty State (Thymeleaf kontrol — normalde controller redirect eder ama guvenlik icin) -->
+                    <div th:if="${#lists.isEmpty(tavsiyeler)}" class="text-center py-5">
+                        <i class="ri-line-chart-line fs-1 text-muted"></i>
+                        <h5 class="mt-3 text-muted">Tavsiye bulunamadi</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+
+</html>

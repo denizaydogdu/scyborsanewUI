@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Fonlar')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Fonlar', 'Yatirim')}"></div>
+
+    <!-- Row 1: 3 KPI Cards -->
+    <div class="row">
+        <!-- Toplam Fon -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Toplam Fon</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 id="kpi-total-funds" class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:text="${stats != null ? stats.totalActiveFunds : 0}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-funds-line text-primary"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ort. Getiri -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Ort. Getiri (Filtrelenmis)</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 id="kpi-avg-return" class="fs-22 fw-semibold ff-secondary mb-4">-</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-line-chart-line text-success"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- En Iyi Performans -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">En Iyi Performans</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 id="kpi-best-fund" class="fs-14 fw-semibold ff-secondary mb-4">-</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-trophy-line text-warning"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ana Kart: Fon Tablosu -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row align-items-center g-3">
+                        <!-- Sol: Tab'lar -->
+                        <div class="col-auto">
+                            <ul class="nav nav-tabs-custom card-header-tabs border-bottom-0" id="fundTypeTabs" role="tablist">
+                                <li class="nav-item"><a class="nav-link active" data-fund-type="ALL" href="javascript:void(0);" role="tab" aria-selected="true">Tumu</a></li>
+                                <li class="nav-item"><a class="nav-link" data-fund-type="YAT" href="javascript:void(0);" role="tab" aria-selected="false">Yatirim</a></li>
+                                <li class="nav-item"><a class="nav-link" data-fund-type="EMK" href="javascript:void(0);" role="tab" aria-selected="false">Emeklilik</a></li>
+                                <li class="nav-item"><a class="nav-link" data-fund-type="BYF" href="javascript:void(0);" role="tab" aria-selected="false">BYF</a></li>
+                            </ul>
+                        </div>
+                        <!-- Orta: Arama -->
+                        <div class="col">
+                            <div class="search-box">
+                                <input type="text" class="form-control search" id="searchInput"
+                                       placeholder="Fon kodu veya adi ile ara..." maxlength="100"
+                                       aria-label="Fon kodu veya adi ile ara">
+                                <i class="ri-search-line search-icon"></i>
+                            </div>
+                        </div>
+                        <!-- Sag: Katilim Toggle + Badge -->
+                        <div class="col-auto d-flex align-items-center gap-2">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="participationToggle">
+                                <label class="form-check-label" for="participationToggle">Katilim</label>
+                            </div>
+                            <span id="filteredCountBadge" class="badge bg-primary fs-12">0 Fon</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Donem Secici -->
+                    <div class="d-flex gap-1 mb-3" id="periodSelector" role="group" aria-label="Donem secimi">
+                        <button class="btn btn-soft-primary btn-sm active" data-period="returnYTD" aria-pressed="true">YBG</button>
+                        <button class="btn btn-soft-primary btn-sm" data-period="return1M" aria-pressed="false">1A</button>
+                        <button class="btn btn-soft-primary btn-sm" data-period="return3M" aria-pressed="false">3A</button>
+                        <button class="btn btn-soft-primary btn-sm" data-period="return6M" aria-pressed="false">6A</button>
+                        <button class="btn btn-soft-primary btn-sm" data-period="return1Y" aria-pressed="false">1Y</button>
+                        <button class="btn btn-soft-primary btn-sm" data-period="return3Y" aria-pressed="false">3Y</button>
+                        <button class="btn btn-soft-primary btn-sm" data-period="return5Y" aria-pressed="false">5Y</button>
+                    </div>
+
+                    <!-- Tablo -->
+                    <div class="table-responsive" id="fundTableContainer">
+                        <table class="table table-striped align-middle mb-0" id="fundTable">
+                            <thead>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th class="sortable" data-col="tefasCode" data-type="text" style="cursor:pointer;">Kod <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="fundName" data-type="text" style="cursor:pointer;">Fon Adi <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="latestPrice" data-type="num" style="width: 120px; cursor:pointer;">NAV <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="return1D" data-type="num" style="width: 110px; cursor:pointer;">Degisim % <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="currentPeriod" data-type="num" style="width: 110px; cursor:pointer;">Getiri <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="portfolioSize" data-type="num" style="width: 120px; cursor:pointer;">Portfoy <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="investorCount" data-type="num" style="width: 110px; cursor:pointer;">Yatirimci <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="riskLevel" data-type="num" style="width: 80px; cursor:pointer;">Risk <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                            </tr>
+                            </thead>
+                            <tbody id="fundTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="emptyState" class="text-center py-5" style="display:none;">
+                        <i class="ri-funds-line fs-1 text-muted"></i>
+                        <h5 class="mt-3 text-muted">Aramaniza uygun fon bulunamadi</h5>
+                    </div>
+
+                    <!-- Sayfalama -->
+                    <div class="d-flex justify-content-between align-items-center mt-3" id="paginationContainer">
+                        <div class="text-muted" id="paginationInfo">0 fon</div>
+                        <nav>
+                            <ul class="pagination pagination-separated mb-0" id="paginationNav">
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<th:block layout:fragment="pagejs">
+    <script th:inline="javascript">
+        window.fonlarData = /*[[${funds}]]*/ [];
+    </script>
+    <script th:src="@{/js/fonlar.js}"></script>
+</th:block>
+</body>
+
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Analistler')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Analistler', 'Scyborsa')}"></div>
+
+    <div class="row mt-4">
+        <div class="col-xl-3 col-lg-6" th:each="analist : ${analistler}">
+            <!-- Trend ribbon: card'a ribbon-box class eklenir -->
+            <div th:classappend="${analist.trend != null and analist.trend} ? 'ribbon-box right overflow-hidden' : ''"
+                 class="card">
+                <div class="card-body text-center p-4">
+                    <!-- Trend rozeti -->
+                    <div th:if="${analist.trend != null and analist.trend}"
+                         class="ribbon ribbon-info ribbon-shape trending-ribbon">
+                        <i class="ri-flashlight-fill text-white align-bottom"></i>
+                        <span class="trending-ribbon-text">Trend</span>
+                    </div>
+
+                    <!-- Analist resmi -->
+                    <img th:src="${analist.resimUrl != null ? analist.resimUrl : '/assets/images/companies/img-1.png'}"
+                         alt="Analist" height="45"/>
+
+                    <!-- Analist adi -->
+                    <h5 class="mb-1 mt-4">
+                        <a href="#!" class="link-primary" th:text="${analist.ad != null ? analist.ad : '-'}">Analist Adi</a>
+                    </h5>
+
+                    <!-- Unvan -->
+                    <p class="text-muted mb-4" th:text="${analist.unvan != null ? analist.unvan : '-'}">Unvan</p>
+
+                    <!-- Sparkline chart -->
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <div th:id="${'chart-analist-' + analist.id}"
+                                 th:attr="data-colors=|[&quot;--vz-${analist.chartRenk != null ? analist.chartRenk : 'warning'}&quot;]|,data-chart-data=${analist.chartVerisi != null ? analist.chartVerisi : '[]'}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Istatistikler -->
+                    <div class="row mt-4">
+                        <div class="col-lg-6 border-end-dashed border-end">
+                            <h5 th:text="${analist.hisseOnerisi != null ? analist.hisseOnerisi : 0}">0</h5>
+                            <span class="text-muted">Hisse Onerisi</span>
+                        </div>
+                        <div class="col-lg-6">
+                            <h5 th:text="${analist.kazanc != null ? #numbers.formatInteger(analist.kazanc, 1, 'POINT') + ' TL' : '0 TL'}">0 TL</h5>
+                            <span class="text-muted">Kazanc</span>
+                        </div>
+                    </div>
+
+                    <!-- Detay butonu -->
+                    <div class="mt-4">
+                        <a href="#!" class="btn btn-light w-100">Detay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bos durum -->
+    <div class="row" th:if="${#lists.isEmpty(analistler)}">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="ri-user-star-line fs-1 text-muted"></i>
+                    <h5 class="mt-3 text-muted">Henuz analist eklenmemis</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<th:block layout:fragment="pagejs">
+    <!-- apexcharts -->
+    <script th:src="@{/assets/libs/apexcharts/apexcharts.min.js}"></script>
+    <!-- analysts init js -->
+    <script th:src="@{/assets/js/pages/analysts.init.js}"></script>
+</th:block>
+</body>
+
+</html>

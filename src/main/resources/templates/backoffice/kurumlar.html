@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Kurum Yönetimi')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Kurum Yönetimi', 'Yönetim')}"></div>
+
+    <!-- Flash messages -->
+    <div class="row" th:if="${successMsg}">
+        <div class="col-12">
+            <div class="alert alert-success alert-dismissible fade show" role="alert" th:text="${successMsg}"></div>
+        </div>
+    </div>
+    <div class="row" th:if="${errorMsg}">
+        <div class="col-12">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" th:text="${errorMsg}"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h5 class="card-title mb-0 flex-grow-1">Kurumlar</h5>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addKurumModal">
+                            <i class="ri-add-line me-1"></i> Yeni Kurum
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Empty state -->
+                    <div th:if="${kurumlar == null or #lists.isEmpty(kurumlar)}" class="text-center py-5">
+                        <i class="ri-briefcase-line fs-1 text-muted"></i>
+                        <h5 class="mt-3 text-muted">Henuz kurum eklenmemis</h5>
+                    </div>
+
+                    <!-- Table -->
+                    <div th:unless="${kurumlar == null or #lists.isEmpty(kurumlar)}" class="table-responsive">
+                        <table class="table table-bordered table-nowrap align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Kurum Adi</th>
+                                    <th>Logo</th>
+                                    <th>Hisse Sayisi</th>
+                                    <th>Sira</th>
+                                    <th>Durum</th>
+                                    <th>Islem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="kurum, iter : ${kurumlar}">
+                                    <td th:text="${iter.count}">1</td>
+                                    <td th:text="${kurum.kurumAdi}">Kurum</td>
+                                    <td>
+                                        <img th:if="${kurum.logoUrl != null}" th:src="${kurum.logoUrl}" style="width:40px;height:40px" alt="Logo" />
+                                        <span th:unless="${kurum.logoUrl != null}" class="text-muted">-</span>
+                                    </td>
+                                    <td th:text="${kurum.hisseSayisi != null ? kurum.hisseSayisi : '-'}">0</td>
+                                    <td th:text="${kurum.siraNo}">1</td>
+                                    <td>
+                                        <span th:if="${kurum.aktif}" class="badge bg-success-subtle text-success">Aktif</span>
+                                        <span th:unless="${kurum.aktif}" class="badge bg-danger-subtle text-danger">Pasif</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button type="button" class="btn btn-sm btn-soft-primary" data-bs-toggle="modal" data-bs-target="#editKurumModal"
+                                                    th:data-id="${kurum.id}" th:data-kurumadi="${kurum.kurumAdi}"
+                                                    th:data-logourl="${kurum.logoUrl}" th:data-hissesayisi="${kurum.hisseSayisi}"
+                                                    th:data-sirano="${kurum.siraNo}">
+                                                <i class="ri-pencil-line"></i>
+                                            </button>
+                                            <form th:unless="${kurum.aktif}" th:action="@{'/backoffice/kurumlar/' + ${kurum.id} + '/aktif'}" method="post" style="display:inline">
+                                                <button type="submit" class="btn btn-sm btn-soft-success" title="Aktiflestir"><i class="ri-checkbox-circle-line"></i></button>
+                                            </form>
+                                            <form th:if="${kurum.aktif}" th:action="@{'/backoffice/kurumlar/' + ${kurum.id} + '/sil'}" method="post" style="display:inline"
+                                                  onsubmit="return confirm('Bu kurumu pasife almak istediginize emin misiniz?')">
+                                                <button type="submit" class="btn btn-sm btn-soft-danger" title="Pasife Al"><i class="ri-close-circle-line"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<th:block layout:fragment="modal">
+    <!-- Ekle Modal -->
+    <div class="modal fade" id="addKurumModal" tabindex="-1" aria-labelledby="addKurumModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form th:action="@{/backoffice/kurumlar}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addKurumModalLabel">Yeni Kurum Ekle</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Kurum Adi</label>
+                            <input type="text" name="kurumAdi" class="form-control" required placeholder="Kurum adi">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Logo URL</label>
+                            <input type="text" name="logoUrl" class="form-control" placeholder="Logo URL">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hisse Sayisi</label>
+                                <input type="number" name="hisseSayisi" class="form-control" value="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Sira No</label>
+                                <input type="number" name="siraNo" class="form-control" value="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Iptal</button>
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Duzenle Modal -->
+    <div class="modal fade" id="editKurumModal" tabindex="-1" aria-labelledby="editKurumModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editKurumForm" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editKurumModalLabel">Kurum Duzenle</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Kurum Adi</label>
+                            <input type="text" name="kurumAdi" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Logo URL</label>
+                            <input type="text" name="logoUrl" class="form-control">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hisse Sayisi</label>
+                                <input type="number" name="hisseSayisi" class="form-control">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Sira No</label>
+                                <input type="number" name="siraNo" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Iptal</button>
+                        <button type="submit" class="btn btn-primary">Guncelle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="pagejs">
+    <script>
+        var editKurumModal = document.getElementById('editKurumModal');
+        if (editKurumModal) {
+            editKurumModal.addEventListener('show.bs.modal', function (event) {
+                var btn = event.relatedTarget;
+                var form = editKurumModal.querySelector('form');
+                form.action = '/backoffice/kurumlar/' + btn.getAttribute('data-id');
+                form.querySelector('[name=kurumAdi]').value = btn.getAttribute('data-kurumadi') || '';
+                form.querySelector('[name=logoUrl]').value = btn.getAttribute('data-logourl') || '';
+                form.querySelector('[name=hisseSayisi]').value = btn.getAttribute('data-hissesayisi') || '';
+                form.querySelector('[name=siraNo]').value = btn.getAttribute('data-sirano') || '';
+            });
+        }
+    </script>
+</th:block>
+</body>
+
+</html>

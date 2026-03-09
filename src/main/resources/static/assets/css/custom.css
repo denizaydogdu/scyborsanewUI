@@ -1,0 +1,25 @@
+/*
+Template Name: Velzon - Admin & Dashboard Template
+Author: Themesbrand
+Website: https://themesbrand.com/
+Contact: support@themesbrand.com
+File: Custom Css File
+*/
+
+/* Fiyat flash efekti — WebSocket güncellemelerinde */
+@keyframes flash-green {
+    0%   { background-color: rgba(25, 135, 84, 0.25); }
+    100% { background-color: transparent; }
+}
+@keyframes flash-red {
+    0%   { background-color: rgba(220, 53, 69, 0.25); }
+    100% { background-color: transparent; }
+}
+.price-flash-up {
+    animation: flash-green 500ms ease-out;
+    border-radius: 4px;
+}
+.price-flash-down {
+    animation: flash-red 500ms ease-out;
+    border-radius: 4px;
+}

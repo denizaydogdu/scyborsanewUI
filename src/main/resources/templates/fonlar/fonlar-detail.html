@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta(${fund.tefasCode})}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title(${fund.tefasCode} + ' - ' + ${fund.fundName}, 'Fonlar')}"></div>
+
+    <!-- ==================== Row 1: Fund Header ==================== -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Fund Name -->
+                    <h4 class="card-title mb-3" th:text="${fund.fundName}">Fon Adi</h4>
+
+                    <!-- Badges Row -->
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        <!-- Kod -->
+                        <span class="badge bg-dark bg-opacity-10 text-dark fs-13"
+                              th:text="'Kod: ' + ${fund.tefasCode}">Kod: AAJ</span>
+
+                        <!-- Tur -->
+                        <span class="badge fs-13"
+                              th:classappend="${fund.fundType == 'YAT' ? 'bg-primary' : (fund.fundType == 'EMK' ? 'bg-info' : (fund.fundType == 'BYF' ? 'bg-secondary' : 'bg-light text-dark'))}"
+                              th:text="${fund.fundType}">YAT</span>
+
+                        <!-- Kategori -->
+                        <span class="badge bg-light text-dark fs-13"
+                              th:text="${fund.fundCategory}">Kategori</span>
+
+                        <!-- Katilim Fonu -->
+                        <span class="badge bg-success fs-13"
+                              th:if="${fund.participation}">Katilim Fonu</span>
+
+                        <!-- Risk -->
+                        <span class="badge fs-13"
+                              th:if="${fund.riskLevel != null && fund.riskLevel > 0}"
+                              th:classappend="${fund.riskLevel <= 3 ? 'bg-success' : (fund.riskLevel <= 5 ? 'bg-warning' : 'bg-danger')}"
+                              th:text="'Risk: ' + ${fund.riskLevel}">Risk: 4</span>
+                        <span class="badge bg-light text-dark fs-13"
+                              th:if="${fund.riskLevel == null || fund.riskLevel == 0}">Risk: -</span>
+
+                        <!-- Kategori Siralamasi -->
+                        <span class="badge bg-soft-primary text-primary fs-13"
+                              th:if="${fund.categoryRank != null && fund.categoryRank.rank != null}"
+                              th:text="'#' + ${fund.categoryRank.rank} + '/' + ${fund.categoryRank.totalFunds}">
+                            #5/120
+                        </span>
+                    </div>
+
+                    <!-- 6 KPI Boxes: 2 rows x 3 -->
+                    <div class="row g-3 mb-2">
+                        <!-- NAV (Birim Fiyat) -->
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center">
+                                <p class="text-muted mb-1">NAV (Birim Fiyat)</p>
+                                <h5 class="mb-0">
+                                    <span th:if="${fund.latestPrice != null}"
+                                          th:text="${#numbers.formatDecimal(fund.latestPrice, 1, 'COMMA', 6, 'POINT')}">0,123456</span>
+                                    <span th:if="${fund.latestPrice == null}">-</span>
+                                    <small class="text-muted">TL</small>
+                                </h5>
+                            </div>
+                        </div>
+                        <!-- Portfoy Buyuklugu -->
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center">
+                                <p class="text-muted mb-1">Portfoy Buyuklugu</p>
+                                <h5 class="mb-0">
+                                    <span class="portfolio-size"
+                                          th:if="${fund.portfolioSize != null}"
+                                          th:data-value="${fund.portfolioSize}"
+                                          th:text="${#numbers.formatDecimal(fund.portfolioSize, 1, 'COMMA', 2, 'POINT')}">0,00</span>
+                                    <small class="text-muted" th:if="${fund.portfolioSize != null}">TL</small>
+                                    <span th:if="${fund.portfolioSize == null}" class="text-muted">Veri yok</span>
+                                </h5>
+                            </div>
+                        </div>
+                        <!-- Yatirimci Sayisi -->
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center">
+                                <p class="text-muted mb-1">Yatirimci Sayisi</p>
+                                <h5 class="mb-0">
+                                    <span th:if="${fund.investorCount != null}"
+                                          th:text="${#numbers.formatInteger(fund.investorCount, 1, 'POINT')}">0</span>
+                                    <span th:if="${fund.investorCount == null}" class="text-muted">Veri yok</span>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <!-- Yonetim Ucreti -->
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center">
+                                <p class="text-muted mb-1">Yonetim Ucreti</p>
+                                <h5 class="mb-0">
+                                    <span th:if="${fund.managementFee != null}"
+                                          th:text="${#numbers.formatDecimal(fund.managementFee, 1, 'COMMA', 2, 'POINT') + '%'}">1,50%</span>
+                                    <span th:if="${fund.managementFee == null}">-</span>
+                                </h5>
+                            </div>
+                        </div>
+                        <!-- Alis Valoru -->
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center">
+                                <p class="text-muted mb-1">Alis Valoru</p>
+                                <h5 class="mb-0">
+                                    <span th:if="${fund.buyingValor != null}"
+                                          th:text="${fund.buyingValor + ' gun'}">0 gun</span>
+                                    <span th:if="${fund.buyingValor == null}">-</span>
+                                </h5>
+                            </div>
+                        </div>
+                        <!-- Satis Valoru -->
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 text-center">
+                                <p class="text-muted mb-1">Satis Valoru</p>
+                                <h5 class="mb-0">
+                                    <span th:if="${fund.sellingValor != null}"
+                                          th:text="${fund.sellingValor + ' gun'}">0 gun</span>
+                                    <span th:if="${fund.sellingValor == null}">-</span>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Action Buttons -->
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        <a th:href="@{/fonlar/{code}/pdf(code=${fund.tefasCode})}" class="btn btn-soft-danger btn-sm">
+                            <i class="ri-file-pdf-line align-bottom me-1"></i> PDF Indir
+                        </a>
+                        <a th:href="@{/fonlar/{code}/history/csv(code=${fund.tefasCode})}" class="btn btn-soft-success btn-sm">
+                            <i class="ri-file-excel-line align-bottom me-1"></i> CSV Indir
+                        </a>
+                        <a th:href="@{/fonlar}" class="btn btn-soft-primary btn-sm">
+                            <i class="ri-arrow-left-line align-bottom me-1"></i> Fon Listesine Don
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== Row 2: Fiyat Grafigi + Varlik Dagilimi ==================== -->
+    <div class="row">
+        <!-- Fiyat Grafigi -->
+        <div class="col-xl-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Fiyat Grafigi</h5>
+                </div>
+                <div class="card-body">
+                    <div id="priceChart" style="height:350px;">
+                        <div class="d-flex justify-content-center align-items-center" style="height:350px;">
+                            <div class="spinner-border text-primary"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Varlik Dagilimi -->
+        <div class="col-xl-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Varlik Dagilimi</h5>
+                </div>
+                <div class="card-body">
+                    <th:block th:if="${fund.allocation != null}">
+                        <div id="allocationChart" style="height:250px;"></div>
+                        <!-- Allocation percentage list -->
+                        <div class="mt-3">
+                            <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.stockPercentage != null && fund.allocation.stockPercentage > 0}">
+                                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#405189;"></span>
+                                <span class="flex-grow-1 text-muted">Hisse Senedi</span>
+                                <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.stockPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.bondPercentage != null && fund.allocation.bondPercentage > 0}">
+                                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#0ab39c;"></span>
+                                <span class="flex-grow-1 text-muted">Tahvil/Bono</span>
+                                <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.bondPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.cashPercentage != null && fund.allocation.cashPercentage > 0}">
+                                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#f7b84b;"></span>
+                                <span class="flex-grow-1 text-muted">Nakit</span>
+                                <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.cashPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.repoPercentage != null && fund.allocation.repoPercentage > 0}">
+                                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#f06548;"></span>
+                                <span class="flex-grow-1 text-muted">Repo</span>
+                                <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.repoPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.foreignCurrencyPercentage != null && fund.allocation.foreignCurrencyPercentage > 0}">
+                                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#299cdb;"></span>
+                                <span class="flex-grow-1 text-muted">Doviz</span>
+                                <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.foreignCurrencyPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.otherPercentage != null && fund.allocation.otherPercentage > 0}">
+                                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#6c757d;"></span>
+                                <span class="flex-grow-1 text-muted">Diger</span>
+                                <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.otherPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
+                            </div>
+                            <div class="text-muted small mt-2" th:if="${fund.allocation.allocationDate != null}"
+                                 th:text="'Tarih: ' + ${fund.allocation.allocationDate}">Tarih: 2024-01-01</div>
+                        </div>
+                    </th:block>
+                    <div th:if="${fund.allocation == null}" class="text-center text-muted py-5">
+                        <i class="ri-pie-chart-line fs-24 d-block mb-2"></i>
+                        Varlik dagilimi verisi bulunamadi
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== Row 3: Getiri Tablosu + Fon Bilgileri ==================== -->
+    <div class="row">
+        <!-- Getiri Tablosu -->
+        <div class="col-xl-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Donem Bazli Getiri</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle mb-0" id="returnTable">
+                            <thead>
+                            <tr>
+                                <th style="width: 140px;">Donem</th>
+                                <th style="width: 120px;">Getiri %</th>
+                                <th>Performans</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- 1 Gun -->
+                            <tr>
+                                <td class="fw-medium">1 Gun</td>
+                                <td>
+                                    <span th:if="${fund.return1D != null}"
+                                          class="return-value"
+                                          th:data-value="${fund.return1D}"
+                                          th:classappend="${fund.return1D > 0 ? 'text-success' : (fund.return1D < 0 ? 'text-danger' : 'text-muted')}"
+                                          th:text="${(fund.return1D > 0 ? '+' : '') + #numbers.formatDecimal(fund.return1D, 1, 'COMMA', 2, 'POINT') + '%'}">
+                                        +1,25%
+                                    </span>
+                                    <span th:unless="${fund.return1D != null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <div class="return-bar-container" th:if="${fund.return1D != null && fund.return1D != 0}">
+                                        <div class="return-bar" th:data-value="${fund.return1D}"
+                                             th:classappend="${fund.return1D > 0 ? 'bg-success' : 'bg-danger'}"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- 1 Hafta -->
+                            <tr>
+                                <td class="fw-medium">1 Hafta</td>
+                                <td>
+                                    <span th:if="${fund.return1W != null}"
+                                          class="return-value"
+                                          th:data-value="${fund.return1W}"
+                                          th:classappend="${fund.return1W > 0 ? 'text-success' : (fund.return1W < 0 ? 'text-danger' : 'text-muted')}"
+                                          th:text="${(fund.return1W > 0 ? '+' : '') + #numbers.formatDecimal(fund.return1W, 1, 'COMMA', 2, 'POINT') + '%'}">
+                                        +2,50%
+                                    </span>
+                                    <span th:unless="${fund.return1W != null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <div class="return-bar-container" th:if="${fund.return1W != null && fund.return1W != 0}">
+                                        <div class="return-bar" th:data-value="${fund.return1W}"
+                                             th:classappend="${fund.return1W > 0 ? 'bg-success' : 'bg-danger'}"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- 1 Ay -->
+                            <tr>
+                                <td class="fw-medium">1 Ay</td>
+                                <td>
+                                    <span th:if="${fund.return1M != null}"
+                                          class="return-value"
+                                          th:data-value="${fund.return1M}"
+                                          th:classappend="${fund.return1M > 0 ? 'text-success' : (fund.return1M < 0 ? 'text-danger' : 'text-muted')}"
+                                          th:text="${(fund.return1M > 0 ? '+' : '') + #numbers.formatDecimal(fund.return1M, 1, 'COMMA', 2, 'POINT') + '%'}">
+                                        +3,00%
+                                    </span>
+                                    <span th:unless="${fund.return1M != null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <div class="return-bar-container" th:if="${fund.return1M != null && fund.return1M != 0}">
+                                        <div class="return-bar" th:data-value="${fund.return1M}"
+                                             th:classappend="${fund.return1M > 0 ? 'bg-success' : 'bg-danger'}"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- 3 Ay -->
+                            <tr>
+                                <td class="fw-medium">3 Ay</td>
+                                <td>
+                                    <span th:if="${fund.return3M != null}"
+                                          class="return-value"
+                                          th:data-value="${fund.return3M}"
+                                          th:classappend="${fund.return3M > 0 ? 'text-success' : (fund.return3M < 0 ? 'text-danger' : 'text-muted')}"
+                                          th:text="${(fund.return3M > 0 ? '+' : '') + #numbers.formatDecimal(fund.return3M, 1, 'COMMA', 2, 'POINT') + '%'}">
+                                        +5,00%
+                                    </span>
+                                    <span th:unless="${fund.return3M != null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <div class="return-bar-container" th:if="${fund.return3M != null && fund.return3M != 0}">
+                                        <div class="return-bar" th:data-value="${fund.return3M}"
+                                             th:classappend="${fund.return3M > 0 ? 'bg-success' : 'bg-danger'}"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- 6 Ay -->
+                            <tr>
+                                <td class="fw-medium">6 Ay</td>
+                                <td>
+                                    <span th:if="${fund.return6M != null}"
+                                          class="return-value"
+                                          th:data-value="${fund.return6M}"
+                                          th:classappend="${fund.return6M > 0 ? 'text-success' : (fund.return6M < 0 ? 'text-danger' : 'text-muted')}"
+                                          th:text="${(fund.return6M > 0 ? '+' : '') + #numbers.formatDecimal(fund.return6M, 1, 'COMMA', 2, 'POINT') + '%'}">
+                                        +8,00%
+                                    </span>
+                                    <span th:unless="${fund.return6M != null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <div class="return-bar-container" th:if="${fund.return6M != null && fund.return6M != 0}">
+                                        <div class="return-bar" th:data-value="${fund.return6M}"
+                                             th:classappend="${fund.return6M > 0 ? 'bg-success' : 'bg-danger'}"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Yil Basindan -->
+                            <tr>
+                                <td class="fw-medium">Yil Basindan</td>
+                                <td>
+                                    <span th:if="${fund.returnYTD != null}"
+                                          class="return-value"
+                                          th:data-value="${fund.returnYTD}"
+                                          th:classappend="${fund.returnYTD > 0 ? 'text-success' : (fund.returnYTD < 0 ? 'text-danger' : 'text-muted')}"
+                                          th:text="${(fund.returnYTD > 0 ? '+' : '') + #numbers.formatDecimal(fund.returnYTD, 1, 'COMMA', 2, 'POINT') + '%'}">
+                                        +12,00%
+                                    </span>
+                                    <span th:unless="${fund.returnYTD != null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <div class="return-bar-container" th:if="${fund.returnYTD != null && fund.returnYTD != 0}">
+                                        <div class="return-bar" th:data-value="${fund.returnYTD}"
+                                             th:classappend="${fund.returnYTD > 0 ? 'bg-success' : 'bg-danger'}"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- 1 Yil -->
+                            <tr>
+                                <td class="fw-medium">1 Yil</td>
+                                <td>
+                                    <span th:if="${fund.return1Y != null}"
+                                          class="return-value"
+                                          th:data-value="${fund.return1Y}"
+                                          th:classappend="${fund.return1Y > 0 ? 'text-success' : (fund.return1Y < 0 ? 'text-danger' : 'text-muted')}"
+                                          th:text="${(fund.return1Y > 0 ? '+' : '') + #numbers.formatDecimal(fund.return1Y, 1, 'COMMA', 2, 'POINT') + '%'}">
+                                        +20,00%
+                                    </span>
+                                    <span th:unless="${fund.return1Y != null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <div class="return-bar-container" th:if="${fund.return1Y != null && fund.return1Y != 0}">
+                                        <div class="return-bar" th:data-value="${fund.return1Y}"
+                                             th:classappend="${fund.return1Y > 0 ? 'bg-success' : 'bg-danger'}"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- 3 Yil -->
+                            <tr>
+                                <td class="fw-medium">3 Yil</td>
+                                <td>
+                                    <span th:if="${fund.return3Y != null}"
+                                          class="return-value"
+                                          th:data-value="${fund.return3Y}"
+                                          th:classappend="${fund.return3Y > 0 ? 'text-success' : (fund.return3Y < 0 ? 'text-danger' : 'text-muted')}"
+                                          th:text="${(fund.return3Y > 0 ? '+' : '') + #numbers.formatDecimal(fund.return3Y, 1, 'COMMA', 2, 'POINT') + '%'}">
+                                        +45,00%
+                                    </span>
+                                    <span th:unless="${fund.return3Y != null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <div class="return-bar-container" th:if="${fund.return3Y != null && fund.return3Y != 0}">
+                                        <div class="return-bar" th:data-value="${fund.return3Y}"
+                                             th:classappend="${fund.return3Y > 0 ? 'bg-success' : 'bg-danger'}"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- 5 Yil -->
+                            <tr>
+                                <td class="fw-medium">5 Yil</td>
+                                <td>
+                                    <span th:if="${fund.return5Y != null}"
+                                          class="return-value"
+                                          th:data-value="${fund.return5Y}"
+                                          th:classappend="${fund.return5Y > 0 ? 'text-success' : (fund.return5Y < 0 ? 'text-danger' : 'text-muted')}"
+                                          th:text="${(fund.return5Y > 0 ? '+' : '') + #numbers.formatDecimal(fund.return5Y, 1, 'COMMA', 2, 'POINT') + '%'}">
+                                        +80,00%
+                                    </span>
+                                    <span th:unless="${fund.return5Y != null}" class="text-muted">-</span>
+                                </td>
+                                <td>
+                                    <div class="return-bar-container" th:if="${fund.return5Y != null && fund.return5Y != 0}">
+                                        <div class="return-bar" th:data-value="${fund.return5Y}"
+                                             th:classappend="${fund.return5Y > 0 ? 'bg-success' : 'bg-danger'}"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fon Bilgileri -->
+        <div class="col-xl-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Fon Bilgileri</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0">
+                            <tbody>
+                            <tr th:if="${fund.founder != null}">
+                                <td class="text-muted">Kurucu</td>
+                                <td class="fw-medium text-end" th:text="${fund.founder}">Kurucu Adi</td>
+                            </tr>
+                            <tr th:if="${fund.cagr != null}">
+                                <td class="text-muted">CAGR</td>
+                                <td class="fw-medium text-end"
+                                    th:classappend="${fund.cagr > 0 ? 'text-success' : (fund.cagr < 0 ? 'text-danger' : 'text-muted')}"
+                                    th:text="${(fund.cagr > 0 ? '+' : '') + #numbers.formatDecimal(fund.cagr, 1, 'COMMA', 2, 'POINT') + '%'}">+12,50%</td>
+                            </tr>
+                            <tr th:if="${fund.totalShares != null}">
+                                <td class="text-muted">Pay Sayisi</td>
+                                <td class="fw-medium text-end"
+                                    th:text="${#numbers.formatInteger(fund.totalShares, 1, 'POINT')}">1.000.000</td>
+                            </tr>
+                            <tr th:if="${fund.priceDate != null}">
+                                <td class="text-muted">Fiyat Tarihi</td>
+                                <td class="fw-medium text-end" th:text="${fund.priceDate}">2024-01-01</td>
+                            </tr>
+                            <tr th:if="${fund.categoryName != null}">
+                                <td class="text-muted">Kategori</td>
+                                <td class="fw-medium text-end" th:text="${fund.categoryName}">Kategori Adi</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Emeklilik</td>
+                                <td class="fw-medium text-end">
+                                    <span th:if="${fund.retirement}" class="badge bg-soft-info text-info">Evet</span>
+                                    <span th:unless="${fund.retirement}" class="badge bg-soft-secondary text-secondary">Hayir</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Strateji Accordion -->
+                    <div th:if="${fund.strategyStatement != null}" class="mt-3">
+                        <div class="accordion" id="strategyAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="strategyHeading">
+                                    <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#strategyCollapse"
+                                            aria-expanded="false" aria-controls="strategyCollapse">
+                                        Yatirim Stratejisi
+                                    </button>
+                                </h2>
+                                <div id="strategyCollapse" class="accordion-collapse collapse"
+                                     aria-labelledby="strategyHeading" data-bs-parent="#strategyAccordion">
+                                    <div class="accordion-body text-muted small"
+                                         th:text="${fund.strategyStatement}">
+                                        Strateji metni burada gorunecektir.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== Row 4: Holdings Tablosu ==================== -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Holdings (Portfoy Dagilimi)</h5>
+                </div>
+                <div class="card-body">
+                    <th:block th:if="${fund.holdings != null && !fund.holdings.empty}">
+                        <div class="table-responsive">
+                            <table class="table table-striped align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th style="width:50px;">#</th>
+                                    <th>Isim</th>
+                                    <th>Ticker</th>
+                                    <th class="text-end">Agirlik (%)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="holding, stat : ${fund.holdings}">
+                                    <td th:text="${stat.count}">1</td>
+                                    <td class="fw-medium" th:text="${holding.name}">Holding Ismi</td>
+                                    <td>
+                                        <span class="badge bg-soft-primary text-primary"
+                                              th:if="${holding.ticker != null}"
+                                              th:text="${holding.ticker}">TICKER</span>
+                                        <span th:if="${holding.ticker == null}" class="text-muted">-</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <span th:if="${holding.percentage != null}"
+                                              th:text="${#numbers.formatDecimal(holding.percentage, 1, 'COMMA', 2, 'POINT') + '%'}">5,00%</span>
+                                        <span th:if="${holding.percentage == null}" class="text-muted">-</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </th:block>
+                    <div th:if="${fund.holdings == null || fund.holdings.empty}" class="text-center text-muted py-4">
+                        <i class="ri-folder-open-line fs-24 d-block mb-2"></i>
+                        Holding verisi bulunamadi
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== Row 5: Benzer Fonlar ==================== -->
+    <div class="row" th:if="${fund.similarFunds != null && !fund.similarFunds.empty}">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Benzer Fonlar</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-xl" th:each="sf, stat : ${fund.similarFunds}" th:if="${stat.index < 5}">
+                            <div class="card border shadow-none mb-0">
+                                <div class="card-body">
+                                    <!-- Fund Code + Name -->
+                                    <div class="mb-3">
+                                        <span class="badge bg-dark bg-opacity-10 text-dark fs-13 mb-1"
+                                              th:text="${sf.tefasCode}">ABC</span>
+                                        <h6 class="mb-0 mt-1 text-truncate" th:text="${sf.fundName}">Fon Adi</h6>
+                                        <small class="text-muted" th:text="${sf.fundType}">YAT</small>
+                                    </div>
+
+                                    <!-- Returns -->
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small class="text-muted">1 Ay</small>
+                                            <small th:if="${sf.return1M != null}"
+                                                   th:classappend="${sf.return1M > 0 ? 'text-success' : (sf.return1M < 0 ? 'text-danger' : 'text-muted')}"
+                                                   th:text="${(sf.return1M > 0 ? '+' : '') + #numbers.formatDecimal(sf.return1M, 1, 'COMMA', 2, 'POINT') + '%'}">+1,00%</small>
+                                            <small th:if="${sf.return1M == null}" class="text-muted">-</small>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small class="text-muted">3 Ay</small>
+                                            <small th:if="${sf.return3M != null}"
+                                                   th:classappend="${sf.return3M > 0 ? 'text-success' : (sf.return3M < 0 ? 'text-danger' : 'text-muted')}"
+                                                   th:text="${(sf.return3M > 0 ? '+' : '') + #numbers.formatDecimal(sf.return3M, 1, 'COMMA', 2, 'POINT') + '%'}">+3,00%</small>
+                                            <small th:if="${sf.return3M == null}" class="text-muted">-</small>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <small class="text-muted">1 Yil</small>
+                                            <small th:if="${sf.return1Y != null}"
+                                                   th:classappend="${sf.return1Y > 0 ? 'text-success' : (sf.return1Y < 0 ? 'text-danger' : 'text-muted')}"
+                                                   th:text="${(sf.return1Y > 0 ? '+' : '') + #numbers.formatDecimal(sf.return1Y, 1, 'COMMA', 2, 'POINT') + '%'}">+10,00%</small>
+                                            <small th:if="${sf.return1Y == null}" class="text-muted">-</small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Similarity Score -->
+                                    <div th:if="${sf.similarityScore != null}" class="mb-2">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <small class="text-muted">Benzerlik</small>
+                                            <small class="fw-medium" th:text="${#numbers.formatDecimal(sf.similarityScore * 100, 1, 'COMMA', 0, 'POINT') + '%'}">85%</small>
+                                        </div>
+                                        <div class="progress" style="height:5px;">
+                                            <div class="progress-bar bg-primary" role="progressbar"
+                                                 th:style="'width:' + ${sf.similarityScore * 100} + '%'"
+                                                 th:attr="aria-valuenow=${sf.similarityScore * 100}"
+                                                 aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Match Reasons -->
+                                    <div th:if="${sf.matchReasons != null && !sf.matchReasons.empty}" class="mt-2">
+                                        <span class="badge bg-soft-info text-info me-1 mb-1"
+                                              th:each="reason : ${sf.matchReasons}"
+                                              th:text="${reason}">Sebep</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== Row 6: AJAX Grafikler ==================== -->
+    <div class="row">
+        <!-- Nakit Akisi -->
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Nakit Akisi</h5>
+                </div>
+                <div class="card-body">
+                    <div id="cashflowChart" style="height:300px;">
+                        <div class="d-flex justify-content-center align-items-center" style="height:300px;">
+                            <div class="spinner-border text-primary"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Yatirimci Sayisi -->
+        <div class="col-xl-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Yatirimci Sayisi</h5>
+                </div>
+                <div class="card-body">
+                    <div id="investorChart" style="height:300px;">
+                        <div class="d-flex justify-content-center align-items-center" style="height:300px;">
+                            <div class="spinner-border text-primary"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</section>
+
+<th:block layout:fragment="pagejs">
+    <!-- Return bar CSS -->
+    <style>
+        .return-bar-container {
+            position: relative;
+            height: 8px;
+            background-color: #f3f3f9;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .return-bar {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            border-radius: 4px;
+            min-width: 2px;
+            transition: width 0.3s ease;
+        }
+        .return-bar.bg-success {
+            left: 0;
+        }
+        .return-bar.bg-danger {
+            right: 0;
+        }
+
+        /* Allocation list */
+        .allocation-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Holdings table */
+        #holdingsTable .text-truncate {
+            max-width: 200px;
+        }
+
+        /* Similar fund cards */
+        .similar-fund-card .progress {
+            height: 5px;
+        }
+        .similar-fund-card .card-body {
+            min-height: 220px;
+        }
+    </style>
+
+    <!-- ApexCharts -->
+    <script th:src="@{/assets/libs/apexcharts/apexcharts.min.js}"></script>
+
+    <!-- Pass server data to JS -->
+    <script th:inline="javascript">
+        window.fundPriceHistory = /*[[${fund.priceHistory}]]*/ [];
+        window.fundAllocation = /*[[${fund.allocation}]]*/ null;
+        window.fundCode = /*[[${fund.tefasCode}]]*/ '';
+    </script>
+
+    <!-- Fund detail JS (formatPortfolioSize, formatHoldingMarketValues, calculateReturnBars, charts) -->
+    <script th:src="@{/js/fund-detail.js}"></script>
+</th:block>
+</body>
+
+</html>
