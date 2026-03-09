@@ -22,3 +22,9 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Velzon reference template (not part of project)
+UItemplate/
+
+# Misc
+http:/
