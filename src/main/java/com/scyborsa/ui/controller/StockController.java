@@ -1,5 +1,6 @@
 package com.scyborsa.ui.controller;
 
+import com.scyborsa.ui.dto.AkdResponseDto;
 import com.scyborsa.ui.dto.AnalistTavsiyeDto;
 import com.scyborsa.ui.dto.SectorStockDto;
 import com.scyborsa.ui.dto.TvScreenerResponseModel;
@@ -186,6 +187,9 @@ public class StockController {
         // Analist tavsiyeleri yukle
         loadAnalistTavsiyeleri(stockId, model);
 
+        // AKD verileri yukle
+        loadAkdData(stockId, model);
+
         return "stock/detail";
     }
 
@@ -341,6 +345,39 @@ public class StockController {
         model.addAttribute("toplamTavsiye", 0);
         model.addAttribute("alSayisi", 0);
         model.addAttribute("ortalamaHedefFiyat", 0.0);
+    }
+
+    /**
+     * AKD (Aracı Kurum Dağılımı) verilerini yükler ve model'e ekler.
+     *
+     * @param stockId hisse kodu
+     * @param model   Thymeleaf model
+     */
+    private void loadAkdData(String stockId, Model model) {
+        try {
+            AkdResponseDto akd = stockDetailService.getAkdData(stockId);
+            if (akd != null) {
+                model.addAttribute("akdAlicilar", akd.getAlicilar() != null ? akd.getAlicilar() : List.of());
+                model.addAttribute("akdSaticilar", akd.getSaticilar() != null ? akd.getSaticilar() : List.of());
+                model.addAttribute("akdToplam", akd.getToplam() != null ? akd.getToplam() : List.of());
+            } else {
+                setDefaultAkdData(model);
+            }
+        } catch (Exception e) {
+            log.warn("AKD verisi yüklenemedi: {} - {}", stockId, e.getMessage());
+            setDefaultAkdData(model);
+        }
+    }
+
+    /**
+     * Boş AKD verilerini model'e ekler (hata durumu için).
+     *
+     * @param model Thymeleaf model
+     */
+    private void setDefaultAkdData(Model model) {
+        model.addAttribute("akdAlicilar", List.of());
+        model.addAttribute("akdSaticilar", List.of());
+        model.addAttribute("akdToplam", List.of());
     }
 
     /**

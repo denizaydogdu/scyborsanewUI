@@ -173,4 +173,9 @@ public final class ScyborsaApiEndpoints {
     /** Araci kurum logo proxy endpoint'i. {@code {filename}} path variable icerir. */
     public static final String BROKERAGE_LOGO_IMG = "/api/v1/brokerage-logos/img/{filename}";
 
+    // ── AKD (Aracı Kurum Dağılımı) ──────────────────────────
+
+    /** Hisse bazlı AKD (Aracı Kurum Dağılımı) endpoint'i. {@code {stockCode}} path variable içerir. */
+    public static final String STOCK_AKD = "/api/v1/stock/{stockCode}/akd";
+
 }

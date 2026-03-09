@@ -424,6 +424,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
+                        <!-- Alicilar -->
                         <div class="col-md-4">
                             <h5 style="color: #00C851;">Alicilar</h5>
                             <table class="table table-bordered">
@@ -436,45 +437,26 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td>Ak</td>
-                                    <td>158,922</td>
-                                    <td>37.23</td>
-                                    <td>20.582</td>
+                                <tr th:if="${akdAlicilar == null or akdAlicilar.isEmpty()}">
+                                    <td colspan="4" class="text-center text-muted">Veri bulunamadi</td>
                                 </tr>
-                                <tr>
-                                    <td>Yapi Kr.</td>
-                                    <td>124,299</td>
-                                    <td>29.12</td>
-                                    <td>20.586</td>
-                                </tr>
-                                <tr>
-                                    <td>BofA</td>
-                                    <td>99,512</td>
-                                    <td>23.31</td>
-                                    <td>20.663</td>
-                                </tr>
-                                <tr>
-                                    <td>ING</td>
-                                    <td>12,050</td>
-                                    <td>2.82</td>
-                                    <td>20.661</td>
-                                </tr>
-                                <tr>
-                                    <td>Phillip</td>
-                                    <td>11,245</td>
-                                    <td>2.63</td>
-                                    <td>20.675</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-warning">Diger</td>
-                                    <td>20,810</td>
-                                    <td>4.88</td>
-                                    <td>20.662</td>
+                                <tr th:each="broker : ${akdAlicilar}">
+                                    <td th:classappend="${broker.code == 'DIGER' ? 'text-warning' : ''}">
+                                        <div class="d-flex align-items-center gap-1">
+                                            <img th:if="${broker.logoUrl != null and !broker.logoUrl.isEmpty()}"
+                                                 th:src="${broker.logoUrl}" alt=""
+                                                 class="rounded-circle" style="width:20px;height:20px;object-fit:contain;">
+                                            <span th:text="${broker.shortTitle}">Kurum</span>
+                                        </div>
+                                    </td>
+                                    <td th:text="${#numbers.formatInteger(broker.adet, 1, 'POINT')}">0</td>
+                                    <td th:text="${#numbers.formatDecimal(broker.yuzde, 1, 2)}">0.00</td>
+                                    <td th:text="${#numbers.formatDecimal(broker.maliyet, 1, 3)}">0.000</td>
                                 </tr>
                                 </tbody>
                             </table>
                         </div>
+                        <!-- Saticilar -->
                         <div class="col-md-4">
                             <h5 style="color: #ff0000;">Saticilar</h5>
                             <table class="table table-bordered">
@@ -487,45 +469,26 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td>Gedik</td>
-                                    <td>-89,984</td>
-                                    <td>21.08</td>
-                                    <td>20.592</td>
+                                <tr th:if="${akdSaticilar == null or akdSaticilar.isEmpty()}">
+                                    <td colspan="4" class="text-center text-muted">Veri bulunamadi</td>
                                 </tr>
-                                <tr>
-                                    <td>QNB</td>
-                                    <td>-67,589</td>
-                                    <td>15.83</td>
-                                    <td>20.596</td>
-                                </tr>
-                                <tr>
-                                    <td>Vakif</td>
-                                    <td>-48,432</td>
-                                    <td>11.35</td>
-                                    <td>20.569</td>
-                                </tr>
-                                <tr>
-                                    <td>Trive</td>
-                                    <td>-48,054</td>
-                                    <td>11.26</td>
-                                    <td>20.549</td>
-                                </tr>
-                                <tr>
-                                    <td>Garanti</td>
-                                    <td>-33,158</td>
-                                    <td>7.77</td>
-                                    <td>20.611</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-warning">Diger</td>
-                                    <td>-139,621</td>
-                                    <td>32.71</td>
-                                    <td>20.665</td>
+                                <tr th:each="broker : ${akdSaticilar}">
+                                    <td th:classappend="${broker.code == 'DIGER' ? 'text-warning' : ''}">
+                                        <div class="d-flex align-items-center gap-1">
+                                            <img th:if="${broker.logoUrl != null and !broker.logoUrl.isEmpty()}"
+                                                 th:src="${broker.logoUrl}" alt=""
+                                                 class="rounded-circle" style="width:20px;height:20px;object-fit:contain;">
+                                            <span th:text="${broker.shortTitle}">Kurum</span>
+                                        </div>
+                                    </td>
+                                    <td th:text="${#numbers.formatInteger(broker.adet, 1, 'POINT')}">0</td>
+                                    <td th:text="${#numbers.formatDecimal(broker.yuzde, 1, 2)}">0.00</td>
+                                    <td th:text="${#numbers.formatDecimal(broker.maliyet, 1, 3)}">0.000</td>
                                 </tr>
                                 </tbody>
                             </table>
                         </div>
+                        <!-- Toplam -->
                         <div class="col-md-4">
                             <h5 style="color: #007bff;">Toplam</h5>
                             <table class="table table-bordered">
@@ -538,41 +501,21 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td>Is</td>
-                                    <td>815,573</td>
-                                    <td>25.03</td>
-                                    <td>20.642</td>
+                                <tr th:if="${akdToplam == null or akdToplam.isEmpty()}">
+                                    <td colspan="4" class="text-center text-muted">Veri bulunamadi</td>
                                 </tr>
-                                <tr>
-                                    <td>BofA</td>
-                                    <td>413,378</td>
-                                    <td>12.69</td>
-                                    <td>20.620</td>
-                                </tr>
-                                <tr>
-                                    <td>Yapi Kr.</td>
-                                    <td>389,487</td>
-                                    <td>11.95</td>
-                                    <td>20.666</td>
-                                </tr>
-                                <tr>
-                                    <td>Ak</td>
-                                    <td>300,912</td>
-                                    <td>9.24</td>
-                                    <td>20.593</td>
-                                </tr>
-                                <tr>
-                                    <td>QNB</td>
-                                    <td>188,133</td>
-                                    <td>5.77</td>
-                                    <td>20.634</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-warning">Diger</td>
-                                    <td>1,150,775</td>
-                                    <td>35.32</td>
-                                    <td>20.614</td>
+                                <tr th:each="broker : ${akdToplam}">
+                                    <td th:classappend="${broker.code == 'DIGER' ? 'text-warning' : ''}">
+                                        <div class="d-flex align-items-center gap-1">
+                                            <img th:if="${broker.logoUrl != null and !broker.logoUrl.isEmpty()}"
+                                                 th:src="${broker.logoUrl}" alt=""
+                                                 class="rounded-circle" style="width:20px;height:20px;object-fit:contain;">
+                                            <span th:text="${broker.shortTitle}">Kurum</span>
+                                        </div>
+                                    </td>
+                                    <td th:text="${#numbers.formatInteger(broker.adet, 1, 'POINT')}">0</td>
+                                    <td th:text="${#numbers.formatDecimal(broker.yuzde, 1, 2)}">0.00</td>
+                                    <td th:text="${#numbers.formatDecimal(broker.maliyet, 1, 3)}">0.000</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -603,39 +546,9 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td>Is</td>
-                                    <td>34.878.558</td>
-                                    <td>24,68%</td>
-                                </tr>
-                                <tr>
-                                    <td>Yat. Fon.</td>
-                                    <td>19.199.336</td>
-                                    <td>13,58%</td>
-                                </tr>
-                                <tr>
-                                    <td>Garanti</td>
-                                    <td>10.784.588</td>
-                                    <td>7,63%</td>
-                                </tr>
-                                <tr>
-                                    <td>Ak</td>
-                                    <td>7.530.636</td>
-                                    <td>5,33%</td>
-                                </tr>
-                                <tr>
-                                    <td>Vakif</td>
-                                    <td>7.412.589</td>
-                                    <td>5,24%</td>
-                                </tr>
-                                <tr>
-                                    <td>Yapi Kr.</td>
-                                    <td>6.884.208</td>
-                                    <td>4,87%</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-warning">Diger</td>
-                                    <td>26.884.208</td>
-                                    <td>4,87%</td>
+                                    <td colspan="3" class="text-center text-muted py-4">
+                                        <i class="ri-time-line me-1"></i>Takas verisi yakında eklenecektir
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>

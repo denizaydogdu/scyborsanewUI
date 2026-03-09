@@ -1,6 +1,7 @@
 package com.scyborsa.ui.service;
 
 import com.scyborsa.ui.constants.ScyborsaApiEndpoints;
+import com.scyborsa.ui.dto.AkdResponseDto;
 import com.scyborsa.ui.dto.TvScreenerResponseModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -56,6 +57,29 @@ public class StockDetailService {
         } catch (Exception e) {
             log.error("Pine Screener API cagrisi basarisiz: stockId={}", stockId, e);
             return List.of();
+        }
+    }
+
+    /**
+     * Hisse bazlı AKD (Aracı Kurum Dağılımı) verilerini API'den getirir.
+     *
+     * @param stockCode hisse kodu (ör: "GARAN")
+     * @return AKD dağılımı veya hata durumunda null
+     */
+    public AkdResponseDto getAkdData(String stockCode) {
+        try {
+            return webClient.get()
+                    .uri(ScyborsaApiEndpoints.STOCK_AKD, stockCode)
+                    .retrieve()
+                    .bodyToMono(AkdResponseDto.class)
+                    .block();
+        } catch (Exception e) {
+            log.error("AKD verisi alınamadı: {} - {}", stockCode, e.getMessage());
+            AkdResponseDto empty = new AkdResponseDto();
+            empty.setAlicilar(List.of());
+            empty.setSaticilar(List.of());
+            empty.setToplam(List.of());
+            return empty;
         }
     }
 }
