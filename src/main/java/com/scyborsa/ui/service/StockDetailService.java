@@ -2,6 +2,7 @@ package com.scyborsa.ui.service;
 
 import com.scyborsa.ui.constants.ScyborsaApiEndpoints;
 import com.scyborsa.ui.dto.AkdResponseDto;
+import com.scyborsa.ui.dto.TakasResponseDto;
 import com.scyborsa.ui.dto.TvScreenerResponseModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -79,6 +80,27 @@ public class StockDetailService {
             empty.setAlicilar(List.of());
             empty.setSaticilar(List.of());
             empty.setToplam(List.of());
+            return empty;
+        }
+    }
+
+    /**
+     * Hisse bazli Takas (Saklama Dagilimi) verilerini API'den getirir.
+     *
+     * @param stockCode hisse kodu (or: "GARAN")
+     * @return Takas dagilimi veya hata durumunda bos response
+     */
+    public TakasResponseDto getTakasData(String stockCode) {
+        try {
+            return webClient.get()
+                    .uri(ScyborsaApiEndpoints.STOCK_TAKAS, stockCode)
+                    .retrieve()
+                    .bodyToMono(TakasResponseDto.class)
+                    .block();
+        } catch (Exception e) {
+            log.error("Takas verisi alinamadi: {} - {}", stockCode, e.getMessage());
+            TakasResponseDto empty = new TakasResponseDto();
+            empty.setCustodians(List.of());
             return empty;
         }
     }

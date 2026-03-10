@@ -7,16 +7,21 @@
     <th:block layout:fragment="pagetitle">
         <div th:replace="~{partials/title-meta :: title-meta(${stockId})}"></div>
     </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
     <style>
         .score-circle {
             width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
             color: white; font-weight: bold; cursor: pointer; border: none; transition: transform 0.2s;
+            background-color: #6c757d;
         }
         .score-circle:hover { transform: scale(1.1); }
         .score-circle:focus { outline: 2px solid #fff; outline-offset: 2px; }
-        .score-red { background-color: #ff4444; }
-        .score-green { background-color: #00C851; }
-        .score-yellow { background-color: #ffbb33; }
+        .score-red { background-color: #ff4444 !important; }
+        .score-green { background-color: #00C851 !important; }
+        .score-yellow { background-color: #ffbb33 !important; }
         .time-header { text-align: center; font-weight: bold; padding: 8px; background-color: #f8f9fa; }
         .indicator-item {
             padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;
@@ -29,10 +34,6 @@
         .status-neutral { background-color: #ffbb33; }
         .needle { transition: transform 0.5s ease-in-out; }
     </style>
-</head>
-
-<body>
-<section layout:fragment="content">
     <!-- start page title -->
     <div class="row">
         <div class="col-12">
@@ -105,7 +106,6 @@
                                 <tr>
                                     <th>Sembol</th>
                                     <th class="time-header">15 Dk.</th>
-                                    <th class="time-header">30 Dk.</th>
                                     <th class="time-header">1 Saat</th>
                                     <th class="time-header">4 Saat</th>
                                     <th class="time-header">1 Gun</th>
@@ -115,11 +115,11 @@
                                 <tbody>
                                 <tr>
                                     <td th:text="${stockId}"></td>
-                                    <th:block th:each="period : ${ {'15M','30M','1H','4H','1D','1W'} }">
+                                    <th:block th:each="period : ${ {'15M','1H','4H','1D','1W'} }">
                                     <td th:with="pdata=${analysisMap.get(period)}, gc=${pdata != null ? pdata.get('greenCount') : 0}, rc=${pdata != null ? pdata.get('redCount') : 0}">
                                         <button class="score-circle"
-                                                th:classappend="${(gc > 6) ? ' score-green' : ((gc == 5 or gc == 6) ? ' score-yellow' : ' score-red')}"
-                                                th:text="${(gc > 6) ? gc : ((gc == 5 or gc == 6) ? gc : rc)}"
+                                                th:classappend="${(gc > 5) ? ' score-green' : ((rc > 5) ? ' score-red' : ' score-yellow')}"
+                                                th:text="${(gc > 5) ? gc : ((rc > 5) ? rc : gc)}"
                                                 onclick="showIndicatorDetails(this)"
                                                 th:data-period="${period}" th:data-symbol="${stockId}">
                                         </button>
@@ -420,7 +420,10 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">AKD</h4>
+                    <h4 class="card-title mb-0">AKD
+                        <small th:if="${akdDataDate != null}" class="text-muted fw-normal fs-6"
+                               th:text="' - ' + ${akdDataDate}"></small>
+                    </h4>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -531,23 +534,41 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title mb-0">Takas</h4>
+                    <h4 class="card-title mb-0">Takas (Saklama Dağılımı)
+                        <small th:if="${takasDataDate != null}" class="text-muted fw-normal fs-6"
+                               th:text="' - ' + ${takasDataDate}"></small>
+                    </h4>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <table class="table table-bordered">
-                                <thead>
+                            <table class="table table-bordered table-hover align-middle mb-0">
+                                <thead class="table-light">
                                 <tr>
                                     <th>Kurum</th>
-                                    <th>Adet</th>
-                                    <th>%</th>
+                                    <th class="text-end">Değer</th>
+                                    <th class="text-end" style="width: 80px;">%</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
+                                <tr th:each="item : ${takasCustodians}">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img th:if="${item.logoUrl != null and !item.logoUrl.isEmpty()}"
+                                                 th:src="${item.logoUrl}"
+                                                 width="24" height="24"
+                                                 class="rounded-circle me-2"
+                                                 alt="logo"
+                                                 onerror="this.style.display='none'"/>
+                                            <span th:text="${item.shortTitle}">Kurum</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-end" th:text="${item.formattedDeger}">0 TL</td>
+                                    <td class="text-end" th:text="${#numbers.formatDecimal(item.yuzde, 1, 2) + '%'}">0%</td>
+                                </tr>
+                                <tr th:if="${takasCustodians == null or takasCustodians.isEmpty()}">
                                     <td colspan="3" class="text-center text-muted py-4">
-                                        <i class="ri-time-line me-1"></i>Takas verisi yakında eklenecektir
+                                        <i class="ri-information-line me-1"></i>Takas verisi bulunamadı
                                     </td>
                                 </tr>
                                 </tbody>
@@ -589,44 +610,115 @@
     <script th:src="@{/assets/js/pages/stock_detail_gauge_component.js}"></script>
 
     <script>
+        var indicatorDescriptions = {
+            "T3": "Tillson T3 hareketli ortalama. Gecikmeyi azaltarak trendi erken yakalar.",
+            "SuperTrend": "ATR bazli trend gostergesi. Fiyat ustte ise yukselis, altta ise dusus.",
+            "EWO": "Elliott Wave Oscillator. Trend gucunu ve dalga yapısını olcer.",
+            "Squeeze Mom.": "Bollinger + Keltner sıkısma. Dusuk volatilite sonrası patlama sinyali.",
+            "WaveTrend": "Asiri alim/satim osilatoru. Capraz kesismeler sinyal uretir.",
+            "SALMA": "Adaptive hareketli ortalama. Volatiliteye gore hiz ayarlar.",
+            "CVD": "Kumulatif hacim deltası. Alici/satici baski dengesini gosterir.",
+            "Twin Range": "Cift aralik filtre. Kisa ve uzun ATR ile trend dogrular.",
+            "MA Alignment": "Hareketli ortalama dizilimi. EMA'lar sirayla dizilirse guclu trend.",
+            "Trend Follower": "Trend takip gostergesi. Yukselis/dusus trendini onaylar.",
+            "Madrid Ribbon": "EMA serit sistemi. Seritler acilirsa trend guclenir."
+        };
+
         function showIndicatorDetails(buttonEl) {
             var modal = document.getElementById('indicatorDetailsModal');
             var indicatorList = modal.querySelector('.indicator-list');
             if (!indicatorList) return;
             var period = buttonEl.getAttribute('data-period');
             var symbol = buttonEl.getAttribute('data-symbol');
-            var indicators = periodIndicatorData[period].indicators;
+            var periodData = periodIndicatorData[period];
+            if (!periodData) return;
+            var indicators = periodData.indicators;
             var modalTitle = modal.querySelector('.modal-title');
             if (modalTitle) {
                 modalTitle.textContent = symbol + " - " + period + " Gosterge Detaylari";
             }
             indicatorList.textContent = '';
-            if (Array.isArray(indicators)) {
+            if (Array.isArray(indicators) && indicators.length > 0) {
+                var table = document.createElement('table');
+                table.className = 'table table-bordered table-sm mb-0';
+
+                var thead = document.createElement('thead');
+                var headRow = document.createElement('tr');
+                var th1 = document.createElement('th');
+                th1.textContent = 'Gösterge';
+                headRow.appendChild(th1);
+                var th2 = document.createElement('th');
+                th2.textContent = 'Sinyal';
+                th2.className = 'text-center';
+                th2.style.width = '80px';
+                headRow.appendChild(th2);
+                thead.appendChild(headRow);
+                table.appendChild(thead);
+
+                var tbody = document.createElement('tbody');
+
                 indicators.forEach(function(ind) {
-                    var item = document.createElement('div');
-                    item.className = 'indicator-item';
+                    var tr = document.createElement('tr');
 
+                    var tdName = document.createElement('td');
                     var nameSpan = document.createElement('span');
+                    nameSpan.className = 'fw-medium';
                     nameSpan.textContent = ind.name;
-                    item.appendChild(nameSpan);
+                    tdName.appendChild(nameSpan);
+                    var desc = indicatorDescriptions[ind.name];
+                    if (desc) {
+                        var infoIcon = document.createElement('i');
+                        infoIcon.className = 'ri-information-line text-muted ms-1';
+                        infoIcon.style.cursor = 'pointer';
+                        infoIcon.style.fontSize = '13px';
+                        infoIcon.setAttribute('data-bs-toggle', 'tooltip');
+                        infoIcon.setAttribute('data-bs-placement', 'top');
+                        infoIcon.setAttribute('title', desc);
+                        tdName.appendChild(infoIcon);
+                    }
+                    tr.appendChild(tdName);
 
-                    var statusSpan = document.createElement('span');
-                    var statusClass = 'status-neutral';
-                    if (ind.status === 'positive') statusClass = 'status-positive';
-                    else if (ind.status === 'negative') statusClass = 'status-negative';
-                    statusSpan.className = 'indicator-status ' + statusClass;
-                    item.appendChild(statusSpan);
+                    var tdSignal = document.createElement('td');
+                    tdSignal.className = 'text-center';
+                    var badge = document.createElement('span');
+                    if (ind.status === 'positive') {
+                        badge.textContent = 'Al';
+                        badge.className = 'badge bg-success-subtle text-success';
+                    } else if (ind.status === 'negative') {
+                        badge.textContent = 'Sat';
+                        badge.className = 'badge bg-danger-subtle text-danger';
+                    } else {
+                        badge.textContent = 'Nötr';
+                        badge.className = 'badge bg-warning-subtle text-warning';
+                    }
+                    tdSignal.appendChild(badge);
+                    tr.appendChild(tdSignal);
 
-                    indicatorList.appendChild(item);
+                    tbody.appendChild(tr);
                 });
+
+                table.appendChild(tbody);
+                indicatorList.appendChild(table);
             }
+
             var bsModal = new bootstrap.Modal(modal);
             bsModal.show();
+
+            // Tooltip'leri aktifle
+            var tooltipTriggerList = modal.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltipTriggerList.forEach(function(el) {
+                new bootstrap.Tooltip(el);
+            });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             var modal = document.getElementById('indicatorDetailsModal');
             modal.addEventListener('hidden.bs.modal', function() {
+                // Tooltip'leri temizle
+                modal.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
+                    var tooltip = bootstrap.Tooltip.getInstance(el);
+                    if (tooltip) tooltip.dispose();
+                });
                 if (document.activeElement && modal.contains(document.activeElement)) {
                     document.activeElement.blur();
                 }

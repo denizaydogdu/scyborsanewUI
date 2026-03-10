@@ -2,6 +2,7 @@ package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.AkdResponseDto;
 import com.scyborsa.ui.dto.AnalistTavsiyeDto;
+import com.scyborsa.ui.dto.TakasResponseDto;
 import com.scyborsa.ui.dto.SectorStockDto;
 import com.scyborsa.ui.dto.TvScreenerResponseModel;
 import com.scyborsa.ui.enums.PeriodsEnum;
@@ -190,6 +191,9 @@ public class StockController {
         // AKD verileri yukle
         loadAkdData(stockId, model);
 
+        // Takas verileri yukle
+        loadTakasData(stockId, model);
+
         return "stock/detail";
     }
 
@@ -360,6 +364,7 @@ public class StockController {
                 model.addAttribute("akdAlicilar", akd.getAlicilar() != null ? akd.getAlicilar() : List.of());
                 model.addAttribute("akdSaticilar", akd.getSaticilar() != null ? akd.getSaticilar() : List.of());
                 model.addAttribute("akdToplam", akd.getToplam() != null ? akd.getToplam() : List.of());
+                model.addAttribute("akdDataDate", akd.getFormattedDataDate());
             } else {
                 setDefaultAkdData(model);
             }
@@ -378,6 +383,38 @@ public class StockController {
         model.addAttribute("akdAlicilar", List.of());
         model.addAttribute("akdSaticilar", List.of());
         model.addAttribute("akdToplam", List.of());
+        model.addAttribute("akdDataDate", null);
+    }
+
+    /**
+     * Takas (Saklama Dagilimi) verilerini yukler ve model'e ekler.
+     *
+     * @param stockId hisse kodu
+     * @param model   Thymeleaf model
+     */
+    private void loadTakasData(String stockId, Model model) {
+        try {
+            TakasResponseDto takas = stockDetailService.getTakasData(stockId);
+            if (takas != null && takas.getCustodians() != null) {
+                model.addAttribute("takasCustodians", takas.getCustodians());
+                model.addAttribute("takasDataDate", takas.getFormattedDataDate());
+            } else {
+                setDefaultTakasData(model);
+            }
+        } catch (Exception e) {
+            log.warn("Takas verisi yuklenemedi: {} - {}", stockId, e.getMessage());
+            setDefaultTakasData(model);
+        }
+    }
+
+    /**
+     * Bos Takas verilerini model'e ekler (hata durumu icin).
+     *
+     * @param model Thymeleaf model
+     */
+    private void setDefaultTakasData(Model model) {
+        model.addAttribute("takasCustodians", List.of());
+        model.addAttribute("takasDataDate", null);
     }
 
     /**
