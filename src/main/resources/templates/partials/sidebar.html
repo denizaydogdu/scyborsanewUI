@@ -102,6 +102,13 @@
 							</a>
 						</li>
 
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="/araci-kurumlar"
+							   th:classappend="${#strings.startsWith(requestURI, '/araci-kurumlar')} ? 'active' : ''">
+								<i class="ri-building-line"></i> <span data-key="t-araci-kurumlar">Araci Kurumlar</span>
+							</a>
+						</li>
+
 						<!-- YAKINDA: Henüz aktif olmayan menü öğeleri gizlendi
 						<li class="menu-title"><span>Yakında</span></li>
 						<li class="nav-item"><a class="nav-link menu-link" href="/analistler"><i class="ri-user-star-line"></i> <span>Analistler</span></a></li>

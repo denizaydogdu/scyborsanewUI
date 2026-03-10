@@ -23,3 +23,9 @@ File: Custom Css File
     animation: flash-red 500ms ease-out;
     border-radius: 4px;
 }
+
+/* Teknik gostergeler tablo baslik info ikonu */
+.indicator-info {
+    font-size: 13px;
+    cursor: pointer;
+}

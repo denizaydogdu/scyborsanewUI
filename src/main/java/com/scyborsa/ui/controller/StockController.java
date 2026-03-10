@@ -10,13 +10,15 @@ import com.scyborsa.ui.service.AnalistTavsiyeService;
 import com.scyborsa.ui.service.Bist100Service;
 import com.scyborsa.ui.service.StockDetailService;
 import com.scyborsa.ui.util.TwUtils;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,7 +41,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Controller
-@RequiredArgsConstructor
 public class StockController {
 
     private static final String[] INDICATOR_NAMES = {
@@ -49,9 +50,35 @@ public class StockController {
     // plot16=TDS (composite) atlanir, gerisi plot6..plot17
     private static final int[] PLOT_INDICES = {6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17};
 
+    /** Market durumu cache TTL (60 saniye). */
+    private static final long MARKET_STATUS_CACHE_TTL_MS = 60_000;
+
     private final StockDetailService stockDetailService;
     private final Bist100Service bist100Service;
     private final AnalistTavsiyeService analistTavsiyeService;
+    private final WebClient webClient;
+
+    /** Cache'lenmis market durumu ve zaman damgasi. */
+    private volatile boolean cachedMarketOpen = true;
+    private volatile long cachedMarketOpenTime = 0;
+
+    /**
+     * Constructor injection — WebClient.Builder'dan WebClient olusturur.
+     *
+     * @param stockDetailService    hisse detay servisi
+     * @param bist100Service        BIST100 servisi
+     * @param analistTavsiyeService analist tavsiye servisi
+     * @param webClientBuilder      Spring tarafindan enjekte edilen WebClient builder
+     */
+    public StockController(StockDetailService stockDetailService,
+                           Bist100Service bist100Service,
+                           AnalistTavsiyeService analistTavsiyeService,
+                           WebClient.Builder webClientBuilder) {
+        this.stockDetailService = stockDetailService;
+        this.bist100Service = bist100Service;
+        this.analistTavsiyeService = analistTavsiyeService;
+        this.webClient = webClientBuilder.build();
+    }
 
     /**
      * Hisse senedi detay sayfasini render eder.
@@ -193,6 +220,12 @@ public class StockController {
 
         // Takas verileri yukle
         loadTakasData(stockId, model);
+
+        // Market durumu yukle
+        model.addAttribute("marketOpen", getMarketOpen());
+
+        // Teknik veri tarihi (bugün)
+        model.addAttribute("teknikTarih", LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
 
         return "stock/detail";
     }
@@ -415,6 +448,38 @@ public class StockController {
     private void setDefaultTakasData(Model model) {
         model.addAttribute("takasCustodians", List.of());
         model.addAttribute("takasDataDate", null);
+    }
+
+    /**
+     * API'den borsa seans durumunu sorgular.
+     *
+     * <p>{@code /api/v1/chart/status} endpoint'inden {@code marketOpen} alanini okur.
+     * Hata durumunda guvenli varsayilan olarak {@code true} doner.</p>
+     *
+     * @return seans aciksa {@code true}, kapaliysa {@code false}
+     */
+    @SuppressWarnings("unchecked")
+    private boolean getMarketOpen() {
+        long now = System.currentTimeMillis();
+        if (now - cachedMarketOpenTime < MARKET_STATUS_CACHE_TTL_MS) {
+            return cachedMarketOpen;
+        }
+
+        try {
+            Map<String, Object> status = webClient.get()
+                    .uri("/api/v1/chart/status")
+                    .retrieve()
+                    .bodyToMono(Map.class)
+                    .block();
+            if (status != null && status.containsKey("marketOpen")) {
+                cachedMarketOpen = Boolean.TRUE.equals(status.get("marketOpen"));
+                cachedMarketOpenTime = now;
+                return cachedMarketOpen;
+            }
+        } catch (Exception e) {
+            log.warn("Market durumu alinamadi, varsayilan true: {}", e.getMessage());
+        }
+        return true;
     }
 
     /**

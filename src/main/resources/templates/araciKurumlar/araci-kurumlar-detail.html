@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta(${kurumTitle} + ' - Aracı Kurum Detay')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <!-- Breadcrumb -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0" th:text="${kurumTitle}">Kurum Adi</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a th:href="@{/dashboard}">Anasayfa</a></li>
+                        <li class="breadcrumb-item"><a th:href="@{/araci-kurumlar}">Araci Kurumlar</a></li>
+                        <li class="breadcrumb-item active" th:text="${kurumTitle}">Kurum</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kurum Header Card -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <!-- Logo with fallback avatar pattern -->
+                        <div class="flex-shrink-0 me-3">
+                            <div class="avatar-sm">
+                                <img th:if="${kurumLogoUrl != null and !kurumLogoUrl.isEmpty()}"
+                                     th:src="${kurumLogoUrl}"
+                                     class="rounded-circle img-fluid"
+                                     style="width:40px;height:40px;object-fit:contain"
+                                     alt="logo"
+                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                                <div class="avatar-title rounded-circle bg-light text-primary border"
+                                     th:style="'width:40px;height:40px;font-size:13px' + (${kurumLogoUrl != null and !kurumLogoUrl.isEmpty()} ? ';display:none' : '')"
+                                     th:text="${kurumShortTitle != null ? kurumShortTitle.substring(0, T(java.lang.Math).min(3, kurumShortTitle.length())).toUpperCase() : brokerageCode}">MLB</div>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1" th:text="${kurumTitle}">Kurum Adi</h5>
+                            <p class="text-muted mb-0">
+                                <span class="badge bg-primary-subtle text-primary me-2" th:text="${brokerageCode}">MLB</span>
+                                <span th:text="${stockCount} + ' hisse'">17 hisse</span>
+                                <span class="mx-1">·</span>
+                                <span th:text="${dataDate}">10 Mart 2026</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3 KPI Cards -->
+    <div class="row">
+        <!-- Toplam Alis Hacmi -->
+        <div class="col-xl-4 col-md-4">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Toplam Alis Hacmi</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4 text-success">
+                                <span class="volume-display" th:attr="data-volume=${totalBuyVolume}">-</span>
+                            </h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white rounded fs-3 border">
+                                <i class="ri-arrow-up-circle-line text-success"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toplam Satis Hacmi -->
+        <div class="col-xl-4 col-md-4">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Toplam Satis Hacmi</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4 text-danger">
+                                <span class="volume-display" th:attr="data-volume=${totalSellVolume}">-</span>
+                            </h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white rounded fs-3 border">
+                                <i class="ri-arrow-down-circle-line text-danger"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Net Hacim -->
+        <div class="col-xl-4 col-md-4">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Net Hacim</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:classappend="${totalNetVolume >= 0} ? 'text-success' : 'text-danger'">
+                                <span class="volume-display" th:attr="data-volume=${totalNetVolume}">-</span>
+                            </h4>
+
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white rounded fs-3 border">
+                                <i class="ri-funds-line"
+                                   th:classappend="${totalNetVolume >= 0} ? 'text-success' : 'text-danger'"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hisse Bazli AKD Tablosu -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1">Hisse Bazli Dagilim</h4>
+                    <div class="flex-shrink-0">
+                        <span class="badge bg-primary-subtle text-primary" th:text="${stockCount} + ' Hisse'">0 Hisse</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Empty state -->
+                    <div th:if="${#lists.isEmpty(stocks)}" class="text-center py-5">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                   colors="primary:#405189,secondary:#0ab39c" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Veri Bulunamadi</h5>
+                        <p class="text-muted mb-0">Bu kurum icin AKD verisi bulunmamaktadir.</p>
+                    </div>
+
+                    <!-- Data table -->
+                    <div th:if="${!#lists.isEmpty(stocks)}" class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="akdDetailTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="width:50px">#</th>
+                                    <th scope="col" class="sortable" data-sort="code">Hisse</th>
+                                    <th scope="col" class="sortable text-end" data-sort="buyVolume">Alis Hacmi</th>
+                                    <th scope="col" class="sortable text-end" data-sort="buyPercentage">Alis %</th>
+                                    <th scope="col" class="sortable text-end" data-sort="sellVolume">Satis Hacmi</th>
+                                    <th scope="col" class="sortable text-end" data-sort="sellPercentage">Satis %</th>
+                                    <th scope="col" class="sortable text-end" data-sort="netVolume">Net Hacim</th>
+                                    <th scope="col" class="sortable text-end" data-sort="netPercentage">Net %</th>
+                                    <th scope="col" class="sortable text-end" data-sort="totalVolume">Toplam Hacim</th>
+                                    <th scope="col" class="sortable text-end" data-sort="cost">Ort. Maliyet</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="stock, stat : ${stocks}">
+                                    <td th:text="${stat.index + 1}">1</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 avatar-xs me-2">
+                                                <img th:if="${stock.logoid != null and !stock.logoid.isEmpty()}"
+                                                     th:src="'/img/stock-logos/' + ${stock.logoid}"
+                                                     th:alt="${stock.code}"
+                                                     class="avatar-xs rounded-circle"
+                                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                                                <div th:style="'background:transparent;color:#495057;border:1.5px solid #ced4da;font-size:0.55rem' + (${stock.logoid != null and !stock.logoid.isEmpty()} ? ';display:none' : '')"
+                                                     class="avatar-title rounded-circle fw-semibold"
+                                                     th:text="${stock.code != null ? (stock.code.length() > 4 ? stock.code.substring(0, 4) : stock.code) : '?'}">THRN</div>
+                                            </div>
+                                            <a th:href="@{/stock/detail/{code}(code=${stock.code})}"
+                                               class="fw-medium text-body" th:text="${stock.code}">THYAO</a>
+                                        </div>
+                                    </td>
+                                    <td class="text-end volume-cell" th:attr="data-value=${stock.buyVolume}" th:text="${stock.buyVolume}">0</td>
+                                    <td class="text-end" th:attr="data-value=${stock.buyPercentage}"
+                                        th:text="${#numbers.formatDecimal(stock.buyPercentage, 1, 1)} + '%'">0%</td>
+                                    <td class="text-end volume-cell" th:attr="data-value=${stock.sellVolume}" th:text="${stock.sellVolume}">0</td>
+                                    <td class="text-end" th:attr="data-value=${stock.sellPercentage}"
+                                        th:text="${#numbers.formatDecimal(stock.sellPercentage, 1, 1)} + '%'">0%</td>
+                                    <td class="text-end volume-cell"
+                                        th:attr="data-value=${stock.netVolume}"
+                                        th:classappend="${stock.netVolume > 0 ? 'text-success fw-medium' : (stock.netVolume < 0 ? 'text-danger fw-medium' : '')}"
+                                        th:text="${stock.netVolume}">0</td>
+                                    <td class="text-end"
+                                        th:attr="data-value=${stock.netPercentage}"
+                                        th:classappend="${stock.netPercentage > 0 ? 'text-success' : (stock.netPercentage < 0 ? 'text-danger' : '')}"
+                                        th:text="${#numbers.formatDecimal(stock.netPercentage, 1, 1)} + '%'">0%</td>
+                                    <td class="text-end volume-cell fw-medium" th:attr="data-value=${stock.totalVolume}" th:text="${stock.totalVolume}">0</td>
+                                    <td class="text-end cost-cell" th:attr="data-value=${stock.cost}" th:text="${stock.cost}">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<th:block layout:fragment="pagejs">
+<style>
+    #akdDetailTable th.sortable { cursor: pointer; position: relative; padding-right: 20px !important; }
+    #akdDetailTable th.sortable::after { content: '\2195'; position: absolute; right: 6px; top: 50%; transform: translateY(-50%); opacity: 0.3; font-size: 12px; }
+    #akdDetailTable th.sortable.sorting_asc::after { content: '\2191'; opacity: 0.8; }
+    #akdDetailTable th.sortable.sorting_desc::after { content: '\2193'; opacity: 0.8; }
+</style>
+<script>
+(function() {
+    'use strict';
+
+    // Hacim formatlama (Turkce: Bin, Milyon, Milyar, Trilyon)
+    function formatVolume(value) {
+        var v = Math.abs(value);
+        var sign = value < 0 ? '-' : '';
+        if (v >= 1e12) return sign + (v / 1e12).toFixed(2) + ' Trilyon';
+        if (v >= 1e9) return sign + (v / 1e9).toFixed(2) + ' Milyar';
+        if (v >= 1e6) return sign + (v / 1e6).toFixed(2) + ' Milyon';
+        if (v >= 1e3) return sign + (v / 1e3).toFixed(1) + ' Bin';
+        return sign + v.toLocaleString('tr-TR');
+    }
+
+    // Maliyet formatlama (Turkce locale + TL)
+    function formatCost(value) {
+        var num = parseFloat(value);
+        if (isNaN(num)) return '-';
+        return num.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' \u20BA';
+    }
+
+    // Format volume cells
+    document.querySelectorAll('.volume-cell').forEach(function(cell) {
+        var value = parseFloat(cell.getAttribute('data-value'));
+        if (!isNaN(value)) {
+            cell.textContent = formatVolume(value);
+        }
+    });
+
+    // Format KPI volume displays
+    document.querySelectorAll('.volume-display').forEach(function(el) {
+        var value = parseFloat(el.getAttribute('data-volume'));
+        if (!isNaN(value)) {
+            el.textContent = formatVolume(value);
+        }
+    });
+
+    // Format cost cells
+    document.querySelectorAll('.cost-cell').forEach(function(cell) {
+        var value = cell.getAttribute('data-value');
+        if (value) {
+            cell.textContent = formatCost(value);
+        }
+    });
+
+    // Column sorting
+    var table = document.getElementById('akdDetailTable');
+    if (table) {
+        var headers = table.querySelectorAll('th.sortable');
+        var tbody = table.querySelector('tbody');
+        var currentSort = { col: null, asc: true };
+
+        headers.forEach(function(header) {
+            header.addEventListener('click', function() {
+                var sortKey = this.getAttribute('data-sort');
+                var colIndex = Array.from(this.parentElement.children).indexOf(this);
+                var asc = (currentSort.col === sortKey) ? !currentSort.asc : false; // default desc
+
+                var rows = Array.from(tbody.querySelectorAll('tr'));
+                rows.sort(function(a, b) {
+                    var aVal, bVal;
+                    if (sortKey === 'code') {
+                        var aEl = a.cells[colIndex].querySelector('a') || a.cells[colIndex];
+                        var bEl = b.cells[colIndex].querySelector('a') || b.cells[colIndex];
+                        aVal = aEl.textContent.trim().toLowerCase();
+                        bVal = bEl.textContent.trim().toLowerCase();
+                        return asc ? aVal.localeCompare(bVal, 'tr') : bVal.localeCompare(aVal, 'tr');
+                    } else {
+                        var aCellVal = a.cells[colIndex].getAttribute('data-value');
+                        var bCellVal = b.cells[colIndex].getAttribute('data-value');
+                        aVal = aCellVal ? parseFloat(aCellVal) : parseFloat(a.cells[colIndex].textContent.replace(/[^0-9.-]/g, ''));
+                        bVal = bCellVal ? parseFloat(bCellVal) : parseFloat(b.cells[colIndex].textContent.replace(/[^0-9.-]/g, ''));
+                        return asc ? aVal - bVal : bVal - aVal;
+                    }
+                });
+
+                rows.forEach(function(row, idx) {
+                    row.cells[0].textContent = idx + 1;
+                    tbody.appendChild(row);
+                });
+
+                // Update sort indicators
+                headers.forEach(function(h) { h.classList.remove('sorting_asc', 'sorting_desc'); });
+                this.classList.add(asc ? 'sorting_asc' : 'sorting_desc');
+                currentSort = { col: sortKey, asc: asc };
+            });
+        });
+    }
+
+})();
+</script>
+</th:block>
+</body>
+
+</html>

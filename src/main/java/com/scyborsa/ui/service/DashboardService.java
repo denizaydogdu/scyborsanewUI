@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class DashboardService {
                     .uri(ScyborsaApiEndpoints.DASHBOARD_SENTIMENT)
                     .retrieve()
                     .bodyToMono(DashboardSentimentDto.class)
-                    .block();
+                    .block(Duration.ofSeconds(10));
             return result != null ? result : emptySentiment();
         } catch (Exception e) {
             log.warn("[DASHBOARD-UI] Sentiment verileri alinamadi, fallback kullaniliyor", e);
@@ -71,7 +72,7 @@ public class DashboardService {
                     .retrieve()
                     .bodyToFlux(IndexPerformanceDto.class)
                     .collectList()
-                    .block();
+                    .block(Duration.ofSeconds(10));
             return result != null ? result : Collections.emptyList();
         } catch (Exception e) {
             log.warn("[DASHBOARD-UI] Index performance verileri alinamadi", e);

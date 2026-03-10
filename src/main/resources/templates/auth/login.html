@@ -113,7 +113,7 @@
                                         </div>
 
                                         <div class="mt-4">
-                                            <button class="btn btn-success w-100" type="submit">Giris Yap</button>
+                                            <button class="btn btn-success w-100" type="submit" id="loginBtn">Giriş Yap</button>
                                         </div>
                                     </form>
                                 </div>
@@ -156,6 +156,22 @@
         // Current year for footer
         var yearEl = document.getElementById('currentYear');
         if (yearEl) { yearEl.textContent = new Date().getFullYear(); }
+
+        // Login form submit — loading state
+        var loginForm = document.querySelector('form[action]');
+        var loginBtn = document.getElementById('loginBtn');
+        if (loginForm && loginBtn) {
+            loginForm.addEventListener('submit', function() {
+                loginBtn.disabled = true;
+                loginBtn.textContent = '';
+                var spinner = document.createElement('span');
+                spinner.className = 'spinner-border spinner-border-sm me-1';
+                spinner.setAttribute('role', 'status');
+                spinner.setAttribute('aria-hidden', 'true');
+                loginBtn.appendChild(spinner);
+                loginBtn.appendChild(document.createTextNode(' Giriş yapılıyor...'));
+            });
+        }
 
         // Password show/hide toggle
         var passwordAddon = document.getElementById('password-addon');

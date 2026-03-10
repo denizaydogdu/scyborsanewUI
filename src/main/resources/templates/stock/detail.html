@@ -73,11 +73,11 @@
                         </div>
                         <div class="flex-shrink-0 text-end">
                             <h4 class="mb-1">
-                                <span th:text="${#numbers.formatDecimal(stockPrice, 1, 2)} + ' TL'">150,20 TL</span>
+                                <span id="heroPrice" th:text="${#numbers.formatDecimal(stockPrice, 1, 2)} + ' TL'">150,20 TL</span>
                             </h4>
-                            <span th:class="${stockChangePercent >= 0 ? 'badge bg-success-subtle text-success' : 'badge bg-danger-subtle text-danger'}">
+                            <span id="heroChangeBadge" th:class="${stockChangePercent >= 0 ? 'badge bg-success-subtle text-success' : 'badge bg-danger-subtle text-danger'}">
                                 <i th:class="${stockChangePercent >= 0 ? 'ri-arrow-up-line' : 'ri-arrow-down-line'}"></i>
-                                <span th:text="${'%' + #numbers.formatDecimal(stockChangePercent, 1, 2)}">%2.35</span>
+                                <span id="heroChangePercent" th:text="${'%' + #numbers.formatDecimal(stockChangePercent, 1, 2)}">%2.35</span>
                             </span>
                             <p class="text-muted mb-0 mt-1">
                                 <span class="fw-medium">Hacim:</span>
@@ -97,8 +97,11 @@
                 <!-- Analiz Tablosu -->
                 <div id="stockAnaliz" class="me-3" style="width: 40%;">
                     <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title mb-0">Analiz</h4>
+                        <div class="card-header d-flex align-items-center">
+                            <h4 class="card-title mb-0">Analiz
+                                <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
+                            </h4>
+                            <i class="ri-information-line ms-2 text-muted fs-16" data-bs-toggle="tooltip" data-bs-placement="top" title="Teknik indikatörlerin özet skoru. Sayılara tıklayarak detaylı indikatör dökümünü görebilirsiniz."></i>
                         </div>
                         <div class="card-body">
                             <table class="table table-bordered">
@@ -135,8 +138,11 @@
                 <!-- Trend Yonu Gauge -->
                 <div id="stockChart" style="width: 60%;">
                     <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title mb-0">Trend Yonu</h4>
+                        <div class="card-header d-flex align-items-center">
+                            <h4 class="card-title mb-0">Trend Yonu
+                                <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
+                            </h4>
+                            <i class="ri-information-line ms-2 text-muted fs-16" data-bs-toggle="tooltip" data-bs-placement="top" title="Teknik indikatörlere göre kısa, orta ve uzun vadeli trend yönü. İbre yeşil bölgeye yakınsa alım, kırmızıya yakınsa satım sinyali verir."></i>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -160,32 +166,36 @@
         </div>
     </div>
 
-    <!-- TradingView Chart -->
+    <!-- Grafik (LightweightCharts) -->
     <div class="row">
         <div class="col-xxl-12">
             <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h4 class="card-title mb-0">Grafik
+                        <span id="chartMarketStatus" class="badge fs-11 ms-2"
+                              th:classappend="${marketOpen} ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'"
+                              th:text="${marketOpen} ? 'Seans Açık' : 'Seans Kapalı'">Seans Açık</span>
+                    </h4>
+                    <div class="btn-group btn-group-sm" role="group" id="chartPeriodSelector">
+                        <button type="button" class="btn btn-outline-primary" data-period="15">15dk</button>
+                        <button type="button" class="btn btn-primary active" data-period="30">30dk</button>
+                        <button type="button" class="btn btn-outline-primary" data-period="60">1sa</button>
+                        <button type="button" class="btn btn-outline-primary" data-period="240">4sa</button>
+                        <button type="button" class="btn btn-outline-primary" data-period="D">Günlük</button>
+                        <button type="button" class="btn btn-outline-primary" data-period="W">Haftalık</button>
+                    </div>
+                </div>
                 <div class="card-body p-0">
-                    <div style="height: calc(100vh - 400px); min-height: 400px;">
-                        <div style="height: 100%; width: 100%;">
-                            <div class="tradingview-widget-container" style="height: 100%; width: 100%;">
-                                <div class="tradingview-widget-container__widget" style="height: 100%; width: 100%;"></div>
-                                <script type="text/javascript"
-                                        src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js"
-                                        async
-                                        th:inline="javascript">
-                                    {
-                                        "autosize": true,
-                                        "symbol": /*[['BIST:' + ${stockId}]]*/ "BIST:THYAO",
-                                        "interval": "D",
-                                        "timezone": "Etc/UTC",
-                                        "theme": "light",
-                                        "style": "1",
-                                        "locale": "tr",
-                                        "allow_symbol_change": false,
-                                        "calendar": false,
-                                        "support_host": "https://www.tradingview.com"
-                                    }
-                                </script>
+                    <div id="chartContainer"
+                         style="height: calc(100vh - 400px); min-height: 400px; position: relative;">
+                        <div id="chartLoading" style="position:absolute;inset:0;z-index:10;
+                             background:rgba(255,255,255,0.9);display:flex;align-items:center;
+                             justify-content:center;">
+                            <div class="text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Yükleniyor...</span>
+                                </div>
+                                <p class="text-muted mt-3 mb-0">Grafik yükleniyor...</p>
                             </div>
                         </div>
                     </div>
@@ -199,7 +209,10 @@
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0">Teknik Gostergeler</h4>
+                    <h4 class="card-title mb-0">Teknik Gostergeler
+                        <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
+                    </h4>
+                    <i class="ri-information-line ms-2 text-muted fs-16" data-bs-toggle="tooltip" data-bs-placement="top" title="Her periyot için hesaplanan teknik indikatör değerleri. Al/Sat/Nötr sinyalleri gösterilir."></i>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive table-card">
@@ -207,16 +220,16 @@
                             <thead class="table-light">
                             <tr>
                                 <th scope="col">Fiyat</th>
-                                <th scope="col">RSI</th>
-                                <th scope="col">MACD</th>
-                                <th scope="col">MOM</th>
-                                <th scope="col">ADX14</th>
-                                <th scope="col">EMA20</th>
-                                <th scope="col">EMA50</th>
-                                <th scope="col">SMA50</th>
-                                <th scope="col">SMA200</th>
-                                <th scope="col">Ichimoku</th>
-                                <th scope="col">HULLMA</th>
+                                <th scope="col">RSI <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;Göreceli Güç Endeksi&lt;/b&gt;&lt;br&gt;0-100 arası salınır.&lt;br&gt;&gt;70: Aşırı Alım (SAT sinyali)&lt;br&gt;&lt;30: Aşırı Satım (AL sinyali)&lt;br&gt;30-70: Nötral bölge"></i></th>
+                                <th scope="col">MACD <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;Hareketli Ort. Yakınsama/Iraksama&lt;/b&gt;&lt;br&gt;Level &gt; Signal: Yükseliş trendi&lt;br&gt;Level &lt; Signal: Düşüş trendi&lt;br&gt;Kesişim anları alım/satım sinyalidir"></i></th>
+                                <th scope="col">MOM <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;Momentum&lt;/b&gt;&lt;br&gt;Fiyat değişim hızını ölçer.&lt;br&gt;&gt;0: Yukarı ivme (yükseliş)&lt;br&gt;&lt;0: Aşağı ivme (düşüş)"></i></th>
+                                <th scope="col">ADX14 <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;Ortalama Yönsel Endeks&lt;/b&gt;&lt;br&gt;Trendin gücünü ölçer (yön göstermez).&lt;br&gt;&gt;25: Güçlü trend&lt;br&gt;&lt;25: Zayıf trend / yatay piyasa"></i></th>
+                                <th scope="col">EMA20 <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;20 Günlük Üssel Hareketli Ort.&lt;/b&gt;&lt;br&gt;Kısa vadeli trend göstergesi.&lt;br&gt;Fiyat üzerinde: Yükseliş&lt;br&gt;Fiyat altında: Düşüş"></i></th>
+                                <th scope="col">EMA50 <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;50 Günlük Üssel Hareketli Ort.&lt;/b&gt;&lt;br&gt;Orta vadeli trend göstergesi.&lt;br&gt;Fiyat üzerinde: Yükseliş&lt;br&gt;Fiyat altında: Düşüş"></i></th>
+                                <th scope="col">SMA50 <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;50 Günlük Basit Hareketli Ort.&lt;/b&gt;&lt;br&gt;Orta vadeli destek/direnç seviyesi.&lt;br&gt;Fiyat üzerinde: Yükseliş&lt;br&gt;Fiyat altında: Düşüş"></i></th>
+                                <th scope="col">SMA200 <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;200 Günlük Basit Hareketli Ort.&lt;/b&gt;&lt;br&gt;Uzun vadeli ana trend göstergesi.&lt;br&gt;Fiyat üzerinde: Boğa piyasası&lt;br&gt;Fiyat altında: Ayı piyasası"></i></th>
+                                <th scope="col">Ichimoku <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;Ichimoku Bulutu&lt;/b&gt;&lt;br&gt;CLine (Tenkan): Kısa vadeli denge&lt;br&gt;BLine (Kijun): Orta vadeli denge&lt;br&gt;Fiyat her ikisinin üstünde: Yükseliş&lt;br&gt;Fiyat her ikisinin altında: Düşüş"></i></th>
+                                <th scope="col">HULLMA <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;Hull Hareketli Ortalama&lt;/b&gt;&lt;br&gt;Gecikmeyi azaltan hızlı MA.&lt;br&gt;Fiyat üzerinde: Yükseliş&lt;br&gt;Fiyat altında: Düşüş&lt;br&gt;Trend dönüşlerini erken yakalar"></i></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -352,7 +365,9 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex align-items-center">
-                    <h5 class="card-title mb-0 flex-grow-1">Analist Tavsiyeleri</h5>
+                    <h5 class="card-title mb-0 flex-grow-1">Analist Tavsiyeleri
+                        <i class="ri-information-line ms-1 text-muted fs-14" data-bs-toggle="tooltip" data-bs-placement="top" title="Aracı kurum analistlerinin bu hisse için verdiği al/tut/sat tavsiyeleri ve hedef fiyatları."></i>
+                    </h5>
                     <div class="flex-shrink-0">
                         <span class="badge bg-primary-subtle text-primary me-1" th:text="${toplamTavsiye + ' Tavsiye'}">12 Tavsiye</span>
                         <span class="badge bg-success-subtle text-success me-1" th:text="${alSayisi + ' Al'}">8 Al</span>
@@ -423,6 +438,7 @@
                     <h4 class="card-title mb-0">AKD
                         <small th:if="${akdDataDate != null}" class="text-muted fw-normal fs-6"
                                th:text="' - ' + ${akdDataDate}"></small>
+                        <i class="ri-information-line ms-2 text-muted fs-14" data-bs-toggle="tooltip" data-bs-placement="top" title="Açığa Satış ve Kredili İşlem Dağılımı. Aracı kurumlara göre açık pozisyon miktarlarını gösterir."></i>
                     </h4>
                 </div>
                 <div class="card-body">
@@ -537,6 +553,7 @@
                     <h4 class="card-title mb-0">Takas (Saklama Dağılımı)
                         <small th:if="${takasDataDate != null}" class="text-muted fw-normal fs-6"
                                th:text="' - ' + ${takasDataDate}"></small>
+                        <i class="ri-information-line ms-2 text-muted fs-14" data-bs-toggle="tooltip" data-bs-placement="top" title="Takasbank saklama dağılımı. Yerli/yabancı yatırımcı oranları ve kurum bazlı saklama miktarlarını gösterir."></i>
                     </h4>
                 </div>
                 <div class="card-body">
@@ -608,6 +625,23 @@
     </script>
 
     <script th:src="@{/assets/js/pages/stock_detail_gauge_component.js}"></script>
+
+    <!-- LightweightCharts v4.1.3 -->
+    <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+    <!-- StompJS v7 -->
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <!-- SockJS -->
+    <script th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
+    <!-- Chart symbol + API base + market status injection -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.STOCK_CHART_SYMBOL = /*[[${stockId}]]*/ 'THYAO';
+        window.STOCK_CHART_API_BASE = 'http://localhost:8081';
+        window.MARKET_OPEN = /*[[${marketOpen}]]*/ true;
+        /*]]>*/
+    </script>
+    <!-- Chart modülü -->
+    <script th:src="@{/js/stock-chart.js}"></script>
 
     <script>
         var indicatorDescriptions = {
@@ -712,6 +746,11 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Tüm tooltip'leri aktifle (card header info ikonları + teknik göstergeler tablosu)
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
+                new bootstrap.Tooltip(el);
+            });
+
             var modal = document.getElementById('indicatorDetailsModal');
             modal.addEventListener('hidden.bs.modal', function() {
                 // Tooltip'leri temizle

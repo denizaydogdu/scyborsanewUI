@@ -178,6 +178,12 @@ public final class ScyborsaApiEndpoints {
     /** Hisse bazlı AKD (Aracı Kurum Dağılımı) endpoint'i. {@code {stockCode}} path variable içerir. */
     public static final String STOCK_AKD = "/api/v1/stock/{stockCode}/akd";
 
+    /** Aracı kurum piyasa geneli AKD dağılım listesi endpoint'i. */
+    public static final String ARACI_KURUMLAR_AKD_LIST = "/api/v1/araci-kurumlar/akd-list";
+
+    /** Aracı kurum hisse bazlı AKD detay endpoint'i. {@code {code}} path variable içerir. */
+    public static final String ARACI_KURUM_AKD_DETAIL = "/api/v1/araci-kurumlar/{code}/akd-detail";
+
     // ── Takas (Saklama Dağılımı) ──────────────────────────
 
     /** Hisse bazlı Takas (Saklama Dağılımı) endpoint'i. {@code {stockCode}} path variable içerir. */

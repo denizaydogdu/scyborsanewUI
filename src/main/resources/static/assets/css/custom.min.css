@@ -16,4 +16,10 @@
     border-radius: 4px;
 }
 
+/* Teknik gostergeler tablo baslik info ikonu */
+.indicator-info {
+    font-size: 13px;
+    cursor: pointer;
+}
+
 /*# sourceMappingURL=custom.min.css.map */

@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
+
 /**
  * Authentication servis sinifi.
  *
@@ -43,7 +45,7 @@ public class AuthService {
                     .uri(ScyborsaApiEndpoints.AUTH_LOGIN)
                     .bodyValue(new LoginRequestDto(email, password))
                     .exchangeToMono(response -> response.bodyToMono(LoginResponseDto.class))
-                    .block();
+                    .block(Duration.ofSeconds(10));
             return result != null ? result : failResponse("API yanıt vermedi");
         } catch (Exception e) {
             log.error("[AUTH-UI] API bağlantı hatası", e);
