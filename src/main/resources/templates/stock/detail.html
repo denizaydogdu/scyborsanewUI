@@ -91,7 +91,7 @@
     </div>
 
     <!-- Analiz + Trend Yonu -->
-    <div class="row mb-4">
+    <div class="row mb-4" th:if="${hasAnalysisData}">
         <div class="col-12">
             <div class="d-flex">
                 <!-- Analiz Tablosu -->
@@ -99,7 +99,7 @@
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
                             <h4 class="card-title mb-0">Analiz
-                                <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
+                                <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarihFull}"></small>
                             </h4>
                             <i class="ri-information-line ms-2 text-muted fs-16" data-bs-toggle="tooltip" data-bs-placement="top" title="Teknik indikatörlerin özet skoru. Sayılara tıklayarak detaylı indikatör dökümünü görebilirsiniz."></i>
                         </div>
@@ -140,7 +140,7 @@
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
                             <h4 class="card-title mb-0">Trend Yonu
-                                <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
+                                <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarihFull}"></small>
                             </h4>
                             <i class="ri-information-line ms-2 text-muted fs-16" data-bs-toggle="tooltip" data-bs-placement="top" title="Teknik indikatörlere göre kısa, orta ve uzun vadeli trend yönü. İbre yeşil bölgeye yakınsa alım, kırmızıya yakınsa satım sinyali verir."></i>
                         </div>
@@ -172,6 +172,7 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h4 class="card-title mb-0">Grafik
+                        <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
                         <span id="chartMarketStatus" class="badge fs-11 ms-2"
                               th:classappend="${marketOpen} ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'"
                               th:text="${marketOpen} ? 'Seans Açık' : 'Seans Kapalı'">Seans Açık</span>
@@ -205,7 +206,7 @@
     </div>
 
     <!-- Teknik Gostergeler Tablosu -->
-    <div class="row">
+    <div class="row" th:if="${NO_TIME != null and NO_TIME.data != null and !NO_TIME.data.isEmpty()}">
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-header align-items-center d-flex">
@@ -366,6 +367,7 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="card-title mb-0 flex-grow-1">Analist Tavsiyeleri
+                        <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarihFull}"></small>
                         <i class="ri-information-line ms-1 text-muted fs-14" data-bs-toggle="tooltip" data-bs-placement="top" title="Aracı kurum analistlerinin bu hisse için verdiği al/tut/sat tavsiyeleri ve hedef fiyatları."></i>
                     </h5>
                     <div class="flex-shrink-0">
@@ -431,13 +433,13 @@
     </div>
 
     <!-- AKD Tablosu -->
-    <div class="row mb-4">
+    <div class="row mb-4" th:if="${hasAkdData}">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title mb-0">AKD
                         <small th:if="${akdDataDate != null}" class="text-muted fw-normal fs-6"
-                               th:text="' - ' + ${akdDataDate}"></small>
+                               th:text="' - ' + ${teknikTarihFull}"></small>
                         <i class="ri-information-line ms-2 text-muted fs-14" data-bs-toggle="tooltip" data-bs-placement="top" title="Açığa Satış ve Kredili İşlem Dağılımı. Aracı kurumlara göre açık pozisyon miktarlarını gösterir."></i>
                     </h4>
                 </div>
@@ -546,13 +548,13 @@
     </div>
 
     <!-- Takas Tablosu -->
-    <div class="row mb-4">
+    <div class="row mb-4" th:if="${hasTakasData}">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title mb-0">Takas (Saklama Dağılımı)
                         <small th:if="${takasDataDate != null}" class="text-muted fw-normal fs-6"
-                               th:text="' - ' + ${takasDataDate}"></small>
+                               th:text="' - ' + ${teknikTarihFull}"></small>
                         <i class="ri-information-line ms-2 text-muted fs-14" data-bs-toggle="tooltip" data-bs-placement="top" title="Takasbank saklama dağılımı. Yerli/yabancı yatırımcı oranları ve kurum bazlı saklama miktarlarını gösterir."></i>
                     </h4>
                 </div>
@@ -590,6 +592,116 @@
                                 </tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emir Defteri — Split Orderbook -->
+    <div class="row mb-4" th:if="${hasOrderbookData}">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">Emir Defteri
+                        <span th:if="${orderbookCount != null and orderbookCount > 0}"
+                              class="badge bg-primary-subtle text-primary ms-2"
+                              th:text="${orderbookCount + ' işlem'}"></span>
+                        <small th:if="${teknikTarih != null}" class="text-muted fw-normal fs-6"
+                               th:text="' - ' + ${teknikTarihFull}"></small>
+                        <i class="ri-information-line ms-2 text-muted fs-14" data-bs-toggle="tooltip" data-bs-placement="top" title="Hisse senedinin son emir defteri işlemleri. Alış emirleri solda (yeşil), satış emirleri sağda (kırmızı) gösterilir."></i>
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <!-- ALIŞ (Sol Taraf — Yeşil) -->
+                        <div class="col-md-6" style="border-right: 2px solid #e9ebec;">
+                            <div class="px-3 py-2 d-flex align-items-center justify-content-between" style="background-color: rgba(10,179,156,0.08);">
+                                <span class="fw-semibold text-success"><i class="ri-arrow-up-line me-1"></i>Alış</span>
+                                <span th:if="${orderbookAlisCount != null and orderbookAlisCount > 0}"
+                                      class="badge bg-success-subtle text-success"
+                                      th:text="${orderbookAlisCount}"></span>
+                            </div>
+                            <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+                                <table class="table table-hover align-middle mb-0 table-sm">
+                                    <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                                    <tr>
+                                        <th class="ps-3" style="width: 70px;">Saat</th>
+                                        <th>Kurum</th>
+                                        <th class="text-end" style="width: 90px;">Fiyat</th>
+                                        <th class="text-end pe-3" style="width: 70px;">Lot</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="tx : ${orderbookAlislar}">
+                                        <td class="ps-3 text-muted" style="font-size: 0.8rem;" th:text="${tx.time}">12:30:45</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img th:if="${tx.buyerLogoUrl != null and !tx.buyerLogoUrl.isEmpty()}"
+                                                     th:src="${tx.buyerLogoUrl}"
+                                                     width="18" height="18"
+                                                     class="rounded-circle me-1"
+                                                     alt="logo"
+                                                     onerror="this.style.display='none'"/>
+                                                <span th:text="${tx.buyerShortTitle}" class="text-truncate" style="max-width: 100px; font-size: 0.85rem;">Kurum</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-end fw-medium text-success" th:text="${#numbers.formatDecimal(tx.price, 1, 2)}">139.90</td>
+                                        <td class="text-end pe-3" th:text="${#numbers.formatInteger(tx.lot, 1, 'POINT')}">7</td>
+                                    </tr>
+                                    <tr th:if="${orderbookAlislar == null or orderbookAlislar.isEmpty()}">
+                                        <td colspan="4" class="text-center text-muted py-4">
+                                            <i class="ri-information-line me-1"></i>Alış emri bulunamadı
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- SATIŞ (Sağ Taraf — Kırmızı) -->
+                        <div class="col-md-6">
+                            <div class="px-3 py-2 d-flex align-items-center justify-content-between" style="background-color: rgba(240,101,72,0.08);">
+                                <span class="fw-semibold text-danger"><i class="ri-arrow-down-line me-1"></i>Satış</span>
+                                <span th:if="${orderbookSatisCount != null and orderbookSatisCount > 0}"
+                                      class="badge bg-danger-subtle text-danger"
+                                      th:text="${orderbookSatisCount}"></span>
+                            </div>
+                            <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+                                <table class="table table-hover align-middle mb-0 table-sm">
+                                    <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                                    <tr>
+                                        <th class="ps-3" style="width: 70px;">Saat</th>
+                                        <th>Kurum</th>
+                                        <th class="text-end" style="width: 90px;">Fiyat</th>
+                                        <th class="text-end pe-3" style="width: 70px;">Lot</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="tx : ${orderbookSatislar}">
+                                        <td class="ps-3 text-muted" style="font-size: 0.8rem;" th:text="${tx.time}">12:30:45</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img th:if="${tx.sellerLogoUrl != null and !tx.sellerLogoUrl.isEmpty()}"
+                                                     th:src="${tx.sellerLogoUrl}"
+                                                     width="18" height="18"
+                                                     class="rounded-circle me-1"
+                                                     alt="logo"
+                                                     onerror="this.style.display='none'"/>
+                                                <span th:text="${tx.sellerShortTitle}" class="text-truncate" style="max-width: 100px; font-size: 0.85rem;">Kurum</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-end fw-medium text-danger" th:text="${#numbers.formatDecimal(tx.price, 1, 2)}">139.90</td>
+                                        <td class="text-end pe-3" th:text="${#numbers.formatInteger(tx.lot, 1, 'POINT')}">7</td>
+                                    </tr>
+                                    <tr th:if="${orderbookSatislar == null or orderbookSatislar.isEmpty()}">
+                                        <td colspan="4" class="text-center text-muted py-4">
+                                            <i class="ri-information-line me-1"></i>Satış emri bulunamadı
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

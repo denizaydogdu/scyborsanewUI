@@ -2,6 +2,7 @@ package com.scyborsa.ui.service;
 
 import com.scyborsa.ui.constants.ScyborsaApiEndpoints;
 import com.scyborsa.ui.dto.AkdResponseDto;
+import com.scyborsa.ui.dto.OrderbookResponseDto;
 import com.scyborsa.ui.dto.TakasResponseDto;
 import com.scyborsa.ui.dto.TvScreenerResponseModel;
 import lombok.extern.slf4j.Slf4j;
@@ -101,6 +102,28 @@ public class StockDetailService {
             log.error("Takas verisi alinamadi: {} - {}", stockCode, e.getMessage());
             TakasResponseDto empty = new TakasResponseDto();
             empty.setCustodians(List.of());
+            return empty;
+        }
+    }
+
+    /**
+     * Hisse bazlı emir defteri (orderbook) verilerini API'den getirir.
+     *
+     * @param stockCode hisse kodu (ör: "GARAN")
+     * @return emir defteri verileri veya hata durumunda boş response
+     */
+    public OrderbookResponseDto getOrderbookData(String stockCode) {
+        try {
+            return webClient.get()
+                    .uri(ScyborsaApiEndpoints.STOCK_ORDERBOOK, stockCode)
+                    .retrieve()
+                    .bodyToMono(OrderbookResponseDto.class)
+                    .block();
+        } catch (Exception e) {
+            log.error("Orderbook verisi alınamadı: {} - {}", stockCode, e.getMessage());
+            OrderbookResponseDto empty = new OrderbookResponseDto();
+            empty.setTransactions(List.of());
+            empty.setTotalCount(0);
             return empty;
         }
     }

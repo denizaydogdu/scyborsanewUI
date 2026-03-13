@@ -24,19 +24,35 @@
                         <table class="table table-striped align-middle mb-0">
                             <thead>
                             <tr>
-                                <th style="width: 200px;">Zaman</th>
+                                <th style="width: 180px;">Zaman</th>
+                                <th style="width: 100px;">Kaynak</th>
                                 <th>Baslik</th>
+                                <th style="width: 150px;">Hisse</th>
                                 <th style="width: 80px;">Detay</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:each="item : ${kapNewsResponse != null ? kapNewsResponse.items : {}}">
                                 <td>
-                                    <span class="text-muted" th:text="${item.formattedPublished}">03 Mart 2026 14:30</span>
+                                    <span class="text-muted fs-12" th:text="${item.formattedPublished}">03 Mart 2026 14:30</span>
+                                </td>
+                                <td>
+                                    <span th:if="${item.source != null}"
+                                          th:text="${item.source}"
+                                          th:classappend="${item.source == 'KAP (Fintables)' ? 'badge bg-info-subtle text-info' : 'badge bg-secondary-subtle text-secondary'}">
+                                    </span>
                                 </td>
                                 <td th:text="${item.title}">Haber Basligi</td>
                                 <td>
-                                    <a th:if="${item.id != null}" th:href="@{/haber/{id}(id=${item.id})}"
+                                    <th:block th:if="${item.relatedSymbols != null}">
+                                        <span th:each="sym,iter : ${item.relatedSymbols}" th:if="${iter.index < 3}"
+                                              class="badge bg-primary-subtle text-primary me-1"
+                                              th:text="${sym.symbol != null and sym.symbol.contains(':') ? sym.symbol.substring(sym.symbol.indexOf(':') + 1) : sym.symbol}">
+                                        </span>
+                                    </th:block>
+                                </td>
+                                <td>
+                                    <a th:if="${item.storyPath != null}" th:href="@{/haber/{id}(id=${item.id})}"
                                        class="btn btn-sm btn-soft-primary">
                                         <i class="ri-eye-line"></i>
                                     </a>

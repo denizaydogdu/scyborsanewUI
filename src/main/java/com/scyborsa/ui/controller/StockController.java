@@ -2,6 +2,7 @@ package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.AkdResponseDto;
 import com.scyborsa.ui.dto.AnalistTavsiyeDto;
+import com.scyborsa.ui.dto.OrderbookResponseDto;
 import com.scyborsa.ui.dto.TakasResponseDto;
 import com.scyborsa.ui.dto.SectorStockDto;
 import com.scyborsa.ui.dto.TvScreenerResponseModel;
@@ -178,6 +179,13 @@ public class StockController {
             model.addAttribute("analysisMap", analysisMap);
             model.addAttribute("stockId", stockId);
 
+            // NO_TIME periyodu response'da yoksa boş model ekle (th:each NPE önlemi)
+            if (!model.containsAttribute("NO_TIME")) {
+                TvScreenerResponseModel emptyModel = new TvScreenerResponseModel();
+                emptyModel.setData(new ArrayList<>());
+                model.addAttribute("NO_TIME", emptyModel);
+            }
+
             // Gauge sinyallerini analysisMap greenCount'tan hesapla
             Map<String, Object> period15M = analysisMap.get("15M");
             Map<String, Object> period4H = analysisMap.get("4H");
@@ -209,6 +217,20 @@ public class StockController {
             }
         }
 
+        // Teknik analiz verisi var mi kontrolu
+        @SuppressWarnings("unchecked")
+        Map<String, Map<String, Object>> aMap = (Map<String, Map<String, Object>>) model.getAttribute("analysisMap");
+        boolean hasAnalysisData = false;
+        if (aMap != null) {
+            hasAnalysisData = aMap.values().stream()
+                    .anyMatch(p -> {
+                        int green = (int) p.getOrDefault("greenCount", 0);
+                        int red = (int) p.getOrDefault("redCount", 0);
+                        return green > 0 || red > 0;
+                    });
+        }
+        model.addAttribute("hasAnalysisData", hasAnalysisData);
+
         // Hero header: hisse bilgilerini yukle
         loadStockInfo(stockId, model);
 
@@ -221,11 +243,18 @@ public class StockController {
         // Takas verileri yukle
         loadTakasData(stockId, model);
 
+        // Emir defteri verileri yukle
+        loadOrderbookData(stockId, model);
+
         // Market durumu yukle
         model.addAttribute("marketOpen", getMarketOpen());
 
-        // Teknik veri tarihi (bugün)
-        model.addAttribute("teknikTarih", LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+        // Teknik veri tarihi + gün adı + son güncelleme saati (ör: "11 Mart 2026 / Çarşamba / 17:30")
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        String teknikTarihFull = now.format(DateTimeFormatter.ofPattern("d MMMM yyyy / EEEE / HH:mm", new Locale("tr", "TR")));
+        model.addAttribute("teknikTarihFull", teknikTarihFull);
+        // Kısa format (dd.MM.yyyy) — grafik kartı için
+        model.addAttribute("teknikTarih", now.toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
 
         return "stock/detail";
     }
@@ -398,6 +427,9 @@ public class StockController {
                 model.addAttribute("akdSaticilar", akd.getSaticilar() != null ? akd.getSaticilar() : List.of());
                 model.addAttribute("akdToplam", akd.getToplam() != null ? akd.getToplam() : List.of());
                 model.addAttribute("akdDataDate", akd.getFormattedDataDate());
+                boolean hasAkdData = (akd.getAlicilar() != null && !akd.getAlicilar().isEmpty())
+                        || (akd.getSaticilar() != null && !akd.getSaticilar().isEmpty());
+                model.addAttribute("hasAkdData", hasAkdData);
             } else {
                 setDefaultAkdData(model);
             }
@@ -417,6 +449,7 @@ public class StockController {
         model.addAttribute("akdSaticilar", List.of());
         model.addAttribute("akdToplam", List.of());
         model.addAttribute("akdDataDate", null);
+        model.addAttribute("hasAkdData", false);
     }
 
     /**
@@ -431,6 +464,7 @@ public class StockController {
             if (takas != null && takas.getCustodians() != null) {
                 model.addAttribute("takasCustodians", takas.getCustodians());
                 model.addAttribute("takasDataDate", takas.getFormattedDataDate());
+                model.addAttribute("hasTakasData", takas.getCustodians() != null && !takas.getCustodians().isEmpty());
             } else {
                 setDefaultTakasData(model);
             }
@@ -448,6 +482,57 @@ public class StockController {
     private void setDefaultTakasData(Model model) {
         model.addAttribute("takasCustodians", List.of());
         model.addAttribute("takasDataDate", null);
+        model.addAttribute("hasTakasData", false);
+    }
+
+    /**
+     * Emir defteri (orderbook) verilerini yükler ve model'e ekler.
+     *
+     * @param stockId hisse kodu
+     * @param model   Thymeleaf model
+     */
+    private void loadOrderbookData(String stockId, Model model) {
+        try {
+            OrderbookResponseDto orderbook = stockDetailService.getOrderbookData(stockId);
+            if (orderbook != null && orderbook.getTransactions() != null
+                    && !orderbook.getTransactions().isEmpty()) {
+                List<OrderbookResponseDto.OrderbookTransactionDto> all = orderbook.getTransactions();
+
+                List<OrderbookResponseDto.OrderbookTransactionDto> alisIslemleri = all.stream()
+                        .filter(t -> "B".equals(t.getAction()))
+                        .collect(Collectors.toList());
+
+                List<OrderbookResponseDto.OrderbookTransactionDto> satisIslemleri = all.stream()
+                        .filter(t -> "S".equals(t.getAction()))
+                        .collect(Collectors.toList());
+
+                model.addAttribute("orderbookAlislar", alisIslemleri);
+                model.addAttribute("orderbookSatislar", satisIslemleri);
+                model.addAttribute("orderbookAlisCount", alisIslemleri.size());
+                model.addAttribute("orderbookSatisCount", satisIslemleri.size());
+                model.addAttribute("orderbookCount", orderbook.getTotalCount());
+                model.addAttribute("hasOrderbookData", true);
+            } else {
+                setDefaultOrderbookData(model);
+            }
+        } catch (Exception e) {
+            log.warn("Orderbook verisi yüklenemedi: {} - {}", stockId, e.getMessage());
+            setDefaultOrderbookData(model);
+        }
+    }
+
+    /**
+     * Boş emir defteri verilerini model'e ekler (hata durumu için).
+     *
+     * @param model Thymeleaf model
+     */
+    private void setDefaultOrderbookData(Model model) {
+        model.addAttribute("orderbookAlislar", List.of());
+        model.addAttribute("orderbookSatislar", List.of());
+        model.addAttribute("orderbookAlisCount", 0);
+        model.addAttribute("orderbookSatisCount", 0);
+        model.addAttribute("orderbookCount", 0);
+        model.addAttribute("hasOrderbookData", false);
     }
 
     /**

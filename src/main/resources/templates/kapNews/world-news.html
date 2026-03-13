@@ -24,7 +24,8 @@
                         <table class="table table-striped align-middle mb-0">
                             <thead>
                             <tr>
-                                <th style="width: 200px;">Zaman</th>
+                                <th style="width: 180px;">Zaman</th>
+                                <th style="width: 100px;">Kaynak</th>
                                 <th>Baslik</th>
                                 <th style="width: 80px;">Detay</th>
                             </tr>
@@ -32,11 +33,17 @@
                             <tbody>
                             <tr th:each="item : ${worldNewsResponse != null ? worldNewsResponse.items : {}}">
                                 <td>
-                                    <span class="text-muted" th:text="${item.formattedPublished}">03 Mart 2026 14:30</span>
+                                    <span class="text-muted fs-12" th:text="${item.formattedPublished}">03 Mart 2026 14:30</span>
+                                </td>
+                                <td>
+                                    <span th:if="${item.source != null}"
+                                          th:text="${item.source}"
+                                          th:classappend="${item.source == 'Makro' ? 'badge bg-info-subtle text-info' : 'badge bg-secondary-subtle text-secondary'}">
+                                    </span>
                                 </td>
                                 <td th:text="${item.title}">Haber Basligi</td>
                                 <td>
-                                    <a th:if="${item.id != null}" th:href="@{/haber/{id}(id=${item.id})}"
+                                    <a th:if="${item.storyPath != null}" th:href="@{/haber/{id}(id=${item.id})}"
                                        class="btn btn-sm btn-soft-primary">
                                         <i class="ri-eye-line"></i>
                                     </a>
