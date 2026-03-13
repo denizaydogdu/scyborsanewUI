@@ -48,9 +48,13 @@ public class AnalistTavsiyeDto {
     @AllArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class BrokerageInfo {
+        /** Araci kurum kodu. */
         private String code;
+        /** Araci kurum tam adi. */
         private String title;
+        /** Araci kurum logo URL'i. */
         private String logo;
+        /** Araci kurum kisa adi. */
         private String shortTitle;
     }
 
@@ -62,6 +66,7 @@ public class AnalistTavsiyeDto {
     @AllArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class AttachmentInfo {
+        /** Ek dosya ID'si. */
         private Integer id;
         /** PDF dosya URL'i. */
         private String file;
