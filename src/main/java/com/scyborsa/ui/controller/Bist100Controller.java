@@ -32,6 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Bist100Controller {
 
+    /** BIST endeks hisse verilerini saglayan servis. */
     private final Bist100Service bist100Service;
 
     /**

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequiredArgsConstructor
 public class KapNewsController {
 
+    /** KAP ve piyasa haberleri saglayan servis. */
     private final KapNewsService kapNewsService;
 
     /**

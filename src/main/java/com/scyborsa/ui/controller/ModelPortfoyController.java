@@ -23,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ModelPortfoyController {
 
+    /** Model portfoy verilerini saglayan servis. */
     private final ModelPortfoyService modelPortfoyService;
 
     /**

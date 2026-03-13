@@ -23,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HomeController {
 
+    /** Dashboard verilerini saglayan servis. */
     private final DashboardService dashboardService;
 
     /**

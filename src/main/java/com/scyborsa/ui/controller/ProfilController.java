@@ -26,6 +26,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class ProfilController {
 
+    /** Kullanici profil islemlerini saglayan servis. */
     private final ProfilService profilService;
 
     /**

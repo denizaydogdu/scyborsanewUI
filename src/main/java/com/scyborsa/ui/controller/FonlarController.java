@@ -32,6 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FonlarController {
 
+    /** Fon verilerini saglayan servis. */
     private final FonlarService fonlarService;
 
     /**

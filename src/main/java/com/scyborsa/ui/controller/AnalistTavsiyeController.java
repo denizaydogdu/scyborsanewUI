@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AnalistTavsiyeController {
 
+    /** Analist tavsiye verilerini saglayan servis. */
     private final AnalistTavsiyeService analistTavsiyeService;
     /** Hisse logoid haritasi icin BIST servis bagimliligi. */
     private final Bist100Service bist100Service;

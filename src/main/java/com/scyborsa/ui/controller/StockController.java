@@ -44,23 +44,29 @@ import java.util.stream.Collectors;
 @Controller
 public class StockController {
 
+    /** Desteklenen 11 indikator adi (T3, SuperTrend, EWO, vb.). */
     private static final String[] INDICATOR_NAMES = {
             "T3", "SuperTrend", "EWO", "Squeeze Mom.", "WaveTrend",
             "SALMA", "CVD", "Twin Range", "MA Alignment", "Trend Follower", "Madrid Ribbon"
     };
-    // plot16=TDS (composite) atlanir, gerisi plot6..plot17
+    /** Pine screener plot indeksleri — plot16 (TDS composite) atlanir, plot6..plot17 arasi. */
     private static final int[] PLOT_INDICES = {6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17};
 
     /** Market durumu cache TTL (60 saniye). */
     private static final long MARKET_STATUS_CACHE_TTL_MS = 60_000;
 
+    /** Hisse detay verileri saglayan servis. */
     private final StockDetailService stockDetailService;
+    /** BIST100 hisse ve logo verisi saglayan servis. */
     private final Bist100Service bist100Service;
+    /** Hisse bazli analist tavsiyeleri saglayan servis. */
     private final AnalistTavsiyeService analistTavsiyeService;
+    /** scyborsaApi'ye HTTP istekleri gondermek icin kullanilan WebClient. */
     private final WebClient webClient;
 
     /** Cache'lenmis market durumu ve zaman damgasi. */
     private volatile boolean cachedMarketOpen = true;
+    /** Cache'lenmis market durumunun son guncelleme zamani (epoch millis). */
     private volatile long cachedMarketOpenTime = 0;
 
     /**

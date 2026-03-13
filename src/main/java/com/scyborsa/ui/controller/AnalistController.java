@@ -23,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnalistController {
 
+    /** Analist verilerini saglayan servis. */
     private final AnalistService analistService;
 
     /**

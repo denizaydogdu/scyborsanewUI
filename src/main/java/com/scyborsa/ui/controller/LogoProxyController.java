@@ -40,6 +40,7 @@ public class LogoProxyController {
     /** Araci kurum logo dosya adi dogrulama deseni: kucuk harf, rakam, alt tire, tire + bilinen uzanti. */
     private static final Pattern VALID_BROKERAGE_FILENAME = Pattern.compile("^[a-z0-9_-]{1,100}\\.(png|jpeg|jpg|svg)$");
 
+    /** Logo gorsel verilerini saglayan servis. */
     private final Bist100Service bist100Service;
 
     /**

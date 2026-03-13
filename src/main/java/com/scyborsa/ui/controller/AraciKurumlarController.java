@@ -28,6 +28,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class AraciKurumlarController {
 
+    /** Araci kurum AKD listesi ve detay verilerini saglayan servis. */
     private final AraciKurumListService araciKurumListService;
 
     /**

@@ -30,6 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SectorController {
 
+    /** Sektor verilerini saglayan servis. */
     private final SectorService sectorService;
 
     /**

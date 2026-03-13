@@ -30,6 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BackofficeController {
 
+    /** Backoffice yonetim islemlerini saglayan servis. */
     private final BackofficeService backofficeService;
 
     // ── Dashboard ────────────────────────────────────────
