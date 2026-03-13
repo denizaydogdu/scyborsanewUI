@@ -41,6 +41,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ApiAuthenticationProvider implements AuthenticationProvider {
 
+    /** scyborsaApi'ye login istegi gonderen servis. */
     private final AuthService authService;
 
     /**

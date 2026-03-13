@@ -18,6 +18,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
+    /** scyborsaApi backend base URL'i (application.yml: api.base-url). */
     @Value("${api.base-url}")
     private String apiBaseUrl;
 
