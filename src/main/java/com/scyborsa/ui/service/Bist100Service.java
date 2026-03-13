@@ -24,6 +24,7 @@ import java.util.Map;
 @Service
 public class Bist100Service {
 
+    /** scyborsaApi'ye HTTP istekleri gondermek icin kullanilan WebClient. */
     private final WebClient webClient;
 
     /**

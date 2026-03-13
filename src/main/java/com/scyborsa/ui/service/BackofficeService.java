@@ -27,6 +27,7 @@ import java.util.Map;
 @Service
 public class BackofficeService {
 
+    /** scyborsaApi'ye HTTP istekleri gondermek icin kullanilan WebClient. */
     private final WebClient webClient;
 
     /**

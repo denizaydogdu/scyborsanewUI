@@ -21,6 +21,7 @@ import java.time.Duration;
 @Service
 public class AuthService {
 
+    /** scyborsaApi'ye HTTP istekleri gondermek icin kullanilan WebClient. */
     private final WebClient webClient;
 
     /**

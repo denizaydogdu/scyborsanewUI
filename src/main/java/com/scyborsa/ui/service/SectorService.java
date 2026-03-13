@@ -22,6 +22,7 @@ import java.util.List;
 @Service
 public class SectorService {
 
+    /** scyborsaApi'ye HTTP istekleri gondermek icin kullanilan WebClient. */
     private final WebClient webClient;
 
     /**

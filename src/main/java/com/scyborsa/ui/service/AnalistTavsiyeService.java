@@ -20,6 +20,7 @@ import java.util.List;
 @Service
 public class AnalistTavsiyeService {
 
+    /** scyborsaApi'ye HTTP istekleri gondermek icin kullanilan WebClient. */
     private final WebClient webClient;
 
     /**
