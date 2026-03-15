@@ -1502,12 +1502,104 @@
 		</div><!-- end row -->
 
 		<!-- Para Akisi — gecici olarak devre disi (veri kaynagi dogru degil, ileride tekrar aktif edilecek) -->
-		<!--
+
+		<!-- Sektor Performansi + Bos Kart -->
 		<div class="row">
-			<div class="col-xxl-6 col-lg-6">Para Girisi widget</div>
-			<div class="col-xxl-6 col-lg-6">Para Cikisi widget</div>
-		</div>
-		-->
+			<!-- En Iyi 5 Sektor -->
+			<div class="col-xxl-4 col-lg-6">
+				<div class="card card-height-100">
+					<div class="card-header align-items-center d-flex">
+						<h4 class="card-title mb-0 flex-grow-1">
+							<i class="ri-arrow-up-circle-fill text-success me-1"></i>En Iyi Sektorler
+						</h4>
+						<a th:href="@{/sektorler}" class="text-muted fs-12">Tumu &rarr;</a>
+					</div>
+					<div class="card-body p-0">
+						<ul class="list-group list-group-flush border-dashed mb-0">
+							<li class="list-group-item" th:if="${topSectors == null or #lists.isEmpty(topSectors)}">
+								<div class="text-center text-muted py-3">Veri yok</div>
+							</li>
+							<th:block th:if="${topSectors != null and !#lists.isEmpty(topSectors)}">
+								<li class="list-group-item d-flex align-items-center" th:each="sector : ${topSectors}">
+									<div class="flex-shrink-0 avatar-xs">
+										<span class="avatar-title rounded-circle"
+											  th:classappend="${sector.avgChangePercent >= 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}">
+											<i th:class="${sector.icon != null ? sector.icon : 'ri-bar-chart-line'}"></i>
+										</span>
+									</div>
+									<div class="flex-grow-1 ms-3 overflow-hidden">
+										<a th:href="@{/sector/{slug}(slug=${sector.slug})}" class="text-body">
+											<h6 class="mb-1 text-truncate" th:text="${sector.displayName}">--</h6>
+										</a>
+										<p class="text-muted mb-0 fs-13" th:text="${sector.stockCount + ' hisse'}">--</p>
+									</div>
+									<div class="flex-shrink-0 text-end ms-2">
+										<span class="badge fs-12"
+											  th:classappend="${sector.avgChangePercent >= 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}"
+											  th:text="${(sector.avgChangePercent >= 0 ? '+' : '') + #numbers.formatDecimal(sector.avgChangePercent, 1, 'COMMA', 2, 'POINT') + '%'}">--</span>
+									</div>
+								</li>
+							</th:block>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<!-- En Kotu 5 Sektor -->
+			<div class="col-xxl-4 col-lg-6">
+				<div class="card card-height-100">
+					<div class="card-header align-items-center d-flex">
+						<h4 class="card-title mb-0 flex-grow-1">
+							<i class="ri-arrow-down-circle-fill text-danger me-1"></i>En Kotu Sektorler
+						</h4>
+						<a th:href="@{/sektorler}" class="text-muted fs-12">Tumu &rarr;</a>
+					</div>
+					<div class="card-body p-0">
+						<ul class="list-group list-group-flush border-dashed mb-0">
+							<li class="list-group-item" th:if="${bottomSectors == null or #lists.isEmpty(bottomSectors)}">
+								<div class="text-center text-muted py-3">Veri yok</div>
+							</li>
+							<th:block th:if="${bottomSectors != null and !#lists.isEmpty(bottomSectors)}">
+								<li class="list-group-item d-flex align-items-center" th:each="sector : ${bottomSectors}">
+									<div class="flex-shrink-0 avatar-xs">
+										<span class="avatar-title rounded-circle bg-danger-subtle text-danger">
+											<i th:class="${sector.icon != null ? sector.icon : 'ri-bar-chart-line'}"></i>
+										</span>
+									</div>
+									<div class="flex-grow-1 ms-3 overflow-hidden">
+										<a th:href="@{/sector/{slug}(slug=${sector.slug})}" class="text-body">
+											<h6 class="mb-1 text-truncate" th:text="${sector.displayName}">--</h6>
+										</a>
+										<p class="text-muted mb-0 fs-13" th:text="${sector.stockCount + ' hisse'}">--</p>
+									</div>
+									<div class="flex-shrink-0 text-end ms-2">
+										<span class="badge bg-danger-subtle text-danger fs-12"
+											  th:text="${#numbers.formatDecimal(sector.avgChangePercent, 1, 'COMMA', 2, 'POINT') + '%'}">--</span>
+									</div>
+								</li>
+							</th:block>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<!-- Bos Kart (ileride doldurulacak) -->
+			<div class="col-xxl-4 col-lg-6">
+				<div class="card card-height-100">
+					<div class="card-header align-items-center d-flex">
+						<h4 class="card-title mb-0 flex-grow-1">
+							<i class="ri-draft-line text-muted me-1"></i>Yakinda
+						</h4>
+					</div>
+					<div class="card-body d-flex align-items-center justify-content-center">
+						<div class="text-center text-muted py-4">
+							<i class="ri-tools-line fs-1 d-block mb-2"></i>
+							<p class="mb-0">Bu alan yakinda aktif olacak</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div><!-- end row -->
 
 		<div class="row">
 			<!-- Haberler -->

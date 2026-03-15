@@ -4,6 +4,7 @@ import com.scyborsa.ui.dto.DashboardSentimentDto;
 import com.scyborsa.ui.dto.IndexPerformanceDto;
 import com.scyborsa.ui.dto.MoneyFlowResponse;
 import com.scyborsa.ui.dto.SectorStockDto;
+import com.scyborsa.ui.dto.SectorSummaryDto;
 import com.scyborsa.ui.service.Bist100Service;
 import com.scyborsa.ui.service.DashboardService;
 import lombok.RequiredArgsConstructor;
@@ -80,6 +81,9 @@ public class HomeController {
     public String dashboard(Model model) {
         model.addAttribute("sentiment", dashboardService.getSentiment());
         model.addAttribute("indexPerformances", dashboardService.getIndexPerformances());
+        List<SectorSummaryDto> allSectors = dashboardService.getSectorSummaries();
+        model.addAttribute("topSectors", dashboardService.getTopSectors(allSectors));
+        model.addAttribute("bottomSectors", dashboardService.getBottomSectors(allSectors));
         // TODO: Money flow gecici devre disi — veri kaynagi dogru degil, ileride tekrar aktif edilecek
         // model.addAttribute("moneyFlow", dashboardService.getMoneyFlow());
         return "index";

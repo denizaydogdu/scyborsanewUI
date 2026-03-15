@@ -721,7 +721,9 @@ function renderMoversList(listId, stocks, isGainer) {
         var displayPrice = stock.price != null ? Number(stock.price) : null;
 
         var li = document.createElement('li');
-        li.className = 'list-group-item d-flex align-items-center';
+        li.className = 'list-group-item list-group-item-action d-flex align-items-center';
+        li.style.cursor = 'pointer';
+        li.onclick = function() { window.location.href = '/stock/detail/' + encodeURIComponent(stock.ticker); };
 
         // Avatar — logoid varsa TradingView CDN logosu, yoksa ticker harfli avatar
         var avatarDiv = document.createElement('div');
@@ -799,7 +801,9 @@ function renderVolumeList(stocks) {
         var displayPrice = stock.price != null ? Number(stock.price) : null;
 
         var li = document.createElement('li');
-        li.className = 'list-group-item d-flex align-items-center';
+        li.className = 'list-group-item list-group-item-action d-flex align-items-center';
+        li.style.cursor = 'pointer';
+        li.onclick = function() { window.location.href = '/stock/detail/' + encodeURIComponent(stock.ticker); };
 
         // Avatar — logoid varsa TradingView CDN logosu, yoksa ticker harfli avatar
         var avatarDiv = document.createElement('div');

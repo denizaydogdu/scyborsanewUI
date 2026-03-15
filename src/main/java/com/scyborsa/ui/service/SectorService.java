@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -75,7 +76,7 @@ public class SectorService {
                     .retrieve()
                     .bodyToFlux(SectorSummaryDto.class)
                     .collectList()
-                    .block();
+                    .block(Duration.ofSeconds(10));
             return result != null ? result : List.of();
         } catch (Exception e) {
             log.error("[SECTOR-UI] Sektor ozetleri alinamadi", e);

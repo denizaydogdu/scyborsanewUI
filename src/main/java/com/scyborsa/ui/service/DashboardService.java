@@ -4,13 +4,16 @@ import com.scyborsa.ui.constants.ScyborsaApiEndpoints;
 import com.scyborsa.ui.dto.DashboardSentimentDto;
 import com.scyborsa.ui.dto.IndexPerformanceDto;
 import com.scyborsa.ui.dto.MoneyFlowResponse;
+import com.scyborsa.ui.dto.SectorSummaryDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Dashboard UI servis sinifi.
@@ -25,13 +28,18 @@ public class DashboardService {
     /** scyborsaApi'ye HTTP istekleri gondermek icin kullanilan WebClient. */
     private final WebClient webClient;
 
+    /** Sektor verilerini saglayan servis. */
+    private final SectorService sectorService;
+
     /**
-     * Constructor -- WebClient.Builder inject eder.
+     * Constructor -- WebClient.Builder ve SectorService inject eder.
      *
      * @param webClientBuilder Spring tarafindan saglanan WebClient builder
+     * @param sectorService sektor verileri servisi
      */
-    public DashboardService(WebClient.Builder webClientBuilder) {
+    public DashboardService(WebClient.Builder webClientBuilder, SectorService sectorService) {
         this.webClient = webClientBuilder.build();
+        this.sectorService = sectorService;
     }
 
     /**
@@ -102,6 +110,52 @@ public class DashboardService {
         } catch (Exception e) {
             log.warn("[DASHBOARD-UI] Money flow verileri alinamadi, fallback kullaniliyor", e);
             return emptyMoneyFlow();
+        }
+    }
+
+    /**
+     * En iyi performans gosteren 5 sektoru getirir.
+     *
+     * <p>Tek API cagrisindan donen sektor listesini avgChangePercent'e gore
+     * azalan sirada siralar ve ilk 5 tanesini doner.</p>
+     *
+     * @param allSectors onceden cekilmis sektor listesi
+     * @return en iyi 5 sektor
+     */
+    public List<SectorSummaryDto> getTopSectors(List<SectorSummaryDto> allSectors) {
+        return allSectors.stream()
+                .sorted(Comparator.comparingDouble(SectorSummaryDto::getAvgChangePercent).reversed())
+                .limit(5)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * En kotu performans gosteren 5 sektoru getirir.
+     *
+     * <p>Tek API cagrisindan donen sektor listesini avgChangePercent'e gore
+     * artan sirada siralar ve ilk 5 tanesini doner.</p>
+     *
+     * @param allSectors onceden cekilmis sektor listesi
+     * @return en kotu 5 sektor
+     */
+    public List<SectorSummaryDto> getBottomSectors(List<SectorSummaryDto> allSectors) {
+        return allSectors.stream()
+                .sorted(Comparator.comparingDouble(SectorSummaryDto::getAvgChangePercent))
+                .limit(5)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Tum sektor ozetlerini getirir (tek API cagrisi).
+     *
+     * @return sektor ozet listesi; hata durumunda bos liste
+     */
+    public List<SectorSummaryDto> getSectorSummaries() {
+        try {
+            return sectorService.getSectorSummaries();
+        } catch (Exception e) {
+            log.warn("[DASHBOARD-UI] Sektor ozetleri alinamadi", e);
+            return Collections.emptyList();
         }
     }
 
