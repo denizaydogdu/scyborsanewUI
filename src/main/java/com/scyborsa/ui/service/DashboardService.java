@@ -3,6 +3,7 @@ package com.scyborsa.ui.service;
 import com.scyborsa.ui.constants.ScyborsaApiEndpoints;
 import com.scyborsa.ui.dto.DashboardSentimentDto;
 import com.scyborsa.ui.dto.IndexPerformanceDto;
+import com.scyborsa.ui.dto.MoneyFlowResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -82,6 +83,29 @@ public class DashboardService {
     }
 
     /**
+     * Para akisi (money flow) verilerini getirir.
+     *
+     * <p>scyborsaApi'deki {@code /api/v1/money-flow} endpoint'ini
+     * cagirarak para girisi ve cikisi olan hisse listelerini doner.</p>
+     *
+     * @return para akisi verileri; hata durumunda bos listeler iceren fallback DTO
+     */
+    public MoneyFlowResponse getMoneyFlow() {
+        log.debug("[DASHBOARD-UI] Money flow verileri isteniyor");
+        try {
+            MoneyFlowResponse result = webClient.get()
+                    .uri(ScyborsaApiEndpoints.MONEY_FLOW)
+                    .retrieve()
+                    .bodyToMono(MoneyFlowResponse.class)
+                    .block(Duration.ofSeconds(10));
+            return result != null ? result : emptyMoneyFlow();
+        } catch (Exception e) {
+            log.warn("[DASHBOARD-UI] Money flow verileri alinamadi, fallback kullaniliyor", e);
+            return emptyMoneyFlow();
+        }
+    }
+
+    /**
      * Bos sentiment DTO olusturur.
      *
      * <p>API erisim hatasi veya null yanit durumunda kullanilir.
@@ -97,5 +121,17 @@ public class DashboardService {
                 .toplamHisse(0)
                 .timestamp("")
                 .build();
+    }
+
+    /**
+     * Bos money flow DTO olusturur.
+     *
+     * <p>API erisim hatasi veya null yanit durumunda kullanilir.
+     * Inflow ve outflow listeleri bos olarak doner.</p>
+     *
+     * @return bos listeler iceren fallback money flow DTO
+     */
+    private MoneyFlowResponse emptyMoneyFlow() {
+        return new MoneyFlowResponse(Collections.emptyList(), Collections.emptyList());
     }
 }

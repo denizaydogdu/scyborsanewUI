@@ -2,6 +2,9 @@ package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.DashboardSentimentDto;
 import com.scyborsa.ui.dto.IndexPerformanceDto;
+import com.scyborsa.ui.dto.MoneyFlowResponse;
+import com.scyborsa.ui.dto.SectorStockDto;
+import com.scyborsa.ui.service.Bist100Service;
 import com.scyborsa.ui.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -25,6 +28,9 @@ public class HomeController {
 
     /** Dashboard verilerini saglayan servis. */
     private final DashboardService dashboardService;
+
+    /** BIST hisse verilerini saglayan servis. */
+    private final Bist100Service bist100Service;
 
     /**
      * Public landing page gorunumunu doner.
@@ -74,6 +80,8 @@ public class HomeController {
     public String dashboard(Model model) {
         model.addAttribute("sentiment", dashboardService.getSentiment());
         model.addAttribute("indexPerformances", dashboardService.getIndexPerformances());
+        // TODO: Money flow gecici devre disi — veri kaynagi dogru degil, ileride tekrar aktif edilecek
+        // model.addAttribute("moneyFlow", dashboardService.getMoneyFlow());
         return "index";
     }
 
@@ -109,5 +117,40 @@ public class HomeController {
     @ResponseBody
     public List<IndexPerformanceDto> getIndexesApi() {
         return dashboardService.getIndexPerformances();
+    }
+
+    /**
+     * Para akisi verilerini JSON olarak doner (AJAX proxy).
+     *
+     * <p>Frontend'in periyodik olarak guncel para akisi verisi
+     * cekmesi icin kullanilir. scyborsaApi'ye proxy yapar.</p>
+     *
+     * <p><b>HTTP Method:</b> GET</p>
+     * <p><b>Path:</b> {@code /ajax/dashboard/money-flow}</p>
+     *
+     * @return guncel para akisi verileri
+     */
+    // TODO: Money flow gecici devre disi — veri kaynagi dogru degil, ileride tekrar aktif edilecek
+    // @GetMapping("/ajax/dashboard/money-flow")
+    // @ResponseBody
+    // public MoneyFlowResponse getMoneyFlowApi() {
+    //     return dashboardService.getMoneyFlow();
+    // }
+
+    /**
+     * Hisse arama icin tum hisse listesini JSON olarak doner (AJAX proxy).
+     *
+     * <p>Header search bar'daki autocomplete ozelligi icin kullanilir.
+     * Client tarafinda cache'lenerek yerel filtreleme yapilir.</p>
+     *
+     * <p><b>HTTP Method:</b> GET</p>
+     * <p><b>Path:</b> {@code /ajax/stocks/search}</p>
+     *
+     * @return tum hisse listesi (ticker, description, logoid vb.)
+     */
+    @GetMapping("/ajax/stocks/search")
+    @ResponseBody
+    public List<SectorStockDto> getStocksForSearch() {
+        return bist100Service.getAllStocks();
     }
 }

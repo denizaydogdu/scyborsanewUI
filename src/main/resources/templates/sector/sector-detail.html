@@ -17,7 +17,17 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0" th:text="${sectorName}">Sektör Adı</h5>
+                    <div class="d-flex align-items-center">
+                        <h5 class="card-title mb-0" th:text="${sectorName}">Sektör Adı</h5>
+                        <span th:if="${sectorInfo != null}" class="badge ms-2 fs-12"
+                              th:classappend="${sectorInfo.avgChangePercent >= 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}"
+                              th:with="absVal=${sectorInfo.avgChangePercent >= 0 ? sectorInfo.avgChangePercent : -sectorInfo.avgChangePercent}"
+                              th:text="${(sectorInfo.avgChangePercent >= 0 ? '▲' : '▼') + ' %' + #numbers.formatDecimal(absVal, 1, 'COMMA', 2, 'POINT')}">
+                            ▲ %3,08
+                        </span>
+                        <span th:if="${sectorInfo != null}" class="badge bg-soft-info text-info ms-2 fs-12"
+                              th:text="${sectorInfo.stockCount + ' hisse'}">5 hisse</span>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive" th:if="${stocks != null and !#lists.isEmpty(stocks)}">

@@ -20,13 +20,22 @@
      * @param {string} message - Gosterilecek mesaj
      */
     function showMessage(container, message) {
-        while (container.firstChild) {
-            container.removeChild(container.firstChild);
+        // Veri yoksa parent card'i gizle
+        var card = container.closest('.card');
+        if (card) {
+            var col = card.closest('[class*="col-"]');
+            if (col) {
+                col.style.display = 'none';
+                // Ayni row'daki tum col'lar gizliyse row'u da gizle
+                var row = col.closest('.row');
+                if (row) {
+                    var visibleCols = row.querySelectorAll('[class*="col-"]');
+                    var allHidden = true;
+                    visibleCols.forEach(function(c) { if (c.style.display !== 'none') allHidden = false; });
+                    if (allHidden) row.style.display = 'none';
+                }
+            }
         }
-        var wrapper = document.createElement('div');
-        wrapper.className = 'text-center text-muted py-4';
-        wrapper.textContent = message;
-        container.appendChild(wrapper);
     }
 
     /**

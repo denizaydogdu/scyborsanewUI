@@ -85,6 +85,7 @@ public class SectorController {
         model.addAttribute("sectorName", sectorName);
         model.addAttribute("sectorSlug", safeSlug);
         model.addAttribute("stocks", stocks);
+        model.addAttribute("sectorInfo", sectorInfo);
         return "sector/sector-detail";
     }
 }

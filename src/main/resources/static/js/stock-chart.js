@@ -288,6 +288,7 @@
                 var mapped = mapBarsToSeries(data.bars);
                 candleSeries.setData(mapped.candles);
                 volumeSeries.setData(mapped.volumes);
+                chart.timeScale().fitContent();
                 hideLoading();
 
                 // Overlay fiyatı güncelle (% sadece price stream'den gelir)
@@ -474,6 +475,7 @@
                     console.log('[CHART] candleSeries.setData() OK: ' + mapped.candles.length + ' mum');
                     volumeSeries.setData(mapped.volumes);
                     console.log('[CHART] volumeSeries.setData() OK: ' + mapped.volumes.length + ' volume');
+                    chart.timeScale().fitContent();
                     hideLoading();
 
                     // Overlay fiyatı güncelle (% sadece price stream'den gelir)

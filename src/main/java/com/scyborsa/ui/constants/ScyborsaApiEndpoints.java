@@ -98,6 +98,9 @@ public final class ScyborsaApiEndpoints {
     /** Dashboard endeks performans endpoint'i. */
     public static final String DASHBOARD_INDEXES = "/api/v1/dashboard/indexes";
 
+    /** Dashboard para akisi (money flow) endpoint'i. */
+    public static final String MONEY_FLOW = "/api/v1/money-flow";
+
     // ── BIST Endeks ──────────────────────────────────────
 
     /** Tum BIST hisse listesi endpoint'i. */

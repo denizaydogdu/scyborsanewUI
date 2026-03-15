@@ -114,7 +114,7 @@ public class KapNewsController {
     @GetMapping("/haber/{newsId}")
     public String haberDetay(@PathVariable String newsId, Model model) {
         // newsId format dogrulama
-        if (newsId == null || !newsId.matches("[a-zA-Z0-9_\\-:.]{1,200}")) {
+        if (newsId == null || !newsId.matches("[a-zA-Z0-9_\\-:.,]{1,200}")) {
             return "redirect:/market-news";
         }
         log.info("[HABER-DETAY-UI] Sayfa erisimi [newsId={}]", newsId);

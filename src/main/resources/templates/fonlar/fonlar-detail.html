@@ -149,9 +149,10 @@
     </div>
 
     <!-- ==================== Row 2: Fiyat Grafigi + Varlik Dagilimi ==================== -->
-    <div class="row">
+    <div class="row" th:if="${(fund.priceHistory != null && !fund.priceHistory.empty) || fund.allocation != null}">
         <!-- Fiyat Grafigi -->
-        <div class="col-xl-8">
+        <div th:if="${fund.priceHistory != null && !fund.priceHistory.empty}"
+             th:classappend="${fund.allocation != null ? 'col-xl-8' : 'col-12'}">
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Fiyat Grafigi</h5>
@@ -167,53 +168,48 @@
         </div>
 
         <!-- Varlik Dagilimi -->
-        <div class="col-xl-4">
+        <div th:if="${fund.allocation != null}"
+             th:classappend="${fund.priceHistory != null && !fund.priceHistory.empty ? 'col-xl-4' : 'col-12'}">
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Varlik Dagilimi</h5>
                 </div>
                 <div class="card-body">
-                    <th:block th:if="${fund.allocation != null}">
-                        <div id="allocationChart" style="height:250px;"></div>
-                        <!-- Allocation percentage list -->
-                        <div class="mt-3">
-                            <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.stockPercentage != null && fund.allocation.stockPercentage > 0}">
-                                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#405189;"></span>
-                                <span class="flex-grow-1 text-muted">Hisse Senedi</span>
-                                <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.stockPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
-                            </div>
-                            <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.bondPercentage != null && fund.allocation.bondPercentage > 0}">
-                                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#0ab39c;"></span>
-                                <span class="flex-grow-1 text-muted">Tahvil/Bono</span>
-                                <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.bondPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
-                            </div>
-                            <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.cashPercentage != null && fund.allocation.cashPercentage > 0}">
-                                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#f7b84b;"></span>
-                                <span class="flex-grow-1 text-muted">Nakit</span>
-                                <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.cashPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
-                            </div>
-                            <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.repoPercentage != null && fund.allocation.repoPercentage > 0}">
-                                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#f06548;"></span>
-                                <span class="flex-grow-1 text-muted">Repo</span>
-                                <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.repoPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
-                            </div>
-                            <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.foreignCurrencyPercentage != null && fund.allocation.foreignCurrencyPercentage > 0}">
-                                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#299cdb;"></span>
-                                <span class="flex-grow-1 text-muted">Doviz</span>
-                                <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.foreignCurrencyPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
-                            </div>
-                            <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.otherPercentage != null && fund.allocation.otherPercentage > 0}">
-                                <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#6c757d;"></span>
-                                <span class="flex-grow-1 text-muted">Diger</span>
-                                <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.otherPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
-                            </div>
-                            <div class="text-muted small mt-2" th:if="${fund.allocation.allocationDate != null}"
-                                 th:text="'Tarih: ' + ${fund.allocation.allocationDate}">Tarih: 2024-01-01</div>
+                    <div id="allocationChart" style="height:250px;"></div>
+                    <!-- Allocation percentage list -->
+                    <div class="mt-3">
+                        <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.stockPercentage != null && fund.allocation.stockPercentage > 0}">
+                            <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#405189;"></span>
+                            <span class="flex-grow-1 text-muted">Hisse Senedi</span>
+                            <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.stockPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
                         </div>
-                    </th:block>
-                    <div th:if="${fund.allocation == null}" class="text-center text-muted py-5">
-                        <i class="ri-pie-chart-line fs-24 d-block mb-2"></i>
-                        Varlik dagilimi verisi bulunamadi
+                        <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.bondPercentage != null && fund.allocation.bondPercentage > 0}">
+                            <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#0ab39c;"></span>
+                            <span class="flex-grow-1 text-muted">Tahvil/Bono</span>
+                            <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.bondPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.cashPercentage != null && fund.allocation.cashPercentage > 0}">
+                            <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#f7b84b;"></span>
+                            <span class="flex-grow-1 text-muted">Nakit</span>
+                            <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.cashPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.repoPercentage != null && fund.allocation.repoPercentage > 0}">
+                            <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#f06548;"></span>
+                            <span class="flex-grow-1 text-muted">Repo</span>
+                            <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.repoPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.foreignCurrencyPercentage != null && fund.allocation.foreignCurrencyPercentage > 0}">
+                            <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#299cdb;"></span>
+                            <span class="flex-grow-1 text-muted">Doviz</span>
+                            <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.foreignCurrencyPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
+                        </div>
+                        <div class="d-flex align-items-center mb-2" th:if="${fund.allocation.otherPercentage != null && fund.allocation.otherPercentage > 0}">
+                            <span class="d-inline-block rounded-circle me-2" style="width:10px;height:10px;background-color:#6c757d;"></span>
+                            <span class="flex-grow-1 text-muted">Diger</span>
+                            <span class="fw-medium" th:text="${#numbers.formatDecimal(fund.allocation.otherPercentage, 1, 'COMMA', 2, 'POINT') + '%'}">0,00%</span>
+                        </div>
+                        <div class="text-muted small mt-2" th:if="${fund.allocation.allocationDate != null}"
+                             th:text="'Tarih: ' + ${fund.allocation.allocationDate}">Tarih: 2024-01-01</div>
                     </div>
                 </div>
             </div>
@@ -221,9 +217,10 @@
     </div>
 
     <!-- ==================== Row 3: Getiri Tablosu + Fon Bilgileri ==================== -->
-    <div class="row">
+    <div class="row" th:if="${fund.return1D != null || fund.return1W != null || fund.return1M != null || fund.return3M != null || fund.return6M != null || fund.returnYTD != null || fund.return1Y != null || fund.return3Y != null || fund.return5Y != null || fund.founder != null || fund.cagr != null || fund.strategyStatement != null}">
         <!-- Getiri Tablosu -->
-        <div class="col-xl-8">
+        <div th:classappend="${fund.founder != null || fund.cagr != null || fund.strategyStatement != null ? 'col-xl-8' : 'col-12'}"
+             th:if="${fund.return1D != null || fund.return1W != null || fund.return1M != null || fund.return3M != null || fund.return6M != null || fund.returnYTD != null || fund.return1Y != null || fund.return3Y != null || fund.return5Y != null}">
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Donem Bazli Getiri</h5>
@@ -427,7 +424,8 @@
         </div>
 
         <!-- Fon Bilgileri -->
-        <div class="col-xl-4">
+        <div th:classappend="${fund.return1D != null || fund.return1W != null || fund.return1M != null || fund.return3M != null || fund.return6M != null || fund.returnYTD != null || fund.return1Y != null || fund.return3Y != null || fund.return5Y != null ? 'col-xl-4' : 'col-12'}"
+             th:if="${fund.founder != null || fund.cagr != null || fund.totalShares != null || fund.priceDate != null || fund.categoryName != null || fund.strategyStatement != null}">
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Fon Bilgileri</h5>
@@ -497,47 +495,41 @@
     </div>
 
     <!-- ==================== Row 4: Holdings Tablosu ==================== -->
-    <div class="row">
+    <div class="row" th:if="${fund.holdings != null && !fund.holdings.empty}">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Holdings (Portfoy Dagilimi)</h5>
                 </div>
                 <div class="card-body">
-                    <th:block th:if="${fund.holdings != null && !fund.holdings.empty}">
-                        <div class="table-responsive">
-                            <table class="table table-striped align-middle mb-0">
-                                <thead>
-                                <tr>
-                                    <th style="width:50px;">#</th>
-                                    <th>Isim</th>
-                                    <th>Ticker</th>
-                                    <th class="text-end">Agirlik (%)</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="holding, stat : ${fund.holdings}">
-                                    <td th:text="${stat.count}">1</td>
-                                    <td class="fw-medium" th:text="${holding.name}">Holding Ismi</td>
-                                    <td>
-                                        <span class="badge bg-soft-primary text-primary"
-                                              th:if="${holding.ticker != null}"
-                                              th:text="${holding.ticker}">TICKER</span>
-                                        <span th:if="${holding.ticker == null}" class="text-muted">-</span>
-                                    </td>
-                                    <td class="text-end">
-                                        <span th:if="${holding.percentage != null}"
-                                              th:text="${#numbers.formatDecimal(holding.percentage, 1, 'COMMA', 2, 'POINT') + '%'}">5,00%</span>
-                                        <span th:if="${holding.percentage == null}" class="text-muted">-</span>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </th:block>
-                    <div th:if="${fund.holdings == null || fund.holdings.empty}" class="text-center text-muted py-4">
-                        <i class="ri-folder-open-line fs-24 d-block mb-2"></i>
-                        Holding verisi bulunamadi
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th style="width:50px;">#</th>
+                                <th>Isim</th>
+                                <th>Ticker</th>
+                                <th class="text-end">Agirlik (%)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="holding, stat : ${fund.holdings}">
+                                <td th:text="${stat.count}">1</td>
+                                <td class="fw-medium" th:text="${holding.name}">Holding Ismi</td>
+                                <td>
+                                    <span class="badge bg-soft-primary text-primary"
+                                          th:if="${holding.ticker != null}"
+                                          th:text="${holding.ticker}">TICKER</span>
+                                    <span th:if="${holding.ticker == null}" class="text-muted">-</span>
+                                </td>
+                                <td class="text-end">
+                                    <span th:if="${holding.percentage != null}"
+                                          th:text="${#numbers.formatDecimal(holding.percentage, 1, 'COMMA', 2, 'POINT') + '%'}">5,00%</span>
+                                    <span th:if="${holding.percentage == null}" class="text-muted">-</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
