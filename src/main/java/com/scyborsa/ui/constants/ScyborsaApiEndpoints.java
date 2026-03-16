@@ -197,4 +197,9 @@ public final class ScyborsaApiEndpoints {
     /** Hisse bazlı emir defteri endpoint'i. {@code {stockCode}} path variable içerir. */
     public static final String STOCK_ORDERBOOK = "/api/v1/stock/{stockCode}/orderbook";
 
+    // ── Taramalar ──────────────────────────────────────────
+
+    /** Taramalar API endpoint. */
+    public static final String TARAMALAR = "/api/v1/taramalar";
+
 }

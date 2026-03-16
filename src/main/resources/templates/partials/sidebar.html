@@ -109,6 +109,13 @@
 							</a>
 						</li>
 
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="/taramalar"
+							   th:classappend="${#strings.startsWith(requestURI, '/taramalar')} ? 'active' : ''">
+								<i class="ri-scan-line"></i> <span>Taramalar</span>
+							</a>
+						</li>
+
 						<!-- YAKINDA: Henüz aktif olmayan menü öğeleri gizlendi
 						<li class="menu-title"><span>Yakında</span></li>
 						<li class="nav-item"><a class="nav-link menu-link" href="/analistler"><i class="ri-user-star-line"></i> <span>Analistler</span></a></li>
