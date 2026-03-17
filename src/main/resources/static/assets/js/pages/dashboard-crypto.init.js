@@ -118,7 +118,7 @@ if (donutchartportfolioColors) {
 }
 
 // Market Chart Candlestick — BIST100 (XU100)
-var API_BASE = window.API_BASE || 'http://localhost:8081';
+var API_BASE = (typeof window.API_BASE === 'string') ? window.API_BASE : 'http://localhost:8081';
 var marketChart;
 var seriesData = [];
 var restLoaded = false;

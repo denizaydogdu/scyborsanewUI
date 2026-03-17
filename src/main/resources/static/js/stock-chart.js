@@ -10,7 +10,7 @@
 
     // ─── Config ─────────────────────────────────────────
     var SYMBOL = window.STOCK_CHART_SYMBOL || 'THYAO';
-    var API_BASE = window.STOCK_CHART_API_BASE || 'http://localhost:8081';
+    var API_BASE = (typeof window.STOCK_CHART_API_BASE === 'string') ? window.STOCK_CHART_API_BASE : 'http://localhost:8081';
     var WS_URL = API_BASE + '/ws';
 
     console.log('[CHART] ===== Modül yüklendi =====');
