@@ -1665,6 +1665,7 @@
 		<script th:src="@{/assets/libs/swiper/swiper-bundle.min.js}"></script>
 		<!-- SSR Bridge: dashboard-crypto.init.js'den ONCE yuklenmeli -->
 		<script th:inline="javascript">
+			window.API_BASE = /*[[${apiBaseUrl}]]*/ 'http://localhost:8081';
 			window.initialSentimentData = /*[[${sentiment}]]*/ {};
 			window.initialIndexData = /*[[${indexPerformances}]]*/ [];
 		</script>

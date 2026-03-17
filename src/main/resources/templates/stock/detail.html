@@ -748,7 +748,7 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
         window.STOCK_CHART_SYMBOL = /*[[${stockId}]]*/ 'THYAO';
-        window.STOCK_CHART_API_BASE = 'http://localhost:8081';
+        window.STOCK_CHART_API_BASE = /*[[${apiBaseUrl}]]*/ 'http://localhost:8081';
         window.MARKET_OPEN = /*[[${marketOpen}]]*/ true;
         /*]]>*/
     </script>
