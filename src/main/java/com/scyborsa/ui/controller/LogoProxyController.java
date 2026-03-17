@@ -38,7 +38,7 @@ public class LogoProxyController {
     private static final Pattern VALID_LOGOID = Pattern.compile("^[a-z0-9-]{1,100}$");
 
     /** Araci kurum logo dosya adi dogrulama deseni: kucuk harf, rakam, alt tire, tire + bilinen uzanti. */
-    private static final Pattern VALID_BROKERAGE_FILENAME = Pattern.compile("^[a-z0-9_-]{1,100}\\.(png|jpeg|jpg|svg)$");
+    private static final Pattern VALID_BROKERAGE_FILENAME = Pattern.compile("^[a-z0-9_-]{1,100}\\.(png|jpeg|jpg|svg|webp)$");
 
     /** Logo gorsel verilerini saglayan servis. */
     private final Bist100Service bist100Service;
@@ -75,7 +75,7 @@ public class LogoProxyController {
      *
      * <p>scyborsaApi'deki brokerage logo cache endpoint'ine WebClient ile erisir.
      * Browser cache: 7 gun ({@code Cache-Control: public, max-age=604800}).
-     * PNG/JPEG/SVG formatlari desteklenir. SVG icerik icin CSP baslik eklenir.</p>
+     * PNG/JPEG/SVG/WebP formatlari desteklenir. SVG icerik icin CSP baslik eklenir.</p>
      *
      * @param filename logo dosya adi (orn. "alnus_yatirim_icon.png")
      * @return logo binary veya 400 (gecersiz dosya adi) veya 404 (bulunamadi)
@@ -90,11 +90,10 @@ public class LogoProxyController {
         if (logo == null || logo.length == 0) {
             return ResponseEntity.notFound().build();
         }
-        // Regex validation sadece .png, .jpeg, .jpg, .svg uzantilarina izin verir —
-        // bu noktaya ulasan dosya adi kesinlikle bilinen bir uzantiya sahiptir.
         MediaType mediaType = filename.endsWith(".svg") ? MediaType.valueOf("image/svg+xml")
+                : filename.endsWith(".webp") ? MediaType.valueOf("image/webp")
                 : filename.endsWith(".png") ? MediaType.IMAGE_PNG
-                : MediaType.IMAGE_JPEG; // .jpg ve .jpeg — regex validation diger uzantilari engeller
+                : MediaType.IMAGE_JPEG;
 
         ResponseEntity.BodyBuilder builder = ResponseEntity.ok()
                 .contentType(mediaType)
