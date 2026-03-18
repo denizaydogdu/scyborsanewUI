@@ -197,6 +197,11 @@ public final class ScyborsaApiEndpoints {
     /** Hisse bazlı emir defteri endpoint'i. {@code {stockCode}} path variable içerir. */
     public static final String STOCK_ORDERBOOK = "/api/v1/stock/{stockCode}/orderbook";
 
+    // ── AI Değerlendirme ──────────────────────────────────
+
+    /** AI teknik analiz yorumu endpoint'i. {@code {stockCode}} path variable içerir. */
+    public static final String AI_COMMENT = "/api/v1/ai/comment/{stockCode}";
+
     // ── Taramalar ──────────────────────────────────────────
 
     /** Taramalar API endpoint. */

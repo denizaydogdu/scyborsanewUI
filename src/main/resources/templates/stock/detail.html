@@ -361,6 +361,39 @@
         </div>
     </div>
 
+    <!-- AI Teknik Değerlendirme -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <h4 class="card-title mb-0">
+                        <i class="ri-robot-line me-1 text-primary"></i>AI Teknik Değerlendirme
+                        <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
+                    </h4>
+                    <span class="badge bg-info-subtle text-info ms-2">Beta</span>
+                </div>
+                <div class="card-body" id="aiCommentContainer">
+                    <!-- Loading spinner -->
+                    <div id="aiCommentLoading" class="text-center py-4">
+                        <div class="spinner-border text-primary spinner-border-sm" role="status">
+                            <span class="visually-hidden">Yükleniyor...</span>
+                        </div>
+                        <p class="text-muted mt-2 mb-0">AI analizi yükleniyor...</p>
+                    </div>
+                    <!-- AI yorum içeriği -->
+                    <div id="aiCommentContent" style="display:none;"></div>
+                    <!-- Hata durumu -->
+                    <div id="aiCommentError" style="display:none;">
+                        <div class="alert alert-soft-warning mb-0">
+                            <i class="ri-error-warning-line me-1"></i>
+                            <span id="aiCommentErrorMsg">AI değerlendirmesi şu anda kullanılamıyor.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Analist Tavsiyeleri -->
     <div class="row" th:if="${analistTavsiyeleri != null and !analistTavsiyeleri.isEmpty()}">
         <div class="col-12">
@@ -875,6 +908,96 @@
                 }
             });
         });
+
+        // AI Teknik Değerlendirme — AJAX lazy-load
+        (function() {
+            var aiLoaded = false;
+            var stockCode = window.STOCK_CHART_SYMBOL || '';
+
+            // Emoji başlıkları tanımı
+            var sectionEmojis = ['\u{1F4CA}', '\u{1F4C8}', '\u{1F3AF}', '\u{1F4B0}', '\u{1F4DD}'];
+
+            function loadAiComment() {
+                if (aiLoaded || !stockCode) return;
+                aiLoaded = true;
+
+                fetch('/ajax/stock/' + stockCode + '/ai-comment')
+                    .then(function(resp) { return resp.json(); })
+                    .then(function(data) {
+                        document.getElementById('aiCommentLoading').style.display = 'none';
+
+                        if (data.error) {
+                            document.getElementById('aiCommentErrorMsg').textContent = data.error;
+                            document.getElementById('aiCommentError').style.display = 'block';
+                            return;
+                        }
+
+                        if (data.comment) {
+                            renderAiComment(data.comment);
+                            document.getElementById('aiCommentContent').style.display = 'block';
+                        } else {
+                            document.getElementById('aiCommentErrorMsg').textContent = 'AI degerlendirmesi bulunamadi.';
+                            document.getElementById('aiCommentError').style.display = 'block';
+                        }
+                    })
+                    .catch(function() {
+                        document.getElementById('aiCommentLoading').style.display = 'none';
+                        document.getElementById('aiCommentError').style.display = 'block';
+                    });
+            }
+
+            function renderAiComment(text) {
+                var container = document.getElementById('aiCommentContent');
+                var wrapper = document.createElement('div');
+                wrapper.className = 'ai-comment-text';
+                wrapper.style.lineHeight = '1.7';
+                wrapper.style.fontSize = '0.9rem';
+
+                var lines = text.split('\n');
+                lines.forEach(function(line) {
+                    if (!line.trim()) {
+                        wrapper.appendChild(document.createElement('br'));
+                        return;
+                    }
+
+                    // Emoji ile baslayan satirlari section header yap
+                    var isHeader = sectionEmojis.some(function(emoji) {
+                        return line.trim().indexOf(emoji) === 0;
+                    });
+
+                    if (isHeader) {
+                        var h6 = document.createElement('h6');
+                        h6.className = 'text-primary mt-3 mb-2';
+                        h6.textContent = line.trim();
+                        wrapper.appendChild(h6);
+                    } else {
+                        // **bold** metinleri parse et — DOM ile guvenli
+                        var p = document.createElement('p');
+                        p.className = 'mb-1';
+                        var parts = line.split(/\*\*([^*]+)\*\*/g);
+                        for (var i = 0; i < parts.length; i++) {
+                            if (i % 2 === 1) {
+                                var strong = document.createElement('strong');
+                                strong.textContent = parts[i];
+                                p.appendChild(strong);
+                            } else if (parts[i]) {
+                                p.appendChild(document.createTextNode(parts[i]));
+                            }
+                        }
+                        wrapper.appendChild(p);
+                    }
+                });
+
+                container.appendChild(wrapper);
+            }
+
+            // Sayfa yuklendiginde AI yorumunu getir
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', loadAiComment);
+            } else {
+                loadAiComment();
+            }
+        })();
     </script>
 </th:block>
 </body>

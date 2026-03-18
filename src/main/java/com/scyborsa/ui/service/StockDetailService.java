@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Hisse detay bilgilerini scyborsaApi üzerinden çeken servis.
@@ -126,6 +128,29 @@ public class StockDetailService {
             empty.setTransactions(List.of());
             empty.setTotalCount(0);
             return empty;
+        }
+    }
+
+    /**
+     * Hisse bazlı AI teknik analiz yorumunu API'den getirir.
+     *
+     * <p>API tarafında günlük cache uygulanır; aynı hisse için gün içinde
+     * tekrar AI çağrısı yapılmaz.</p>
+     *
+     * @param stockCode hisse kodu (ör: "GARAN")
+     * @return AI yorum verisi (stockCode + comment) veya hata durumunda null
+     */
+    public Map<String, Object> getAiComment(String stockCode) {
+        try {
+            return webClient.get()
+                    .uri(ScyborsaApiEndpoints.AI_COMMENT, stockCode)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                    .timeout(Duration.ofSeconds(30))
+                    .block();
+        } catch (Exception e) {
+            log.error("AI yorum verisi alınamadı: {} - {}", stockCode, e.getMessage());
+            return null;
         }
     }
 }

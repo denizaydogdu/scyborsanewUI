@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDate;
@@ -263,6 +264,33 @@ public class StockController {
         model.addAttribute("teknikTarih", now.toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
 
         return "stock/detail";
+    }
+
+    /**
+     * AI teknik analiz yorumunu AJAX proxy olarak döndürür.
+     *
+     * <p>Hisse detay sayfasındaki AI kartı bu endpoint'i lazy-load ile çağırır.
+     * scyborsaApi'deki cache mekanizması sayesinde günde bir kez AI çağrısı yapılır.</p>
+     *
+     * @param stockCode hisse kodu (ör: "GARAN")
+     * @return AI yorum JSON'u veya hata mesajı
+     */
+    @GetMapping("/ajax/stock/{stockCode}/ai-comment")
+    @ResponseBody
+    public Map<String, Object> getAiComment(@PathVariable String stockCode) {
+        if (stockCode == null || !stockCode.matches("^[A-Z0-9]{2,6}$")) {
+            return Map.of("error", "Geçersiz hisse kodu.");
+        }
+        try {
+            Map<String, Object> result = stockDetailService.getAiComment(stockCode);
+            if (result != null) {
+                return result;
+            }
+            return Map.of("error", "AI yorumu alınamadı.");
+        } catch (Exception e) {
+            log.warn("AI yorum proxy hatası: {} - {}", stockCode, e.getMessage());
+            return Map.of("error", "AI servisi şu anda kullanılamıyor.");
+        }
     }
 
     /**
