@@ -1503,10 +1503,10 @@
 
 		<!-- Para Akisi — gecici olarak devre disi (veri kaynagi dogru degil, ileride tekrar aktif edilecek) -->
 
-		<!-- Sektor Performansi + Bos Kart -->
+		<!-- Sektor Performansi -->
 		<div class="row">
 			<!-- En Iyi 5 Sektor -->
-			<div class="col-xxl-4 col-lg-6">
+			<div class="col-xxl-6 col-lg-6">
 				<div class="card card-height-100">
 					<div class="card-header align-items-center d-flex">
 						<h4 class="card-title mb-0 flex-grow-1">
@@ -1520,23 +1520,37 @@
 								<div class="text-center text-muted py-3">Veri yok</div>
 							</li>
 							<th:block th:if="${topSectors != null and !#lists.isEmpty(topSectors)}">
-								<li class="list-group-item d-flex align-items-center" th:each="sector : ${topSectors}">
-									<div class="flex-shrink-0 avatar-xs">
-										<span class="avatar-title rounded-circle"
-											  th:classappend="${sector.avgChangePercent >= 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}">
-											<i th:class="${sector.icon != null ? sector.icon : 'ri-bar-chart-line'}"></i>
-										</span>
+								<li class="list-group-item" th:each="sector : ${topSectors}">
+									<div class="d-flex align-items-center">
+										<div class="flex-shrink-0 avatar-xs">
+											<span class="avatar-title rounded-circle bg-white text-primary border">
+												<i th:class="${sector.icon != null ? sector.icon : 'ri-bar-chart-line'}"></i>
+											</span>
+										</div>
+										<div class="flex-grow-1 ms-3 overflow-hidden">
+											<a th:href="@{/sector/{slug}(slug=${sector.slug})}" class="text-body">
+												<h6 class="mb-1 text-truncate" th:text="${sector.displayName}">--</h6>
+											</a>
+											<p class="text-muted mb-0 fs-13" th:text="${sector.stockCount + ' hisse'}">--</p>
+										</div>
+										<div class="flex-shrink-0 text-end ms-2">
+											<span class="badge fs-12"
+												  th:classappend="${sector.avgChangePercent >= 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}"
+												  th:text="${(sector.avgChangePercent >= 0 ? '+' : '') + #numbers.formatDecimal(sector.avgChangePercent, 1, 'COMMA', 2, 'POINT') + '%'}">--</span>
+										</div>
 									</div>
-									<div class="flex-grow-1 ms-3 overflow-hidden">
-										<a th:href="@{/sector/{slug}(slug=${sector.slug})}" class="text-body">
-											<h6 class="mb-1 text-truncate" th:text="${sector.displayName}">--</h6>
-										</a>
-										<p class="text-muted mb-0 fs-13" th:text="${sector.stockCount + ' hisse'}">--</p>
-									</div>
-									<div class="flex-shrink-0 text-end ms-2">
-										<span class="badge fs-12"
-											  th:classappend="${sector.avgChangePercent >= 0 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}"
-											  th:text="${(sector.avgChangePercent >= 0 ? '+' : '') + #numbers.formatDecimal(sector.avgChangePercent, 1, 'COMMA', 2, 'POINT') + '%'}">--</span>
+									<!-- Top hisseler -->
+									<div th:if="${sector.topStocks != null and !sector.topStocks.isEmpty()}" class="ms-4 ps-3 mt-1">
+										<div class="d-flex align-items-center py-1" th:each="stock : ${sector.topStocks}">
+											<img th:if="${stock.logoid != null}" th:src="@{/img/stock-logos/{logoid}(logoid=${stock.logoid})}"
+												 class="rounded-circle me-2" width="16" height="16" alt="" />
+											<span class="fs-12 fw-medium text-body me-2" th:text="${stock.ticker}">--</span>
+											<span class="fs-11 text-muted me-auto text-truncate" style="max-width:120px" th:text="${stock.description}">--</span>
+											<span class="fs-12 text-body me-2" th:text="${#numbers.formatDecimal(stock.price, 1, 'COMMA', 2, 'POINT') + '₺'}">--</span>
+											<span class="fs-12 fw-medium"
+												  th:classappend="${stock.changePercent >= 0 ? 'text-success' : 'text-danger'}"
+												  th:text="${(stock.changePercent >= 0 ? '+' : '') + #numbers.formatDecimal(stock.changePercent, 1, 'COMMA', 2, 'POINT') + '%'}">--</span>
+										</div>
 									</div>
 								</li>
 							</th:block>
@@ -1546,7 +1560,7 @@
 			</div>
 
 			<!-- En Kotu 5 Sektor -->
-			<div class="col-xxl-4 col-lg-6">
+			<div class="col-xxl-6 col-lg-6">
 				<div class="card card-height-100">
 					<div class="card-header align-items-center d-flex">
 						<h4 class="card-title mb-0 flex-grow-1">
@@ -1560,21 +1574,36 @@
 								<div class="text-center text-muted py-3">Veri yok</div>
 							</li>
 							<th:block th:if="${bottomSectors != null and !#lists.isEmpty(bottomSectors)}">
-								<li class="list-group-item d-flex align-items-center" th:each="sector : ${bottomSectors}">
-									<div class="flex-shrink-0 avatar-xs">
-										<span class="avatar-title rounded-circle bg-danger-subtle text-danger">
-											<i th:class="${sector.icon != null ? sector.icon : 'ri-bar-chart-line'}"></i>
-										</span>
+								<li class="list-group-item" th:each="sector : ${bottomSectors}">
+									<div class="d-flex align-items-center">
+										<div class="flex-shrink-0 avatar-xs">
+											<span class="avatar-title rounded-circle bg-white text-primary border">
+												<i th:class="${sector.icon != null ? sector.icon : 'ri-bar-chart-line'}"></i>
+											</span>
+										</div>
+										<div class="flex-grow-1 ms-3 overflow-hidden">
+											<a th:href="@{/sector/{slug}(slug=${sector.slug})}" class="text-body">
+												<h6 class="mb-1 text-truncate" th:text="${sector.displayName}">--</h6>
+											</a>
+											<p class="text-muted mb-0 fs-13" th:text="${sector.stockCount + ' hisse'}">--</p>
+										</div>
+										<div class="flex-shrink-0 text-end ms-2">
+											<span class="badge bg-danger-subtle text-danger fs-12"
+												  th:text="${#numbers.formatDecimal(sector.avgChangePercent, 1, 'COMMA', 2, 'POINT') + '%'}">--</span>
+										</div>
 									</div>
-									<div class="flex-grow-1 ms-3 overflow-hidden">
-										<a th:href="@{/sector/{slug}(slug=${sector.slug})}" class="text-body">
-											<h6 class="mb-1 text-truncate" th:text="${sector.displayName}">--</h6>
-										</a>
-										<p class="text-muted mb-0 fs-13" th:text="${sector.stockCount + ' hisse'}">--</p>
-									</div>
-									<div class="flex-shrink-0 text-end ms-2">
-										<span class="badge bg-danger-subtle text-danger fs-12"
-											  th:text="${#numbers.formatDecimal(sector.avgChangePercent, 1, 'COMMA', 2, 'POINT') + '%'}">--</span>
+									<!-- Top hisseler -->
+									<div th:if="${sector.topStocks != null and !sector.topStocks.isEmpty()}" class="ms-4 ps-3 mt-1">
+										<div class="d-flex align-items-center py-1" th:each="stock : ${sector.topStocks}">
+											<img th:if="${stock.logoid != null}" th:src="@{/img/stock-logos/{logoid}(logoid=${stock.logoid})}"
+												 class="rounded-circle me-2" width="16" height="16" alt="" />
+											<span class="fs-12 fw-medium text-body me-2" th:text="${stock.ticker}">--</span>
+											<span class="fs-11 text-muted me-auto text-truncate" style="max-width:120px" th:text="${stock.description}">--</span>
+											<span class="fs-12 text-body me-2" th:text="${#numbers.formatDecimal(stock.price, 1, 'COMMA', 2, 'POINT') + '₺'}">--</span>
+											<span class="fs-12 fw-medium"
+												  th:classappend="${stock.changePercent >= 0 ? 'text-success' : 'text-danger'}"
+												  th:text="${(stock.changePercent >= 0 ? '+' : '') + #numbers.formatDecimal(stock.changePercent, 1, 'COMMA', 2, 'POINT') + '%'}">--</span>
+										</div>
 									</div>
 								</li>
 							</th:block>
@@ -1582,24 +1611,47 @@
 					</div>
 				</div>
 			</div>
+		</div><!-- end row -->
 
-			<!-- Bos Kart (ileride doldurulacak) -->
-			<div class="col-xxl-4 col-lg-6">
+		<!-- Temettü Bilgileri -->
+		<div class="row">
+			<div class="col-xxl-6">
 				<div class="card card-height-100">
-					<div class="card-header align-items-center d-flex">
+					<div class="card-header border-0 align-items-center d-flex">
 						<h4 class="card-title mb-0 flex-grow-1">
-							<i class="ri-draft-line text-muted me-1"></i>Yakinda
+							<i class="ri-calendar-check-line me-1 text-success"></i>Yaklaşan Temettüler
 						</h4>
+						<div class="flex-shrink-0">
+							<span class="badge bg-success-subtle text-success" id="futureDividendCount">0</span>
+						</div>
 					</div>
-					<div class="card-body d-flex align-items-center justify-content-center">
-						<div class="text-center text-muted py-4">
-							<i class="ri-tools-line fs-1 d-block mb-2"></i>
-							<p class="mb-0">Bu alan yakinda aktif olacak</p>
+					<div class="card-body p-0" id="futureDividendContent">
+						<div class="text-center py-4">
+							<div class="spinner-border spinner-border-sm text-muted"></div>
+							<span class="text-muted ms-2">Yükleniyor...</span>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div><!-- end row -->
+			<div class="col-xxl-6">
+				<div class="card card-height-100">
+					<div class="card-header border-0 align-items-center d-flex">
+						<h4 class="card-title mb-0 flex-grow-1">
+							<i class="ri-calendar-line me-1 text-muted"></i>Geçmiş Temettüler
+						</h4>
+						<div class="flex-shrink-0">
+							<span class="badge bg-secondary-subtle text-secondary" id="pastDividendCount">0</span>
+						</div>
+					</div>
+					<div class="card-body p-0" id="pastDividendContent">
+						<div class="text-center py-4">
+							<div class="spinner-border spinner-border-sm text-muted"></div>
+							<span class="text-muted ms-2">Yükleniyor...</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<div class="row">
 			<!-- Haberler -->
@@ -1656,6 +1708,153 @@
 				</div>
 			</div>
 		</div><!-- end row -->
+
+		<!-- Temettü AJAX -->
+		<script th:inline="javascript">
+		(function() {
+			var months = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+
+			function formatDate(dateStr) {
+				if (!dateStr) return 'Tarih yok';
+				try {
+					var dt = new Date(dateStr);
+					if (!isNaN(dt.getTime())) return dt.getDate() + ' ' + months[dt.getMonth()];
+				} catch(e) {}
+				return dateStr;
+			}
+
+			function isPastDate(dateStr) {
+				if (!dateStr) return true;
+				try {
+					var dt = new Date(dateStr);
+					if (!isNaN(dt.getTime())) return dt < new Date();
+				} catch(e) {}
+				return true;
+			}
+
+			function buildItem(d, badgeClass, iconClass) {
+				var amountText = '';
+				if (d.dividendAmount != null) {
+					amountText = 'Hisse başına ' + d.dividendAmount.toFixed(2).replace('.', ',') + ' ' + (d.currency || 'TRY');
+				} else if (d.dividendYield != null) {
+					amountText = 'Getiri: %' + d.dividendYield.toFixed(2).replace('.', ',');
+				}
+				var dateText = formatDate(d.paymentDate || d.exDividendDate);
+
+				var link = document.createElement('a');
+				link.href = '/stock/detail/' + (d.stockCode || '');
+				link.className = 'list-group-item list-group-item-action';
+
+				var row = document.createElement('div');
+				row.className = 'd-flex align-items-center';
+
+				var iconWrap = document.createElement('div');
+				iconWrap.className = 'flex-shrink-0 me-3';
+				var badge = document.createElement('span');
+				badge.className = 'badge ' + badgeClass + ' p-2';
+				var calIcon = document.createElement('i');
+				calIcon.className = iconClass + ' fs-16';
+				badge.appendChild(calIcon);
+				iconWrap.appendChild(badge);
+
+				var body = document.createElement('div');
+				body.className = 'flex-grow-1';
+				var title = document.createElement('h6');
+				title.className = 'mb-1';
+				title.textContent = (d.stockCode || '') + ' ';
+				var subtitle = document.createElement('span');
+				subtitle.className = 'text-muted fw-normal';
+				subtitle.textContent = 'Temettü Ödeme';
+				title.appendChild(subtitle);
+				var amountP = document.createElement('p');
+				amountP.className = 'text-muted mb-0 fs-12';
+				amountP.textContent = amountText;
+				body.appendChild(title);
+				body.appendChild(amountP);
+
+				var dateWrap = document.createElement('div');
+				dateWrap.className = 'flex-shrink-0 text-end';
+				var dateSpan = document.createElement('span');
+				dateSpan.className = 'text-muted fs-12';
+				var dateIcon = document.createElement('i');
+				dateIcon.className = 'ri-calendar-line me-1';
+				dateSpan.appendChild(dateIcon);
+				dateSpan.appendChild(document.createTextNode(dateText));
+				dateWrap.appendChild(dateSpan);
+
+				row.appendChild(iconWrap);
+				row.appendChild(body);
+				row.appendChild(dateWrap);
+				link.appendChild(row);
+				return link;
+			}
+
+			function renderEmpty(container, message) {
+				container.textContent = '';
+				var emptyDiv = document.createElement('div');
+				emptyDiv.className = 'text-center py-4 text-muted';
+				var icon = document.createElement('i');
+				icon.className = 'ri-money-dollar-circle-line fs-1 d-block mb-2';
+				emptyDiv.appendChild(icon);
+				emptyDiv.appendChild(document.createTextNode(message));
+				container.appendChild(emptyDiv);
+			}
+
+			fetch('/ajax/dashboard/dividends')
+				.then(function(r) { return r.json(); })
+				.then(function(data) {
+					var dividends = data.dividends || [];
+					var futureContainer = document.getElementById('futureDividendContent');
+					var pastContainer = document.getElementById('pastDividendContent');
+					var futureCount = document.getElementById('futureDividendCount');
+					var pastCount = document.getElementById('pastDividendCount');
+
+					var futureList = [];
+					var pastList = [];
+
+					dividends.forEach(function(d) {
+						var rawDate = d.paymentDate || d.exDividendDate;
+						if (isPastDate(rawDate)) {
+							pastList.push(d);
+						} else {
+							futureList.push(d);
+						}
+					});
+
+					// Yaklaşan temettüler
+					if (futureList.length > 0) {
+						futureCount.textContent = futureList.length + ' Temettü';
+						var futureGroup = document.createElement('div');
+						futureGroup.className = 'list-group list-group-flush';
+						futureList.forEach(function(d) {
+							futureGroup.appendChild(buildItem(d, 'bg-success-subtle text-success', 'ri-calendar-check-line'));
+						});
+						futureContainer.textContent = '';
+						futureContainer.appendChild(futureGroup);
+					} else {
+						renderEmpty(futureContainer, 'Yaklaşan temettü bulunmuyor.');
+					}
+
+					// Geçmiş temettüler
+					if (pastList.length > 0) {
+						pastCount.textContent = pastList.length + ' Temettü';
+						var pastGroup = document.createElement('div');
+						pastGroup.className = 'list-group list-group-flush';
+						pastList.forEach(function(d) {
+							pastGroup.appendChild(buildItem(d, 'bg-secondary-subtle text-secondary', 'ri-calendar-line'));
+						});
+						pastContainer.textContent = '';
+						pastContainer.appendChild(pastGroup);
+					} else {
+						renderEmpty(pastContainer, 'Geçmiş temettü bulunmuyor.');
+					}
+				})
+				.catch(function() {
+					renderEmpty(document.getElementById('futureDividendContent'), 'Temettü verileri yüklenemedi.');
+					renderEmpty(document.getElementById('pastDividendContent'), 'Temettü verileri yüklenemedi.');
+				});
+		})();
+		</script>
 	</section>
 
 	<th:block layout:fragment="pagejs">

@@ -7,6 +7,7 @@ import com.scyborsa.ui.dto.SectorStockDto;
 import com.scyborsa.ui.dto.SectorSummaryDto;
 import com.scyborsa.ui.service.Bist100Service;
 import com.scyborsa.ui.service.DashboardService;
+import com.scyborsa.ui.service.DividendService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Ana sayfa ve giris view controller'i.
@@ -32,6 +34,9 @@ public class HomeController {
 
     /** BIST hisse verilerini saglayan servis. */
     private final Bist100Service bist100Service;
+
+    /** Temettu bilgilerini saglayan servis. */
+    private final DividendService dividendService;
 
     /**
      * Public landing page gorunumunu doner.
@@ -156,5 +161,22 @@ public class HomeController {
     @ResponseBody
     public List<SectorStockDto> getStocksForSearch() {
         return bist100Service.getAllStocks();
+    }
+
+    /**
+     * Yaklasan temettu bilgilerini JSON olarak doner (AJAX proxy).
+     *
+     * <p>Frontend'in dashboard'da temettu bilgilerini gostermesi
+     * icin kullanilir. scyborsaApi'ye proxy yapar.</p>
+     *
+     * <p><b>HTTP Method:</b> GET</p>
+     * <p><b>Path:</b> {@code /ajax/dashboard/dividends}</p>
+     *
+     * @return temettu verileri (dividends listesi + totalCount)
+     */
+    @GetMapping("/ajax/dashboard/dividends")
+    @ResponseBody
+    public Map<String, Object> getDividends() {
+        return dividendService.getDividends();
     }
 }

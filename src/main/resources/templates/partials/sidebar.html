@@ -112,7 +112,14 @@
 						<li class="nav-item">
 							<a class="nav-link menu-link" href="/taramalar"
 							   th:classappend="${#strings.startsWith(requestURI, '/taramalar')} ? 'active' : ''">
-								<i class="ri-scan-line"></i> <span>Taramalar</span>
+								<i class="ri-scan-line"></i> <span>SCY Taramalar</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="/hazir-taramalar"
+							   th:classappend="${#strings.startsWith(requestURI, '/hazir-taramalar')} ? 'active' : ''">
+								<i class="ri-search-eye-line"></i> <span>Hazır Taramalar</span>
 							</a>
 						</li>
 

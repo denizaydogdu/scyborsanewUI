@@ -29,4 +29,7 @@ public class TaramalarResponseDto {
 
     /** Toplam kart sayısı. */
     private int toplamKart;
+
+    /** Hisse bazlı gruplu sinyal listesi. {@code groupByStock=true} ise dolu, değilse {@code null}. */
+    private List<StockGroupDto> stockGroups;
 }

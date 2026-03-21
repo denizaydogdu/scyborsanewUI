@@ -13,10 +13,10 @@
 <section layout:fragment="content">
     <div th:replace="~{partials/page-title :: page-title('Taramalar', 'Piyasa')}"></div>
 
-    <!-- Row 1: 4 KPI Cards -->
+    <!-- Row 1: KPI Cards -->
     <div class="row">
         <!-- KPI 1: Toplam Sinyal -->
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-6 col-md-6">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -39,60 +39,8 @@
             </div>
         </div>
 
-        <!-- KPI 2: Başarı Oranı -->
-        <div class="col-xl-3 col-md-6">
-            <div class="card card-animate">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1 overflow-hidden">
-                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Başarı Oranı</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-end justify-content-between mt-4">
-                        <div>
-                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:classappend="${ozet != null and ozet.basariOrani != null and ozet.basariOrani >= 50} ? 'text-success' : 'text-danger'"
-                                th:text="${ozet?.getFormattedBasariOrani()} ?: '0.0%'">0.0%</h4>
-                        </div>
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-white rounded fs-3 border">
-                                <i class="ri-percent-line"
-                                   th:classappend="${ozet != null and ozet.basariOrani != null and ozet.basariOrani >= 50} ? ' text-success' : ' text-danger'"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- KPI 3: Ortalama Getiri -->
-        <div class="col-xl-3 col-md-6">
-            <div class="card card-animate">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1 overflow-hidden">
-                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Ortalama Getiri</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-end justify-content-between mt-4">
-                        <div>
-                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:classappend="${ozet != null and ozet.ortalamaGetiri != null and ozet.pozitif} ? 'text-success' : (${ozet != null and ozet.ortalamaGetiri != null} ? 'text-danger' : '')"
-                                th:text="${ozet?.getFormattedOrtalamaGetiri()} ?: '0.00%'">0.00%</h4>
-                        </div>
-                        <div class="avatar-sm flex-shrink-0">
-                            <span class="avatar-title bg-white rounded fs-3 border">
-                                <i class="ri-line-chart-line"
-                                   th:classappend="${ozet != null and ozet.ortalamaGetiri != null and ozet.pozitif} ? ' text-success' : (${ozet != null and ozet.ortalamaGetiri != null} ? ' text-danger' : '')"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- KPI 4: Benzersiz Hisse -->
-        <div class="col-xl-3 col-md-6">
+        <!-- KPI 2: Benzersiz Hisse -->
+        <div class="col-xl-6 col-md-6">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -143,12 +91,16 @@
                         </div>
                         <div class="col-md-2">
                             <label for="stockFilter" class="form-label">Hisse</label>
-                            <input type="text" class="form-control" id="stockFilter"
-                                   placeholder="GARAN, THYAO..."
-                                   th:value="${selectedStock}"/>
+                            <div class="position-relative">
+                                <input type="text" class="form-control" id="stockFilter"
+                                       placeholder="GARAN, THYAO..." autocomplete="off"
+                                       th:value="${selectedStock}"/>
+                                <div class="dropdown-menu p-0" id="stock-filter-dropdown"
+                                     style="max-height:300px;overflow-y:auto;min-width:280px;"></div>
+                            </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 flex-wrap align-items-center">
                                 <button type="button" class="btn btn-primary" onclick="applyFilter()">
                                     <i class="ri-search-line me-1"></i> Filtrele
                                 </button>
@@ -158,6 +110,14 @@
                                 <button type="button" class="btn btn-soft-warning" onclick="location.reload()">
                                     <i class="ri-refresh-line me-1"></i> Yenile
                                 </button>
+                                <button type="button" class="btn btn-soft-danger" onclick="window.location.href='/taramalar'">
+                                    <i class="ri-delete-bin-line me-1"></i> Temizle
+                                </button>
+                                <div class="form-check ms-2">
+                                    <input class="form-check-input" type="checkbox" id="groupByStock"
+                                           th:checked="${groupByStock}" onchange="applyFilter()">
+                                    <label class="form-check-label" for="groupByStock">Benzersiz Hisseler</label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -166,8 +126,8 @@
         </div>
     </div>
 
-    <!-- Row 3: Ana Tablo -->
-    <div class="row">
+    <!-- Row 3: Ana Tablo (normal görünüm) -->
+    <div class="row" th:if="${!groupByStock}">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header align-items-center d-flex">
@@ -195,7 +155,6 @@
                                     <th scope="col">Hisse</th>
                                     <th scope="col" class="text-end">Fiyat</th>
                                     <th scope="col" class="text-end">Sinyal %</th>
-                                    <th scope="col" class="text-end">Gün Sonu %</th>
                                     <th scope="col">Tarama</th>
                                     <th scope="col">Saat</th>
                                     <th scope="col">Tarih</th>
@@ -213,9 +172,6 @@
                                     <td class="text-end fw-medium"
                                         th:classappend="${t.cssClass}"
                                         th:text="${t.formattedPercentage}">0.00%</td>
-                                    <td class="text-end fw-medium">
-                                        <span th:text="${t.formattedGunSonuDegisim}" th:class="${t.gunSonuCssClass}"></span>
-                                    </td>
                                     <td>
                                         <span th:if="${!t.grouped}"
                                               class="badge bg-primary-subtle text-primary"
@@ -236,6 +192,91 @@
         </div>
     </div>
 
+    <!-- Row 3: Gruplu Görünüm (Benzersiz Hisseler) -->
+    <div class="row" th:if="${groupByStock}">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1">Benzersiz Hisseler</h4>
+                    <div class="flex-shrink-0">
+                        <span class="badge bg-info-subtle text-info"
+                              th:text="${#lists.size(stockGroups)} + ' Hisse'">0 Hisse</span>
+                        <span class="badge bg-primary-subtle text-primary ms-1"
+                              th:text="${ozet?.toplamSinyal} ?: 0 + ' Sinyal'">0 Sinyal</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Empty state -->
+                    <div th:if="${#lists.isEmpty(stockGroups)}" class="text-center py-5">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                   colors="primary:#405189,secondary:#0ab39c" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Veri Bulunamadı</h5>
+                        <p class="text-muted mb-0">Seçilen filtrelere uygun tarama sonucu bulunamadı.</p>
+                    </div>
+
+                    <!-- Accordion -->
+                    <div th:if="${!#lists.isEmpty(stockGroups)}" class="accordion" id="stockGroupAccordion">
+                        <div class="accordion-item" th:each="g, stat : ${stockGroups}">
+                            <h2 class="accordion-header" th:id="'heading-' + ${stat.index}">
+                                <button class="accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse"
+                                        th:attr="data-bs-target='#collapse-' + ${stat.index},
+                                                 aria-controls='collapse-' + ${stat.index}"
+                                        aria-expanded="false">
+                                    <div class="d-flex align-items-center w-100 me-3">
+                                        <span class="fw-semibold me-2" th:text="${stat.index + 1} + '.'">1.</span>
+                                        <a th:href="@{/stock/detail/{code}(code=${g.stockName})}"
+                                           class="fw-semibold text-primary me-3"
+                                           th:text="${g.stockName}"
+                                           onclick="event.stopPropagation();">GARAN</a>
+                                        <span class="badge bg-info-subtle text-info me-3"
+                                              th:text="${g.sinyalSayisi} + ' Sinyal'">1 Sinyal</span>
+                                        <span class="text-muted me-3 fs-12"
+                                              th:text="'Fiyat: ' + ${g.formattedIlkFiyat}">Fiyat: 0.00</span>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div th:id="'collapse-' + ${stat.index}"
+                                 class="accordion-collapse collapse"
+                                 th:attr="aria-labelledby='heading-' + ${stat.index}"
+                                 data-bs-parent="#stockGroupAccordion">
+                                <div class="accordion-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0 table-sm">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th scope="col">Saat</th>
+                                                    <th scope="col">Tarama</th>
+                                                    <th scope="col" class="text-end">Fiyat</th>
+                                                    <th scope="col" class="text-end">Sinyal %</th>
+                                                    <th scope="col">Tarih</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="s : ${g.sinyaller}">
+                                                    <td class="text-muted" th:text="${s.screenerTime}">10:30</td>
+                                                    <td>
+                                                        <span class="badge bg-primary-subtle text-primary"
+                                                              th:text="${s.screenerName}">Tarama</span>
+                                                    </td>
+                                                    <td class="text-end" th:text="${s.formattedPrice}">0.00</td>
+                                                    <td class="text-end fw-medium"
+                                                        th:classappend="${s.cssClass}"
+                                                        th:text="${s.formattedPercentage}">0.00%</td>
+                                                    <td class="text-muted" th:text="${s.screenerDay}">2025-01-15</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </section>
 
 <th:block layout:fragment="pagejs">
@@ -246,9 +287,11 @@ function applyFilter() {
     var endDate = document.getElementById('endDate').value;
     var screener = document.getElementById('screenerFilter').value;
     var stock = document.getElementById('stockFilter').value;
+    var groupByStock = document.getElementById('groupByStock').checked;
     var url = '/taramalar?startDate=' + encodeURIComponent(startDate) + '&endDate=' + encodeURIComponent(endDate);
     if (screener) url += '&screener=' + encodeURIComponent(screener);
     if (stock) url += '&stock=' + encodeURIComponent(stock);
+    if (groupByStock) url += '&groupByStock=true';
     window.location.href = url;
 }
 
@@ -260,7 +303,7 @@ function setToday() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    ['startDate', 'endDate', 'stockFilter'].forEach(function(id) {
+    ['startDate', 'endDate'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) {
             el.addEventListener('keypress', function(e) {
@@ -272,6 +315,96 @@ document.addEventListener('DOMContentLoaded', function() {
     if (sel) {
         sel.addEventListener('change', function() { applyFilter(); });
     }
+
+    // Hisse autocomplete
+    var stockInput = document.getElementById('stockFilter');
+    var stockDropdown = document.getElementById('stock-filter-dropdown');
+    if (!stockInput || !stockDropdown) return;
+
+    var stockCache = null;
+    var fetching = false;
+
+    function loadStocks(cb) {
+        if (stockCache) { cb(stockCache); return; }
+        if (fetching) { setTimeout(function() { loadStocks(cb); }, 100); return; }
+        fetching = true;
+        fetch('/ajax/stocks/search')
+            .then(function(r) { return r.json(); })
+            .then(function(d) { stockCache = d || []; fetching = false; cb(stockCache); })
+            .catch(function() { fetching = false; stockCache = []; cb([]); });
+    }
+
+    function filterStocks(stocks, q) {
+        var tM = [], dM = [];
+        for (var i = 0; i < stocks.length; i++) {
+            var t = (stocks[i].ticker || '').toLowerCase();
+            var d = (stocks[i].description || '').toLowerCase();
+            if (t.indexOf(q) === 0) tM.push(stocks[i]);
+            else if (d.indexOf(q) !== -1) dM.push(stocks[i]);
+            if (tM.length + dM.length >= 16) break;
+        }
+        return tM.concat(dM).slice(0, 8);
+    }
+
+    function renderDropdown(results) {
+        while (stockDropdown.firstChild) stockDropdown.removeChild(stockDropdown.firstChild);
+        if (results.length === 0) {
+            var empty = document.createElement('div');
+            empty.className = 'dropdown-item text-muted text-center py-2';
+            empty.textContent = 'Sonuç bulunamadı';
+            stockDropdown.appendChild(empty);
+        } else {
+            for (var i = 0; i < results.length; i++) {
+                var item = document.createElement('a');
+                item.href = '#';
+                item.className = 'dropdown-item py-2';
+                item.setAttribute('data-ticker', results[i].ticker || '');
+                var wrap = document.createElement('div');
+                wrap.className = 'd-flex align-items-center';
+                var txt = document.createElement('div');
+                var tk = document.createElement('span');
+                tk.className = 'fw-semibold';
+                tk.textContent = results[i].ticker || '';
+                var ds = document.createElement('span');
+                ds.className = 'text-muted ms-2 fs-12';
+                ds.textContent = results[i].description || '';
+                txt.appendChild(tk);
+                txt.appendChild(ds);
+                wrap.appendChild(txt);
+                item.appendChild(wrap);
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    stockInput.value = this.getAttribute('data-ticker');
+                    stockDropdown.classList.remove('show');
+                    applyFilter();
+                });
+                stockDropdown.appendChild(item);
+            }
+        }
+        stockDropdown.classList.add('show');
+    }
+
+    stockInput.addEventListener('input', function() {
+        var q = (stockInput.value || '').trim().toLowerCase();
+        if (q.length < 1) {
+            stockDropdown.classList.remove('show');
+            return;
+        }
+        loadStocks(function(stocks) { renderDropdown(filterStocks(stocks, q)); });
+    });
+
+    stockInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            stockDropdown.classList.remove('show');
+            applyFilter();
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!stockInput.contains(e.target) && !stockDropdown.contains(e.target)) {
+            stockDropdown.classList.remove('show');
+        }
+    });
 });
 /*]]>*/
 </script>

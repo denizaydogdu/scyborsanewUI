@@ -39,8 +39,9 @@ public class TaramalarController {
      * @param startDate başlangıç tarihi (YYYY-MM-DD, opsiyonel — varsayılan bugün)
      * @param endDate   bitiş tarihi (YYYY-MM-DD, opsiyonel — varsayılan bugün)
      * @param screener  tarama adı filtresi (opsiyonel)
-     * @param stock     hisse kodu filtresi (opsiyonel)
-     * @param model     Thymeleaf model
+     * @param stock        hisse kodu filtresi (opsiyonel)
+     * @param groupByStock hisse bazlı gruplama (opsiyonel, varsayılan false)
+     * @param model        Thymeleaf model
      * @return template adı
      */
     @GetMapping("/taramalar")
@@ -49,6 +50,7 @@ public class TaramalarController {
             @RequestParam(required = false) String endDate,
             @RequestParam(required = false) String screener,
             @RequestParam(required = false) String stock,
+            @RequestParam(required = false, defaultValue = "false") boolean groupByStock,
             Model model) {
 
         String today = LocalDate.now(ZoneId.of("Europe/Istanbul")).toString();
@@ -75,10 +77,10 @@ public class TaramalarController {
             screener = screener.replaceAll("[\\p{Cntrl}]", "");
         }
 
-        log.info("[TARAMALAR-UI] Taramalar sayfası istendi, startDate={}, endDate={}, screener={}, stock={}",
-                startDate, endDate, screener, stock);
+        log.info("[TARAMALAR-UI] Taramalar sayfası istendi, startDate={}, endDate={}, screener={}, stock={}, groupByStock={}",
+                startDate, endDate, screener, stock, groupByStock);
 
-        TaramalarResponseDto response = taramalarService.getTaramalar(startDate, endDate, screener, stock);
+        TaramalarResponseDto response = taramalarService.getTaramalar(startDate, endDate, screener, stock, groupByStock);
 
         model.addAttribute("taramalar", response.getTaramalar() != null ? response.getTaramalar() : List.of());
         model.addAttribute("ozet", response.getOzet());
@@ -89,6 +91,8 @@ public class TaramalarController {
         model.addAttribute("selectedStock", stock != null ? stock : "");
         model.addAttribute("toplamKart", response.getToplamKart());
         model.addAttribute("today", today);
+        model.addAttribute("groupByStock", groupByStock);
+        model.addAttribute("stockGroups", response.getStockGroups() != null ? response.getStockGroups() : List.of());
 
         return "taramalar/taramalar-list";
     }

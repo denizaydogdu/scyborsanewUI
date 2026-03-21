@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Hazır Taramalar')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Hazır Taramalar', 'Anasayfa')}"></div>
+
+    <!-- TEKNİK TARAMA Bölümü -->
+    <div class="row">
+        <div class="col-lg-12">
+            <h5 class="text-uppercase mb-3"><i class="ri-equalizer-line me-1"></i> Teknik Tarama</h5>
+        </div>
+    </div>
+
+    <!-- Strateji Seçim Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1">Strateji Seç</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-6">
+                            <label for="strategySelect" class="form-label">Tarama Stratejisi</label>
+                            <select class="form-select" id="strategySelect">
+                                <option value="">-- Strateji Seçiniz --</option>
+                                <th:block th:with="categories=${categories}">
+                                    <th:block th:each="cat : ${categories}">
+                                        <optgroup th:label="${cat}">
+                                            <option th:each="s : ${strategies}"
+                                                    th:if="${s.category != null AND s.category eq cat}"
+                                                    th:value="${s.code}"
+                                                    th:text="${s.displayName}"
+                                                    th:title="${s.description}">
+                                            </option>
+                                        </optgroup>
+                                    </th:block>
+                                </th:block>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex gap-2 align-items-end h-100">
+                                <button type="button" class="btn btn-primary" id="btnScan">
+                                    <i class="ri-search-line me-1"></i> Tara
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Strateji açıklaması -->
+                    <div id="strategyDescription" class="mt-2 text-muted fs-13" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="row" id="loadingSpinner" style="display:none;">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Yükleniyor...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Tarama yapılıyor, lütfen bekleyiniz...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hata Mesajı -->
+    <div class="row" id="errorMessage" style="display:none;">
+        <div class="col-lg-12">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span id="errorText">Bir hata oluştu.</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sonuç Kartı -->
+    <div class="row" id="resultsSection" style="display:none;">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1" id="resultsTitle">Tarama Sonuçları</h4>
+                    <div class="flex-shrink-0">
+                        <span id="resultCountBadge" class="badge bg-primary-subtle text-primary">0 Hisse</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Sonuç Tablosu -->
+                    <div class="table-responsive" id="resultsTableContainer">
+                        <table class="table table-hover table-striped align-middle mb-0" id="resultsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="width:50px">#</th>
+                                    <th scope="col" class="sortable" data-col="stockCode" style="cursor:pointer;">
+                                        Hisse <i class="ri-arrow-up-down-line text-muted fs-13"></i>
+                                    </th>
+                                    <th scope="col" class="sortable text-end" data-col="price" style="cursor:pointer;">
+                                        Fiyat <i class="ri-arrow-up-down-line text-muted fs-13"></i>
+                                    </th>
+                                    <th scope="col" class="sortable text-end" data-col="changePercent" style="cursor:pointer;">
+                                        Değişim % <i class="ri-arrow-down-s-fill text-primary fs-13"></i>
+                                    </th>
+                                    <th scope="col" class="sortable text-end" data-col="relativeVolume" style="cursor:pointer;">
+                                        Göreceli Hacim <i class="ri-arrow-up-down-line text-muted fs-13"></i>
+                                    </th>
+                                    <th scope="col" class="sortable text-end" data-col="avgVolume10d" style="cursor:pointer;">
+                                        Ort. Hacim 10G <i class="ri-arrow-up-down-line text-muted fs-13"></i>
+                                    </th>
+                                    <th scope="col" class="sortable text-end" data-col="avgVolume60d" style="cursor:pointer;">
+                                        Ort. Hacim 60G <i class="ri-arrow-up-down-line text-muted fs-13"></i>
+                                    </th>
+                                    <th scope="col" class="sortable text-end" data-col="avgVolume90d" style="cursor:pointer;">
+                                        Ort. Hacim 90G <i class="ri-arrow-up-down-line text-muted fs-13"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultsTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="emptyState" class="text-center py-5" style="display:none;">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                   colors="primary:#405189,secondary:#0ab39c" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Sonuç Bulunamadı</h5>
+                        <p class="text-muted mb-0">Seçilen stratejiye uygun hisse bulunamadı.</p>
+                    </div>
+
+                    <!-- Sayfalama -->
+                    <div class="d-flex justify-content-between align-items-center mt-3" id="paginationContainer" style="display:none;">
+                        <div class="text-muted" id="paginationInfo">0 hisse</div>
+                        <nav>
+                            <ul class="pagination pagination-separated mb-0" id="paginationNav">
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Boş Durum (henüz tarama yapılmadı) -->
+    <div class="row" id="initialState">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                               colors="primary:#405189,secondary:#0ab39c" style="width:75px;height:75px"></lord-icon>
+                    <h5 class="mt-2">Tarama Bekleniyor</h5>
+                    <p class="text-muted mb-0">Bir strateji seçin ve "Tara" butonuna tıklayın.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORMASYON TARAMA Bölümü -->
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <h5 class="text-uppercase mb-3"><i class="ri-shape-line me-1"></i> Formasyon Tarama</h5>
+        </div>
+    </div>
+
+    <!-- Formasyon Filtre Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1">Formasyon Filtrele</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col">
+                            <label for="patternTypeSelect" class="form-label">Formasyon Tipi</label>
+                            <select class="form-select" id="patternTypeSelect">
+                                <option value="all">Tüm Formasyonlar</option>
+                                <option value="Yükselen Kanal">Yükselen Kanal</option>
+                                <option value="Düşen Kanal">Düşen Kanal</option>
+                                <option value="Yatay Kanal">Yatay Kanal</option>
+                                <option value="Yükselen Kama">Yükselen Kama</option>
+                                <option value="Düşen Kama">Düşen Kama</option>
+                                <option value="Simetrik Üçgen">Simetrik Üçgen</option>
+                                <option value="Düşen Üçgen">Düşen Üçgen</option>
+                                <option value="Yükselen Üçgen">Yükselen Üçgen</option>
+                                <option value="Dikdörtgen">Dikdörtgen</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="patternWindowSelect" class="form-label">Mum</label>
+                            <select class="form-select" id="patternWindowSelect">
+                                <option value="all">Tüm Mumlar</option>
+                                <option value="10" selected>Kısa (10 mum)</option>
+                                <option value="15">Orta (15 mum)</option>
+                                <option value="20">Uzun (20 mum)</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="patternPeriodSelect" class="form-label">Periyot</label>
+                            <select class="form-select" id="patternPeriodSelect">
+                                <option value="all">Tüm Periyotlar</option>
+                                <option value="1D" selected>Günlük (1D)</option>
+                                <option value="1W">Haftalık (1W)</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="patternDirectionSelect" class="form-label">Yön</label>
+                            <select class="form-select" id="patternDirectionSelect">
+                                <option value="all">Tüm Yönler</option>
+                                <option value="bullish">Yükseliş</option>
+                                <option value="bearish">Düşüş</option>
+                                <option value="neutral">Nötr</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-primary" id="btnPatternScan">
+                                <i class="ri-search-line me-1"></i> Tara
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formasyon KPI Kartları -->
+    <div class="row" id="patternKpiCards" style="display:none;">
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate" >
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Toplam Formasyon</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div><h4 class="fs-22 fw-semibold ff-secondary mb-4" id="kpiTotalPatterns">0</h4></div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white rounded fs-3 border"><i class="ri-shape-line text-primary"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate" >
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Yükseliş Formasyonları</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div><h4 class="fs-22 fw-semibold ff-secondary mb-4 text-success" id="kpiBullishPatterns">0</h4></div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white rounded fs-3 border"><i class="ri-arrow-up-line text-success"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate" >
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Düşüş Formasyonları</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div><h4 class="fs-22 fw-semibold ff-secondary mb-4 text-danger" id="kpiBearishPatterns">0</h4></div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white rounded fs-3 border"><i class="ri-arrow-down-line text-danger"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate" >
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Nötr Formasyonlar</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div><h4 class="fs-22 fw-semibold ff-secondary mb-4 text-warning" id="kpiNeutralPatterns">0</h4></div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white rounded fs-3 border"><i class="ri-arrow-left-right-line text-warning"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formasyon Bilgi Kartı -->
+    <div class="row" id="patternInfoCard">
+        <div class="col-lg-12">
+            <div class="card card-body border-info border-opacity-25">
+                <a class="text-info fw-medium" data-bs-toggle="collapse" href="#patternInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Formasyon Tarama Nedir? Nasıl Kullanılır?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="patternInfoCollapse">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-shape-line text-info fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Formasyon Nedir?</h6>
+                                    <p class="text-muted mb-0 fs-12">Fiyat hareketlerinin oluşturduğu teknik şekillerdir. Destek ve direnç çizgileri arasındaki fiyat davranışını analiz ederek gelecek yönü tahmin etmeye yardımcı olur.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-bar-chart-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Skor ve Uzaklık</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>Skor:</strong> Formasyonun güvenilirlik puanı (0-1). 0.25 üstü güçlü sinyal. <strong>Uzaklık:</strong> Fiyatın kırılma noktasına mesafesi. %1 altı = harekete çok yakın.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-search-eye-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Mum Sayısı ve Periyot</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>Mum Sayısı:</strong> Tarayıcının geriye kaç mum bakacağı (10=kısa, 15=orta, 20=uzun vadeli). <strong>Periyot:</strong> Her mumun kapsadığı süre (günlük veya haftalık).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top pt-2">
+                        <h6 class="mb-2 fs-13">Formasyon Tipleri ve Yönleri</h6>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-success-subtle bg-opacity-10">
+                                    <span class="badge bg-success-subtle text-success mb-1"><i class="ri-arrow-up-line me-1"></i>Yükseliş</span>
+                                    <p class="text-muted mb-0 fs-11">Yükselen Kanal (trend devamı), Düşen Kama (%68-74 yukarı kırılma), Yükselen Üçgen (%63-83 yukarı kırılma)</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-danger-subtle bg-opacity-10">
+                                    <span class="badge bg-danger-subtle text-danger mb-1"><i class="ri-arrow-down-line me-1"></i>Düşüş</span>
+                                    <p class="text-muted mb-0 fs-11">Düşen Kanal (trend devamı), Yükselen Kama (%72-81 aşağı kırılma), Düşen Üçgen (%58-87 aşağı kırılma)</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-warning-subtle bg-opacity-10">
+                                    <span class="badge bg-warning-subtle text-warning mb-1"><i class="ri-arrow-left-right-line me-1"></i>Belirsiz</span>
+                                    <p class="text-muted mb-0 fs-11">Yatay Kanal, Simetrik Üçgen (%55-70), Dikdörtgen (%68-85) — kırılma yönü belirsiz, hacim takibi gerekir</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formasyon Loading -->
+    <div class="row" id="patternLoading" style="display:none;">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Yükleniyor...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Formasyon analizi yapılıyor...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formasyon Hata -->
+    <div class="row" id="patternError" style="display:none;">
+        <div class="col-lg-12">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span id="patternErrorText">Bir hata oluştu.</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formasyon Sonuc Tablosu -->
+    <div class="row" id="patternResults" style="display:none;">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1">Formasyon Sonuçları</h4>
+                    <div class="flex-shrink-0">
+                        <span id="patternCountBadge" class="badge bg-primary-subtle text-primary">0 Formasyon</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="width:50px">#</th>
+                                    <th scope="col" class="pattern-sortable" data-col="symbol" style="cursor:pointer;">
+                                        Hisse <i class="ri-arrow-up-down-line text-muted fs-13"></i>
+                                        <i class="ri-information-line text-muted fs-12 ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Formasyonu tespit edilen hisse senedi"></i>
+                                    </th>
+                                    <th scope="col" class="pattern-sortable text-center" data-col="patternName" style="cursor:pointer;">
+                                        Formasyon <i class="ri-arrow-up-down-line text-muted fs-13"></i>
+                                        <i class="ri-information-line text-muted fs-12 ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Tespit edilen teknik formasyon tipi ve yönü"></i>
+                                    </th>
+                                    <th scope="col" class="pattern-sortable text-end" data-col="score" style="cursor:pointer;">
+                                        Skor <i class="ri-arrow-down-s-fill text-primary fs-13"></i>
+                                        <i class="ri-information-line text-muted fs-12 ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Formasyonun güvenilirlik skoru (0-1). Yüksek skor = güçlü formasyon"></i>
+                                    </th>
+                                    <th scope="col" class="pattern-sortable text-end" data-col="distance" style="cursor:pointer;">
+                                        Uzaklık <i class="ri-arrow-up-down-line text-muted fs-13"></i>
+                                        <i class="ri-information-line text-muted fs-12 ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Mevcut fiyatın formasyon hedefine olan mesafesi (%)"></i>
+                                    </th>
+                                    <th scope="col" class="text-center" style="width:100px;">Periyot
+                                        <i class="ri-information-line text-muted fs-12 ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Grafik zaman dilimi ve analiz edilen mum sayısı"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="patternTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pattern Empty State -->
+                    <div id="patternEmpty" class="text-center py-5" style="display:none;">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                   colors="primary:#405189,secondary:#0ab39c" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Sonuç Bulunamadı</h5>
+                        <p class="text-muted mb-0">Seçilen filtrelere uygun formasyon bulunamadı.</p>
+                    </div>
+
+                    <!-- Pattern Pagination -->
+                    <div class="d-flex justify-content-between align-items-center mt-3" id="patternPagination" style="display:none;">
+                        <div class="text-muted" id="patternPaginationInfo">0 formasyon</div>
+                        <nav>
+                            <ul class="pagination pagination-separated mb-0" id="patternPaginationNav">
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formasyon Görsel Modal -->
+    <div class="modal fade" id="patternImageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="patternModalTitle">Formasyon</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body" id="patternModalBody">
+                    <!-- JS tarafından dinamik olarak doldurulur -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<th:block layout:fragment="pagejs">
+    <script th:inline="javascript">
+        window.strategyDescriptions = /*[[${strategyDescriptions}]]*/ {};
+    </script>
+    <script th:src="@{/js/hazir-taramalar.js}"></script>
+    <script th:src="@{/js/pattern-screener.js}"></script>
+</th:block>
+</body>
+
+</html>

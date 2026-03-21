@@ -133,9 +133,26 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Şifre</label>
-                            <input type="password" name="password" class="form-control" required placeholder="Şifre"
-                                   oninvalid="this.setCustomValidity('Lütfen şifre girin')"
-                                   oninput="this.setCustomValidity('')">
+                            <div class="input-group">
+                                <input type="password" name="password" id="addPassword" class="form-control" required placeholder="Şifre" minlength="6"
+                                       oninvalid="this.setCustomValidity(this.validity.valueMissing ? 'Lütfen şifre girin' : this.validity.tooShort ? 'Şifre en az 6 karakter olmalı' : '')"
+                                       oninput="this.setCustomValidity('')">
+                                <button type="button" class="btn btn-outline-secondary password-toggle" data-target="addPassword" tabindex="-1">
+                                    <i class="ri-eye-off-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Şifre Tekrar</label>
+                            <div class="input-group">
+                                <input type="password" id="addPasswordConfirm" class="form-control" required placeholder="Şifre tekrar"
+                                       oninvalid="this.setCustomValidity('Lütfen şifreyi tekrar girin')"
+                                       oninput="this.setCustomValidity('')">
+                                <button type="button" class="btn btn-outline-secondary password-toggle" data-target="addPasswordConfirm" tabindex="-1">
+                                    <i class="ri-eye-off-line"></i>
+                                </button>
+                            </div>
+                            <div id="addPasswordMismatch" class="invalid-feedback" style="display:none;">Şifreler eşleşmiyor</div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Ad Soyad</label>
@@ -193,7 +210,12 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Şifre <small class="text-muted">(boş bırakılırsa değişmez)</small></label>
-                            <input type="password" name="password" class="form-control" placeholder="Yeni şifre (opsiyonel)">
+                            <div class="input-group">
+                                <input type="password" name="password" id="editPassword" class="form-control" placeholder="Yeni şifre (opsiyonel)">
+                                <button type="button" class="btn btn-outline-secondary password-toggle" data-target="editPassword" tabindex="-1">
+                                    <i class="ri-eye-off-line"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Ad Soyad</label>
@@ -231,6 +253,7 @@
 
 <th:block layout:fragment="pagejs">
     <script>
+        // Düzenle modal — alanları doldur
         var editUserModal = document.getElementById('editUserModal');
         if (editUserModal) {
             editUserModal.addEventListener('show.bs.modal', function (event) {
@@ -244,6 +267,77 @@
                 form.querySelector('[name=validFrom]').value = btn.getAttribute('data-validfrom') || '';
                 form.querySelector('[name=validTo]').value = btn.getAttribute('data-validto') || '';
                 form.querySelector('[name=password]').value = '';
+            });
+        }
+
+        // Şifre göster/gizle toggle
+        document.querySelectorAll('.password-toggle').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var targetId = this.getAttribute('data-target');
+                var input = document.getElementById(targetId);
+                var icon = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'ri-eye-line';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'ri-eye-off-line';
+                }
+            });
+        });
+
+        // Yeni kullanıcı formu — şifre eşleşme kontrolü
+        var addUserForm = document.querySelector('#addUserModal form');
+        if (addUserForm) {
+            addUserForm.addEventListener('submit', function (e) {
+                var pw = document.getElementById('addPassword');
+                var pwConfirm = document.getElementById('addPasswordConfirm');
+                var mismatchDiv = document.getElementById('addPasswordMismatch');
+                if (pw.value !== pwConfirm.value) {
+                    e.preventDefault();
+                    pwConfirm.classList.add('is-invalid');
+                    mismatchDiv.style.display = 'block';
+                    return false;
+                }
+                pwConfirm.classList.remove('is-invalid');
+                mismatchDiv.style.display = 'none';
+            });
+
+            // Yazarken hata mesajını temizle
+            document.getElementById('addPasswordConfirm').addEventListener('input', function () {
+                this.classList.remove('is-invalid');
+                document.getElementById('addPasswordMismatch').style.display = 'none';
+            });
+        }
+
+        // Modal kapanınca formu ve göz ikonlarını resetle
+        function resetPasswordToggles(modal) {
+            modal.querySelectorAll('.password-toggle').forEach(function (btn) {
+                var targetId = btn.getAttribute('data-target');
+                var input = document.getElementById(targetId);
+                var icon = btn.querySelector('i');
+                if (input) input.type = 'password';
+                if (icon) icon.className = 'ri-eye-off-line';
+            });
+        }
+
+        var addUserModal = document.getElementById('addUserModal');
+        if (addUserModal) {
+            addUserModal.addEventListener('hidden.bs.modal', function () {
+                this.querySelector('form').reset();
+                resetPasswordToggles(this);
+                var mismatchDiv = document.getElementById('addPasswordMismatch');
+                if (mismatchDiv) {
+                    mismatchDiv.style.display = 'none';
+                }
+                var pwConfirm = document.getElementById('addPasswordConfirm');
+                if (pwConfirm) pwConfirm.classList.remove('is-invalid');
+            });
+        }
+
+        if (editUserModal) {
+            editUserModal.addEventListener('hidden.bs.modal', function () {
+                resetPasswordToggles(this);
             });
         }
     </script>

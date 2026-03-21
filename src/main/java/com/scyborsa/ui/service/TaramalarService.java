@@ -40,15 +40,17 @@ public class TaramalarService {
      * <p>scyborsaApi'deki {@code GET /api/v1/taramalar} endpoint'ini çağırır.
      * Tarih aralığı, tarama adı ve hisse kodu filtre parametreleri desteklenir.</p>
      *
-     * @param startDate başlangıç tarihi (YYYY-MM-DD formatında)
-     * @param endDate   bitiş tarihi (YYYY-MM-DD formatında)
-     * @param screener  tarama adı filtresi (opsiyonel)
-     * @param stock     hisse kodu filtresi (opsiyonel)
+     * @param startDate    başlangıç tarihi (YYYY-MM-DD formatında)
+     * @param endDate      bitiş tarihi (YYYY-MM-DD formatında)
+     * @param screener     tarama adı filtresi (opsiyonel)
+     * @param stock        hisse kodu filtresi (opsiyonel)
+     * @param groupByStock {@code true} ise hisse bazlı gruplama yapılır
      * @return tarama sonuçları; hata durumunda boş DTO
      */
-    public TaramalarResponseDto getTaramalar(String startDate, String endDate, String screener, String stock) {
-        log.debug("[TARAMALAR-UI] Taramalar isteniyor, startDate={}, endDate={}, screener={}, stock={}",
-                startDate, endDate, screener, stock);
+    public TaramalarResponseDto getTaramalar(String startDate, String endDate, String screener, String stock,
+                                              boolean groupByStock) {
+        log.debug("[TARAMALAR-UI] Taramalar isteniyor, startDate={}, endDate={}, screener={}, stock={}, groupByStock={}",
+                startDate, endDate, screener, stock, groupByStock);
         try {
             TaramalarResponseDto result = webClient.get()
                     .uri(uriBuilder -> {
@@ -64,6 +66,9 @@ public class TaramalarService {
                         }
                         if (stock != null && !stock.isBlank()) {
                             uriBuilder.queryParam("stock", stock);
+                        }
+                        if (groupByStock) {
+                            uriBuilder.queryParam("groupByStock", "true");
                         }
                         return uriBuilder.build();
                     })

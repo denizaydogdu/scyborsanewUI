@@ -207,4 +207,22 @@ public final class ScyborsaApiEndpoints {
     /** Taramalar API endpoint. */
     public static final String TARAMALAR = "/api/v1/taramalar";
 
+    // ── Hazir Taramalar ──────────────────────────────────────
+
+    /** Hazir tarama strateji listesi endpoint'i. */
+    public static final String HAZIR_TARAMALAR_STRATEGIES = "/api/v1/hazir-taramalar/strategies";
+
+    /** Hazir tarama calistirma endpoint'i. {@code strategy} query parameter gerektirir. */
+    public static final String HAZIR_TARAMALAR_SCAN = "/api/v1/hazir-taramalar/scan";
+
+    // ── Formasyon Tarama ──────────────────────────────────────
+
+    /** Formasyon tarama endpoint'i. */
+    public static final String PATTERN_SCREENER_SCAN = "/api/v1/pattern-screener/scan";
+
+    // ── Temettü ──────────────────────────────────────────
+
+    /** Yaklasan temettu bilgileri endpoint'i. */
+    public static final String DIVIDENDS = "/api/v1/dividends";
+
 }
