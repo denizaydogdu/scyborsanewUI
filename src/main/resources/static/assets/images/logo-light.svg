@@ -1,3 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 34" height="34">
-  <text x="0" y="26" font-family="'Segoe UI', system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#ffffff" letter-spacing="2">SCY</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 34" height="34">
+  <!-- Boğa (Bull) silueti -->
+  <g fill="#ffffff">
+    <!-- Sol boynuz -->
+    <path d="M2,14 Q4,2 10,1 Q8,6 9,12 Z"/>
+    <!-- Sağ boynuz -->
+    <path d="M28,14 Q26,2 20,1 Q22,6 21,12 Z"/>
+    <!-- Baş -->
+    <path d="M7,12 Q8,9 15,8 Q22,9 23,12 Q24,16 22,20 Q20,23 15,24 Q10,23 8,20 Q6,16 7,12 Z"/>
+    <!-- Sol kulak -->
+    <path d="M8,11 Q5,8 7,12 Z"/>
+    <!-- Sağ kulak -->
+    <path d="M22,11 Q25,8 23,12 Z"/>
+    <!-- Burun halkası -->
+    <circle cx="15" cy="20" r="2.5" fill="none" stroke="#ffffff" stroke-width="1.2"/>
+    <!-- Gözler -->
+    <circle cx="11.5" cy="14" r="1.2" fill="#405189"/>
+    <circle cx="18.5" cy="14" r="1.2" fill="#405189"/>
+  </g>
+  <!-- SCY Text -->
+  <text x="38" y="25" font-family="'Segoe UI', system-ui, -apple-system, sans-serif" font-size="26" font-weight="700" fill="#ffffff" letter-spacing="3">SCY</text>
 </svg>

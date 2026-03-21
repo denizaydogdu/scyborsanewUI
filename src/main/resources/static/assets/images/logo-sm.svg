@@ -1,4 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34" height="34">
+  <!-- Arka plan -->
   <rect width="34" height="34" rx="6" fill="#405189"/>
-  <text x="17" y="24" font-family="'Segoe UI', system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#ffffff" text-anchor="middle" letter-spacing="0.5">SCY</text>
+  <!-- Boğa (Bull) silueti - beyaz, ortalanmış -->
+  <g fill="#ffffff" transform="translate(5, 4) scale(0.9)">
+    <!-- Sol boynuz -->
+    <path d="M4,14 Q6,3 11,2 Q9,7 10,12 Z"/>
+    <!-- Sağ boynuz -->
+    <path d="M23,14 Q21,3 16,2 Q18,7 17,12 Z"/>
+    <!-- Baş -->
+    <path d="M8,12 Q9,9 13.5,8 Q18,9 19,12 Q20,16 18,20 Q16,23 13.5,24 Q11,23 9,20 Q7,16 8,12 Z"/>
+    <!-- Sol kulak -->
+    <path d="M9,11 Q6,8 8,12 Z"/>
+    <!-- Sağ kulak -->
+    <path d="M18,11 Q21,8 19,12 Z"/>
+    <!-- Burun halkası -->
+    <circle cx="13.5" cy="20" r="2.2" fill="none" stroke="#ffffff" stroke-width="1"/>
+    <!-- Gözler -->
+    <circle cx="11" cy="14" r="1" fill="#405189"/>
+    <circle cx="16" cy="14" r="1" fill="#405189"/>
+  </g>
 </svg>
