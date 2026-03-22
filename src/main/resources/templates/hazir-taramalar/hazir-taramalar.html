@@ -474,6 +474,404 @@
         </div>
     </div>
 
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- MUM FORMASYONLARI Bölümü                                       -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <h5 class="text-uppercase mb-3"><i class="ri-bar-chart-2-line me-1"></i> Mum Formasyonları</h5>
+        </div>
+    </div>
+
+    <!-- Mum Formasyon Filtre Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1">Mum Formasyonu Filtrele</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-2 col-sm-6">
+                            <label for="csPeriodSelect" class="form-label">Periyot</label>
+                            <select class="form-select" id="csPeriodSelect">
+                                <option value="1D" selected>Günlük (1D)</option>
+                                <option value="1W">Haftalık (1W)</option>
+                                <option value="4H">4 Saatlik (4H)</option>
+                                <option value="1H">1 Saatlik (1H)</option>
+                                <option value="15">15 Dakika</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-6">
+                            <label for="csCategorySelect" class="form-label">Kategori</label>
+                            <select class="form-select" id="csCategorySelect">
+                                <option value="all">Tüm Kategoriler</option>
+                                <option value="bullish">Boğa (Yükseliş)</option>
+                                <option value="bearish">Ayı (Düşüş)</option>
+                                <option value="neutral">Kararsızlık</option>
+                                <option value="gap">Gap Formasyonları</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-6">
+                            <label for="csMinCountSelect" class="form-label">Min. Formasyon</label>
+                            <select class="form-select" id="csMinCountSelect">
+                                <option value="1" selected>1+ Formasyon</option>
+                                <option value="2">2+ Formasyon</option>
+                                <option value="3">3+ Formasyon</option>
+                                <option value="5">5+ Formasyon</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-6">
+                            <label for="csReliabilitySelect" class="form-label">Güvenilirlik</label>
+                            <select class="form-select" id="csReliabilitySelect">
+                                <option value="all">Tümü</option>
+                                <option value="Düşük">Düşük</option>
+                                <option value="Orta">Orta</option>
+                                <option value="Yüksek">Yüksek</option>
+                                <option value="Çok Yüksek">Çok Yüksek</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-6">
+                            <label for="csTypeSelect" class="form-label">Tip</label>
+                            <select class="form-select" id="csTypeSelect">
+                                <option value="all">Tümü</option>
+                                <option value="Dönüş">Dönüş</option>
+                                <option value="Devam">Devam</option>
+                                <option value="Kararsızlık">Kararsızlık</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-6">
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-primary flex-grow-1" id="btnCsScan">
+                                    <i class="ri-search-line me-1"></i> Tara
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="btnCsReset" data-bs-toggle="tooltip" title="Tüm filtreleri sıfırla">
+                                    <i class="ri-refresh-line"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <label class="form-label mb-0">Formasyonlar</label>
+                                <span id="csPatternCounter" class="badge bg-primary-subtle text-primary" style="display:none">0 seçili</span>
+                                <div class="ms-auto d-flex gap-1">
+                                    <button type="button" class="btn btn-sm btn-outline-success" id="btnCsAllBullish">
+                                        <i class="ri-arrow-up-line me-1"></i>Tüm Boğa
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" id="btnCsAllBearish">
+                                        <i class="ri-arrow-down-line me-1"></i>Tüm Ayı
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-warning" id="btnCsAllNeutral">
+                                        <i class="ri-arrow-left-right-line me-1"></i>Tüm Kararsızlık
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-info" id="btnCsAllGap">
+                                        <i class="ri-split-cells-vertical me-1"></i>Tüm Gap
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="btnCsClearPatterns">
+                                        <i class="ri-close-line"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="csPatternPanel" class="border rounded p-2">
+                                <!-- JS tarafından 3 kategori accordion + checkbox'lar ile doldurulur -->
+                                <div class="text-muted text-center py-2 small">Yükleniyor...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="csFilterChips" class="d-flex flex-wrap gap-1 mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mum Formasyon KPI Kartları -->
+    <div class="row" id="csKpiCards" style="display:none;">
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Toplam Hisse</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="badge bg-primary-subtle text-primary"><i class="ri-bar-chart-2-line"></i></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-2">
+                        <h4 class="fs-22 fw-semibold mb-0" id="csKpiTotal">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Boğa Sinyalleri</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="badge bg-success-subtle text-success"><i class="ri-arrow-up-line"></i></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-2">
+                        <h4 class="fs-22 fw-semibold mb-0 text-success" id="csKpiBullish">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Ayı Sinyalleri</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="badge bg-danger-subtle text-danger"><i class="ri-arrow-down-line"></i></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-2">
+                        <h4 class="fs-22 fw-semibold mb-0 text-danger" id="csKpiBearish">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Kararsızlık</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="badge bg-warning-subtle text-warning"><i class="ri-arrow-left-right-line"></i></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-2">
+                        <h4 class="fs-22 fw-semibold mb-0 text-warning" id="csKpiNeutral">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Gap Sinyalleri</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="badge bg-info-subtle text-info"><i class="ri-split-cells-vertical"></i></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-2">
+                        <h4 class="fs-22 fw-semibold mb-0 text-info" id="csKpiGap">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mum Formasyon Bilgi Kartı -->
+    <div class="row" id="csInfoCard">
+        <div class="col-lg-12">
+            <div class="card card-body border-info border-opacity-25">
+                <a class="text-info fw-medium" data-bs-toggle="collapse" href="#csInfoCollapse" role="button" aria-expanded="true" aria-controls="csInfoCollapse">
+                    <i class="ri-information-line me-1"></i>Mum Formasyonları Nedir? Nasıl Kullanılır?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="csInfoCollapse">
+                    <!-- Bölüm 1: Mum Formasyonları Nedir? -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <h6 class="text-info"><i class="ri-lightbulb-line me-1"></i> Mum Formasyonları Nedir?</h6>
+                            <p class="text-muted small mb-2">Japon mum grafik formasyonları, hisse fiyatının açılış, kapanış, en yüksek ve en düşük seviyelerini kullanarak oluşan görsel kalıplardır. Bu kalıplar yüzyıllardır Japon pirinç tüccarları tarafından kullanılır ve fiyatın hangi yöne gidebileceği hakkında ipuçları verir.</p>
+                            <p class="text-muted small mb-0">Formasyonlar tek bir mum çubuğundan (Çekiç, Doji) veya birden fazla mumun bir araya gelmesiyle (Yutan, Sabah Yıldızı, Üç Beyaz Asker) oluşabilir. Her formasyon belirli bir <strong>piyasa psikolojisini</strong> yansıtır — örneğin Çekiç formasyonu, satıcıların fiyatı aşağı çektiği ama alıcıların geri aldığı anlamına gelir.</p>
+                        </div>
+                    </div>
+
+                    <!-- Bölüm 2: Dört Kategori -->
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <div class="border rounded p-3 h-100" style="border-color: rgba(10,179,156,0.3) !important;">
+                                <h6 class="text-success"><i class="ri-arrow-up-circle-line me-1"></i> Boğa Formasyonları (10)</h6>
+                                <p class="text-muted small mb-2"><strong>Ne anlama gelir:</strong> Fiyatın düşüşten yükselişe dönebileceğini veya yükselişin devam edeceğini işaret eder.</p>
+                                <p class="text-muted small mb-2"><strong>En güçlüler:</strong></p>
+                                <ul class="text-muted small mb-0 ps-3">
+                                    <li><strong>Çekiç:</strong> Uzun alt gölge — satıcılar bastırdı ama alıcılar geri aldı</li>
+                                    <li><strong>Boğa Yutan:</strong> Yeşil mum önceki kırmızı mumu tamamen yuttu — güçlü dönüş</li>
+                                    <li><strong>Sabah Yıldızı:</strong> Üç mumlu güçlü dönüş — karamsarlık bitti, alıcılar hakim</li>
+                                    <li><strong>Üç Beyaz Asker:</strong> Art arda üç yükselen yeşil mum — kararlı yükseliş</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border rounded p-3 h-100" style="border-color: rgba(240,101,72,0.3) !important;">
+                                <h6 class="text-danger"><i class="ri-arrow-down-circle-line me-1"></i> Ayı Formasyonları (10)</h6>
+                                <p class="text-muted small mb-2"><strong>Ne anlama gelir:</strong> Fiyatın yükselişten düşüşe dönebileceğini veya düşüşün devam edeceğini işaret eder.</p>
+                                <p class="text-muted small mb-2"><strong>En güçlüler:</strong></p>
+                                <ul class="text-muted small mb-0 ps-3">
+                                    <li><strong>Kayan Yıldız:</strong> Uzun üst gölge — alıcılar yükseltti ama satıcılar geri itti</li>
+                                    <li><strong>Ayı Yutan:</strong> Kırmızı mum önceki yeşil mumu yuttu — güçlü düşüş sinyali</li>
+                                    <li><strong>Akşam Yıldızı:</strong> Üç mumlu dönüş — iyimserlik bitti, satıcılar hakim</li>
+                                    <li><strong>Üç Kara Karga:</strong> Art arda üç düşen kırmızı mum — kararlı düşüş</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border rounded p-3 h-100" style="border-color: rgba(247,184,75,0.3) !important;">
+                                <h6 class="text-warning"><i class="ri-arrow-left-right-line me-1"></i> Kararsızlık Formasyonları (7)</h6>
+                                <p class="text-muted small mb-2"><strong>Ne anlama gelir:</strong> Alıcı ve satıcılar arasında denge var — mevcut trend zayıflıyor olabilir.</p>
+                                <p class="text-muted small mb-2"><strong>Örnekler:</strong></p>
+                                <ul class="text-muted small mb-0 ps-3">
+                                    <li><strong>Doji:</strong> Açılış = kapanış — piyasa kararsız, dikkatli olun</li>
+                                    <li><strong>Yusufçuk Doji:</strong> Uzun alt gölge + gövde yok — destekte olabilir</li>
+                                    <li><strong>Mezar Taşı Doji:</strong> Uzun üst gölge + gövde yok — dirençte olabilir</li>
+                                    <li><strong>Topaç:</strong> Küçük gövde, uzun gölgeler — yön belirsiz</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="border rounded p-3 h-100" style="border-color: rgba(41,156,219,0.3) !important;">
+                                <h6 class="text-info"><i class="ri-split-cells-vertical me-1"></i> Gap Formasyonları (4)</h6>
+                                <p class="text-muted small mb-2"><strong>Ne anlama gelir:</strong> Hisse gap ile açılıp ters yönde kapandığında oluşur. Trend dönüşü sinyali verebilir.</p>
+                                <ul class="text-muted small mb-0 ps-3">
+                                    <li><strong>Gap Aşağı Dönüş:</strong> Gap aşağı açıldı ama yeşil kapandı — alıcılar geri geldi</li>
+                                    <li><strong>Gap Yukarı Dönüş:</strong> Gap yukarı açıldı ama kırmızı kapandı — satıcılar bastırdı</li>
+                                    <li><strong>(Güçlü):</strong> Gap tamamen kapatıldı — çok güçlü sinyal</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bölüm 3: Filtre Açıklamaları -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <h6 class="text-info"><i class="ri-filter-3-line me-1"></i> Filtreleri Nasıl Kullanırım?</h6>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="text-muted small mb-0"><strong>Periyot:</strong> Mum grafiğinin zaman dilimi. <em>Günlük (1D)</em> en yaygın kullanılandır. Kısa vadeli trade için 1H veya 4H, uzun vadeli analiz için Haftalık (1W) seçebilirsiniz. Periyot değiştirdiğinizde "Tara" butonuna basmanız gerekir.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="text-muted small mb-0"><strong>Kategori:</strong> Sadece belirli yöndeki formasyonları görmek için kullanın. <span class="text-success">Boğa</span> = yükseliş sinyalleri, <span class="text-danger">Ayı</span> = düşüş sinyalleri, <span class="text-warning">Kararsızlık</span> = yön belirsiz. Bu filtre anlık çalışır, tekrar tara demenize gerek yok.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="text-muted small mb-0"><strong>Formasyon:</strong> 27 formasyondan belirli birini aramak için kullanın. Örneğin sadece "Çekiç" görüntülemek istiyorsanız bu dropdown'dan seçin. Kategori filtresine göre otomatik güncellenir.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <p class="text-muted small mb-0"><strong>Min. Formasyon:</strong> Bir hissede aynı anda kaç formasyon tespit edilmiş olmasını istediğinizi belirler. "3+" seçerseniz sadece 3 veya daha fazla formasyonu olan hisseler listelenir — bu genellikle daha güçlü sinyaller anlamına gelir.</p>
+                        </div>
+                    </div>
+
+                    <!-- Uyarı -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="alert alert-warning alert-borderless py-2 mb-0 small">
+                                <i class="ri-error-warning-line me-1"></i> <strong>Önemli:</strong> Mum formasyonları tek başına al/sat sinyali değildir. Hacim, trend yönü, destek/direnç seviyeleri ve diğer teknik göstergeler (RSI, MACD vb.) ile birlikte değerlendirilmelidir. Bir formasyonun güvenilirliği, oluştuğu bağlama (trend içi mi, tepe/dip mi) bağlıdır.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mum Formasyon Loading -->
+    <div class="row" id="csLoading" style="display:none;">
+        <div class="col-lg-12">
+            <div class="card card-body text-center py-5">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Yükleniyor...</span>
+                </div>
+                <p class="text-muted">Mum formasyonları taranıyor...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mum Formasyon Hata -->
+    <div class="row" id="csError" style="display:none;">
+        <div class="col-lg-12">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="ri-error-warning-line me-2"></i>
+                <span id="csErrorText">Mum formasyonu verileri yüklenirken hata oluştu. Lütfen tekrar deneyin.</span>
+                <button type="button" class="btn-close" aria-label="Kapat" onclick="document.getElementById('csError').style.display='none'"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mum Formasyon Sonuç Tablosu -->
+    <div class="row" id="csResults" style="display:none;">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1">Mum Formasyonu Sonuçları</h4>
+                    <div class="flex-shrink-0">
+                        <span id="csCountBadge" class="badge bg-primary-subtle text-primary">0 Hisse</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:50px">#</th>
+                                    <th class="cs-sortable" data-col="symbol">
+                                        Hisse <i class="ri-arrow-up-down-line text-muted ms-1"></i>
+                                    </th>
+                                    <th class="cs-sortable text-end" data-col="price" style="width:90px">
+                                        Fiyat <i class="ri-arrow-up-down-line text-muted ms-1"></i>
+                                    </th>
+                                    <th class="cs-sortable text-end" data-col="changePercent" style="width:100px">
+                                        Değişim % <i class="ri-arrow-up-down-line text-muted ms-1"></i>
+                                    </th>
+                                    <th class="cs-sortable" data-col="patternCount" style="width:80px" data-bs-toggle="tooltip" data-bs-placement="top" title="Hissede tespit edilen toplam formasyon sayısı.">
+                                        Sayı <i class="ri-arrow-up-down-line text-muted ms-1"></i>
+                                    </th>
+                                    <th data-bs-toggle="tooltip" data-bs-placement="top" title="Tespit edilen mum formasyonları. Yeşil=Boğa, Kırmızı=Ayı, Sarı=Kararsızlık.">Formasyonlar</th>
+                                    <th class="text-center" style="width:80px">Periyot</th>
+                                </tr>
+                            </thead>
+                            <tbody id="csTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Boş durum -->
+                    <div id="csEmpty" class="text-center py-5" style="display:none;">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#405189,secondary:#0ab39c" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Sonuç Bulunamadı</h5>
+                        <p class="text-muted mb-0">Seçili filtrelere uygun mum formasyonu bulunamadı.</p>
+                    </div>
+
+                    <!-- Sayfalama -->
+                    <div class="d-flex justify-content-between align-items-center mt-3" id="csPagination" style="display:none;">
+                        <div class="text-muted" id="csPaginationInfo">0 hisse</div>
+                        <nav>
+                            <ul class="pagination pagination-separated mb-0" id="csPaginationNav"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mum Formasyon Detay Modal -->
+    <div class="modal fade" id="csDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="csDetailModalTitle">Mum Formasyonları</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body" id="csDetailModalBody">
+                    <!-- JS tarafından dinamik olarak doldurulur -->
+                </div>
+            </div>
+        </div>
+    </div>
+
 </section>
 
 <th:block layout:fragment="pagejs">
@@ -482,6 +880,7 @@
     </script>
     <script th:src="@{/js/hazir-taramalar.js}"></script>
     <script th:src="@{/js/pattern-screener.js}"></script>
+    <script th:src="@{/js/candle-screener.js}"></script>
 </th:block>
 </body>
 

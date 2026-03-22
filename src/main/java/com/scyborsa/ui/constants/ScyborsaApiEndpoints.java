@@ -220,6 +220,11 @@ public final class ScyborsaApiEndpoints {
     /** Formasyon tarama endpoint'i. */
     public static final String PATTERN_SCREENER_SCAN = "/api/v1/pattern-screener/scan";
 
+    // ── Mum Formasyonları ──────────────────────────────────────
+
+    /** Mum formasyonu tarama endpoint'i. */
+    public static final String CANDLE_PATTERNS_SCAN = "/api/v1/candle-patterns/scan";
+
     // ── Temettü ──────────────────────────────────────────
 
     /** Yaklasan temettu bilgileri endpoint'i. */

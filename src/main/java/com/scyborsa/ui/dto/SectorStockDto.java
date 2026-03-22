@@ -25,4 +25,7 @@ public class SectorStockDto {
     private double volume;
     /** TradingView logo kimligi. */
     private String logoid;
+
+    /** Gunluk acilis fiyati (TL). */
+    private double open;
 }

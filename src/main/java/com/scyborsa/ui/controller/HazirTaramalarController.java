@@ -2,6 +2,7 @@ package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.HazirTaramalarResponseDto;
 import com.scyborsa.ui.dto.PresetStrategyDto;
+import com.scyborsa.ui.service.CandlePatternService;
 import com.scyborsa.ui.service.HazirTaramalarService;
 import com.scyborsa.ui.service.PatternScreenerService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,9 @@ public class HazirTaramalarController {
 
     /** Formasyon tarama verilerini saglayan servis. */
     private final PatternScreenerService patternScreenerService;
+
+    /** Mum formasyonu tarama verilerini saglayan servis. */
+    private final CandlePatternService candlePatternService;
 
     /**
      * Hazir taramalar sayfasini gosterir.
@@ -100,5 +104,24 @@ public class HazirTaramalarController {
     public Map<String, Object> patternScan() {
         log.info("[HAZIR-TARAMALAR-UI] Formasyon tarama istendi");
         return patternScreenerService.scan();
+    }
+
+    /**
+     * Mum formasyonu tarama calistirir (AJAX endpoint).
+     *
+     * <p>{@code GET /ajax/hazir-taramalar/candle-scan?period=1D} istegini karsilar.
+     * Periyot parametresi sanitize edilir (max 3 karakter).</p>
+     *
+     * @param period tarama periyodu (varsayilan: 1D)
+     * @return mum formasyonu tarama sonuclari JSON
+     */
+    @GetMapping("/ajax/hazir-taramalar/candle-scan")
+    @ResponseBody
+    public Map<String, Object> candleScan(@RequestParam(defaultValue = "1D") String period) {
+        // Sanitize period: strip control chars, max 3 chars
+        String safePeriod = period.replaceAll("[\\p{Cntrl}]", "");
+        safePeriod = safePeriod.length() > 3 ? safePeriod.substring(0, 3) : safePeriod;
+        log.info("[HAZIR-TARAMALAR-UI] Mum formasyonu tarama istendi, periyot: {}", safePeriod);
+        return candlePatternService.scan(safePeriod);
     }
 }
