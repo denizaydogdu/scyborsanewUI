@@ -9,8 +9,8 @@
     var sortOrder = 'desc';
 
     // Formasyon yon siniflandirmasi
-    var BULLISH_PATTERNS = ['Yükselen Kanal', 'Yükselen Kama', 'Yükselen Üçgen'];
-    var BEARISH_PATTERNS = ['Düşen Kanal', 'Düşen Kama', 'Düşen Üçgen'];
+    var BULLISH_PATTERNS = ['Yükselen Kanal', 'Yükselen Kama', 'Yükselen Üçgen', 'İkili Dip', 'Fincan Kulp'];
+    var BEARISH_PATTERNS = ['Düşen Kanal', 'Düşen Kama', 'Düşen Üçgen', 'İkili Tepe'];
 
     function getPatternDirection(name) {
         if (BULLISH_PATTERNS.indexOf(name) !== -1) return 'bullish';
@@ -37,7 +37,10 @@
         'Simetrik Üçgen': '<svg width="48" height="28" viewBox="0 0 48 28"><polygon points="2,2 2,26 44,14 44,14" fill="#f7b84b" opacity="0.08"/><line x1="2" y1="2" x2="44" y2="14" stroke="#f7b84b" stroke-width="1" opacity="0.6"/><line x1="2" y1="26" x2="44" y2="14" stroke="#f7b84b" stroke-width="1" opacity="0.6"/><polyline points="4,22 8,5 12,20 16,8 20,18 24,10 28,17 32,12 36,15 40,13 44,14" stroke="#f7b84b" stroke-width="1.5" fill="none"/></svg>',
         'Düşen Üçgen': '<svg width="48" height="28" viewBox="0 0 48 28"><polygon points="2,2 46,22 46,22 2,22" fill="#f06548" opacity="0.08"/><line x1="2" y1="22" x2="46" y2="22" stroke="#f06548" stroke-width="1" opacity="0.6"/><line x1="2" y1="2" x2="46" y2="22" stroke="#f06548" stroke-width="1" opacity="0.6"/><polyline points="4,4 8,20 12,6 16,21 20,10 24,21 28,14 32,21 36,18 40,21 44,26" stroke="#f06548" stroke-width="1.5" fill="none"/></svg>',
         'Yükselen Üçgen': '<svg width="48" height="28" viewBox="0 0 48 28"><polygon points="2,26 46,6 46,6 2,6" fill="#0ab39c" opacity="0.08"/><line x1="2" y1="6" x2="46" y2="6" stroke="#0ab39c" stroke-width="1" opacity="0.6"/><line x1="2" y1="26" x2="46" y2="6" stroke="#0ab39c" stroke-width="1" opacity="0.6"/><polyline points="4,24 8,8 12,22 16,7 20,18 24,7 28,15 32,7 36,12 40,7 44,3" stroke="#0ab39c" stroke-width="1.5" fill="none"/></svg>',
-        'Dikdörtgen': '<svg width="48" height="28" viewBox="0 0 48 28"><polygon points="2,6 46,6 46,22 2,22" fill="#f7b84b" opacity="0.08"/><line x1="2" y1="6" x2="46" y2="6" stroke="#f7b84b" stroke-width="1" opacity="0.6"/><line x1="2" y1="22" x2="46" y2="22" stroke="#f7b84b" stroke-width="1" opacity="0.6"/><polyline points="4,12 8,20 12,8 16,20 20,8 24,18 28,8 32,20 36,8 40,18 44,14" stroke="#f7b84b" stroke-width="1.5" fill="none"/></svg>'
+        'Dikdörtgen': '<svg width="48" height="28" viewBox="0 0 48 28"><polygon points="2,6 46,6 46,22 2,22" fill="#f7b84b" opacity="0.08"/><line x1="2" y1="6" x2="46" y2="6" stroke="#f7b84b" stroke-width="1" opacity="0.6"/><line x1="2" y1="22" x2="46" y2="22" stroke="#f7b84b" stroke-width="1" opacity="0.6"/><polyline points="4,12 8,20 12,8 16,20 20,8 24,18 28,8 32,20 36,8 40,18 44,14" stroke="#f7b84b" stroke-width="1.5" fill="none"/></svg>',
+        'İkili Tepe': '<svg width="48" height="28" viewBox="0 0 48 28"><polyline points="2,24 8,8 14,16 20,6 26,16 32,8 38,16 44,24" stroke="#f06548" stroke-width="1.5" fill="none"/><line x1="8" y1="8" x2="32" y2="8" stroke="#f06548" stroke-width="0.8" stroke-dasharray="2"/><polygon points="2,24 8,8 14,16 20,6 26,16 32,8 38,16 44,24" fill="#f06548" opacity="0.06"/></svg>',
+        'İkili Dip': '<svg width="48" height="28" viewBox="0 0 48 28"><polyline points="2,4 8,20 14,12 20,22 26,12 32,20 38,12 44,4" stroke="#0ab39c" stroke-width="1.5" fill="none"/><line x1="8" y1="20" x2="32" y2="20" stroke="#0ab39c" stroke-width="0.8" stroke-dasharray="2"/><polygon points="2,4 8,20 14,12 20,22 26,12 32,20 38,12 44,4" fill="#0ab39c" opacity="0.06"/></svg>',
+        'Fincan Kulp': '<svg width="48" height="28" viewBox="0 0 48 28"><path d="M2,6 C2,6 6,24 24,24 C42,24 38,6 38,6" stroke="#06b6d4" stroke-width="1.5" fill="none"/><polyline points="38,6 40,10 42,8 44,6" stroke="#06b6d4" stroke-width="1.5" fill="none"/><line x1="2" y1="6" x2="44" y2="6" stroke="#06b6d4" stroke-width="0.8" stroke-dasharray="2"/></svg>'
     };
 
     var PATTERN_INFO = {
@@ -94,6 +97,24 @@
             direction: 'Belirsiz', dirColor: 'warning', reliability: '%68-85', category: 'Nötr',
             action: 'Kırılma yönünü bekleyin. Yukarı kırılırsa alış, aşağı kırılırsa satış sinyali. Hacim artışı ile doğrulayın.',
             warning: 'Kırılma yönü belirsizdir. Pozisyon almadan önce hacim teyidi alınmalıdır.'
+        },
+        'İkili Tepe': {
+            desc: 'Fiyat iki kez aynı seviyeye çıkıp geri döner (M şekli). Güçlü direnç ve trend dönüşü sinyali.',
+            direction: 'Düşüş', dirColor: 'danger', reliability: '%72-78', category: 'Dönüş',
+            action: 'Boyun çizgisi (iki tepe arasındaki dip) kırılırsa satış sinyali. Hacim artışı ile teyit alın. Hedef: boyun çizgisinden tepe yüksekliği kadar aşağı.',
+            warning: 'İki tepe arasındaki süre çok kısa ise güvenilirlik düşer. İkinci tepe birinciden belirgin yüksekse formasyon geçersizdir.'
+        },
+        'İkili Dip': {
+            desc: 'Fiyat iki kez aynı seviyeye düşüp geri döner (W şekli). Güçlü destek ve trend dönüşü sinyali.',
+            direction: 'Yükseliş', dirColor: 'success', reliability: '%72-78', category: 'Dönüş',
+            action: 'Boyun çizgisi (iki dip arasındaki tepe) kırılırsa alım sinyali. Hacim artışı ile teyit alın. Hedef: boyun çizgisinden dip derinliği kadar yukarı.',
+            warning: 'İki dip arasındaki süre çok kısa ise güvenilirlik düşer. İkinci dip birinciden belirgin düşükse formasyon geçersizdir.'
+        },
+        'Fincan Kulp': {
+            desc: 'U şekilli yumuşak dip (fincan) ve ardından küçük geri çekilme (kulp). Güçlü yükseliş devam formasyonu.',
+            direction: 'Yükseliş', dirColor: 'success', reliability: '%65-75', category: 'Devam',
+            action: 'Kulp kırılımında alım yapın. Hedef: fincan derinliği kadar yukarı. Hacim kulp kırılımında artmalı.',
+            warning: 'Kulp fincandan derin olmamalı (%50 max). Fincan tabanı sivri değil yuvarlak olmalı. V şekli fincan güvenilir değildir.'
         }
     };
 
@@ -174,7 +195,7 @@
 
         filteredPatterns = allPatterns.filter(function(p) {
             if (type !== 'all' && p.patternName !== type) return false;
-            if (windowVal !== 'all' && p.window !== parseInt(windowVal, 10)) return false;
+            if (windowVal !== 'all' && p.window != null && p.window !== parseInt(windowVal, 10)) return false;
             if (period !== 'all' && p.period !== period) return false;
             if (direction !== 'all' && getPatternDirection(p.patternName) !== direction) return false;
             return true;
@@ -234,14 +255,14 @@
 
         var tr = document.createElement('tr');
         tr.style.borderLeft = '3px solid ' + dirBorder;
-        if (p.filename) {
-            tr.setAttribute('data-filename', p.filename);
-            tr.setAttribute('data-symbol', p.symbol || '');
-            tr.setAttribute('data-pattern', p.patternName || '');
-            tr.setAttribute('data-score', p.score != null ? p.score.toFixed(3) : '');
-            tr.setAttribute('data-distance', p.distance != null ? p.distance.toFixed(1) : '');
-            tr.style.cursor = 'pointer';
-        }
+        tr.style.cursor = 'pointer';
+        if (p.filename) tr.setAttribute('data-filename', p.filename);
+        tr.setAttribute('data-symbol', p.symbol || '');
+        tr.setAttribute('data-pattern', p.patternName || '');
+        tr.setAttribute('data-score', p.score != null ? p.score.toFixed(3) : '');
+        tr.setAttribute('data-distance', p.distance != null ? p.distance.toFixed(1) : '');
+        tr.setAttribute('data-window', p.window != null ? p.window : '');
+        tr.setAttribute('data-period', p.period || '1D');
 
         // # column
         var tdNum = document.createElement('td');
@@ -308,34 +329,44 @@
         // Skor column (progress bar + number)
         var tdScore = document.createElement('td');
         tdScore.className = 'text-end';
-        var scoreColor = p.score >= 0.25 ? 'success' : (p.score >= 0.15 ? 'warning' : 'secondary');
-        var scoreWrapper = document.createElement('div');
-        scoreWrapper.className = 'd-flex align-items-center justify-content-end gap-2';
+        if (p.score != null) {
+            var scoreColor = p.score >= 0.25 ? 'success' : (p.score >= 0.15 ? 'warning' : 'secondary');
+            var scoreWrapper = document.createElement('div');
+            scoreWrapper.className = 'd-flex align-items-center justify-content-end gap-2';
 
-        var progressDiv = document.createElement('div');
-        progressDiv.className = 'progress progress-sm';
-        progressDiv.style.width = '60px';
-        var progressBar = document.createElement('div');
-        progressBar.className = 'progress-bar bg-' + scoreColor;
-        progressBar.style.width = (p.score != null ? (p.score * 100) : 0) + '%';
-        progressDiv.appendChild(progressBar);
+            var progressDiv = document.createElement('div');
+            progressDiv.className = 'progress progress-sm';
+            progressDiv.style.width = '60px';
+            var progressBar = document.createElement('div');
+            progressBar.className = 'progress-bar bg-' + scoreColor;
+            progressBar.style.width = (p.score * 100) + '%';
+            progressDiv.appendChild(progressBar);
 
-        var scoreSpan = document.createElement('span');
-        scoreSpan.className = 'fw-semibold text-' + scoreColor;
-        scoreSpan.textContent = p.score != null ? p.score.toFixed(3) : '-';
+            var scoreSpan = document.createElement('span');
+            scoreSpan.className = 'fw-semibold text-' + scoreColor;
+            scoreSpan.textContent = p.score.toFixed(3);
 
-        scoreWrapper.appendChild(progressDiv);
-        scoreWrapper.appendChild(scoreSpan);
-        tdScore.appendChild(scoreWrapper);
+            scoreWrapper.appendChild(progressDiv);
+            scoreWrapper.appendChild(scoreSpan);
+            tdScore.appendChild(scoreWrapper);
+        } else {
+            tdScore.className = 'text-end text-muted';
+            tdScore.textContent = '-';
+        }
         tr.appendChild(tdScore);
 
         // Uzaklik column (badge wrapped)
         var tdDistance = document.createElement('td');
         tdDistance.className = 'text-end';
-        var distBadge = document.createElement('span');
-        distBadge.className = 'badge bg-light text-dark';
-        distBadge.textContent = p.distance != null ? '%' + p.distance.toFixed(1) : '-';
-        tdDistance.appendChild(distBadge);
+        if (p.distance != null) {
+            var distBadge = document.createElement('span');
+            distBadge.className = 'badge bg-light text-dark';
+            distBadge.textContent = '%' + p.distance.toFixed(1);
+            tdDistance.appendChild(distBadge);
+        } else {
+            tdDistance.className = 'text-end text-muted';
+            tdDistance.textContent = '-';
+        }
         tr.appendChild(tdDistance);
 
         // Periyot column (two vertical badges)
@@ -376,8 +407,8 @@
         });
         patternTableBody.appendChild(fragment);
 
-        // Row click → pattern detail modal
-        patternTableBody.querySelectorAll('tr[data-filename]').forEach(function(row) {
+        // Row click → pattern detail modal (data-pattern var olan tüm satırlar)
+        patternTableBody.querySelectorAll('tr[data-pattern]').forEach(function(row) {
             row.addEventListener('click', function(e) {
                 if (e.target.closest('a')) return;
 
@@ -400,18 +431,22 @@
                 var scoreNum = parseFloat(score) || 0;
                 var scoreColor = scoreNum >= 0.25 ? 'success' : (scoreNum >= 0.15 ? 'warning' : 'secondary');
 
-                // Distance label
-                var distNum = parseFloat(distance) || 0;
+                // Distance label (null guard for indicator-screener patterns)
                 var distLabel;
-                if (distNum <= 1) distLabel = '%' + distNum.toFixed(1) + ' (çok yakın!)';
-                else if (distNum <= 3) distLabel = '%' + distNum.toFixed(1) + ' (yakın)';
-                else distLabel = '%' + distNum.toFixed(1) + ' (uzak)';
+                if (!distance) {
+                    distLabel = '-';
+                } else {
+                    var distNum = parseFloat(distance) || 0;
+                    if (distNum <= 1) distLabel = '%' + distNum.toFixed(1) + ' (çok yakın!)';
+                    else if (distNum <= 3) distLabel = '%' + distNum.toFixed(1) + ' (yakın)';
+                    else distLabel = '%' + distNum.toFixed(1) + ' (uzak)';
+                }
 
-                // Period info from current filters or data
-                var periodText = document.getElementById('patternPeriodSelect').value;
-                var windowText = document.getElementById('patternWindowSelect').value;
+                // Period/window info from row data attributes (null-safe for indicator-screener patterns)
+                var periodText = this.getAttribute('data-period') || document.getElementById('patternPeriodSelect').value;
+                var windowText = this.getAttribute('data-window') || '';
                 if (periodText === 'all') periodText = '1D';
-                if (windowText === 'all') windowText = '10';
+                if (!windowText) windowText = null;
                 var periodLabel = periodText === '1W' ? 'Haftalık' : 'Günlük';
 
                 var bodyHtml = '';
@@ -445,7 +480,7 @@
                     var catColor = info.category === 'Devam' ? 'info' : (info.category === 'Dönüş' ? 'primary' : 'secondary');
                     bodyHtml += '<span class="badge bg-' + catColor + '-subtle text-' + catColor + '"><i class="ri-bookmark-line me-1"></i>' + info.category + ' Formasyonu</span>';
                 }
-                bodyHtml += '<span class="badge bg-secondary-subtle text-secondary"><i class="ri-time-line me-1"></i>' + periodLabel + ' | ' + windowText + ' Mum</span>';
+                bodyHtml += '<span class="badge bg-secondary-subtle text-secondary"><i class="ri-time-line me-1"></i>' + periodLabel + (windowText ? ' | ' + windowText + ' Mum' : '') + '</span>';
                 bodyHtml += '</div>';
 
                 // Stock detail button

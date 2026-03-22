@@ -19,7 +19,7 @@
     console.log('[CHART] window.STOCK_CHART_API_BASE=' + window.STOCK_CHART_API_BASE);
 
     // ─── State ──────────────────────────────────────────
-    var currentPeriod = '30';
+    var currentPeriod = 'D';
     var chart = null;
     var candleSeries = null;
     var volumeSeries = null;
