@@ -498,8 +498,9 @@
                                     <td th:classappend="${broker.code == 'DIGER' ? 'text-warning' : ''}">
                                         <div class="d-flex align-items-center gap-1">
                                             <img th:if="${broker.logoUrl != null and !broker.logoUrl.isEmpty()}"
-                                                 th:src="${broker.logoUrl}" alt=""
-                                                 class="rounded-circle" style="width:20px;height:20px;object-fit:contain;">
+                                                 th:src="${'/img/brokerage-logos/' + broker.logoUrl.substring(broker.logoUrl.lastIndexOf('/') + 1)}" alt=""
+                                                 class="rounded-circle" style="width:20px;height:20px;object-fit:contain;"
+                                                 onerror="this.style.display='none'">
                                             <span th:text="${broker.shortTitle}">Kurum</span>
                                         </div>
                                     </td>
@@ -530,8 +531,9 @@
                                     <td th:classappend="${broker.code == 'DIGER' ? 'text-warning' : ''}">
                                         <div class="d-flex align-items-center gap-1">
                                             <img th:if="${broker.logoUrl != null and !broker.logoUrl.isEmpty()}"
-                                                 th:src="${broker.logoUrl}" alt=""
-                                                 class="rounded-circle" style="width:20px;height:20px;object-fit:contain;">
+                                                 th:src="${'/img/brokerage-logos/' + broker.logoUrl.substring(broker.logoUrl.lastIndexOf('/') + 1)}" alt=""
+                                                 class="rounded-circle" style="width:20px;height:20px;object-fit:contain;"
+                                                 onerror="this.style.display='none'">
                                             <span th:text="${broker.shortTitle}">Kurum</span>
                                         </div>
                                     </td>
@@ -562,8 +564,9 @@
                                     <td th:classappend="${broker.code == 'DIGER' ? 'text-warning' : ''}">
                                         <div class="d-flex align-items-center gap-1">
                                             <img th:if="${broker.logoUrl != null and !broker.logoUrl.isEmpty()}"
-                                                 th:src="${broker.logoUrl}" alt=""
-                                                 class="rounded-circle" style="width:20px;height:20px;object-fit:contain;">
+                                                 th:src="${'/img/brokerage-logos/' + broker.logoUrl.substring(broker.logoUrl.lastIndexOf('/') + 1)}" alt=""
+                                                 class="rounded-circle" style="width:20px;height:20px;object-fit:contain;"
+                                                 onerror="this.style.display='none'">
                                             <span th:text="${broker.shortTitle}">Kurum</span>
                                         </div>
                                     </td>
@@ -607,7 +610,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <img th:if="${item.logoUrl != null and !item.logoUrl.isEmpty()}"
-                                                 th:src="${item.logoUrl}"
+                                                 th:src="${'/img/brokerage-logos/' + item.logoUrl.substring(item.logoUrl.lastIndexOf('/') + 1)}"
                                                  width="24" height="24"
                                                  class="rounded-circle me-2"
                                                  alt="logo"

@@ -1542,7 +1542,7 @@
 									<!-- Top hisseler -->
 									<div th:if="${sector.topStocks != null and !sector.topStocks.isEmpty()}" class="ms-4 ps-3 mt-1">
 										<div class="d-flex align-items-center py-1" th:each="stock : ${sector.topStocks}">
-											<img th:if="${stock.logoid != null}" th:src="@{/img/stock-logos/{logoid}(logoid=${stock.logoid})}"
+											<img th:if="${stock.logoid != null and !stock.logoid.isEmpty()}" th:src="@{/img/stock-logos/{logoid}(logoid=${stock.logoid})}"
 												 class="rounded-circle me-2" width="16" height="16" alt="" />
 											<span class="fs-12 fw-medium text-body me-2" th:text="${stock.ticker}">--</span>
 											<span class="fs-11 text-muted me-auto text-truncate" style="max-width:120px" th:text="${stock.description}">--</span>
@@ -1595,7 +1595,7 @@
 									<!-- Top hisseler -->
 									<div th:if="${sector.topStocks != null and !sector.topStocks.isEmpty()}" class="ms-4 ps-3 mt-1">
 										<div class="d-flex align-items-center py-1" th:each="stock : ${sector.topStocks}">
-											<img th:if="${stock.logoid != null}" th:src="@{/img/stock-logos/{logoid}(logoid=${stock.logoid})}"
+											<img th:if="${stock.logoid != null and !stock.logoid.isEmpty()}" th:src="@{/img/stock-logos/{logoid}(logoid=${stock.logoid})}"
 												 class="rounded-circle me-2" width="16" height="16" alt="" />
 											<span class="fs-12 fw-medium text-body me-2" th:text="${stock.ticker}">--</span>
 											<span class="fs-11 text-muted me-auto text-truncate" style="max-width:120px" th:text="${stock.description}">--</span>

@@ -710,7 +710,7 @@
         divAvatar.className = 'avatar-xs me-2';
 
         var img = document.createElement('img');
-        img.src = '/img/stock-logos/' + encodeURIComponent(stock.logoid || '');
+        if (stock.logoid) img.src = '/img/stock-logos/' + encodeURIComponent(stock.logoid);
         img.alt = '';
         img.className = 'rounded-circle';
         img.style.cssText = 'width:32px;height:32px;object-fit:cover;';
@@ -1176,7 +1176,7 @@
         avatarDiv.className = 'avatar-sm me-3';
 
         var headerImg = document.createElement('img');
-        headerImg.src = '/img/stock-logos/' + encodeURIComponent(stock.logoid || '');
+        if (stock.logoid) headerImg.src = '/img/stock-logos/' + encodeURIComponent(stock.logoid);
         headerImg.alt = '';
         headerImg.className = 'rounded-circle';
         headerImg.style.cssText = 'width:40px;height:40px;object-fit:cover;';

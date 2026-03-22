@@ -278,7 +278,7 @@
         divAvatar.className = 'avatar-xs me-2';
 
         var img = document.createElement('img');
-        img.src = '/img/stock-logos/' + (p.logoid || '');
+        if (p.logoid) img.src = '/img/stock-logos/' + encodeURIComponent(p.logoid);
         img.alt = '';
         img.className = 'rounded-circle';
         img.style.cssText = 'width:32px;height:32px;object-fit:cover;';
