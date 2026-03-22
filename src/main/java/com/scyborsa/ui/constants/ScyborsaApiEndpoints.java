@@ -225,4 +225,27 @@ public final class ScyborsaApiEndpoints {
     /** Yaklasan temettu bilgileri endpoint'i. */
     public static final String DIVIDENDS = "/api/v1/dividends";
 
+    // ── Bilancolar ──────────────────────────────────────
+
+    /** Tum semboller son bilanco rapor metadata endpoint'i. */
+    public static final String BILANCO_SON = "/api/v1/bilanco/son";
+
+    /** Tek sembol son bilanco rapor metadata endpoint'i. {@code {symbol}} path variable icerir. */
+    public static final String BILANCO_SON_SYMBOL = "/api/v1/bilanco/son/{symbol}";
+
+    /** Bilanco (mali durum tablosu) endpoint'i. {@code {symbol}} path variable icerir. */
+    public static final String BILANCO_DATA = "/api/v1/bilanco/{symbol}";
+
+    /** Gelir tablosu endpoint'i. {@code {symbol}} path variable icerir. */
+    public static final String BILANCO_INCOME = "/api/v1/bilanco/{symbol}/income";
+
+    /** Nakit akim tablosu endpoint'i. {@code {symbol}} path variable icerir. */
+    public static final String BILANCO_CASHFLOW = "/api/v1/bilanco/{symbol}/cashflow";
+
+    /** Tum finansal tablolar (bilanco + gelir + nakit) endpoint'i. {@code {symbol}} path variable icerir. */
+    public static final String BILANCO_ALL = "/api/v1/bilanco/{symbol}/all";
+
+    /** Finansal oranlar endpoint'i. {@code {symbol}} path variable icerir. */
+    public static final String BILANCO_RASYO = "/api/v1/bilanco/{symbol}/rasyo";
+
 }

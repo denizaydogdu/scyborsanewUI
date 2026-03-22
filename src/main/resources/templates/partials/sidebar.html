@@ -97,6 +97,13 @@
 						</li>
 
 						<li class="nav-item">
+							<a class="nav-link menu-link" href="/bilancolar"
+							   th:classappend="${#strings.startsWith(requestURI, '/bilancolar')} ? 'active' : ''">
+								<i class="ri-file-list-3-line"></i> <span>Bilançolar</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
 							<a class="nav-link menu-link" href="/analist-tavsiyeleri">
 								<i class="ri-line-chart-line"></i> <span>Analist Tavsiyeleri</span>
 							</a>
