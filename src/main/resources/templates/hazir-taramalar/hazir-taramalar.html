@@ -895,7 +895,7 @@
                     <div class="row g-3 align-items-end">
                         <!-- Eğim Grubu -->
                         <div class="col-md-3 col-sm-6">
-                            <label class="form-label">Eğim</label>
+                            <label class="form-label fw-medium">Eğim <i class="ri-information-line text-muted fs-11" data-bs-toggle="tooltip" data-bs-placement="top" title="Regresyon çizgisinin yönü. Yükseliş: fiyat genel olarak artıyor. Düşüş: fiyat genel olarak azalıyor. Birden fazla seçilebilir (VEYA mantığı)."></i></label>
                             <div class="d-flex gap-1">
                                 <button type="button" class="btn btn-sm btn-outline-success rc-slope-btn" data-rc-slope="up">
                                     <i class="ri-arrow-up-line me-1"></i>Yükseliş Trendi
@@ -904,10 +904,11 @@
                                     <i class="ri-arrow-down-line me-1"></i>Düşüş Trendi
                                 </button>
                             </div>
+                            <small class="text-muted fs-11 mt-1 d-block">Regresyon çizgisinin genel yönü. Seçmezseniz tüm eğimler gösterilir.</small>
                         </div>
                         <!-- Pozisyon Grubu -->
                         <div class="col-md-5 col-sm-12">
-                            <label class="form-label">Pozisyon</label>
+                            <label class="form-label fw-medium">Pozisyon <i class="ri-information-line text-muted fs-11" data-bs-toggle="tooltip" data-bs-placement="top" title="Fiyatın regresyon kanalı içindeki konumu. Kanal Üstü/Altı: fiyat bant dışında (aşırı alım/satım). Üst/Alt Bölge: bant içi üst/alt yarı. Orta: merkez çizgisine yakın. Birden fazla seçilebilir (VEYA mantığı)."></i></label>
                             <div class="d-flex flex-wrap gap-1">
                                 <button type="button" class="btn btn-sm btn-outline-success rc-position-btn" data-rc-position="above">Kanal Üstü</button>
                                 <button type="button" class="btn btn-sm btn-outline-success rc-position-btn" data-rc-position="upper">Üst Bölge</button>
@@ -915,15 +916,17 @@
                                 <button type="button" class="btn btn-sm btn-outline-danger rc-position-btn" data-rc-position="lower">Alt Bölge</button>
                                 <button type="button" class="btn btn-sm btn-outline-danger rc-position-btn" data-rc-position="below">Kanal Altı</button>
                             </div>
+                            <small class="text-muted fs-11 mt-1 d-block">Fiyatın kanal içindeki konumu. Birden fazla bölge seçilebilir. Seçmezseniz tümü gösterilir.</small>
                         </div>
                         <!-- Trend Gücü -->
                         <div class="col-md-2 col-sm-6">
-                            <label class="form-label">Trend Gücü</label>
+                            <label class="form-label fw-medium">Trend Gücü <i class="ri-information-line text-muted fs-11" data-bs-toggle="tooltip" data-bs-placement="top" title="R² (determinasyon katsayısı) fiyatın regresyon çizgisine uyumunu ölçer. R² ≥ 0.7 güçlü ve güvenilir trend anlamına gelir."></i></label>
                             <div>
                                 <button type="button" class="btn btn-sm btn-outline-info" id="btnRcStrong" data-rc-strong="true">
                                     <i class="ri-focus-2-line me-1"></i>Güçlü Trend R²&gt;0.7
                                 </button>
                             </div>
+                            <small class="text-muted fs-11 mt-1 d-block">Sadece güvenilir kanal yapısına sahip hisseleri filtreler.</small>
                         </div>
                         <!-- Aksiyon Butonları -->
                         <div class="col-md-2 col-sm-6">
