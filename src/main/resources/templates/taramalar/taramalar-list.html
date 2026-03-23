@@ -15,19 +15,22 @@
 
     <!-- Row 1: KPI Cards -->
     <div class="row">
-        <!-- KPI 1: Toplam Sinyal -->
+        <!-- KPI 1: Toplam Tekil Sinyal -->
         <div class="col-xl-4 col-md-4">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1 overflow-hidden">
-                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Toplam Sinyal</p>
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                Toplam Tekil Sinyal
+                                <i class="ri-information-line ms-1 text-info" style="cursor:pointer;opacity:0.6;font-size:0.9em;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Tekil Sinyal</b><br>Aynı hisse + aynı saat birleştirilmiş sinyal sayısı. Bir hisseye aynı anda birden fazla tarama sinyal verirse tek kart olarak gösterilir."></i>
+                            </p>
                         </div>
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-4">
                         <div>
                             <h4 class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:text="${ozet != null ? ozet.toplamSinyal : toplamKart}">0</h4>
+                                th:text="${toplamKart}">0</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white rounded fs-3 border">
@@ -39,19 +42,22 @@
             </div>
         </div>
 
-        <!-- KPI 2: Listede -->
+        <!-- KPI 2: Tabloda Gösterilen -->
         <div class="col-xl-4 col-md-4">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1 overflow-hidden">
-                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Listede</p>
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                Tabloda Gösterilen
+                                <i class="ri-information-line ms-1 text-info" style="cursor:pointer;opacity:0.6;font-size:0.9em;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Tabloda Gösterilen</b><br>Filtreler uygulandıktan sonra tabloda listelenen kayıt sayısı."></i>
+                            </p>
                         </div>
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-4">
                         <div>
                             <h4 class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:text="${groupByStock ? #lists.size(stockGroups) + ' Hisse' : #lists.size(taramalar) + ' Sinyal'}">0</h4>
+                                th:text="${groupByStock ? #lists.size(stockGroups) + ' Hisse' : #lists.size(taramalar) + ' Kart'}">0</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white rounded fs-3 border">
@@ -69,7 +75,10 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1 overflow-hidden">
-                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Benzersiz Hisse</p>
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
+                                Benzersiz Hisse
+                                <i class="ri-information-line ms-1 text-info" style="cursor:pointer;opacity:0.6;font-size:0.9em;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Benzersiz Hisse</b><br>Seçilen tarih aralığında en az bir sinyal alan farklı hisse sayısı."></i>
+                            </p>
                         </div>
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-4">
@@ -347,6 +356,11 @@ function setToday() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Tooltip init
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
+        new bootstrap.Tooltip(el);
+    });
+
     ['startDate', 'endDate'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) {
