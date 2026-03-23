@@ -3,6 +3,8 @@ package com.scyborsa.ui.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.codec.ClientCodecConfigurer;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -32,10 +34,18 @@ public class WebClientConfig {
      *
      * @return base URL'i ayarlanmış {@link WebClient.Builder} örneği
      */
+    /** Maksimum buffer boyutu (2 MB). Taramalar groupByStock gibi büyük JSON response'lar için gerekli. */
+    private static final int MAX_BUFFER_SIZE = 2 * 1024 * 1024;
+
     @Bean
     public WebClient.Builder webClientBuilder() {
+        ExchangeStrategies strategies = ExchangeStrategies.builder()
+                .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(MAX_BUFFER_SIZE))
+                .build();
+
         return WebClient.builder()
-                .baseUrl(apiBaseUrl);
+                .baseUrl(apiBaseUrl)
+                .exchangeStrategies(strategies);
     }
 
 }
