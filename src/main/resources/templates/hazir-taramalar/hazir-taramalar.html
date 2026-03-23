@@ -875,6 +875,332 @@
         </div>
     </div>
 
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- REGRESYON KANALI Bölümü                                         -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <h5 class="text-uppercase mb-3"><i class="ri-line-chart-line me-1"></i> Regresyon Kanalı</h5>
+        </div>
+    </div>
+
+    <!-- Regresyon Filtre Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1">Regresyon Kanalı Filtrele</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <!-- Eğim Grubu -->
+                        <div class="col-md-3 col-sm-6">
+                            <label class="form-label">Eğim</label>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="btn btn-sm btn-outline-success rc-slope-btn" data-rc-slope="up">
+                                    <i class="ri-arrow-up-line me-1"></i>Yükseliş Trendi
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger rc-slope-btn" data-rc-slope="down">
+                                    <i class="ri-arrow-down-line me-1"></i>Düşüş Trendi
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Pozisyon Grubu -->
+                        <div class="col-md-5 col-sm-12">
+                            <label class="form-label">Pozisyon</label>
+                            <div class="d-flex flex-wrap gap-1">
+                                <button type="button" class="btn btn-sm btn-outline-success rc-position-btn" data-rc-position="above">Kanal Üstü</button>
+                                <button type="button" class="btn btn-sm btn-outline-success rc-position-btn" data-rc-position="upper">Üst Bölge</button>
+                                <button type="button" class="btn btn-sm btn-outline-primary rc-position-btn" data-rc-position="middle">Orta Bölge</button>
+                                <button type="button" class="btn btn-sm btn-outline-danger rc-position-btn" data-rc-position="lower">Alt Bölge</button>
+                                <button type="button" class="btn btn-sm btn-outline-danger rc-position-btn" data-rc-position="below">Kanal Altı</button>
+                            </div>
+                        </div>
+                        <!-- Trend Gücü -->
+                        <div class="col-md-2 col-sm-6">
+                            <label class="form-label">Trend Gücü</label>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-info" id="btnRcStrong" data-rc-strong="true">
+                                    <i class="ri-focus-2-line me-1"></i>Güçlü Trend R²&gt;0.7
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Aksiyon Butonları -->
+                        <div class="col-md-2 col-sm-6">
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-primary" id="btnRcScan">
+                                    <i class="ri-search-line me-1"></i> Tara
+                                </button>
+                                <button type="button" class="btn btn-light" id="btnRcReset">
+                                    <i class="ri-refresh-line me-1"></i> Sıfırla
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Regresyon KPI Kartları -->
+    <div class="row" id="rcKpiCards" style="display:none;">
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Toplam Hisse</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="badge bg-primary-subtle text-primary"><i class="ri-bar-chart-2-line"></i></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-2">
+                        <h4 class="fs-22 fw-semibold mb-0" id="rcKpiTotal">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Yükseliş Trendi</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="badge bg-success-subtle text-success"><i class="ri-arrow-up-line"></i></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-2">
+                        <h4 class="fs-22 fw-semibold mb-0 text-success" id="rcKpiUptrend">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Düşüş Trendi</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="badge bg-danger-subtle text-danger"><i class="ri-arrow-down-line"></i></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-2">
+                        <h4 class="fs-22 fw-semibold mb-0 text-danger" id="rcKpiDowntrend">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Güçlü Trend R²&gt;0.7</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="badge bg-info-subtle text-info"><i class="ri-focus-2-line"></i></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-2">
+                        <h4 class="fs-22 fw-semibold mb-0 text-info" id="rcKpiStrong">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Kanal Dışı</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="badge bg-warning-subtle text-warning"><i class="ri-logout-box-line"></i></span>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-2">
+                        <h4 class="fs-22 fw-semibold mb-0 text-warning" id="rcKpiOutside">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Regresyon Bilgi Kartı -->
+    <div class="row" id="rcInfoCard">
+        <div class="col-lg-12">
+            <div class="card card-body border-info border-opacity-25">
+                <a class="text-info fw-medium" data-bs-toggle="collapse" href="#rcInfoCollapse" role="button" aria-expanded="false" aria-controls="rcInfoCollapse">
+                    <i class="ri-information-line me-1"></i>Regresyon Kanalı Nedir? Nasıl Kullanılır?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse mt-3" id="rcInfoCollapse">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-line-chart-line text-info fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Regresyon Kanalı Nedir?</h6>
+                                    <p class="text-muted mb-0 fs-12">Fiyat hareketlerinin istatistiksel eğilim çizgisi etrafındaki dağılımını gösteren bir teknik analiz aracıdır. Doğrusal regresyon ile hesaplanan merkez çizgi ve standart sapma bantlarından oluşur.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-focus-2-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">R² (Determinasyon Katsayısı)</h6>
+                                    <p class="text-muted mb-0 fs-12">Fiyatın regresyon çizgisine ne kadar uyduğunu gösterir (0-1). <strong>R² &gt; 0.7:</strong> Güçlü trend, kanal güvenilir. <strong>R² &lt; 0.3:</strong> Zayıf trend, kanal güvenilmez.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-dashboard-3-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Kanal Pozisyonu (%)</h6>
+                                    <p class="text-muted mb-0 fs-12">Fiyatın kanal içindeki konumunu yüzde olarak gösterir. <strong>0%:</strong> Alt bant, <strong>50%:</strong> Merkez çizgi, <strong>100%:</strong> Üst bant. Negatif veya 100+ ise kanal dışında.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top pt-2">
+                        <h6 class="mb-2 fs-13">Pozisyon Bölgeleri</h6>
+                        <div class="row g-2">
+                            <div class="col-md-2">
+                                <div class="border rounded p-2 bg-success-subtle bg-opacity-10">
+                                    <span class="badge bg-success-subtle text-success mb-1">Kanal Üstü</span>
+                                    <p class="text-muted mb-0 fs-11">%100 üzeri. Aşırı alım, geri çekilme beklenir.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="border rounded p-2 bg-success-subtle bg-opacity-10">
+                                    <span class="badge bg-success-subtle text-success mb-1">Üst Bölge</span>
+                                    <p class="text-muted mb-0 fs-11">%50-%100 arası. Yükseliş momentumu güçlü.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="border rounded p-2 bg-primary-subtle bg-opacity-10">
+                                    <span class="badge bg-primary-subtle text-primary mb-1">Orta Bölge</span>
+                                    <p class="text-muted mb-0 fs-11">%25-%50 arası. Merkez çizgisine yakın, denge bölgesi.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="border rounded p-2 bg-danger-subtle bg-opacity-10">
+                                    <span class="badge bg-danger-subtle text-danger mb-1">Alt Bölge</span>
+                                    <p class="text-muted mb-0 fs-11">%0-%25 arası. Destek bölgesine yakın.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="border rounded p-2 bg-danger-subtle bg-opacity-10">
+                                    <span class="badge bg-danger-subtle text-danger mb-1">Kanal Altı</span>
+                                    <p class="text-muted mb-0 fs-11">%0 altı. Aşırı satım, toparlanma fırsatı.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="border rounded p-2 bg-warning-subtle bg-opacity-10">
+                                    <span class="badge bg-warning-subtle text-warning mb-1">Uyarı</span>
+                                    <p class="text-muted mb-0 fs-11">Regresyon kanalı tek başına yeterli değildir. Hacim ve diğer göstergelerle teyit alın.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Regresyon Loading -->
+    <div class="row" id="rcLoading" style="display:none;">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Yükleniyor...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Regresyon kanalı verileri yükleniyor...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Regresyon Error -->
+    <div class="row" id="rcError" style="display:none;">
+        <div class="col-lg-12">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="ri-error-warning-line me-2"></i>
+                <span id="rcErrorText">Regresyon kanalı verileri yüklenirken hata oluştu. Lütfen tekrar deneyin.</span>
+                <button type="button" class="btn-close" aria-label="Kapat" onclick="document.getElementById('rcError').style.display='none'"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Regresyon Sonuç Tablosu -->
+    <div class="row" id="rcResults" style="display:none;">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1">Regresyon Kanalı Sonuçları</h4>
+                    <div class="flex-shrink-0">
+                        <span id="rcCountBadge" class="badge bg-primary-subtle text-primary">0 Hisse</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:50px">#</th>
+                                    <th class="rc-sortable" data-col="symbol" style="cursor:pointer;">
+                                        Hisse <i class="ri-arrow-up-down-line text-muted ms-1"></i>
+                                    </th>
+                                    <th class="rc-sortable text-center" data-col="slope" style="cursor:pointer;">
+                                        Eğim <i class="ri-arrow-up-down-line text-muted ms-1"></i>
+                                    </th>
+                                    <th class="rc-sortable text-center" data-col="position" style="cursor:pointer;">
+                                        Pozisyon <i class="ri-arrow-up-down-line text-muted ms-1"></i>
+                                    </th>
+                                    <th class="rc-sortable text-end" data-col="r2" style="cursor:pointer;">
+                                        R² <i class="ri-arrow-down-s-fill text-primary ms-1"></i>
+                                    </th>
+                                    <th class="rc-sortable text-end" data-col="period" style="cursor:pointer;">
+                                        Periyot <i class="ri-arrow-up-down-line text-muted ms-1"></i>
+                                    </th>
+                                    <th class="text-center" style="width:180px;"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Fiyatın regresyon kanalı içindeki konumu. 0%=Alt bant, 50%=Merkez, 100%=Üst bant.">
+                                        Kanal Pozisyonu (%) <i class="ri-information-line text-muted fs-12 ms-1"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="rcTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Boş durum -->
+                    <div id="rcEmpty" class="text-center py-5" style="display:none;">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#405189,secondary:#0ab39c" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Sonuç Bulunamadı</h5>
+                        <p class="text-muted mb-0">Seçili filtrelere uygun regresyon kanalı verisi bulunamadı.</p>
+                    </div>
+
+                    <!-- Sayfalama -->
+                    <div class="d-flex justify-content-between align-items-center mt-3" id="rcPagination" style="display:none;">
+                        <div class="text-muted" id="rcPaginationInfo">0 hisse</div>
+                        <nav>
+                            <ul class="pagination pagination-separated mb-0" id="rcPaginationNav"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </section>
 
 <th:block layout:fragment="pagejs">
@@ -884,6 +1210,7 @@
     <script th:src="@{/js/hazir-taramalar.js}"></script>
     <script th:src="@{/js/pattern-screener.js}"></script>
     <script th:src="@{/js/candle-screener.js}"></script>
+    <script th:src="@{/js/regression-screener.js}"></script>
 </th:block>
 </body>
 

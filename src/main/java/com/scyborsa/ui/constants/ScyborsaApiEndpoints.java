@@ -225,6 +225,11 @@ public final class ScyborsaApiEndpoints {
     /** Mum formasyonu tarama endpoint'i. */
     public static final String CANDLE_PATTERNS_SCAN = "/api/v1/candle-patterns/scan";
 
+    // ── Regresyon Kanalı ──────────────────────────────────────
+
+    /** Regresyon kanali tarama endpoint'i. */
+    public static final String REGRESSION_SCREENER_SCAN = "/api/v1/regression-screener/scan";
+
     // ── Temettü ──────────────────────────────────────────
 
     /** Yaklasan temettu bilgileri endpoint'i. */

@@ -5,6 +5,7 @@ import com.scyborsa.ui.dto.PresetStrategyDto;
 import com.scyborsa.ui.service.CandlePatternService;
 import com.scyborsa.ui.service.HazirTaramalarService;
 import com.scyborsa.ui.service.PatternScreenerService;
+import com.scyborsa.ui.service.RegressionScreenerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -39,6 +40,9 @@ public class HazirTaramalarController {
 
     /** Mum formasyonu tarama verilerini saglayan servis. */
     private final CandlePatternService candlePatternService;
+
+    /** Regresyon kanali tarama verilerini saglayan servis. */
+    private final RegressionScreenerService regressionScreenerService;
 
     /**
      * Hazir taramalar sayfasini gosterir.
@@ -123,5 +127,20 @@ public class HazirTaramalarController {
         safePeriod = safePeriod.length() > 3 ? safePeriod.substring(0, 3) : safePeriod;
         log.info("[HAZIR-TARAMALAR-UI] Mum formasyonu tarama istendi, periyot: {}", safePeriod);
         return candlePatternService.scan(safePeriod);
+    }
+
+    /**
+     * Regresyon kanali tarama calistirir (AJAX endpoint).
+     *
+     * <p>{@code GET /ajax/hazir-taramalar/regression-scan} istegini karsilar.
+     * Tum hisseler icin regresyon kanali verilerini tarar ve sonuclari JSON olarak doner.</p>
+     *
+     * @return regresyon kanali tarama sonuclari JSON (regressions listesi + totalCount)
+     */
+    @GetMapping("/ajax/hazir-taramalar/regression-scan")
+    @ResponseBody
+    public Map<String, Object> regressionScan() {
+        log.info("[HAZIR-TARAMALAR-UI] Regresyon kanali tarama istendi");
+        return regressionScreenerService.scan();
     }
 }
