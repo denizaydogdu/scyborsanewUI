@@ -63,19 +63,19 @@
                 <div class="card-header">
                     <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link fs-14 fw-semibold" id="tab-future" data-bs-toggle="tab" href="#panel-future" role="tab">
+                            <a class="nav-link fs-14 fw-semibold" id="tab-future" data-bs-toggle="tab" href="#panel-future" role="tab" aria-selected="false">
                                 <i class="ri-calendar-event-line me-1"></i>Gelecek
                                 <span class="badge bg-warning ms-1" id="badge-future">0</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active fs-14 fw-semibold" id="tab-today" data-bs-toggle="tab" href="#panel-today" role="tab">
+                            <a class="nav-link active fs-14 fw-semibold" id="tab-today" data-bs-toggle="tab" href="#panel-today" role="tab" aria-selected="true">
                                 <i class="ri-calendar-check-line me-1"></i>Bugun
                                 <span class="badge bg-info ms-1" id="badge-today">0</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fs-14 fw-semibold" id="tab-past" data-bs-toggle="tab" href="#panel-past" role="tab">
+                            <a class="nav-link fs-14 fw-semibold" id="tab-past" data-bs-toggle="tab" href="#panel-past" role="tab" aria-selected="false">
                                 <i class="ri-history-line me-1"></i>Gecmis
                                 <span class="badge bg-secondary ms-1" id="badge-past">0</span>
                             </a>
@@ -106,7 +106,7 @@
                         </div>
 
                         <!-- Bugun -->
-                        <div class="tab-pane active" id="panel-today" role="tabpanel">
+                        <div class="tab-pane active show" id="panel-today" role="tabpanel">
                             <div class="table-responsive">
                                 <table class="table table-striped align-middle mb-0">
                                     <thead>
@@ -291,8 +291,10 @@
             var hideTab = document.getElementById(hideTabId);
             if (tab && showPanel && hidePanel && hideTab) {
                 hideTab.classList.remove('active');
+                hideTab.setAttribute('aria-selected', 'false');
                 hidePanel.classList.remove('active', 'show');
                 tab.classList.add('active');
+                tab.setAttribute('aria-selected', 'true');
                 showPanel.classList.add('active', 'show');
             }
         }
