@@ -29,3 +29,8 @@ File: Custom Css File
     font-size: 13px;
     cursor: pointer;
 }
+
+/* Sidebar "Yakında" bolumu — disabled menu ogeleri */
+.nav-link.menu-link.disabled {
+    opacity: 0.6;
+}
