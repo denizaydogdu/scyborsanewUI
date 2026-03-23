@@ -444,9 +444,10 @@
         img.style.cssText = 'width:32px;height:32px;object-fit:cover;';
 
         var divFallback = document.createElement('div');
-        divFallback.className = 'avatar-title rounded-circle bg-primary-subtle text-primary';
-        divFallback.style.cssText = 'display:none;width:32px;height:32px;font-size:12px;';
-        divFallback.textContent = (stock.symbol || '??').substring(0, 2);
+        divFallback.className = 'avatar-title rounded-circle';
+        divFallback.style.cssText = 'display:none;width:32px;height:32px;font-size:11px;font-weight:600;background:#f3f6f9;color:#495057;border:1px solid #e9ebec;';
+        var sym = stock.symbol || '??';
+        divFallback.textContent = sym.length >= 3 ? sym.charAt(0) + sym.charAt(Math.floor(sym.length / 2)) : sym.substring(0, 2);
 
         if (stock.logoid) {
             img.src = '/img/stock-logos/' + encodeURIComponent(stock.logoid);
