@@ -29,6 +29,9 @@ public class KapNewsItemDto {
     /** Haber saglayici adi (orn: "kap", "Fintables", "Matriks"). */
     private String provider;
 
+    /** Yayinlanma zamani (unix epoch saniye). */
+    private Long published;
+
     /** Formatlanmis yayinlanma zamani (orn: "03 Mart 2026 14:30"). */
     private String formattedPublished;
 
