@@ -63,8 +63,9 @@
                                     <p class="text-muted">Scyborsa'ya erisim icin giris yapin.</p>
                                 </div>
 
+                                <!-- scyborsa-login-page -->
                                 <!-- Oturum suresi doldu mesaji -->
-                                <div th:if="${param.timeout}" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+                                <div th:if="${param.timeout != null && param.timeout[0] == 'true'}" class="alert alert-info alert-dismissible fade show mt-3" role="alert">
                                     <i class="ri-time-line me-1"></i> Oturumunuz sona erdi. Lütfen tekrar giriş yapın.
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
                                 </div>

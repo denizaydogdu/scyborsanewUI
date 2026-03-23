@@ -27,17 +27,18 @@
      * @returns {boolean} Login sayfasi ise true
      */
     function isLoginPage(text) {
-        return text && text.indexOf('loginBtn') !== -1 && text.indexOf('auth-page-wrapper') !== -1;
+        return text && text.indexOf('<!-- scyborsa-login-page -->') !== -1;
     }
 
     // Global fetch interceptor
     var originalFetch = window.fetch;
     window.fetch = function () {
         return originalFetch.apply(this, arguments).then(function (response) {
-            // Login URL'sine redirect edildiyse
-            if (response.redirected && response.url && response.url.indexOf('/login') !== -1) {
-                redirectToLogin();
-            }
+            try {
+                if (response.redirected && response.url && response.url.indexOf('/login') !== -1) {
+                    redirectToLogin();
+                }
+            } catch (e) { /* guard hatasi — yoksay */ }
             return response;
         });
     };
@@ -47,7 +48,6 @@
     XMLHttpRequest.prototype.open = function () {
         this.addEventListener('load', function () {
             if (this.responseURL && this.responseURL.indexOf('/login') !== -1) {
-                // Yanit login sayfasi HTML'i mi kontrol et
                 if (isLoginPage(this.responseText)) {
                     redirectToLogin();
                 }
@@ -61,7 +61,8 @@
         if (redirecting) return;
         fetch('/ajax/session-check', { credentials: 'same-origin' })
             .then(function (res) {
-                if (!res.ok || (res.redirected && res.url.indexOf('/login') !== -1)) {
+                if (redirecting) return;
+                if (!res.ok) {
                     redirectToLogin();
                 }
             })
