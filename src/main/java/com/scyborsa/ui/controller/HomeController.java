@@ -201,4 +201,19 @@ public class HomeController {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
+    /**
+     * Session gecerlilik kontrolu.
+     *
+     * <p>Session-guard.js tarafindan 60sn aralikla cagirilir. Authenticated endpoint
+     * oldugu icin session suresi doldugunda Spring Security otomatik olarak /login'e
+     * redirect yapar — client bu redirect'i yakalayip kullaniciyi login sayfasina yonlendirir.</p>
+     *
+     * @return 200 OK (session gecerli)
+     */
+    @GetMapping("/ajax/session-check")
+    @ResponseBody
+    public ResponseEntity<Void> sessionCheck() {
+        return ResponseEntity.ok().build();
+    }
 }
