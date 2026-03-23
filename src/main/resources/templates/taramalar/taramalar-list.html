@@ -21,16 +21,14 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1 overflow-hidden">
-                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
-                                Toplam Tekil Sinyal
-                                <i class="ri-information-line ms-1 text-info" style="cursor:pointer;opacity:0.6;font-size:0.9em;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Tekil Sinyal</b><br>Aynı hisse + aynı saat birleştirilmiş sinyal sayısı. Bir hisseye aynı anda birden fazla tarama sinyal verirse tek kart olarak gösterilir."></i>
-                            </p>
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Toplam Tekil Sinyal</p>
                         </div>
                     </div>
-                    <div class="d-flex align-items-end justify-content-between mt-4">
+                    <div class="d-flex align-items-end justify-content-between mt-2">
                         <div>
-                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-1"
                                 th:text="${toplamKart}">0</h4>
+                            <p class="text-muted fs-12 mb-0">Ayni hisse + saat birlestirilerek hesaplanir</p>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white rounded fs-3 border">
@@ -48,16 +46,14 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1 overflow-hidden">
-                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
-                                Tabloda Gösterilen
-                                <i class="ri-information-line ms-1 text-info" style="cursor:pointer;opacity:0.6;font-size:0.9em;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Tabloda Gösterilen</b><br>Filtreler uygulandıktan sonra tabloda listelenen kayıt sayısı."></i>
-                            </p>
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Tabloda Gosterilen</p>
                         </div>
                     </div>
-                    <div class="d-flex align-items-end justify-content-between mt-4">
+                    <div class="d-flex align-items-end justify-content-between mt-2">
                         <div>
-                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-1"
                                 th:text="${groupByStock ? #lists.size(stockGroups) + ' Hisse' : #lists.size(taramalar) + ' Kart'}">0</h4>
+                            <p class="text-muted fs-12 mb-0">Filtreler uygulandiktan sonraki sayi</p>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white rounded fs-3 border">
@@ -75,16 +71,14 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1 overflow-hidden">
-                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">
-                                Benzersiz Hisse
-                                <i class="ri-information-line ms-1 text-info" style="cursor:pointer;opacity:0.6;font-size:0.9em;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Benzersiz Hisse</b><br>Seçilen tarih aralığında en az bir sinyal alan farklı hisse sayısı."></i>
-                            </p>
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Benzersiz Hisse</p>
                         </div>
                     </div>
-                    <div class="d-flex align-items-end justify-content-between mt-4">
+                    <div class="d-flex align-items-end justify-content-between mt-2">
                         <div>
-                            <h4 class="fs-22 fw-semibold ff-secondary mb-4"
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-1"
                                 th:text="${ozet != null ? ozet.benzersizHisseSayisi : #lists.size(stockGroups)}">0</h4>
+                            <p class="text-muted fs-12 mb-0">En az 1 sinyal alan farkli hisse sayisi</p>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white rounded fs-3 border">
