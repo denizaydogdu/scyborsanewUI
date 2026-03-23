@@ -45,7 +45,7 @@ public class SecurityConfig {
         http
             .authenticationProvider(authProvider)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/ws-auth-check", "/assets/**", "/css/**", "/js/**", "/img/**",
+                .requestMatchers("/", "/login", "/ws-auth-check", "/robots.txt", "/assets/**", "/css/**", "/js/**", "/img/**",
                                  "/webjars/**", "/favicon.ico", "/error",
                                  "/.well-known/**").permitAll()
                 .requestMatchers("/backoffice/**").hasRole("ADMIN")
@@ -79,11 +79,12 @@ public class SecurityConfig {
                     .policy("camera=(), microphone=(), geolocation=()"));
                 headers.contentSecurityPolicy(csp -> csp
                     .policyDirectives("default-src 'self'; "
-                        + "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com; "
+                        + "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://googleads.g.doubleclick.net; "
                         + "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
-                        + "img-src 'self' data: https://s3-symbol-logo.tradingview.com https://storage.fintables.com; "
+                        + "img-src 'self' data: https://s3-symbol-logo.tradingview.com https://storage.fintables.com https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://*.google.com; "
                         + "font-src 'self' data: https://fonts.gstatic.com; "
-                        + "connect-src 'self' wss: ws: https://cdn.jsdelivr.net https://cdn.lordicon.com;"));
+                        + "frame-src https://www.googletagmanager.com; "
+                        + "connect-src 'self' wss: ws: https://cdn.jsdelivr.net https://cdn.lordicon.com https://www.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://stats.g.doubleclick.net https://*.google-analytics.com https://*.analytics.google.com;"));
             });
         return http.build();
     }

@@ -1,0 +1,5 @@
+# Scyborsa - Kapali platform, arama motorlari indekslemesin
+User-agent: *
+Disallow: /
+
+# Sitemap yok - kapali platform
