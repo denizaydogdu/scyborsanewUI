@@ -1101,7 +1101,7 @@ function renderNewsList(containerId, items, iconClass, colorClass, emptyMsg, vie
     var todayItems = [];
     var pastItems = [];
     items.forEach(function(item) {
-        var dateStr = _getNewsItemDateStr(item);
+        var dateStr = _getNewsItemDateStr(item, todayStr);
         if (dateStr > todayStr) futureItems.push(item);
         else if (dateStr === todayStr) todayItems.push(item);
         else pastItems.push(item);
@@ -1129,7 +1129,7 @@ function renderNewsList(containerId, items, iconClass, colorClass, emptyMsg, vie
 
     // Gecmis bolumu (sadece gelecek ve bugun az ise goster)
     var shownCount = Math.min(futureItems.length, maxPerGroup) + Math.min(todayItems.length, maxPerGroup);
-    if (pastItems.length > 0 && shownCount < 6) {
+    if (pastItems.length > 0 && shownCount < 10) {
         var pastMax = Math.min(pastItems.length, 10 - shownCount);
         if (pastMax > 0) {
             var sep2 = document.createElement('hr');
@@ -1138,14 +1138,6 @@ function renderNewsList(containerId, items, iconClass, colorClass, emptyMsg, vie
             _renderNewsGroupHeader(container, 'Ge\u00E7mi\u015F', 'ri-history-line', 'text-secondary', pastItems.length);
             _renderNewsGroupItems(container, pastItems.slice(0, pastMax), iconClass);
         }
-    }
-
-    // Hic haber yoksa
-    if (futureItems.length === 0 && todayItems.length === 0 && pastItems.length === 0) {
-        var noData = document.createElement('div');
-        noData.className = 'text-center text-muted py-3';
-        noData.textContent = emptyMsg;
-        container.appendChild(noData);
     }
 
     // "Tumu" linki
@@ -1230,8 +1222,7 @@ function _getNewsTodayStr() {
 }
 
 /** Haber item'inin tarih string'ini dondurur (YYYY-MM-DD) */
-function _getNewsItemDateStr(item) {
-    var todayStr = _getNewsTodayStr();
+function _getNewsItemDateStr(item, todayStr) {
     if (item.published) {
         var turkeyOffset = 3 * 60;
         var d = new Date(item.published * 1000);
