@@ -241,12 +241,13 @@
                     <!-- Tablo + Accordion -->
                     <div th:if="${!#lists.isEmpty(stockGroups)}">
                         <!-- Kolon Basliklari -->
-                        <div class="row text-muted fw-semibold fs-12 text-uppercase border-bottom pb-2 mb-2 px-3">
+                        <div class="row text-muted fw-semibold fs-12 text-uppercase border-bottom pb-2 mb-0" style="padding-left:20px;padding-right:56px;">
                             <div class="col-1">#</div>
                             <div class="col-3">Hisse</div>
                             <div class="col-3 text-center">Sinyal</div>
                             <div class="col-2 text-end">Fiyat</div>
-                            <div class="col-3 text-end">Son Fiyat</div>
+                            <div class="col-2 text-end">Son Fiyat</div>
+                            <div class="col-1 text-end">Detay</div>
                         </div>
                         <div class="accordion" id="stockGroupAccordion">
                         <div class="accordion-item border-0 border-bottom" th:each="g, stat : ${stockGroups}">
@@ -256,7 +257,7 @@
                                         th:attr="data-bs-target='#collapse-' + ${stat.index},
                                                  aria-controls='collapse-' + ${stat.index}"
                                         aria-expanded="false">
-                                    <div class="row align-items-center w-100 me-3">
+                                    <div class="row align-items-center w-100">
                                         <div class="col-1">
                                             <span class="fw-semibold text-muted" th:text="${stat.index + 1}">1</span>
                                         </div>
@@ -273,7 +274,7 @@
                                         <div class="col-2 text-end">
                                             <span th:text="${g.formattedIlkFiyat}">0.00</span>
                                         </div>
-                                        <div class="col-3 text-end">
+                                        <div class="col-2 text-end">
                                             <span th:text="${g.formattedSonFiyat}">0.00</span>
                                         </div>
                                     </div>
