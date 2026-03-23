@@ -997,7 +997,8 @@ function renderKapNewsList(items) {
         return;
     }
 
-    items.slice(0, 5).forEach(function(item, index) {
+    var maxItems = 10;
+    items.slice(0, maxItems).forEach(function(item, index) {
         var wrapper = document.createElement('div');
         wrapper.className = index === 0 ? '' : 'mt-3';
 
@@ -1046,7 +1047,7 @@ function renderKapNewsList(items) {
         wrapper.appendChild(titleP);
 
         // Ayırıcı çizgi (son item hariç)
-        if (index < Math.min(items.length, 5) - 1) {
+        if (index < Math.min(items.length, maxItems) - 1) {
             var hr = document.createElement('hr');
             hr.className = 'my-0 mt-3 text-muted opacity-25';
             wrapper.appendChild(hr);
@@ -1068,13 +1069,12 @@ function renderKapNewsList(items) {
 
 /**
  * Ortak haber listesi render fonksiyonu (Piyasa Haberleri + Dünya Haberleri).
- * renderKapNewsList pattern'ini takip eder, parametrize edilmiştir.
+ * Haberleri Gelecek / Bugun olarak gruplar, alt basliklar ile gosterir.
  */
 function renderNewsList(containerId, items, iconClass, colorClass, emptyMsg, viewAllText, viewAllHref) {
     var container = document.getElementById(containerId);
     if (!container) return;
 
-    // Mevcut içeriği temizle
     while (container.firstChild) {
         container.removeChild(container.firstChild);
     }
@@ -1093,47 +1093,62 @@ function renderNewsList(containerId, items, iconClass, colorClass, emptyMsg, vie
         return;
     }
 
-    items.slice(0, 5).forEach(function(item, index) {
-        var wrapper = document.createElement('div');
-        wrapper.className = index === 0 ? 'd-flex align-items-center' : 'd-flex align-items-center mt-4';
+    // Turkiye saat dilimine gore bugunun tarihini al
+    var todayStr = _getNewsTodayStr();
 
-        // Icon
-        var iconDiv = document.createElement('div');
-        iconDiv.className = 'flex-shrink-0';
-        var avatarDiv = document.createElement('div');
-        avatarDiv.className = 'avatar-sm';
-        var avatarSpan = document.createElement('span');
-        avatarSpan.className = 'avatar-title rounded';
-        avatarSpan.style.cssText = 'background:transparent; color:#495057; border:1.5px solid #ced4da;';
-        var avatarI = document.createElement('i');
-        avatarI.className = iconClass + ' fs-18';
-        avatarSpan.appendChild(avatarI);
-        avatarDiv.appendChild(avatarSpan);
-        iconDiv.appendChild(avatarDiv);
-
-        // Content
-        var contentDiv = document.createElement('div');
-        contentDiv.className = 'flex-grow-1 ms-3';
-        var titleEl = document.createElement('h6');
-        titleEl.className = 'mb-1 lh-base';
-        var displayTitle = item.title || 'Haber';
-        if (displayTitle.length > 100) {
-            displayTitle = displayTitle.substring(0, 100) + '...';
-        }
-        titleEl.textContent = displayTitle;
-
-        var metaEl = document.createElement('p');
-        metaEl.className = 'text-muted fs-13 mb-0';
-        metaEl.textContent = item.formattedPublished || '';
-        contentDiv.appendChild(titleEl);
-        contentDiv.appendChild(metaEl);
-
-        wrapper.appendChild(iconDiv);
-        wrapper.appendChild(contentDiv);
-        container.appendChild(wrapper);
+    // Haberleri grupla
+    var futureItems = [];
+    var todayItems = [];
+    var pastItems = [];
+    items.forEach(function(item) {
+        var dateStr = _getNewsItemDateStr(item);
+        if (dateStr > todayStr) futureItems.push(item);
+        else if (dateStr === todayStr) todayItems.push(item);
+        else pastItems.push(item);
     });
 
-    // "Tümünü gör" linki
+    // Her grubun max gosterim sayisi — toplam ~10
+    var maxPerGroup = 5;
+
+    // Gelecek bolumu
+    if (futureItems.length > 0) {
+        _renderNewsGroupHeader(container, 'Gelecek', 'ri-calendar-event-line', 'text-warning', futureItems.length);
+        _renderNewsGroupItems(container, futureItems.slice(0, maxPerGroup), iconClass);
+    }
+
+    // Bugun bolumu
+    if (todayItems.length > 0) {
+        if (futureItems.length > 0) {
+            var sep = document.createElement('hr');
+            sep.className = 'my-3 text-muted opacity-50';
+            container.appendChild(sep);
+        }
+        _renderNewsGroupHeader(container, 'Bug\u00FCn', 'ri-calendar-check-line', 'text-success', todayItems.length);
+        _renderNewsGroupItems(container, todayItems.slice(0, maxPerGroup), iconClass);
+    }
+
+    // Gecmis bolumu (sadece gelecek ve bugun az ise goster)
+    var shownCount = Math.min(futureItems.length, maxPerGroup) + Math.min(todayItems.length, maxPerGroup);
+    if (pastItems.length > 0 && shownCount < 6) {
+        var pastMax = Math.min(pastItems.length, 10 - shownCount);
+        if (pastMax > 0) {
+            var sep2 = document.createElement('hr');
+            sep2.className = 'my-3 text-muted opacity-50';
+            container.appendChild(sep2);
+            _renderNewsGroupHeader(container, 'Ge\u00E7mi\u015F', 'ri-history-line', 'text-secondary', pastItems.length);
+            _renderNewsGroupItems(container, pastItems.slice(0, pastMax), iconClass);
+        }
+    }
+
+    // Hic haber yoksa
+    if (futureItems.length === 0 && todayItems.length === 0 && pastItems.length === 0) {
+        var noData = document.createElement('div');
+        noData.className = 'text-center text-muted py-3';
+        noData.textContent = emptyMsg;
+        container.appendChild(noData);
+    }
+
+    // "Tumu" linki
     var viewAllDiv = document.createElement('div');
     viewAllDiv.className = 'mt-3 text-center';
     var viewAllLink = document.createElement('a');
@@ -1142,4 +1157,104 @@ function renderNewsList(containerId, items, iconClass, colorClass, emptyMsg, vie
     viewAllLink.textContent = viewAllText;
     viewAllDiv.appendChild(viewAllLink);
     container.appendChild(viewAllDiv);
+}
+
+/** Alt baslik render helper */
+function _renderNewsGroupHeader(container, label, iconCls, colorCls, count) {
+    var header = document.createElement('div');
+    header.className = 'd-flex align-items-center mb-2';
+    var icon = document.createElement('i');
+    icon.className = iconCls + ' me-1 ' + colorCls;
+    var span = document.createElement('span');
+    span.className = 'fw-semibold fs-13 ' + colorCls;
+    span.textContent = label;
+    var badge = document.createElement('span');
+    badge.className = 'badge bg-light text-body ms-1 fs-10';
+    badge.textContent = count;
+    header.appendChild(icon);
+    header.appendChild(span);
+    header.appendChild(badge);
+    container.appendChild(header);
+}
+
+/** Haber item listesi render helper */
+function _renderNewsGroupItems(container, items, iconClass) {
+    items.forEach(function(item, index) {
+        var wrapper = document.createElement('div');
+        wrapper.className = index === 0 ? 'd-flex align-items-center' : 'd-flex align-items-center mt-3';
+
+        var iconDiv = document.createElement('div');
+        iconDiv.className = 'flex-shrink-0';
+        var avatarDiv = document.createElement('div');
+        avatarDiv.className = 'avatar-xs';
+        var avatarSpan = document.createElement('span');
+        avatarSpan.className = 'avatar-title rounded';
+        avatarSpan.style.cssText = 'background:transparent; color:#495057; border:1px solid #ced4da;';
+        var avatarI = document.createElement('i');
+        avatarI.className = iconClass + ' fs-14';
+        avatarSpan.appendChild(avatarI);
+        avatarDiv.appendChild(avatarSpan);
+        iconDiv.appendChild(avatarDiv);
+
+        var contentDiv = document.createElement('div');
+        contentDiv.className = 'flex-grow-1 ms-2';
+        var titleEl = document.createElement('p');
+        titleEl.className = 'mb-0 fs-13 lh-base';
+        var displayTitle = item.title || 'Haber';
+        if (displayTitle.length > 80) {
+            displayTitle = displayTitle.substring(0, 80) + '...';
+        }
+        titleEl.textContent = displayTitle;
+
+        var metaEl = document.createElement('span');
+        metaEl.className = 'text-muted fs-11';
+        metaEl.textContent = item.formattedPublished || '';
+        contentDiv.appendChild(titleEl);
+        contentDiv.appendChild(metaEl);
+
+        wrapper.appendChild(iconDiv);
+        wrapper.appendChild(contentDiv);
+        container.appendChild(wrapper);
+    });
+}
+
+/** Bugunun tarih string'ini dondurur (YYYY-MM-DD, Turkiye saati) */
+function _getNewsTodayStr() {
+    var now = new Date();
+    var turkeyOffset = 3 * 60;
+    var utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
+    var turkeyNow = new Date(utcMs + (turkeyOffset * 60000));
+    return turkeyNow.getFullYear() + '-' +
+        String(turkeyNow.getMonth() + 1).padStart(2, '0') + '-' +
+        String(turkeyNow.getDate()).padStart(2, '0');
+}
+
+/** Haber item'inin tarih string'ini dondurur (YYYY-MM-DD) */
+function _getNewsItemDateStr(item) {
+    var todayStr = _getNewsTodayStr();
+    if (item.published) {
+        var turkeyOffset = 3 * 60;
+        var d = new Date(item.published * 1000);
+        var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+        var tr = new Date(utc + (turkeyOffset * 60000));
+        return tr.getFullYear() + '-' +
+            String(tr.getMonth() + 1).padStart(2, '0') + '-' +
+            String(tr.getDate()).padStart(2, '0');
+    }
+    // formattedPublished'ten parse: "03 Nisan 2026 14:30"
+    var str = item.formattedPublished;
+    if (!str || str === '-') return todayStr;
+    var months = {
+        'Ocak':'01','\u015Eubat':'02','Mart':'03','Nisan':'04',
+        'May\u0131s':'05','Haziran':'06','Temmuz':'07','A\u011Fustos':'08',
+        'Eyl\u00FCl':'09','Ekim':'10','Kas\u0131m':'11','Aral\u0131k':'12'
+    };
+    var parts = str.trim().split(/\s+/);
+    if (parts.length >= 3) {
+        var day = parts[0].padStart(2, '0');
+        var month = months[parts[1]] || '01';
+        var year = parts[2];
+        return year + '-' + month + '-' + day;
+    }
+    return todayStr;
 }
