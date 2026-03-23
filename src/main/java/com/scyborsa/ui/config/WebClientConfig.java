@@ -3,7 +3,6 @@ package com.scyborsa.ui.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.codec.ClientCodecConfigurer;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -20,6 +19,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
+    /** Maksimum buffer boyutu (2 MB). Taramalar groupByStock gibi büyük JSON response'lar için gerekli. */
+    private static final int MAX_BUFFER_SIZE = 2 * 1024 * 1024;
+
     /** scyborsaApi backend base URL'i (application.yml: api.base-url). */
     @Value("${api.base-url}")
     private String apiBaseUrl;
@@ -28,15 +30,12 @@ public class WebClientConfig {
      * Önceden yapılandırılmış bir {@link WebClient.Builder} bean'i oluşturur.
      * <p>
      * Builder, {@code api.base-url} property'sinden alınan base URL ile
-     * konfigüre edilir. Enjekte edilen her servis bu builder üzerinden
-     * kendi WebClient örneğini oluşturabilir.
+     * konfigüre edilir. {@code maxInMemorySize} 2 MB olarak ayarlanır
+     * (büyük JSON response'lar için, ör: groupByStock taramalar).
      * </p>
      *
-     * @return base URL'i ayarlanmış {@link WebClient.Builder} örneği
+     * @return base URL'i ve buffer limiti ayarlanmış {@link WebClient.Builder} örneği
      */
-    /** Maksimum buffer boyutu (2 MB). Taramalar groupByStock gibi büyük JSON response'lar için gerekli. */
-    private static final int MAX_BUFFER_SIZE = 2 * 1024 * 1024;
-
     @Bean
     public WebClient.Builder webClientBuilder() {
         ExchangeStrategies strategies = ExchangeStrategies.builder()

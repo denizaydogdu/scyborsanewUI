@@ -226,7 +226,7 @@
                         <span class="badge bg-info-subtle text-info"
                               th:text="${#lists.size(stockGroups)} + ' Hisse'">0 Hisse</span>
                         <span class="badge bg-primary-subtle text-primary ms-1"
-                              th:text="${ozet?.toplamSinyal} ?: 0 + ' Sinyal'">0 Sinyal</span>
+                              th:text="${(ozet != null ? ozet.toplamSinyal : 0) + ' Sinyal'}">0 Sinyal</span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -241,13 +241,12 @@
                     <!-- Tablo + Accordion -->
                     <div th:if="${!#lists.isEmpty(stockGroups)}">
                         <!-- Kolon Basliklari -->
-                        <div class="row text-muted fw-semibold fs-12 text-uppercase border-bottom pb-2 mb-0" style="padding-left:20px;padding-right:20px;">
+                        <div class="row text-muted fw-semibold fs-12 text-uppercase border-bottom pb-2 mb-0 ps-4 pe-5">
                             <div class="col-1">#</div>
                             <div class="col-3">Hisse</div>
                             <div class="col-2 text-center">Sinyal</div>
-                            <div class="col-2 text-end">Fiyat</div>
-                            <div class="col-2 text-end">Son Fiyat</div>
-                            <div class="col-2 text-end pe-2">Detay</div>
+                            <div class="col-3 text-end">Fiyat</div>
+                            <div class="col-3 text-end">Son Fiyat</div>
                         </div>
                         <div class="accordion" id="stockGroupAccordion">
                         <div class="accordion-item border-0 border-bottom" th:each="g, stat : ${stockGroups}">
@@ -271,10 +270,10 @@
                                             <span class="badge bg-info-subtle text-info"
                                                   th:text="${g.sinyalSayisi} + ' Sinyal'">1 Sinyal</span>
                                         </div>
-                                        <div class="col-2 text-end">
+                                        <div class="col-3 text-end">
                                             <span th:text="${g.formattedIlkFiyat}">0.00</span>
                                         </div>
-                                        <div class="col-2 text-end">
+                                        <div class="col-3 text-end">
                                             <span th:text="${g.formattedSonFiyat}">0.00</span>
                                         </div>
                                     </div>
