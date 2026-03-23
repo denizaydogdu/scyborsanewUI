@@ -238,25 +238,49 @@
                         <p class="text-muted mb-0">Seçilen filtrelere uygun tarama sonucu bulunamadı.</p>
                     </div>
 
-                    <!-- Accordion -->
-                    <div th:if="${!#lists.isEmpty(stockGroups)}" class="accordion" id="stockGroupAccordion">
-                        <div class="accordion-item" th:each="g, stat : ${stockGroups}">
+                    <!-- Tablo + Accordion -->
+                    <div th:if="${!#lists.isEmpty(stockGroups)}">
+                        <!-- Kolon Basliklari -->
+                        <div class="row text-muted fw-semibold fs-12 text-uppercase border-bottom pb-2 mb-2 px-3">
+                            <div class="col-1">#</div>
+                            <div class="col-2">Hisse</div>
+                            <div class="col-2 text-center">Sinyal</div>
+                            <div class="col-2 text-end">Fiyat</div>
+                            <div class="col-2 text-end">Son Fiyat</div>
+                            <div class="col-3 text-end">Degisim</div>
+                        </div>
+                        <div class="accordion" id="stockGroupAccordion">
+                        <div class="accordion-item border-0 border-bottom" th:each="g, stat : ${stockGroups}">
                             <h2 class="accordion-header" th:id="'heading-' + ${stat.index}">
-                                <button class="accordion-button collapsed" type="button"
+                                <button class="accordion-button collapsed py-2" type="button"
                                         data-bs-toggle="collapse"
                                         th:attr="data-bs-target='#collapse-' + ${stat.index},
                                                  aria-controls='collapse-' + ${stat.index}"
                                         aria-expanded="false">
-                                    <div class="d-flex align-items-center w-100 me-3">
-                                        <span class="fw-semibold me-2" th:text="${stat.index + 1} + '.'">1.</span>
-                                        <a th:href="@{/stock/detail/{code}(code=${g.stockName})}"
-                                           class="fw-semibold text-primary me-3"
-                                           th:text="${g.stockName}"
-                                           onclick="event.stopPropagation();">GARAN</a>
-                                        <span class="badge bg-info-subtle text-info me-3"
-                                              th:text="${g.sinyalSayisi} + ' Sinyal'">1 Sinyal</span>
-                                        <span class="text-muted me-3 fs-12"
-                                              th:text="'Fiyat: ' + ${g.formattedIlkFiyat}">Fiyat: 0.00</span>
+                                    <div class="row align-items-center w-100 me-3">
+                                        <div class="col-1">
+                                            <span class="fw-semibold text-muted" th:text="${stat.index + 1}">1</span>
+                                        </div>
+                                        <div class="col-2">
+                                            <a th:href="@{/stock/detail/{code}(code=${g.stockName})}"
+                                               class="fw-semibold text-primary"
+                                               th:text="${g.stockName}"
+                                               onclick="event.stopPropagation();">GARAN</a>
+                                        </div>
+                                        <div class="col-2 text-center">
+                                            <span class="badge bg-info-subtle text-info"
+                                                  th:text="${g.sinyalSayisi} + ' Sinyal'">1 Sinyal</span>
+                                        </div>
+                                        <div class="col-2 text-end">
+                                            <span th:text="${g.formattedIlkFiyat}">0.00</span>
+                                        </div>
+                                        <div class="col-2 text-end">
+                                            <span th:text="${g.formattedSonFiyat}">0.00</span>
+                                        </div>
+                                        <div class="col-3 text-end">
+                                            <span class="fw-medium" th:classappend="${g.gunSonuCssClass}"
+                                                  th:text="${g.formattedGunSonuDegisim}">-</span>
+                                        </div>
                                     </div>
                                 </button>
                             </h2>
@@ -295,7 +319,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div><!-- end accordion -->
+                    </div><!-- end tablo+accordion wrapper -->
                 </div>
             </div>
         </div>
