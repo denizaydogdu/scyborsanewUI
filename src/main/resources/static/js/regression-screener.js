@@ -421,7 +421,7 @@
         tr.style.borderLeft = '3px solid ' + borderColor;
         tr.style.cursor = 'pointer';
         tr.addEventListener('click', function(e) {
-            if (e.target.tagName === 'A') return; // link tıklamalarını engelleme
+            if (e.target.closest && e.target.closest('a')) return; // link tıklamalarını engelleme
             showDetailModal(stock);
         });
 
@@ -739,7 +739,7 @@
             rcDetailModalBody.appendChild(barSection);
         }
 
-        var modal = new bootstrap.Modal(rcDetailModal);
+        var modal = bootstrap.Modal.getOrCreateInstance(rcDetailModal);
         modal.show();
     }
 
