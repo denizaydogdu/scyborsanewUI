@@ -243,11 +243,10 @@
                         <!-- Kolon Basliklari -->
                         <div class="row text-muted fw-semibold fs-12 text-uppercase border-bottom pb-2 mb-2 px-3">
                             <div class="col-1">#</div>
-                            <div class="col-2">Hisse</div>
-                            <div class="col-2 text-center">Sinyal</div>
+                            <div class="col-3">Hisse</div>
+                            <div class="col-3 text-center">Sinyal</div>
                             <div class="col-2 text-end">Fiyat</div>
-                            <div class="col-2 text-end">Son Fiyat</div>
-                            <div class="col-3 text-end">Degisim</div>
+                            <div class="col-3 text-end">Son Fiyat</div>
                         </div>
                         <div class="accordion" id="stockGroupAccordion">
                         <div class="accordion-item border-0 border-bottom" th:each="g, stat : ${stockGroups}">
@@ -261,25 +260,21 @@
                                         <div class="col-1">
                                             <span class="fw-semibold text-muted" th:text="${stat.index + 1}">1</span>
                                         </div>
-                                        <div class="col-2">
+                                        <div class="col-3">
                                             <a th:href="@{/stock/detail/{code}(code=${g.stockName})}"
                                                class="fw-semibold text-primary"
                                                th:text="${g.stockName}"
                                                onclick="event.stopPropagation();">GARAN</a>
                                         </div>
-                                        <div class="col-2 text-center">
+                                        <div class="col-3 text-center">
                                             <span class="badge bg-info-subtle text-info"
                                                   th:text="${g.sinyalSayisi} + ' Sinyal'">1 Sinyal</span>
                                         </div>
                                         <div class="col-2 text-end">
                                             <span th:text="${g.formattedIlkFiyat}">0.00</span>
                                         </div>
-                                        <div class="col-2 text-end">
-                                            <span th:text="${g.formattedSonFiyat}">0.00</span>
-                                        </div>
                                         <div class="col-3 text-end">
-                                            <span class="fw-medium" th:classappend="${g.gunSonuCssClass}"
-                                                  th:text="${g.formattedGunSonuDegisim}">-</span>
+                                            <span th:text="${g.formattedSonFiyat}">0.00</span>
                                         </div>
                                     </div>
                                 </button>
