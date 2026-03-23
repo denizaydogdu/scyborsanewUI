@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 /**
  * Spring Security yapilandirmasi.
@@ -68,6 +69,8 @@ public class SecurityConfig {
             )
             .sessionManagement(session -> session
                 .sessionFixation().migrateSession()
+                .maximumSessions(1)
+                .expiredUrl("/login?kicked=true")
             )
             // HTTP guvenlik header'lari — clickjacking, MIME sniffing, referrer ve izin politikalari
             .headers(headers -> {
@@ -97,5 +100,19 @@ public class SecurityConfig {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * HTTP session event publisher — concurrent session kontrolu icin gerekli.
+     *
+     * <p>Spring Security'nin {@code maximumSessions(1)} ozelliginin calisabilmesi icin
+     * session olusturma/yok etme event'lerinin publish edilmesi gerekir.
+     * Bu bean olmadan session registry guncel kalmaz ve concurrent session kontrolu calismaz.</p>
+     *
+     * @return HttpSessionEventPublisher instance
+     */
+    @Bean
+    HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
     }
 }

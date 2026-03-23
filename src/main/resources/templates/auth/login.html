@@ -70,6 +70,12 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
                                 </div>
 
+                                <!-- Baska cihazdan giris yapildi mesaji -->
+                                <div th:if="${param.kicked != null && param.kicked[0] == 'true'}" class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+                                    <i class="ri-user-shared-line me-1"></i> Hesabınıza başka bir cihazdan giriş yapıldı. Aynı anda yalnızca bir oturum açılabilir.
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+                                </div>
+
                                 <!-- Uyelik bitmis mesaji -->
                                 <div th:if="${param.error != null && param.error[0] == 'expired'}" class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
                                     <i class="ri-timer-line me-1"></i> Üyeliğiniz bitmiştir. Lütfen yönetici ile iletişime geçiniz.
