@@ -18,7 +18,9 @@
 			<div class="col-xxl-3">
 				<div class="card card-height-100">
 					<div class="card-header border-0 align-items-center d-flex">
-						<h4 class="card-title mb-0 flex-grow-1">Piyasa</h4>
+						<h4 class="card-title mb-0 flex-grow-1">Piyasa
+							<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="<b>Piyasa Endeksleri</b><br>BIST 100, BIST 50 ve BIST 30 endekslerinin anlık fiyat ve değişim bilgilerini gösterir."></i>
+						</h4>
 					</div><!-- end cardheader -->
 					<div class="card-body">
 						<div id="portfolio_donut_charts" data-colors='["--vz-primary", "--vz-info", "--vz-warning"]' class="apex-charts" dir="ltr"></div>
@@ -91,7 +93,9 @@
 										</div>
 										<div class="flex-grow-1 ms-3">
 											<p class="text-uppercase fw-semibold fs-13 text-muted mb-1">
-												Kısa Vadeli</p>
+												Kısa Vadeli
+												<i class="ri-information-line ms-1 text-info" style="cursor:pointer;opacity:0.6;font-size:0.85em;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Kısa Vade (0-3 ay)</b><br>Günlük teknik göstergelere dayalı piyasa yönelimi. Hızlı alım-satım stratejileri için uygundur."></i>
+											</p>
 											<h4 class=" mb-0">%<span class="counter-value" th:attr="data-target=${sentiment.kisaVadeli}" th:text="${#numbers.formatDecimal(sentiment.kisaVadeli, 1, 1)}">0</span></h4>
 										</div>
 									</div>
@@ -115,7 +119,9 @@
 										</div>
 										<div class="flex-grow-1 ms-3">
 											<p class="text-uppercase fw-semibold fs-13 text-muted mb-1">
-												Orta Vadeli</p>
+												Orta Vadeli
+												<i class="ri-information-line ms-1 text-info" style="cursor:pointer;opacity:0.6;font-size:0.85em;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Orta Vade (3-12 ay)</b><br>Haftalık ve aylık trendlere dayalı piyasa yönelimi. Swing trading ve pozisyon stratejileri için uygundur."></i>
+											</p>
 											<h4 class=" mb-0">%<span class="counter-value" th:attr="data-target=${sentiment.ortaVadeli}" th:text="${#numbers.formatDecimal(sentiment.ortaVadeli, 1, 1)}">0</span></h4>
 										</div>
 									</div>
@@ -138,7 +144,9 @@
 											</span>
 										</div>
 										<div class="flex-grow-1 ms-3">
-											<p class="text-uppercase fw-semibold fs-13 text-muted mb-1">Uzun Vadeli</p>
+											<p class="text-uppercase fw-semibold fs-13 text-muted mb-1">Uzun Vadeli
+												<i class="ri-information-line ms-1 text-info" style="cursor:pointer;opacity:0.6;font-size:0.85em;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Uzun Vade (1 yıl+)</b><br>Aylık ve yıllık trendlere dayalı piyasa yönelimi. Değer yatırımı ve uzun vadeli birikim stratejileri için uygundur."></i>
+											</p>
 											<h4 class=" mb-0">%<span class="counter-value" th:attr="data-target=${sentiment.uzunVadeli}" th:text="${#numbers.formatDecimal(sentiment.uzunVadeli, 1, 1)}">0</span></h4>
 										</div>
 									</div>
@@ -157,7 +165,9 @@
 						<div class="col-xl-12">
 							<div class="card">
 								<div class="card-header border-0 align-items-center d-flex">
-									<h4 class="card-title mb-0 flex-grow-1">BIST 100</h4>
+									<h4 class="card-title mb-0 flex-grow-1">BIST 100
+										<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="<b>BIST 100 Endeksi</b><br>Borsa İstanbul'da işlem gören en büyük 100 şirketin performansını gösteren ana endeks grafiği."></i>
+									</h4>
 									<!-- TODO: Periyot butonları — canlı veri desteği eklenince açılacak -->
 									<div style="display: none;">
 										<button type="button" class="btn btn-soft-secondary btn-sm">
@@ -206,6 +216,10 @@
 
 		<div class="row">
 			<div class="col-lg-12">
+				<div class="d-flex align-items-center mb-2">
+					<h5 class="mb-0 text-muted fs-14">Sektörel Endeksler</h5>
+					<i class="ri-information-line ms-2 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-html="true" title="<b>Sektörel Endeksler</b><br>BIST sektörel endekslerinin anlık fiyat ve günlük değişim bilgileri. Sparkline grafik son 10 günlük trendi gösterir."></i>
+				</div>
 				<div class="swiper cryptoSlider">
 					<div class="swiper-wrapper">
 						<!-- 1. XFINK -->
@@ -1390,7 +1404,9 @@
 			<div class="col-xxl-4 col-lg-6">
 				<div class="card card-height-100">
 					<div class="card-header align-items-center d-flex">
-						<h4 class="card-title mb-0 flex-grow-1">En Çok Yükselenler</h4>
+						<h4 class="card-title mb-0 flex-grow-1">En Çok Yükselenler
+							<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>En Çok Yükselenler</b><br>Gün içinde en yüksek yüzdesel artış gösteren 5 hisse. Veriler 30 saniyede bir güncellenir."></i>
+						</h4>
 					</div>
 					<div class="card-body p-0">
 						<ul class="list-group list-group-flush border-dashed mb-0" id="top-gainers-list">
@@ -1428,7 +1444,9 @@
 			<div class="col-xxl-4 col-lg-6">
 				<div class="card card-height-100">
 					<div class="card-header align-items-center d-flex">
-						<h4 class="card-title mb-0 flex-grow-1">En Çok Düşenler</h4>
+						<h4 class="card-title mb-0 flex-grow-1">En Çok Düşenler
+							<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>En Çok Düşenler</b><br>Gün içinde en yüksek yüzdesel düşüş gösteren 5 hisse. Veriler 30 saniyede bir güncellenir."></i>
+						</h4>
 					</div>
 					<div class="card-body p-0">
 						<ul class="list-group list-group-flush border-dashed mb-0" id="top-losers-list">
@@ -1466,7 +1484,9 @@
 			<div class="col-xxl-4 col-lg-6">
 				<div class="card card-height-100">
 					<div class="card-header align-items-center d-flex">
-						<h4 class="card-title mb-0 flex-grow-1">En Çok Hacimliler</h4>
+						<h4 class="card-title mb-0 flex-grow-1">En Çok Hacimliler
+							<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>En Çok Hacimliler</b><br>Gün içinde en yüksek işlem hacmine sahip 5 hisse. Yüksek hacim, güçlü ilgi ve likiditeye işaret eder."></i>
+						</h4>
 					</div>
 					<div class="card-body p-0">
 						<ul class="list-group list-group-flush border-dashed mb-0" id="top-volume-list">
@@ -1511,6 +1531,7 @@
 					<div class="card-header align-items-center d-flex">
 						<h4 class="card-title mb-0 flex-grow-1">
 							<i class="ri-arrow-up-circle-fill text-success me-1"></i>En Iyi Sektorler
+							<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>En İyi Sektörler</b><br>44 sektör arasında gün içinde ortalama değişimi en yüksek 5 sektör ve öne çıkan hisseleri."></i>
 						</h4>
 						<a th:href="@{/sektorler}" class="text-muted fs-12">Tumu &rarr;</a>
 					</div>
@@ -1565,6 +1586,7 @@
 					<div class="card-header align-items-center d-flex">
 						<h4 class="card-title mb-0 flex-grow-1">
 							<i class="ri-arrow-down-circle-fill text-danger me-1"></i>En Kotu Sektorler
+							<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>En Kötü Sektörler</b><br>44 sektör arasında gün içinde ortalama değişimi en düşük 5 sektör ve en çok etkilenen hisseleri."></i>
 						</h4>
 						<a th:href="@{/sektorler}" class="text-muted fs-12">Tumu &rarr;</a>
 					</div>
@@ -1620,6 +1642,7 @@
 					<div class="card-header border-0 align-items-center d-flex">
 						<h4 class="card-title mb-0 flex-grow-1">
 							<i class="ri-calendar-check-line me-1 text-success"></i>Yaklaşan Temettüler
+							<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Yaklaşan Temettüler</b><br>Önümüzdeki dönemde temettü dağıtacak şirketler. Ödeme tarihi ve hisse başına brüt temettü tutarını gösterir."></i>
 						</h4>
 						<div class="flex-shrink-0">
 							<span class="badge bg-success-subtle text-success" id="futureDividendCount">0</span>
@@ -1638,6 +1661,7 @@
 					<div class="card-header border-0 align-items-center d-flex">
 						<h4 class="card-title mb-0 flex-grow-1">
 							<i class="ri-calendar-line me-1 text-muted"></i>Geçmiş Temettüler
+							<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Geçmiş Temettüler</b><br>Son dönemde temettü dağıtmış şirketler. Geçmiş temettü verileri yatırım kararlarınızda referans olabilir."></i>
 						</h4>
 						<div class="flex-shrink-0">
 							<span class="badge bg-secondary-subtle text-secondary" id="pastDividendCount">0</span>
@@ -1658,7 +1682,9 @@
 			<div class="col-xxl-4 col-lg-6">
 				<div class="card card-height-100">
 					<div class="card-header align-items-center d-flex">
-						<h4 class="card-title mb-0 flex-grow-1">Haberler</h4>
+						<h4 class="card-title mb-0 flex-grow-1">Haberler
+							<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Piyasa Haberleri</b><br>Borsa İstanbul ve finansal piyasalara ilişkin son haberler. Temettü, sermaye artırımı ve şirket gelişmeleri."></i>
+						</h4>
 						<div>
 							<a th:href="@{/market-news}" class="btn btn-soft-primary btn-sm">Tümü</a>
 						</div>
@@ -1676,7 +1702,9 @@
 			<div class="col-xxl-4 col-lg-6">
 				<div class="card card-height-100">
 					<div class="card-header align-items-center d-flex">
-						<h4 class="card-title mb-0 flex-grow-1">KAP Bildirimleri</h4>
+						<h4 class="card-title mb-0 flex-grow-1">KAP Bildirimleri
+							<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>KAP Bildirimleri</b><br>Kamuyu Aydınlatma Platformu'ndan gelen son bildirimler. Özel durum açıklamaları, finansal raporlar ve kurumsal gelişmeler."></i>
+						</h4>
 						<div>
 							<a th:href="@{/kap-news}" class="btn btn-soft-warning btn-sm">Tümü</a>
 						</div>
@@ -1694,7 +1722,9 @@
 			<div class="col-xxl-4 col-lg-6">
 				<div class="card card-height-100">
 					<div class="card-header align-items-center d-flex">
-						<h4 class="card-title mb-0 flex-grow-1">Dünya Haberleri</h4>
+						<h4 class="card-title mb-0 flex-grow-1">Dünya Haberleri
+							<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Dünya Haberleri</b><br>Küresel piyasaları etkileyen ekonomik takvim verileri. ABD istihdam, enflasyon ve PMI gibi kritik makroekonomik göstergeler."></i>
+						</h4>
 						<div>
 							<a th:href="@{/world-news}" class="btn btn-soft-info btn-sm">Tümü</a>
 						</div>
