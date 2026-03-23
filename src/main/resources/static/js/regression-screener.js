@@ -56,6 +56,7 @@
     var rcTableBody, rcCountBadge;
     var rcPagination, rcPaginationInfo, rcPaginationNav;
     var btnRcScan, btnRcReset, btnRcStrong;
+    var rcDetailModal, rcDetailModalTitle, rcDetailModalBody;
 
     /* ========== Init ========== */
 
@@ -77,6 +78,9 @@
         rcPagination = document.getElementById('rcPagination');
         rcPaginationInfo = document.getElementById('rcPaginationInfo');
         rcPaginationNav = document.getElementById('rcPaginationNav');
+        rcDetailModal = document.getElementById('rcDetailModal');
+        rcDetailModalTitle = document.getElementById('rcDetailModalTitle');
+        rcDetailModalBody = document.getElementById('rcDetailModalBody');
         btnRcScan = document.getElementById('btnRcScan');
         btnRcReset = document.getElementById('btnRcReset');
         btnRcStrong = document.getElementById('btnRcStrong');
@@ -415,6 +419,11 @@
 
         var tr = document.createElement('tr');
         tr.style.borderLeft = '3px solid ' + borderColor;
+        tr.style.cursor = 'pointer';
+        tr.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') return; // link tıklamalarını engelleme
+            showDetailModal(stock);
+        });
 
         // #1 — Row number
         var tdNum = document.createElement('td');
@@ -541,6 +550,197 @@
         tr.appendChild(tdPct);
 
         return tr;
+    }
+
+    /* ========== Detay Modal ========== */
+
+    function showDetailModal(stock) {
+        if (!rcDetailModal || !rcDetailModalTitle || !rcDetailModalBody) return;
+
+        var slopeColor = SLOPE_COLORS[stock.slope] || 'secondary';
+        var posColor = POSITION_COLORS[stock.position] || 'secondary';
+        var slopeLabel = SLOPE_LABELS[stock.slope] || stock.slope || '-';
+        var posLabel = POSITION_LABELS[stock.position] || stock.position || '-';
+        var r2Val = stock.r2 != null ? stock.r2.toFixed(4) : '-';
+        var r2Pct = stock.r2 != null ? (stock.r2 * 100).toFixed(1) + '%' : '-';
+        var pctVal = stock.pctPosition != null ? stock.pctPosition.toFixed(1) + '%' : '-';
+        var r2Class = stock.r2 != null && stock.r2 >= 0.7 ? 'text-success' : 'text-muted';
+        var trendStr = '';
+        if (stock.r2 != null) {
+            if (stock.r2 >= 0.9) trendStr = 'Çok Güçlü Trend';
+            else if (stock.r2 >= 0.7) trendStr = 'Güçlü Trend';
+            else if (stock.r2 >= 0.4) trendStr = 'Orta Trend';
+            else trendStr = 'Zayıf Trend';
+        }
+
+        var posDesc = {
+            'above': 'Fiyat regresyon kanalının üst bandının üzerinde. Aşırı alım bölgesi, geri çekilme riski yüksek.',
+            'upper': 'Fiyat üst bölgede. Yükseliş momentumu güçlü, trend devam edebilir.',
+            'middle': 'Fiyat merkez çizgisine yakın. Denge bölgesi, yön belirleme bekleniyor.',
+            'lower': 'Fiyat alt bölgede. Destek bölgesine yakın, toparlanma fırsatı olabilir.',
+            'below': 'Fiyat regresyon kanalının alt bandının altında. Aşırı satım bölgesi, toparlanma beklenir.'
+        };
+
+        var slopeDesc = stock.slope === 'up'
+            ? 'Regresyon çizgisi yukarı yönlü. Genel eğilim yükseliş yönünde.'
+            : 'Regresyon çizgisi aşağı yönlü. Genel eğilim düşüş yönünde.';
+
+        rcDetailModalTitle.textContent = stock.symbol + ' \u2014 Regresyon Kanal\u0131';
+
+        // Modal body — DOM-safe construction (no innerHTML, XSS-safe)
+        while (rcDetailModalBody.firstChild) rcDetailModalBody.removeChild(rcDetailModalBody.firstChild);
+
+        // Header row (logo + symbol + period)
+        var headerDiv = document.createElement('div');
+        headerDiv.className = 'd-flex align-items-center mb-3';
+        if (stock.logoid) {
+            var logoImg = document.createElement('img');
+            logoImg.src = '/img/stock-logos/' + encodeURIComponent(stock.logoid);
+            logoImg.className = 'rounded-circle me-2';
+            logoImg.style.cssText = 'width:40px;height:40px;object-fit:cover;';
+            logoImg.onerror = function() { this.style.display = 'none'; };
+            headerDiv.appendChild(logoImg);
+        }
+        var headerText = document.createElement('div');
+        var h5 = document.createElement('h5');
+        h5.className = 'mb-0';
+        h5.textContent = stock.symbol;
+        var small = document.createElement('small');
+        small.className = 'text-muted';
+        small.textContent = 'Periyot: ' + (stock.period || '-') + ' mum';
+        headerText.appendChild(h5);
+        headerText.appendChild(small);
+        headerDiv.appendChild(headerText);
+        rcDetailModalBody.appendChild(headerDiv);
+
+        // KPI grid (4 cards)
+        var kpiRow = document.createElement('div');
+        kpiRow.className = 'row g-2 mb-3';
+
+        function addKpiCard(label, badgeHtml, badgeClass) {
+            var col = document.createElement('div');
+            col.className = 'col-6 col-md-3';
+            var card = document.createElement('div');
+            card.className = 'border rounded p-2 text-center';
+            var labelDiv = document.createElement('div');
+            labelDiv.className = 'text-muted fs-11 mb-1';
+            labelDiv.textContent = label;
+            card.appendChild(labelDiv);
+            var badge = document.createElement('span');
+            badge.className = badgeClass;
+            badge.textContent = badgeHtml;
+            card.appendChild(badge);
+            col.appendChild(card);
+            kpiRow.appendChild(col);
+            return badge;
+        }
+
+        // Egim KPI
+        var slopeBadge = addKpiCard('E\u011Fim', '', 'badge bg-' + slopeColor + '-subtle text-' + slopeColor + ' fs-13');
+        var slopeI = document.createElement('i');
+        slopeI.className = (SLOPE_ICONS[stock.slope] || 'ri-subtract-line') + ' me-1';
+        slopeBadge.textContent = '';
+        slopeBadge.appendChild(slopeI);
+        slopeBadge.appendChild(document.createTextNode(slopeLabel));
+
+        // Pozisyon KPI
+        addKpiCard('Pozisyon', posLabel, 'badge bg-' + posColor + '-subtle text-' + posColor + ' fs-13');
+
+        // R² KPI
+        addKpiCard('R\u00B2', r2Val, 'fw-semibold fs-13 ' + r2Class);
+
+        // Kanal % KPI
+        addKpiCard('Kanal %', pctVal, 'fw-semibold fs-13');
+
+        rcDetailModalBody.appendChild(kpiRow);
+
+        // Detail list
+        var listGroup = document.createElement('div');
+        listGroup.className = 'list-group list-group-flush';
+
+        function addDetailItem(iconClass, iconColor, title, desc) {
+            var item = document.createElement('div');
+            item.className = 'list-group-item px-0';
+            var flex = document.createElement('div');
+            flex.className = 'd-flex align-items-start';
+            var icon = document.createElement('i');
+            icon.className = iconClass + ' text-' + iconColor + ' fs-18 me-2 mt-1';
+            var textDiv = document.createElement('div');
+            var h6 = document.createElement('h6');
+            h6.className = 'mb-1';
+            h6.textContent = title;
+            var p = document.createElement('p');
+            p.className = 'text-muted mb-0 fs-12';
+            p.textContent = desc;
+            textDiv.appendChild(h6);
+            textDiv.appendChild(p);
+            flex.appendChild(icon);
+            flex.appendChild(textDiv);
+            item.appendChild(flex);
+            listGroup.appendChild(item);
+        }
+
+        // Egim detay
+        addDetailItem(SLOPE_ICONS[stock.slope] || 'ri-subtract-line', slopeColor, slopeLabel + ' Trendi', slopeDesc);
+
+        // Pozisyon detay
+        addDetailItem('ri-map-pin-line', posColor, posLabel, posDesc[stock.position] || '');
+
+        // Trend gucu detay
+        if (trendStr) {
+            var trendDesc = '';
+            if (stock.r2 >= 0.7) trendDesc = 'Fiyat regresyon \u00E7izgisine y\u00FCksek uyum g\u00F6steriyor. Kanal s\u0131n\u0131rlar\u0131 g\u00FCvenilir.';
+            else if (stock.r2 >= 0.4) trendDesc = 'Orta d\u00FCzeyde uyum. Kanal s\u0131n\u0131rlar\u0131 k\u0131smen g\u00FCvenilir, ek teyit \u00F6nerilir.';
+            else trendDesc = 'D\u00FC\u015F\u00FCk uyum. Fiyat kanalda d\u00FCzg\u00FCn hareket etmiyor, kanal g\u00FCvenilmez.';
+            addDetailItem('ri-focus-2-line', stock.r2 >= 0.7 ? 'success' : 'muted', trendStr + ' (R\u00B2 = ' + r2Pct + ')', trendDesc);
+        }
+
+        rcDetailModalBody.appendChild(listGroup);
+
+        // Visual progress bar for channel position
+        if (stock.pctPosition != null) {
+            var clamp = Math.max(0, Math.min(100, stock.pctPosition));
+            var barSection = document.createElement('div');
+            barSection.className = 'mt-3 pt-3 border-top';
+
+            var labelsDiv = document.createElement('div');
+            labelsDiv.className = 'd-flex justify-content-between mb-1';
+            var lblLow = document.createElement('small');
+            lblLow.className = 'text-danger';
+            lblLow.textContent = 'Alt Bant (0%)';
+            var lblMid = document.createElement('small');
+            lblMid.className = 'text-muted';
+            lblMid.textContent = 'Merkez (50%)';
+            var lblHigh = document.createElement('small');
+            lblHigh.className = 'text-success';
+            lblHigh.textContent = '\u00DCst Bant (100%)';
+            labelsDiv.appendChild(lblLow);
+            labelsDiv.appendChild(lblMid);
+            labelsDiv.appendChild(lblHigh);
+            barSection.appendChild(labelsDiv);
+
+            var progressDiv = document.createElement('div');
+            progressDiv.className = 'progress';
+            progressDiv.style.height = '12px';
+            var bar = document.createElement('div');
+            bar.className = 'progress-bar bg-' + posColor;
+            bar.style.width = clamp + '%';
+            progressDiv.appendChild(bar);
+            barSection.appendChild(progressDiv);
+
+            var centerBadge = document.createElement('div');
+            centerBadge.className = 'text-center mt-1';
+            var pctBadge = document.createElement('span');
+            pctBadge.className = 'badge bg-' + posColor + '-subtle text-' + posColor;
+            pctBadge.textContent = pctVal;
+            centerBadge.appendChild(pctBadge);
+            barSection.appendChild(centerBadge);
+
+            rcDetailModalBody.appendChild(barSection);
+        }
+
+        var modal = new bootstrap.Modal(rcDetailModal);
+        modal.show();
     }
 
     /* ========== Sayfalama ========== */

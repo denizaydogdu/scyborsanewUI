@@ -1035,11 +1035,11 @@
     <div class="row" id="rcInfoCard">
         <div class="col-lg-12">
             <div class="card card-body border-info border-opacity-25">
-                <a class="text-info fw-medium" data-bs-toggle="collapse" href="#rcInfoCollapse" role="button" aria-expanded="false" aria-controls="rcInfoCollapse">
+                <a class="text-info fw-medium" data-bs-toggle="collapse" href="#rcInfoCollapse" role="button" aria-expanded="true" aria-controls="rcInfoCollapse">
                     <i class="ri-information-line me-1"></i>Regresyon Kanalı Nedir? Nasıl Kullanılır?
                     <i class="ri-arrow-down-s-line float-end fs-16"></i>
                 </a>
-                <div class="collapse mt-3" id="rcInfoCollapse">
+                <div class="collapse show mt-3" id="rcInfoCollapse">
                     <div class="row g-3 mb-3">
                         <div class="col-md-4">
                             <div class="d-flex">
@@ -1196,6 +1196,21 @@
                             <ul class="pagination pagination-separated mb-0" id="rcPaginationNav"></ul>
                         </nav>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Regresyon Kanalı Detay Modal -->
+    <div class="modal fade" id="rcDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rcDetailModalTitle">Regresyon Kanalı</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body" id="rcDetailModalBody">
+                    <!-- JS tarafından dinamik olarak doldurulur -->
                 </div>
             </div>
         </div>
