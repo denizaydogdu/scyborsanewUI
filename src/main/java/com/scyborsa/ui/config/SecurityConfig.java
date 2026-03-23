@@ -69,6 +69,7 @@ public class SecurityConfig {
             )
             .sessionManagement(session -> {
                 session.sessionFixation().migrateSession();
+                // maxSessionsPreventsLogin default false: yeni giris eskiyi kovar (tercih edilmis davranis)
                 session.sessionConcurrency(concurrency -> concurrency
                     .maximumSessions(1)
                     .expiredUrl("/login?kicked=true")
