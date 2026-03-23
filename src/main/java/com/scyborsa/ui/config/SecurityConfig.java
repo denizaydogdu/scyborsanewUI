@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 
 /**
  * Spring Security yapilandirmasi.
@@ -44,7 +45,7 @@ public class SecurityConfig {
         http
             .authenticationProvider(authProvider)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/assets/**", "/css/**", "/js/**", "/img/**",
+                .requestMatchers("/", "/login", "/ws-auth-check", "/assets/**", "/css/**", "/js/**", "/img/**",
                                  "/webjars/**", "/favicon.ico", "/error",
                                  "/.well-known/**").permitAll()
                 .requestMatchers("/backoffice/**").hasRole("ADMIN")
@@ -67,7 +68,23 @@ public class SecurityConfig {
             )
             .sessionManagement(session -> session
                 .sessionFixation().migrateSession()
-            );
+            )
+            // HTTP guvenlik header'lari — clickjacking, MIME sniffing, referrer ve izin politikalari
+            .headers(headers -> {
+                headers.frameOptions(frame -> frame.sameOrigin());
+                headers.contentTypeOptions(contentType -> {});
+                headers.referrerPolicy(referrer -> referrer
+                    .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN));
+                headers.permissionsPolicy(permissions -> permissions
+                    .policy("camera=(), microphone=(), geolocation=()"));
+                headers.contentSecurityPolicy(csp -> csp
+                    .policyDirectives("default-src 'self'; "
+                        + "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com; "
+                        + "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
+                        + "img-src 'self' data: https://s3-symbol-logo.tradingview.com https://storage.fintables.com; "
+                        + "font-src 'self' data: https://fonts.gstatic.com; "
+                        + "connect-src 'self' wss: ws: https://cdn.jsdelivr.net https://cdn.lordicon.com;"));
+            });
         return http.build();
     }
 

@@ -14,6 +14,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -178,5 +181,24 @@ public class HomeController {
     @ResponseBody
     public Map<String, Object> getDividends() {
         return dividendService.getDividends();
+    }
+
+    /**
+     * Nginx auth_request icin WebSocket session dogrulama endpoint'i.
+     *
+     * <p>Nginx, {@code /ws} WebSocket baglantisi oncesi bu endpoint'e
+     * subrequest gonderir. Gecerli session varsa 200, yoksa 401 doner.
+     * Bu sayede sadece login olmus kullanicilar WebSocket'e baglanabilir.</p>
+     *
+     * @param principal authenticated kullanici (null ise session yok)
+     * @return 200 OK (authenticated) veya 401 Unauthorized
+     */
+    @GetMapping("/ws-auth-check")
+    @ResponseBody
+    public ResponseEntity<Void> wsAuthCheck(Principal principal) {
+        if (principal != null) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
