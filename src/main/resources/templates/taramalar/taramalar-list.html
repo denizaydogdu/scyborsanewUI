@@ -27,7 +27,7 @@
                     <div class="d-flex align-items-end justify-content-between mt-4">
                         <div>
                             <h4 class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:text="${ozet?.toplamSinyal} ?: 0">0</h4>
+                                th:text="${ozet != null ? ozet.toplamSinyal : toplamKart}">0</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white rounded fs-3 border">
@@ -51,7 +51,7 @@
                     <div class="d-flex align-items-end justify-content-between mt-4">
                         <div>
                             <h4 class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:text="${#lists.size(taramalar)} + ' Sinyal'">0 Sinyal</h4>
+                                th:text="${groupByStock ? #lists.size(stockGroups) + ' Hisse' : #lists.size(taramalar) + ' Sinyal'}">0</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white rounded fs-3 border">
@@ -75,7 +75,7 @@
                     <div class="d-flex align-items-end justify-content-between mt-4">
                         <div>
                             <h4 class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:text="${ozet?.benzersizHisseSayisi} ?: 0">0</h4>
+                                th:text="${ozet != null ? ozet.benzersizHisseSayisi : #lists.size(stockGroups)}">0</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white rounded fs-3 border">
