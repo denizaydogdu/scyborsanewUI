@@ -67,11 +67,13 @@ public class SecurityConfig {
                 .deleteCookies("JSESSIONID")
                 .permitAll()
             )
-            .sessionManagement(session -> session
-                .sessionFixation().migrateSession()
-                .maximumSessions(1)
-                .expiredUrl("/login?kicked=true")
-            )
+            .sessionManagement(session -> {
+                session.sessionFixation().migrateSession();
+                session.sessionConcurrency(concurrency -> concurrency
+                    .maximumSessions(1)
+                    .expiredUrl("/login?kicked=true")
+                );
+            })
             // HTTP guvenlik header'lari — clickjacking, MIME sniffing, referrer ve izin politikalari
             .headers(headers -> {
                 headers.frameOptions(frame -> frame.sameOrigin());
