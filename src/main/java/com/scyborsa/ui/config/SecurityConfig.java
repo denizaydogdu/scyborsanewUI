@@ -88,7 +88,7 @@ public class SecurityConfig {
                     .policyDirectives("default-src 'self'; "
                         + "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://cdn.lordicon.com https://www.googletagmanager.com https://www.google-analytics.com https://ssl.google-analytics.com https://googleads.g.doubleclick.net; "
                         + "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
-                        + "img-src 'self' data: https://s3-symbol-logo.tradingview.com https://storage.fintables.com https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://*.google.com; "
+                        + "img-src 'self' data: https://s3-symbol-logo.tradingview.com https://storage.fintables.com https://coin-images.coingecko.com https://assets.coingecko.com https://*.coingecko.com https://bin.bnbstatic.com https://*.binance.com https://*.bnbstatic.com https://alternative.me https://www.googletagmanager.com https://www.google-analytics.com https://googleads.g.doubleclick.net https://*.google.com; "
                         + "font-src 'self' data: https://fonts.gstatic.com; "
                         + "frame-src https://www.googletagmanager.com https://googleads.g.doubleclick.net https://td.doubleclick.net; "
                         + "connect-src 'self' wss: ws: https://cdn.jsdelivr.net https://cdn.lordicon.com https://www.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://stats.g.doubleclick.net https://googleads.g.doubleclick.net https://*.google-analytics.com https://*.analytics.google.com;"));

@@ -10,7 +10,7 @@
 
     // ── Sabitler ──────────────────────────────────────────
     var PAGE_SIZE = 25;
-    var MARKET_REFRESH = 120000; // 2dk
+    var MARKET_REFRESH = 30000; // 30sn
     var SPARKLINE_REFRESH = 300000; // 5dk
     var MAX_ERRORS = 3;
     var MAX_VISIBLE_PAGES = 7;
@@ -173,7 +173,7 @@
             // # sira
             var tdRank = document.createElement('td');
             tdRank.className = 'fw-medium';
-            tdRank.textContent = c.marketCapRank || (start + i + 1);
+            tdRank.textContent = start + i + 1;
             tr.appendChild(tdRank);
 
             // Coin (logo + ad + sembol)
@@ -380,6 +380,14 @@
         if (el) el.textContent = filteredMarkets.length;
     }
 
+    function updateLastUpdateTime() {
+        var el = document.getElementById('kripto-last-update');
+        if (el) {
+            var now = new Date();
+            el.textContent = 'Son g\u00fcncelleme: ' + now.toLocaleTimeString('tr-TR');
+        }
+    }
+
     // ── KPI Guncelleme ───────────────────────────────────
 
     /**
@@ -402,7 +410,7 @@
             if (chgEl) {
                 var chg = global.marketCapChangePercentage24hUsd || 0;
                 chgEl.textContent = formatPercent(chg);
-                chgEl.className = colorClass(chg) + ' fs-22 fw-semibold ff-secondary mb-4';
+                chgEl.className = colorClass(chg) + ' fs-16 fw-semibold ff-secondary mb-4';
             }
         }
 
@@ -463,8 +471,21 @@
             var coinId = containers[i].getAttribute('data-coin-id');
             var data = sparklinesMap[coinId];
             if (data && data.length > 0) {
+                containers[i].style.display = '';
                 var isPositive = data[data.length - 1] >= data[0];
                 renderSparkline(containers[i], data, isPositive);
+            } else {
+                containers[i].style.display = 'none';
+                var parent = containers[i].parentNode;
+                if (parent) {
+                    // Onceki no-sparkline span'i temizle
+                    var existing = parent.querySelector('.no-sparkline');
+                    if (existing) existing.remove();
+                    var span = document.createElement('span');
+                    span.className = 'no-sparkline text-muted fs-12';
+                    span.textContent = '\u2014';
+                    parent.appendChild(span);
+                }
             }
         }
     }
@@ -487,6 +508,7 @@
                         allMarkets = data;
                         applyFilters(false);
                         fetchAndRenderSparklines();
+                        updateLastUpdateTime();
                         consecutiveErrors = 0;
                     }
                 } catch (e) {
@@ -566,10 +588,7 @@
      */
     function handleError() {
         consecutiveErrors++;
-        if (consecutiveErrors >= MAX_ERRORS) {
-            consecutiveErrors = 0;
-            // 2dk bekle (sonraki interval'de otomatik retry)
-        }
+        // MAX_ERRORS'a ulasinca polling durur, basarili response'ta sifirlanir (line 509)
     }
 
     // ── Sort Header Binding ──────────────────────────────
@@ -642,10 +661,14 @@
         bindSortHeaders();
         bindSearch();
 
+        // Varsayilan siralama: piyasa degerine gore (marketCap DESC)
+        sortCol = 'marketCap';
+        sortAsc = false;
+
         if (allMarkets.length > 0) {
             applyFilters();
-            // Sparklines ayri AJAX ile
             fetchAndRenderSparklines();
+            updateLastUpdateTime();
         } else {
             fetchMarkets();
         }

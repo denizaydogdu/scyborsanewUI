@@ -32,6 +32,10 @@ public class WebClientConfig {
     @Value("${vapi.base-url}")
     private String vapiBaseUrl;
 
+    /** vApi API key (application.yml: vapi.api-key). */
+    @Value("${vapi.api-key:}")
+    private String vapiApiKey;
+
     /**
      * Önceden yapılandırılmış bir {@link WebClient.Builder} bean'i oluşturur.
      * <p>
@@ -70,9 +74,13 @@ public class WebClientConfig {
                 .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(MAX_BUFFER_SIZE))
                 .build();
 
-        return WebClient.builder()
+        WebClient.Builder builder = WebClient.builder()
                 .baseUrl(vapiBaseUrl)
                 .exchangeStrategies(strategies);
+        if (vapiApiKey != null && !vapiApiKey.isEmpty()) {
+            builder.defaultHeader("X-API-KEY", vapiApiKey);
+        }
+        return builder;
     }
 
 }

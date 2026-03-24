@@ -13,6 +13,14 @@
 <section layout:fragment="content">
     <div th:replace="~{partials/page-title :: page-title('Kripto Para', 'Yatirim')}"></div>
 
+    <!-- Canli guncelleme notu -->
+    <div class="alert alert-info alert-dismissible fade show py-2 mb-3" role="alert">
+        <i class="ri-refresh-line me-1"></i>
+        <span class="fw-medium">Veriler 30 saniyede bir otomatik olarak guncellenir.</span>
+        <span id="kripto-last-update" class="text-muted ms-2 fs-12"></span>
+        <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
     <!-- Row 1: 5 KPI Cards -->
     <div class="row">
         <!-- Toplam Market Cap -->
@@ -26,11 +34,8 @@
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-4">
                         <div>
-                            <h4 id="kpi-market-cap" class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:if="${global != null}"
-                                th:text="${global.totalMarketCapUsd != null ? '$' + T(String).format('%,.0f', global.totalMarketCapUsd) : '--'}">--</h4>
-                            <h4 id="kpi-market-cap" class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:unless="${global != null}">--</h4>
+                            <h4 id="kpi-market-cap" class="fs-16 fw-semibold ff-secondary mb-4"
+                                >--</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white border rounded fs-3">
@@ -53,11 +58,7 @@
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-4">
                         <div>
-                            <h4 id="kpi-volume" class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:if="${global != null}"
-                                th:text="${global.totalVolumeUsd != null ? '$' + T(String).format('%,.0f', global.totalVolumeUsd) : '--'}">--</h4>
-                            <h4 id="kpi-volume" class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:unless="${global != null}">--</h4>
+                            <h4 id="kpi-volume" class="fs-16 fw-semibold ff-secondary mb-4">--</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white border rounded fs-3">
@@ -80,11 +81,7 @@
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-4">
                         <div>
-                            <h4 id="kpi-btc-dominance" class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:if="${global != null}"
-                                th:text="${global.btcDominance != null ? #numbers.formatDecimal(global.btcDominance, 1, 1) + '%' : '--'}">--</h4>
-                            <h4 id="kpi-btc-dominance" class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:unless="${global != null}">--</h4>
+                            <h4 id="kpi-btc-dominance" class="fs-16 fw-semibold ff-secondary mb-4">--</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white border rounded fs-3">
@@ -107,16 +104,8 @@
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-4">
                         <div>
-                            <h4 id="kpi-fear-greed-value" class="fs-22 fw-semibold ff-secondary mb-2"
-                                th:if="${fearGreed != null}"
-                                th:text="${fearGreed.value}">--</h4>
-                            <h4 id="kpi-fear-greed-value" class="fs-22 fw-semibold ff-secondary mb-2"
-                                th:unless="${fearGreed != null}">--</h4>
-                            <span id="kpi-fear-greed-label" class="badge bg-secondary-subtle text-secondary"
-                                  th:if="${fearGreed != null}"
-                                  th:text="${fearGreed.classification}">--</span>
-                            <span id="kpi-fear-greed-label" class="badge bg-secondary-subtle text-secondary"
-                                  th:unless="${fearGreed != null}">--</span>
+                            <h4 id="kpi-fear-greed-value" class="fs-16 fw-semibold ff-secondary mb-2">--</h4>
+                            <span id="kpi-fear-greed-label" class="badge bg-secondary-subtle text-secondary">--</span>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white border rounded fs-3">
@@ -139,11 +128,7 @@
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-4">
                         <div>
-                            <h4 id="kpi-market-change" class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:if="${global != null}"
-                                th:text="${global.marketCapChangePercentage24hUsd != null ? (global.marketCapChangePercentage24hUsd >= 0 ? '+' : '') + #numbers.formatDecimal(global.marketCapChangePercentage24hUsd, 1, 2) + '%' : '--'}">--</h4>
-                            <h4 id="kpi-market-change" class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:unless="${global != null}">--</h4>
+                            <h4 id="kpi-market-change" class="fs-16 fw-semibold ff-secondary mb-4">--</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white border rounded fs-3">

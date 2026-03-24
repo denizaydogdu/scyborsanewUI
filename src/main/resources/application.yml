@@ -18,3 +18,4 @@ api:
 
 vapi:
   base-url: ${VAPI_BASE_URL:https://api.velzon.tr}
+  api-key: ${VAPI_API_KEY:}
