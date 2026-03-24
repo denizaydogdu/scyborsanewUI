@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta(${coin.name} + ' | Kripto')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title(${coin.name}, 'Kripto Para')}"></div>
+
+    <!-- ==================== Section 1: Hero Header ==================== -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Coin Info + Price -->
+                    <div class="d-flex align-items-center">
+                        <img th:src="${coin.image}" th:alt="${coin.symbol}"
+                             width="40" height="40" class="rounded-circle"
+                             onerror="this.style.display='none'"/>
+                        <div class="ms-3">
+                            <h4 class="mb-1">
+                                <span th:text="${coin.name}">Bitcoin</span>
+                                <span class="badge bg-primary-subtle text-primary ms-2"
+                                      th:text="'#' + ${coin.marketCapRank}">--</span>
+                            </h4>
+                            <span class="text-muted text-uppercase" th:text="${coin.symbol}">BTC</span>
+                        </div>
+                        <div class="ms-auto text-end">
+                            <h3 id="detail-price" class="fw-bold">--</h3>
+                            <span id="detail-change" class="badge">--</span>
+                        </div>
+                    </div>
+
+                    <!-- 24h High/Low Progress Bar -->
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">24s En Dusuk</small>
+                            <small class="text-muted">24s En Yuksek</small>
+                        </div>
+                        <div class="progress mt-1" style="height: 8px;">
+                            <div id="detail-highlow-bar" class="progress-bar bg-primary" style="width:50%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <span id="detail-low" class="fs-12">--</span>
+                            <span id="detail-high" class="fs-12">--</span>
+                        </div>
+                    </div>
+
+                    <!-- 3 Stat Boxes -->
+                    <div class="row g-3 mt-3">
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <p class="text-muted mb-1">Piyasa Degeri</p>
+                                <h5 id="detail-mcap" class="fw-semibold">--</h5>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <p class="text-muted mb-1">24s Hacim</p>
+                                <h5 id="detail-volume" class="fw-semibold">--</h5>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <p class="text-muted mb-1">Dolasimdaki Arz</p>
+                                <h5 id="detail-supply" class="fw-semibold">--</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== Section 2: Candlestick Chart ==================== -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <h5 class="card-title flex-grow-1 mb-0">Fiyat Grafigi</h5>
+                    <div id="chartPeriodSelector" class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" data-interval="1h" data-limit="200">1sa</button>
+                        <button class="btn btn-outline-primary" data-interval="4h" data-limit="200">4sa</button>
+                        <button class="btn btn-primary active" data-interval="1d" data-limit="365">Gunluk</button>
+                        <button class="btn btn-outline-primary" data-interval="1d" data-limit="52">Haftalik</button>
+                        <button class="btn btn-outline-primary" data-interval="1d" data-limit="30">Aylik</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="crypto-chart-container" style="min-height:400px;">
+                        <div id="crypto-chart-loading" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Yukleniyor...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Grafik yukleniyor...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== Section 3: Teknik Analiz ==================== -->
+    <div class="row">
+        <div class="col-12">
+            <!-- Genel Sinyal -->
+            <div class="text-center mb-3">
+                <h5>Teknik Analiz Ozeti</h5>
+                <span id="aggregate-signal" class="badge fs-14 px-4 py-2">Yukleniyor...</span>
+                <p id="aggregate-counts" class="text-muted mt-2 fs-12"></p>
+            </div>
+
+            <!-- 4 Kart Grid -->
+            <div class="row g-3">
+                <!-- Momentum -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="ri-speed-line me-1"></i>Momentum Gostergeleri</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="momentum-indicators" class="list-group list-group-flush"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Trend -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="ri-line-chart-line me-1"></i>Trend Gostergeleri</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="trend-indicators" class="list-group list-group-flush"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Volatilite -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="ri-thunderstorms-line me-1"></i>Volatilite Gostergeleri</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="volatility-indicators" class="list-group list-group-flush"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Hareketli Ortalamalar -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0"><i class="ri-bar-chart-grouped-line me-1"></i>Hareketli Ortalamalar</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="ma-indicators">
+                                <table class="table table-sm mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Periyot</th>
+                                            <th>EMA</th>
+                                            <th>Sinyal</th>
+                                            <th>SMA</th>
+                                            <th>Sinyal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ma-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== Section 4: Piyasa Verileri ==================== -->
+    <div class="row g-3 mt-1">
+        <!-- ATH / ATL -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">ATH / ATL Araligi</h5>
+                </div>
+                <div class="card-body">
+                    <div id="ath-atl-content"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Arz Bilgisi -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Arz Bilgisi</h5>
+                </div>
+                <div class="card-body">
+                    <div id="supply-content"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Fiyat Degisimi -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Fiyat Degisimi</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered text-center mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>24s</th>
+                                <th>7g</th>
+                                <th>30g</th>
+                                <th>1y</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="change-24h">--</td>
+                                <td id="change-7d">--</td>
+                                <td id="change-30d">--</td>
+                                <td id="change-1y">--</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== Section 5: Hakkinda ==================== -->
+    <div class="row"
+         th:if="${coin.descriptionTr != null or coin.descriptionEn != null}">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Hakkinda</h5>
+                </div>
+                <div class="card-body">
+                    <div id="coin-description">
+                        <p th:if="${coin.descriptionTr != null and !coin.descriptionTr.isEmpty()}"
+                           th:text="${coin.descriptionTr}"></p>
+                        <p th:if="${(coin.descriptionTr == null or coin.descriptionTr.isEmpty()) and coin.descriptionEn != null}"
+                           th:text="${coin.descriptionEn}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<th:block layout:fragment="pagejs">
+    <!-- Pass server data to JS -->
+    <script th:inline="javascript">
+        window.COIN_DATA = /*[[${coin}]]*/ {};
+        window.BINANCE_SYMBOL = /*[[${binanceSymbol}]]*/ '';
+        window.INITIAL_TECHNICAL = /*[[${technical}]]*/ {};
+    </script>
+
+    <!-- ApexCharts -->
+    <script th:src="@{/assets/libs/apexcharts/apexcharts.min.js}"></script>
+
+    <!-- Kripto Detail JS -->
+    <script th:src="@{/js/kripto-detail.js}"></script>
+</th:block>
+</body>
+
+</html>

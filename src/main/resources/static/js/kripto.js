@@ -189,7 +189,7 @@
             img.onerror = function () { this.style.display = 'none'; };
             var nameDiv = document.createElement('div');
             var nameSpan = document.createElement('span');
-            nameSpan.className = 'fw-medium';
+            nameSpan.className = 'fw-medium text-primary';
             nameSpan.textContent = c.name || '';
             var symSpan = document.createElement('span');
             symSpan.className = 'text-muted ms-1 text-uppercase fs-11';
@@ -244,6 +244,14 @@
             sparkDiv.style.height = '40px';
             tdSpark.appendChild(sparkDiv);
             tr.appendChild(tdSpark);
+
+            // Satir tiklama — detay sayfasina yonlendirme
+            tr.style.cursor = 'pointer';
+            (function (id) {
+                tr.addEventListener('click', function () {
+                    window.location.href = '/kripto/' + encodeURIComponent(id);
+                });
+            })(c.id);
 
             fragment.appendChild(tr);
         }

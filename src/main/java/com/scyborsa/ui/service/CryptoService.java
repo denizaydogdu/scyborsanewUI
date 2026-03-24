@@ -1,6 +1,7 @@
 package com.scyborsa.ui.service;
 
 import com.scyborsa.ui.constants.VApiEndpoints;
+import com.scyborsa.ui.dto.CryptoDetailDto;
 import com.scyborsa.ui.dto.CryptoFearGreedDto;
 import com.scyborsa.ui.dto.CryptoGlobalDto;
 import com.scyborsa.ui.dto.CryptoMarketDto;
@@ -115,6 +116,87 @@ public class CryptoService {
         } catch (Exception e) {
             log.error("[KRIPTO-UI] Fear & Greed verisi alinamadi: {}", e.getMessage());
             return new CryptoFearGreedDto();
+        }
+    }
+
+    /**
+     * Coin detay verilerini getirir (fiyat, ATH/ATL, arz, aciklama vb.).
+     *
+     * @param coinId CoinGecko coin ID'si (orn: "bitcoin")
+     * @return coin detay verileri, hata durumunda bos DTO
+     */
+    public CryptoDetailDto getCoinDetail(String coinId) {
+        if (coinId == null || !coinId.matches("^[a-z0-9-]{1,50}$")) {
+            return new CryptoDetailDto();
+        }
+        log.info("[KRIPTO-UI] Coin detay isteniyor: {}", coinId);
+        try {
+            CryptoDetailDto result = webClient.get()
+                    .uri(VApiEndpoints.CRYPTO_COIN_DETAIL, coinId)
+                    .retrieve()
+                    .bodyToMono(CryptoDetailDto.class)
+                    .block(Duration.ofSeconds(15));
+            return result != null ? result : new CryptoDetailDto();
+        } catch (Exception e) {
+            log.error("[KRIPTO-UI] Coin detay alinamadi [coinId={}]: {}", coinId, e.getMessage());
+            return new CryptoDetailDto();
+        }
+    }
+
+    /**
+     * Teknik analiz indikatorlerini getirir (RSI, MACD, Bollinger vb.).
+     *
+     * @param coinId CoinGecko coin ID'si
+     * @return indikator key-value map, hata durumunda bos map
+     */
+    public Map<String, Object> getTechnical(String coinId) {
+        if (coinId == null || !coinId.matches("^[a-z0-9-]{1,50}$")) {
+            return Collections.emptyMap();
+        }
+        try {
+            Map<String, Object> result = webClient.get()
+                    .uri(VApiEndpoints.CRYPTO_TECHNICAL, coinId)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                    .block(Duration.ofSeconds(10));
+            return result != null ? result : Collections.emptyMap();
+        } catch (Exception e) {
+            log.error("[KRIPTO-UI] Teknik analiz alinamadi [coinId={}]: {}", coinId, e.getMessage());
+            return Collections.emptyMap();
+        }
+    }
+
+    /**
+     * OHLCV (mum grafik) verilerini getirir.
+     *
+     * @param symbol Binance sembol (orn: "BTCUSDT")
+     * @param interval zaman dilimi (1m, 5m, 15m, 1h, 4h, 1d)
+     * @param limit mum sayisi (maks 2000)
+     * @return OHLCV listesi, hata durumunda bos liste
+     */
+    public List<Map<String, Object>> getOhlcv(String symbol, String interval, Integer limit) {
+        if (symbol == null || !symbol.matches("^[A-Z0-9]{2,20}$")) {
+            return Collections.emptyList();
+        }
+        if (interval == null || !interval.matches("^(1m|5m|15m|1h|4h|1d)$")) {
+            interval = "1d";
+        }
+        if (limit == null || limit < 1 || limit > 2000) limit = 200;
+        try {
+            final String finalInterval = interval;
+            final int finalLimit = limit;
+            List<Map<String, Object>> result = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path(VApiEndpoints.CRYPTO_OHLCV)
+                            .queryParam("limit", finalLimit)
+                            .build(symbol, finalInterval))
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                    .block(Duration.ofSeconds(15));
+            return result != null ? result : Collections.emptyList();
+        } catch (Exception e) {
+            log.error("[KRIPTO-UI] OHLCV alinamadi [symbol={}, interval={}]: {}", symbol, interval, e.getMessage());
+            return Collections.emptyList();
         }
     }
 }

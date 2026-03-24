@@ -1,14 +1,18 @@
 package com.scyborsa.ui.controller;
 
+import com.scyborsa.ui.dto.CryptoDetailDto;
 import com.scyborsa.ui.dto.CryptoFearGreedDto;
 import com.scyborsa.ui.dto.CryptoGlobalDto;
 import com.scyborsa.ui.dto.CryptoMarketDto;
 import com.scyborsa.ui.service.CryptoService;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
@@ -82,5 +86,77 @@ public class CryptoController {
     @ResponseBody
     public CryptoFearGreedDto getFearGreedAjax() {
         return cryptoService.getFearGreed();
+    }
+
+    /**
+     * Kripto para detay sayfasini render eder.
+     * @param coinId CoinGecko coin ID'si (orn: "bitcoin")
+     * @param model Thymeleaf model
+     * @return kripto detay template adi
+     */
+    @GetMapping("/kripto/{coinId}")
+    public String kriptoDetail(@PathVariable String coinId, Model model) {
+        if (coinId == null || !coinId.matches("^[a-z0-9-]{1,50}$")) {
+            return "redirect:/kripto";
+        }
+        log.info("[KRIPTO-UI] Kripto detay sayfasi erisimi [coinId={}]", coinId);
+        CryptoDetailDto coin = cryptoService.getCoinDetail(coinId);
+        if (coin == null || coin.getId() == null) {
+            return "redirect:/kripto";
+        }
+        Map<String, Object> technical = cryptoService.getTechnical(coinId);
+        // Binance sembol: symbol alanindan derive et (btc -> BTCUSDT)
+        String binanceSymbol = coin.getSymbol() != null
+                ? coin.getSymbol().toUpperCase() + "USDT" : "";
+
+        model.addAttribute("coin", coin);
+        model.addAttribute("technical", technical);
+        model.addAttribute("binanceSymbol", binanceSymbol);
+        return "kripto/kripto-detail";
+    }
+
+    /**
+     * Coin detay verilerini JSON olarak doner (AJAX polling 120sn).
+     * @param coinId CoinGecko coin ID'si
+     * @return coin detay DTO
+     */
+    @GetMapping("/ajax/kripto/{coinId}/detail")
+    @ResponseBody
+    public CryptoDetailDto getCoinDetailAjax(@PathVariable String coinId) {
+        if (!isValidCoinId(coinId)) return new CryptoDetailDto();
+        return cryptoService.getCoinDetail(coinId);
+    }
+
+    /**
+     * Teknik analiz indikatorlerini JSON olarak doner (AJAX polling 60sn).
+     * @param coinId CoinGecko coin ID'si
+     * @return indikator map
+     */
+    @GetMapping("/ajax/kripto/{coinId}/technical")
+    @ResponseBody
+    public Map<String, Object> getTechnicalAjax(@PathVariable String coinId) {
+        if (!isValidCoinId(coinId)) return Collections.emptyMap();
+        return cryptoService.getTechnical(coinId);
+    }
+
+    /**
+     * OHLCV mum verilerini JSON olarak doner.
+     * @param symbol Binance sembol (orn: BTCUSDT)
+     * @param interval zaman dilimi (default: 1d)
+     * @param limit mum sayisi (default: 200)
+     * @return OHLCV listesi
+     */
+    @GetMapping("/ajax/kripto/ohlcv")
+    @ResponseBody
+    public List<Map<String, Object>> getOhlcvAjax(
+            @RequestParam String symbol,
+            @RequestParam(defaultValue = "1d") String interval,
+            @RequestParam(defaultValue = "200") Integer limit) {
+        String normalized = symbol != null ? symbol.toUpperCase() : "";
+        return cryptoService.getOhlcv(normalized, interval, limit);
+    }
+
+    private boolean isValidCoinId(String coinId) {
+        return coinId != null && coinId.matches("^[a-z0-9-]{1,50}$");
     }
 }

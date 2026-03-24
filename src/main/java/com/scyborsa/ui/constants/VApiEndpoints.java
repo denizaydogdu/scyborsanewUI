@@ -19,4 +19,13 @@ public final class VApiEndpoints {
 
     /** Kripto piyasa duygu endeksi (Fear and Greed) endpoint'i. */
     public static final String CRYPTO_FEAR_GREED = "/api/crypto/fear-greed";
+
+    /** Kripto para detay endpoint'i (CoinGecko coin ID ile). */
+    public static final String CRYPTO_COIN_DETAIL = "/api/crypto/coin/{coinId}";
+
+    /** Kripto para teknik analiz indikatörleri endpoint'i. */
+    public static final String CRYPTO_TECHNICAL = "/api/crypto/technical/{coinId}";
+
+    /** Kripto para OHLCV (mum grafik) verileri endpoint'i. */
+    public static final String CRYPTO_OHLCV = "/api/crypto/ohlcv/{symbol}/{interval}";
 }
