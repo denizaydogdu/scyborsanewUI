@@ -649,6 +649,7 @@ sectorIndices.forEach(function(code) {
       dataLabels: { enabled: false },
       stroke: { curve: "smooth", width: 1.5 },
       fill: { type: "gradient", gradient: { shadeIntensity: 1, inverseColors: false, opacityFrom: 0.45, opacityTo: 0.05, stops: [50, 100, 100, 100] } },
+      tooltip: { enabled: false },
       colors: colors,
     };
     var chart = new ApexCharts(document.querySelector("#" + chartId), options);
