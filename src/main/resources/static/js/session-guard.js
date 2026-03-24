@@ -2,8 +2,8 @@
  * Session Guard — Oturum suresi dolunca kullaniciyi login sayfasina yonlendirir.
  *
  * <p>Global fetch interceptor ile tum AJAX yanitlarini izler. Spring Security
- * session timeout sonrasi /login'e redirect yaptiginda bunu yakalar ve
- * kullaniciyi login sayfasina yonlendirir.</p>
+ * session timeout veya concurrent session kick sonrasi /login'e redirect
+ * yaptiginda bunu yakalar ve kullaniciyi uygun mesajla login sayfasina yonlendirir.</p>
  */
 (function () {
     'use strict';
@@ -13,11 +13,19 @@
 
     /**
      * Login sayfasina yonlendirir (tekrar cagriyi onler).
+     * Redirect URL'sindeki kicked parametresini korur.
+     *
+     * @param {string} [redirectUrl] - Spring Security'nin yonlendirdigi URL
      */
-    function redirectToLogin() {
+    function redirectToLogin(redirectUrl) {
         if (redirecting) return;
         redirecting = true;
-        window.location.href = '/login?timeout=true';
+        // Concurrent session kick ise kicked mesajini goster, yoksa timeout
+        if (redirectUrl && redirectUrl.indexOf('kicked=true') !== -1) {
+            window.location.href = '/login?kicked=true';
+        } else {
+            window.location.href = '/login?timeout=true';
+        }
     }
 
     /**
@@ -36,7 +44,7 @@
         return originalFetch.apply(this, arguments).then(function (response) {
             try {
                 if (response.redirected && response.url && response.url.indexOf('/login') !== -1) {
-                    redirectToLogin();
+                    redirectToLogin(response.url);
                 }
             } catch (e) { /* guard hatasi — yoksay */ }
             return response;
@@ -49,7 +57,7 @@
         this.addEventListener('load', function () {
             if (this.responseURL && this.responseURL.indexOf('/login') !== -1) {
                 if (isLoginPage(this.responseText)) {
-                    redirectToLogin();
+                    redirectToLogin(this.responseURL);
                 }
             }
         });
@@ -57,15 +65,12 @@
     };
 
     // Periyodik session kontrolu (polling olmayan sayfalarda da calisir)
+    // Not: Spring Security session expired → 302 redirect → fetch interceptor yakalar.
+    // Bu polling sadece redirect tespiti icin, !res.ok kontrolu yapilmaz
+    // (500 server error'da kullaniciyi yanlis logout yapmasini onler).
     setInterval(function () {
         if (redirecting) return;
         fetch('/ajax/session-check', { credentials: 'same-origin' })
-            .then(function (res) {
-                if (redirecting) return;
-                if (!res.ok) {
-                    redirectToLogin();
-                }
-            })
             .catch(function () {
                 // ag hatasi — session kontrolu atlaniyor
             });

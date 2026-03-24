@@ -21,6 +21,9 @@ import java.time.Duration;
 @Service
 public class AuthService {
 
+    /** API hata kodu — ApiAuthenticationProvider ile paylasilan sabit. */
+    public static final String API_ERROR = "API_ERROR";
+
     /** scyborsaApi'ye HTTP istekleri gondermek icin kullanilan WebClient. */
     private final WebClient webClient;
 
@@ -47,10 +50,10 @@ public class AuthService {
                     .bodyValue(new LoginRequestDto(email, password))
                     .exchangeToMono(response -> response.bodyToMono(LoginResponseDto.class))
                     .block(Duration.ofSeconds(10));
-            return result != null ? result : failResponse("API yanıt vermedi");
+            return result != null ? result : failResponse(API_ERROR);
         } catch (Exception e) {
             log.error("[AUTH-UI] API bağlantı hatası", e);
-            return failResponse("API bağlantı hatası");
+            return failResponse(API_ERROR);
         }
     }
 

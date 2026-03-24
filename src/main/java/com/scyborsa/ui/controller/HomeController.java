@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.core.Authentication;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -66,9 +67,11 @@ public class HomeController {
      * @return login sayfasi veya dashboard redirect
      */
     @GetMapping("/login")
-    public String login(Principal principal) {
+    public String login(Principal principal, Authentication authentication) {
         if (principal != null) {
-            return "redirect:/dashboard";
+            boolean isAdmin = authentication != null && authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+            return isAdmin ? "redirect:/backoffice" : "redirect:/dashboard";
         }
         return "auth/login";
     }

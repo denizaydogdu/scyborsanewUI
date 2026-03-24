@@ -94,7 +94,19 @@ public class SecurityConfig {
                         + "connect-src 'self' wss: ws: https://cdn.jsdelivr.net https://cdn.lordicon.com https://www.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://stats.g.doubleclick.net https://googleads.g.doubleclick.net https://*.google-analytics.com https://*.analytics.google.com;"));
             })
             // AJAX endpoint'lerini saved request cache'den haric tut — login sonrasi beyaz sayfa onlemi
-            .requestCache(cache -> cache.requestCache(httpSessionRequestCache()));
+            .requestCache(cache -> cache.requestCache(httpSessionRequestCache()))
+            // CSRF token expired (uzun sure acik kalmis login formu) → 403 yerine login'e yonlendir
+            .exceptionHandling(ex -> ex
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    if (request.getUserPrincipal() == null) {
+                        // Anonim kullanici — CSRF expired, login'e yonlendir
+                        response.sendRedirect("/login");
+                    } else {
+                        // Authenticated kullanici — yetkisiz erisim
+                        response.sendRedirect("/error");
+                    }
+                })
+            );
         return http.build();
     }
 
@@ -108,7 +120,22 @@ public class SecurityConfig {
     @Bean
     HttpSessionRequestCache httpSessionRequestCache() {
         var cache = new HttpSessionRequestCache();
-        cache.setMatchingRequestParameterName("continue");
+        // AJAX ve statik kaynak isteklerini saved request olarak kaydetme —
+        // session-guard.js polling'i ve diger AJAX cagrilari login sonrasi
+        // beyaz sayfaya yonlendirme sorununu onler.
+        // Sayfa istekleri (GET /bilancolar vb.) kayit edilir ve login sonrasi
+        // kullaniciyi orijinal sayfaya yonlendirir.
+        cache.setRequestMatcher(request -> {
+            String uri = request.getRequestURI();
+            // AJAX endpoint'leri, statik kaynaklar ve favicon'u haric tut
+            if (uri.startsWith("/ajax/") || uri.startsWith("/img/") || uri.startsWith("/assets/")
+                    || uri.startsWith("/css/") || uri.startsWith("/js/") || uri.startsWith("/webjars/")
+                    || uri.equals("/favicon.ico")) {
+                return false;
+            }
+            // Sadece GET isteklerini kaydet (POST/PUT/DELETE saved request olarak anlamsiz)
+            return "GET".equals(request.getMethod());
+        });
         return cache;
     }
 

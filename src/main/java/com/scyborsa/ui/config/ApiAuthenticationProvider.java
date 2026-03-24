@@ -74,7 +74,7 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
             if ("NOT_YET_ACTIVE".equals(msg)) {
                 throw new LockedException("Hesabınız henüz aktif değil");
             }
-            if ("API bağlantı hatası".equals(msg) || "API yanıt vermedi".equals(msg)) {
+            if (AuthService.API_ERROR.equals(msg)) {
                 throw new AuthenticationServiceException("Sistem hatası");
             }
             throw new BadCredentialsException("Hatalı e-posta veya şifre");
