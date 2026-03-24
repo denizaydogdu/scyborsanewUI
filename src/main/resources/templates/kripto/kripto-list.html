@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Kripto Para')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Kripto Para', 'Yatirim')}"></div>
+
+    <!-- Row 1: 5 KPI Cards -->
+    <div class="row">
+        <!-- Toplam Market Cap -->
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Toplam Market Cap</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 id="kpi-market-cap" class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:if="${global != null}"
+                                th:text="${global.totalMarketCapUsd != null ? '$' + T(String).format('%,.0f', global.totalMarketCapUsd) : '--'}">--</h4>
+                            <h4 id="kpi-market-cap" class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:unless="${global != null}">--</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-funds-line text-primary"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 24s Hacim -->
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">24s Hacim</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 id="kpi-volume" class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:if="${global != null}"
+                                th:text="${global.totalVolumeUsd != null ? '$' + T(String).format('%,.0f', global.totalVolumeUsd) : '--'}">--</h4>
+                            <h4 id="kpi-volume" class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:unless="${global != null}">--</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-bar-chart-2-line text-info"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BTC Dominance -->
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">BTC Dominance</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 id="kpi-btc-dominance" class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:if="${global != null}"
+                                th:text="${global.btcDominance != null ? #numbers.formatDecimal(global.btcDominance, 1, 1) + '%' : '--'}">--</h4>
+                            <h4 id="kpi-btc-dominance" class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:unless="${global != null}">--</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-bit-coin-line text-warning"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fear & Greed -->
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Fear &amp; Greed</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 id="kpi-fear-greed-value" class="fs-22 fw-semibold ff-secondary mb-2"
+                                th:if="${fearGreed != null}"
+                                th:text="${fearGreed.value}">--</h4>
+                            <h4 id="kpi-fear-greed-value" class="fs-22 fw-semibold ff-secondary mb-2"
+                                th:unless="${fearGreed != null}">--</h4>
+                            <span id="kpi-fear-greed-label" class="badge bg-secondary-subtle text-secondary"
+                                  th:if="${fearGreed != null}"
+                                  th:text="${fearGreed.classification}">--</span>
+                            <span id="kpi-fear-greed-label" class="badge bg-secondary-subtle text-secondary"
+                                  th:unless="${fearGreed != null}">--</span>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-emotion-line text-info"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 24s Degisim -->
+        <div class="col-xl col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">24s Degisim</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 id="kpi-market-change" class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:if="${global != null}"
+                                th:text="${global.marketCapChangePercentage24hUsd != null ? (global.marketCapChangePercentage24hUsd >= 0 ? '+' : '') + #numbers.formatDecimal(global.marketCapChangePercentage24hUsd, 1, 2) + '%' : '--'}">--</h4>
+                            <h4 id="kpi-market-change" class="fs-22 fw-semibold ff-secondary mb-4"
+                                th:unless="${global != null}">--</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-white border rounded fs-3">
+                                <i class="ri-arrow-up-down-line text-success"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 2: Arama + Bilgi -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row align-items-center g-3">
+                        <div class="col">
+                            <div class="search-box">
+                                <input type="text" class="form-control search" id="kripto-search"
+                                       placeholder="Coin ara (Bitcoin, ETH...)" maxlength="100"
+                                       aria-label="Coin ara">
+                                <i class="ri-search-line search-icon"></i>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <span id="kripto-result-count" class="badge bg-primary fs-12"
+                                  th:text="${markets != null ? #lists.size(markets) : 0}">0</span>
+                            <span class="text-muted fs-12">coin</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Ana Tablo -->
+                <div class="card-body">
+                    <div class="table-responsive" id="kripto-table-container">
+                        <table class="table table-hover align-middle table-nowrap mb-0" id="kripto-table">
+                            <thead>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th data-col="name" style="cursor:pointer;">Coin <i class="sort-icon ri-arrow-up-down-line text-muted ms-1 fs-13"></i></th>
+                                <th data-col="currentPrice" style="cursor:pointer;">Fiyat <i class="sort-icon ri-arrow-up-down-line text-muted ms-1 fs-13"></i></th>
+                                <th data-col="priceChangePercentage1hInCurrency" style="cursor:pointer;">1s % <i class="sort-icon ri-arrow-up-down-line text-muted ms-1 fs-13"></i></th>
+                                <th data-col="priceChangePercentage24hInCurrency" style="cursor:pointer;">24s % <i class="sort-icon ri-arrow-up-down-line text-muted ms-1 fs-13"></i></th>
+                                <th data-col="priceChangePercentage7dInCurrency" style="cursor:pointer;">7g % <i class="sort-icon ri-arrow-up-down-line text-muted ms-1 fs-13"></i></th>
+                                <th data-col="marketCap" style="cursor:pointer;">Piyasa Degeri <i class="sort-icon ri-arrow-up-down-line text-muted ms-1 fs-13"></i></th>
+                                <th data-col="totalVolume" style="cursor:pointer;">Hacim <i class="sort-icon ri-arrow-up-down-line text-muted ms-1 fs-13"></i></th>
+                                <th style="width: 140px;">7g Grafik</th>
+                            </tr>
+                            </thead>
+                            <tbody id="kripto-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="kripto-empty-state" class="text-center py-5" style="display:none;">
+                        <i class="ri-bit-coin-line fs-1 text-muted"></i>
+                        <h5 class="mt-3 text-muted">Aramaniza uygun coin bulunamadi</h5>
+                    </div>
+
+                    <!-- Sayfalama -->
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted" id="kripto-pagination-info">0 coin</div>
+                        <nav>
+                            <ul class="pagination pagination-separated mb-0" id="kripto-pagination">
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<th:block layout:fragment="pagejs">
+    <script th:inline="javascript">
+        var INITIAL_MARKETS = /*[[${markets}]]*/ [];
+        var INITIAL_GLOBAL = /*[[${global}]]*/ null;
+        var INITIAL_FEAR_GREED = /*[[${fearGreed}]]*/ null;
+    </script>
+    <script th:src="@{/assets/libs/apexcharts/apexcharts.min.js}"></script>
+    <script th:src="@{/js/kripto.js}"></script>
+</th:block>
+</body>
+
+</html>
