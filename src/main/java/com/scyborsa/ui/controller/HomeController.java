@@ -1,6 +1,7 @@
 package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.DashboardSentimentDto;
+import com.scyborsa.ui.dto.GlobalMarketDto;
 import com.scyborsa.ui.dto.IndexPerformanceDto;
 import com.scyborsa.ui.dto.MoneyFlowResponse;
 import com.scyborsa.ui.dto.SectorStockDto;
@@ -95,6 +96,7 @@ public class HomeController {
         List<SectorSummaryDto> allSectors = dashboardService.getSectorSummaries();
         model.addAttribute("topSectors", dashboardService.getTopSectors(allSectors));
         model.addAttribute("bottomSectors", dashboardService.getBottomSectors(allSectors));
+        model.addAttribute("globalMarkets", dashboardService.getGlobalMarkets());
         // TODO: Money flow gecici devre disi — veri kaynagi dogru degil, ileride tekrar aktif edilecek
         // model.addAttribute("moneyFlow", dashboardService.getMoneyFlow());
         return "index";
@@ -151,6 +153,23 @@ public class HomeController {
     // public MoneyFlowResponse getMoneyFlowApi() {
     //     return dashboardService.getMoneyFlow();
     // }
+
+    /**
+     * Global piyasa verilerini JSON olarak doner (AJAX proxy).
+     *
+     * <p>Frontend'in periyodik olarak guncel global piyasa verisi
+     * cekmesi icin kullanilir. scyborsaApi'ye proxy yapar.</p>
+     *
+     * <p><b>HTTP Method:</b> GET</p>
+     * <p><b>Path:</b> {@code /ajax/dashboard/global-markets}</p>
+     *
+     * @return guncel global piyasa listesi
+     */
+    @GetMapping("/ajax/dashboard/global-markets")
+    @ResponseBody
+    public List<GlobalMarketDto> getGlobalMarketsApi() {
+        return dashboardService.getGlobalMarkets();
+    }
 
     /**
      * Hisse arama icin tum hisse listesini JSON olarak doner (AJAX proxy).

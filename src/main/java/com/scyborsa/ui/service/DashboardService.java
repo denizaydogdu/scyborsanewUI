@@ -2,6 +2,7 @@ package com.scyborsa.ui.service;
 
 import com.scyborsa.ui.constants.ScyborsaApiEndpoints;
 import com.scyborsa.ui.dto.DashboardSentimentDto;
+import com.scyborsa.ui.dto.GlobalMarketDto;
 import com.scyborsa.ui.dto.IndexPerformanceDto;
 import com.scyborsa.ui.dto.MoneyFlowResponse;
 import com.scyborsa.ui.dto.SectorSummaryDto;
@@ -110,6 +111,31 @@ public class DashboardService {
         } catch (Exception e) {
             log.warn("[DASHBOARD-UI] Money flow verileri alinamadi, fallback kullaniliyor", e);
             return emptyMoneyFlow();
+        }
+    }
+
+    /**
+     * Global piyasa verilerini getirir.
+     *
+     * <p>scyborsaApi'deki {@code /api/v1/dashboard/global-markets} endpoint'ini
+     * cagirarak dolar, euro, altin, petrol gibi global enstrumanlarin
+     * guncel fiyat ve degisim bilgilerini doner.</p>
+     *
+     * @return global piyasa listesi; hata durumunda bos liste
+     */
+    public List<GlobalMarketDto> getGlobalMarkets() {
+        log.debug("[DASHBOARD-UI] Global market verileri isteniyor");
+        try {
+            List<GlobalMarketDto> result = webClient.get()
+                    .uri(ScyborsaApiEndpoints.DASHBOARD_GLOBAL_MARKETS)
+                    .retrieve()
+                    .bodyToFlux(GlobalMarketDto.class)
+                    .collectList()
+                    .block(Duration.ofSeconds(10));
+            return result != null ? result : Collections.emptyList();
+        } catch (Exception e) {
+            log.warn("[DASHBOARD-UI] Global market verileri alinamadi", e);
+            return Collections.emptyList();
         }
     }
 

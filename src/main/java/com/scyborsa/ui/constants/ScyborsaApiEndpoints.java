@@ -98,6 +98,9 @@ public final class ScyborsaApiEndpoints {
     /** Dashboard endeks performans endpoint'i. */
     public static final String DASHBOARD_INDEXES = "/api/v1/dashboard/indexes";
 
+    /** Dashboard global piyasa verileri endpoint'i. */
+    public static final String DASHBOARD_GLOBAL_MARKETS = "/api/v1/dashboard/global-markets";
+
     /** Dashboard para akisi (money flow) endpoint'i. */
     public static final String MONEY_FLOW = "/api/v1/money-flow";
 

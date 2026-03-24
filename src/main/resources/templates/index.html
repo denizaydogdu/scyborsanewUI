@@ -1026,6 +1026,21 @@
 			</div><!-- end col -->
 		</div><!-- end row -->
 
+		<!-- Emtialar / Borsa Slider -->
+		<div class="row mb-3">
+			<div class="col-lg-12">
+				<div class="d-flex align-items-center mb-2">
+					<h5 class="mb-0 text-muted fs-14">Emtialar / Borsa</h5>
+					<i class="ri-information-line ms-2 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Emtialar / Borsa</b><br>Küresel emtia fiyatları, döviz kurları, kripto paralar ve dünya borsası endeksleri. Veriler anlık olarak güncellenir."></i>
+				</div>
+				<div class="swiper globalMarketSlider">
+					<div class="swiper-wrapper" id="global-market-swiper-wrapper">
+						<!-- JS ile doldurulacak -->
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- TODO: My Currencies + Trading kartları şu an gizli — canlı veri bağlandığında açılacak -->
 		<div class="row" style="display: none;">
 			<div class="col-xl-8">
@@ -1904,10 +1919,12 @@
 			window.API_BASE = /*[[${apiBaseUrl}]]*/ 'http://localhost:8081';
 			window.initialSentimentData = /*[[${sentiment}]]*/ {};
 			window.initialIndexData = /*[[${indexPerformances}]]*/ [];
+			window.initialGlobalMarkets = /*[[${globalMarkets}]]*/ [];
 		</script>
 		<script th:src="@{/assets/js/pages/dashboard-crypto.init.js}"></script>
 		<script th:src="@{/js/sentiment.js}"></script>
 		<script th:src="@{/js/index-swiper.js}"></script>
+		<script th:src="@{/js/global-markets-swiper.js}"></script>
 		<!-- <script th:src="@{/js/money-flow.js}"></script> --> <!-- gecici devre disi -->
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
