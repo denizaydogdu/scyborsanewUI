@@ -2,8 +2,8 @@
  * Kripto Para detay sayfasi istemci tarafi mantigi.
  *
  * SSR ile gelen COIN_DATA, BINANCE_SYMBOL ve INITIAL_TECHNICAL uzerinde
- * hero guncelleme, teknik analiz render, candlestick grafik ve
- * piyasa verileri render islemlerini yapar.
+ * hero guncelleme, teknik analiz render, LightweightCharts candlestick grafik,
+ * Fear & Greed gauge ve piyasa verileri render islemlerini yapar.
  * 2dk detail polling + 1dk technical polling.
  */
 (function () {
@@ -17,10 +17,30 @@
     // ── Durum ─────────────────────────────────────────────
     var coinId = '';
     var binanceSymbol = '';
-    var candleChart = null;
+    var consecutiveErrors = 0;
+
+    // ── LightweightCharts Durum ───────────────────────────
+    var chart = null;
+    var candleSeries = null;
+    var volumeSeries = null;
+    var resizeObserver = null;
     var currentInterval = '1d';
     var currentLimit = 365;
-    var consecutiveErrors = 0;
+
+    // ── Fear & Greed Durum ────────────────────────────────
+    var fearGreedChart = null;
+
+    // ── Tema Renkleri (Velzon Light) ──────────────────────
+    var themeColors = {
+        bg: '#ffffff',
+        grid: '#f3f3f9',
+        text: '#495057',
+        border: '#e9ebec',
+        green: '#0ab39c',
+        red: '#f06548',
+        greenAlpha: 'rgba(10,179,156,0.5)',
+        redAlpha: 'rgba(240,101,72,0.5)'
+    };
 
     // ── Formatlama Yardimcilari ──────────────────────────
 
@@ -207,6 +227,20 @@
             var pct = range > 0 ? ((coin.currentPrice - coin.low24h) / range) * 100 : 50;
             barEl.style.width = Math.max(0, Math.min(100, pct)) + '%';
         }
+
+        // Genel Bakis KPI guncelle
+        var kpiMcap = document.getElementById('kpi-mcap');
+        var kpiVol = document.getElementById('kpi-vol');
+        var kpiFdv = document.getElementById('kpi-fdv');
+        var kpiCirc = document.getElementById('kpi-circ');
+        var kpiTotal = document.getElementById('kpi-total');
+        var kpiMax = document.getElementById('kpi-max');
+        if (kpiMcap) kpiMcap.textContent = formatCompact(coin.marketCap);
+        if (kpiVol) kpiVol.textContent = formatCompact(coin.totalVolume);
+        if (kpiFdv) kpiFdv.textContent = formatCompact(coin.fullyDilutedValuation);
+        if (kpiCirc) kpiCirc.textContent = formatSupply(coin.circulatingSupply);
+        if (kpiTotal) kpiTotal.textContent = formatSupply(coin.totalSupply);
+        if (kpiMax) kpiMax.textContent = coin.maxSupply ? formatSupply(coin.maxSupply) : 'S\u0131n\u0131r Yok';
     }
 
     // ── Teknik Analiz Render ──────────────────────────────────
@@ -472,12 +506,132 @@
                 el.className = colorClass(changes[c].val);
             }
         }
+
+        // Genel Bakis KPI guncelle (renderMarketData icinden de)
+        var kpiMcap = document.getElementById('kpi-mcap');
+        var kpiVol = document.getElementById('kpi-vol');
+        var kpiFdv = document.getElementById('kpi-fdv');
+        var kpiCirc = document.getElementById('kpi-circ');
+        var kpiTotal = document.getElementById('kpi-total');
+        var kpiMax = document.getElementById('kpi-max');
+        if (kpiMcap) kpiMcap.textContent = formatCompact(coin.marketCap);
+        if (kpiVol) kpiVol.textContent = formatCompact(coin.totalVolume);
+        if (kpiFdv) kpiFdv.textContent = formatCompact(coin.fullyDilutedValuation);
+        if (kpiCirc) kpiCirc.textContent = formatSupply(coin.circulatingSupply);
+        if (kpiTotal) kpiTotal.textContent = formatSupply(coin.totalSupply);
+        if (kpiMax) kpiMax.textContent = coin.maxSupply ? formatSupply(coin.maxSupply) : 'S\u0131n\u0131r Yok';
     }
 
-    // ── Candlestick Grafik ──────────────────────────────────
+    // ── LightweightCharts Grafik ──────────────────────────────
 
     /**
-     * OHLCV verisini AJAX ile ceker ve grafigi olusturur/gunceller.
+     * LightweightCharts candlestick + volume grafigini olusturur.
+     * stock-chart.js pattern'i ile birebir uyumlu.
+     */
+    function createChart() {
+        var container = document.getElementById('crypto-chart-container');
+        if (!container || typeof LightweightCharts === 'undefined') return;
+        var colors = themeColors;
+
+        chart = LightweightCharts.createChart(container, {
+            width: container.clientWidth,
+            height: container.clientHeight || 400,
+            layout: {
+                background: { color: colors.bg },
+                textColor: colors.text
+            },
+            grid: {
+                vertLines: { color: colors.grid },
+                horzLines: { color: colors.grid }
+            },
+            crosshair: {
+                mode: LightweightCharts.CrosshairMode.Normal
+            },
+            rightPriceScale: {
+                borderColor: colors.border
+            },
+            timeScale: {
+                borderColor: colors.border,
+                timeVisible: true,
+                secondsVisible: false
+            }
+        });
+
+        candleSeries = chart.addCandlestickSeries({
+            upColor: colors.green,
+            downColor: colors.red,
+            borderDownColor: colors.red,
+            borderUpColor: colors.green,
+            wickDownColor: colors.red,
+            wickUpColor: colors.green
+        });
+
+        volumeSeries = chart.addHistogramSeries({
+            color: colors.green,
+            priceFormat: { type: 'volume' },
+            priceScaleId: ''
+        });
+        volumeSeries.priceScale().applyOptions({
+            scaleMargins: { top: 0.8, bottom: 0 }
+        });
+
+        // ResizeObserver — stock-chart.js pattern
+        resizeObserver = new ResizeObserver(function(entries) {
+            if (entries.length > 0) {
+                chart.applyOptions({ width: entries[0].contentRect.width });
+            }
+        });
+        resizeObserver.observe(container);
+    }
+
+    // ── Price Overlay ─────────────────────────────────────────
+
+    /**
+     * Grafik uzerine canli fiyat overlay'i olusturur.
+     * stock-chart.js pattern'i ile birebir uyumlu.
+     */
+    function createPriceOverlay() {
+        var container = document.getElementById('crypto-chart-container');
+        if (!container) return;
+
+        var overlay = document.createElement('div');
+        overlay.id = 'chartPriceOverlay';
+        overlay.style.cssText = 'position:absolute;top:8px;left:12px;z-index:5;display:flex;align-items:center;gap:8px;padding:4px 12px;border-radius:6px;font-family:inherit;background:rgba(255,255,255,0.92);box-shadow:0 1px 3px rgba(0,0,0,0.08);transition:background 0.4s ease;';
+
+        var priceSpan = document.createElement('span');
+        priceSpan.id = 'chartLivePrice';
+        priceSpan.style.cssText = 'font-size:15px;font-weight:600;color:#495057;';
+
+        var changeSpan = document.createElement('span');
+        changeSpan.id = 'chartLiveChange';
+        changeSpan.style.cssText = 'font-size:12px;font-weight:600;padding:2px 6px;border-radius:4px;';
+
+        overlay.appendChild(priceSpan);
+        overlay.appendChild(changeSpan);
+        container.appendChild(overlay);
+    }
+
+    /**
+     * Price overlay fiyat ve degisim degerlerini gunceller.
+     * @param {number} price - Guncel fiyat
+     * @param {number|null} changePercent - 24s degisim yuzdesi
+     */
+    function updatePriceOverlay(price, changePercent) {
+        var priceEl = document.getElementById('chartLivePrice');
+        var changeEl = document.getElementById('chartLiveChange');
+        if (priceEl) priceEl.textContent = formatUsd(price);
+        if (changeEl && changePercent != null) {
+            var isPos = changePercent >= 0;
+            changeEl.textContent = (isPos ? '+' : '') + changePercent.toFixed(2) + '%';
+            changeEl.style.background = isPos ? 'rgba(10,179,156,0.12)' : 'rgba(240,101,72,0.12)';
+            changeEl.style.color = isPos ? '#0ab39c' : '#f06548';
+        }
+    }
+
+    // ── Grafik Veri Yukleme ───────────────────────────────────
+
+    /**
+     * OHLCV verisini AJAX ile ceker ve LightweightCharts'a yukler.
      * @param {string} interval - Zaman araligi (1h, 4h, 1d)
      * @param {number} limit - Veri miktari
      */
@@ -495,13 +649,38 @@
                 try {
                     var data = JSON.parse(xhr.responseText);
                     if (data && data.length > 0) {
-                        var series = data.map(function (d) {
-                            return {x: (d.time || 0) * 1000, y: [d.open, d.high, d.low, d.close]};
-                        });
-                        if (candleChart) {
-                            candleChart.updateSeries([{data: series}]);
-                        } else {
-                            initCandleChart(series);
+                        if (!chart) {
+                            createChart();
+                            createPriceOverlay();
+                        }
+
+                        var candles = [];
+                        var volumes = [];
+                        for (var i = 0; i < data.length; i++) {
+                            var d = data[i];
+                            var timeSec = d.time || 0;
+                            candles.push({
+                                time: timeSec,
+                                open: d.open,
+                                high: d.high,
+                                low: d.low,
+                                close: d.close
+                            });
+                            volumes.push({
+                                time: timeSec,
+                                value: d.volume || 0,
+                                color: d.close >= d.open ? themeColors.greenAlpha : themeColors.redAlpha
+                            });
+                        }
+
+                        if (candleSeries) candleSeries.setData(candles);
+                        if (volumeSeries) volumeSeries.setData(volumes);
+                        if (chart) chart.timeScale().fitContent();
+
+                        // Price overlay guncelle
+                        var last = data[data.length - 1];
+                        if (last) {
+                            updatePriceOverlay(last.close, null);
                         }
                     }
                 } catch (e) { /* silent */ }
@@ -511,49 +690,6 @@
             if (loadingEl) loadingEl.style.display = 'none';
         };
         xhr.send();
-    }
-
-    /**
-     * ApexCharts candlestick grafigini baslatir.
-     * @param {Array} seriesData - OHLCV seri verisi
-     */
-    function initCandleChart(seriesData) {
-        var container = document.getElementById('crypto-chart-container');
-        if (!container || typeof ApexCharts === 'undefined') return;
-        var loadingEl = document.getElementById('crypto-chart-loading');
-        if (loadingEl) loadingEl.style.display = 'none';
-
-        candleChart = new ApexCharts(container, {
-            series: [{name: binanceSymbol, data: seriesData}],
-            chart: {
-                type: 'candlestick',
-                height: 400,
-                toolbar: {show: true},
-                animations: {enabled: false},
-                background: 'transparent'
-            },
-            xaxis: {
-                type: 'datetime',
-                labels: {datetimeUTC: false}
-            },
-            yaxis: {
-                tooltip: {enabled: true},
-                labels: {
-                    formatter: function (v) {
-                        return formatUsd(v);
-                    }
-                }
-            },
-            plotOptions: {
-                candlestick: {
-                    colors: {upward: '#0ab39c', downward: '#f06548'},
-                    wick: {useFillColor: true}
-                }
-            },
-            grid: {borderColor: '#e9ebec', strokeDashArray: 3},
-            tooltip: {enabled: true}
-        });
-        candleChart.render();
     }
 
     // ── Periyot Butonlari ──────────────────────────────────
@@ -579,6 +715,101 @@
         });
     }
 
+    // ── Fear & Greed Gauge ────────────────────────────────────
+
+    /**
+     * Fear & Greed endeksini ApexCharts radialBar gauge olarak render eder.
+     * @param {number} value - Fear & Greed degeri (0-100)
+     * @param {string} classification - Siniflandirma etiketi
+     */
+    function renderFearGreedGauge(value, classification) {
+        if (typeof ApexCharts === 'undefined') return;
+        var el = document.getElementById('fear-greed-gauge');
+        if (!el) return;
+
+        if (fearGreedChart) {
+            fearGreedChart.destroy();
+            fearGreedChart = null;
+        }
+
+        var color = '#6c757d';
+        if (value <= 24) color = '#f06548';
+        else if (value <= 44) color = '#f7b84b';
+        else if (value <= 55) color = '#0dcaf0';
+        else if (value <= 74) color = '#0ab39c';
+        else color = '#405189';
+
+        fearGreedChart = new ApexCharts(el, {
+            chart: { type: 'radialBar', height: 200 },
+            series: [value || 0],
+            plotOptions: {
+                radialBar: {
+                    startAngle: -135,
+                    endAngle: 135,
+                    hollow: { size: '65%' },
+                    track: { background: '#f3f3f9' },
+                    dataLabels: {
+                        name: {
+                            show: true,
+                            fontSize: '12px',
+                            color: '#878a99',
+                            offsetY: 20
+                        },
+                        value: {
+                            show: true,
+                            fontSize: '28px',
+                            fontWeight: 700,
+                            color: color,
+                            offsetY: -15,
+                            formatter: function (val) {
+                                return Math.round(val);
+                            }
+                        }
+                    }
+                }
+            },
+            colors: [color],
+            labels: [classification || '--'],
+            stroke: { lineCap: 'round' }
+        });
+        fearGreedChart.render();
+
+        // Label badge
+        var labelEl = document.getElementById('fear-greed-label');
+        if (labelEl) {
+            labelEl.textContent = classification || '--';
+            var cls = 'bg-secondary-subtle text-secondary';
+            if (value <= 24) cls = 'bg-danger-subtle text-danger';
+            else if (value <= 44) cls = 'bg-warning-subtle text-warning';
+            else if (value <= 55) cls = 'bg-info-subtle text-info';
+            else if (value <= 74) cls = 'bg-success-subtle text-success';
+            else cls = 'bg-primary-subtle text-primary';
+            labelEl.className = 'badge ' + cls + ' mt-2';
+        }
+    }
+
+    /**
+     * Fear & Greed endeksini AJAX ile ceker ve gauge render eder.
+     */
+    function fetchFearGreed() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/ajax/kripto/fear-greed', true);
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.timeout = 10000;
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    if (data && data.value != null) {
+                        renderFearGreedGauge(data.value, data.classification);
+                    }
+                } catch (e) { /* silent */ }
+            }
+        };
+        xhr.onerror = xhr.ontimeout = function () { /* silent */ };
+        xhr.send();
+    }
+
     // ── Polling ──────────────────────────────────
 
     /**
@@ -596,6 +827,11 @@
                     updateHero(data);
                     renderMarketData(data);
                     consecutiveErrors = 0;
+
+                    // Price overlay da guncelle (polling ile)
+                    if (data && data.currentPrice != null) {
+                        updatePriceOverlay(data.currentPrice, data.priceChangePercentage24h);
+                    }
                 } catch (e) {
                     consecutiveErrors++;
                 }
@@ -621,6 +857,7 @@
             if (xhr.status >= 200 && xhr.status < 300) {
                 try {
                     renderTechnical(JSON.parse(xhr.responseText));
+                    consecutiveErrors = 0;
                 } catch (e) { consecutiveErrors++; }
             } else {
                 consecutiveErrors++;
@@ -635,6 +872,14 @@
     /**
      * Sayfa yuklendiginde tum bilesenleri baslatir.
      */
+    // ── Temizlik ──────────────────────────────────
+    function cleanup() {
+        if (resizeObserver) resizeObserver.disconnect();
+        if (chart) chart.remove();
+        if (fearGreedChart) fearGreedChart.destroy();
+    }
+    window.addEventListener('beforeunload', cleanup);
+
     function init() {
         coinId = window.COIN_DATA ? window.COIN_DATA.id || '' : '';
         binanceSymbol = window.BINANCE_SYMBOL || '';
@@ -642,12 +887,14 @@
         if (window.COIN_DATA) {
             updateHero(window.COIN_DATA);
             renderMarketData(window.COIN_DATA);
+            // Fear & Greed fetch
+            fetchFearGreed();
         }
         if (window.INITIAL_TECHNICAL) {
             renderTechnical(window.INITIAL_TECHNICAL);
         }
 
-        bindPeriodButtons();
+        if (binanceSymbol) bindPeriodButtons();
         if (binanceSymbol) {
             loadChart(currentInterval, currentLimit);
         } else {
