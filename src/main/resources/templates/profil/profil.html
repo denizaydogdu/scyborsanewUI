@@ -58,8 +58,13 @@
                         <!-- Sifre (opsiyonel) -->
                         <div class="mb-3">
                             <label class="form-label">Yeni Şifre <small class="text-muted">(boş bırakılırsa değişmez)</small></label>
-                            <input type="password" id="password" name="password" class="form-control"
-                                   placeholder="Yeni şifre">
+                            <div class="input-group">
+                                <input type="password" id="password" name="password" class="form-control"
+                                       placeholder="Yeni şifre">
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('password', this)">
+                                    <i class="ri-eye-off-line"></i>
+                                </button>
+                            </div>
                             <!-- Şifre kuralları -->
                             <div id="pwRules" class="mt-2" style="display:none;">
                                 <small id="ruleLen" class="d-block text-muted"><i class="ri-close-circle-line me-1"></i>En az 6 karakter</small>
@@ -77,8 +82,13 @@
                         <!-- Sifre Tekrar -->
                         <div class="mb-3">
                             <label class="form-label">Yeni Şifre (Tekrar)</label>
-                            <input type="password" id="passwordConfirm" class="form-control"
-                                   placeholder="Yeni şifreyi tekrar girin">
+                            <div class="input-group">
+                                <input type="password" id="passwordConfirm" class="form-control"
+                                       placeholder="Yeni şifreyi tekrar girin">
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('passwordConfirm', this)">
+                                    <i class="ri-eye-off-line"></i>
+                                </button>
+                            </div>
                             <div id="passwordMismatch" class="invalid-feedback">Şifreler eşleşmiyor.</div>
                         </div>
 
@@ -112,6 +122,17 @@
     </div>
 
     <script th:inline="javascript">
+        function togglePasswordVisibility(inputId, btn) {
+            var input = document.getElementById(inputId);
+            var icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'ri-eye-line';
+            } else {
+                input.type = 'password';
+                icon.className = 'ri-eye-off-line';
+            }
+        }
         (function () {
             var pw = document.getElementById('password');
             var pwc = document.getElementById('passwordConfirm');

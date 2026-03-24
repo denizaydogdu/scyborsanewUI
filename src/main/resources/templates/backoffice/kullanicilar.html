@@ -218,6 +218,16 @@
                             </div>
                         </div>
                         <div class="mb-3">
+                            <label class="form-label">Şifre Tekrar</label>
+                            <div class="input-group">
+                                <input type="password" id="editPasswordConfirm" class="form-control" placeholder="Şifre tekrar">
+                                <button type="button" class="btn btn-outline-secondary password-toggle" data-target="editPasswordConfirm" tabindex="-1">
+                                    <i class="ri-eye-off-line"></i>
+                                </button>
+                            </div>
+                            <div id="editPasswordMismatch" class="invalid-feedback" style="display:none;">Şifreler eşleşmiyor</div>
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label">Ad Soyad</label>
                             <input type="text" name="adSoyad" class="form-control">
                         </div>
@@ -335,9 +345,36 @@
             });
         }
 
+        // Düzenleme formu — şifre eşleşme kontrolü
+        var editUserForm = document.querySelector('#editUserModal form');
+        if (editUserForm) {
+            editUserForm.addEventListener('submit', function (e) {
+                var pw = document.getElementById('editPassword');
+                var pwConfirm = document.getElementById('editPasswordConfirm');
+                var mismatchDiv = document.getElementById('editPasswordMismatch');
+                if (pw.value && pw.value !== pwConfirm.value) {
+                    e.preventDefault();
+                    pwConfirm.classList.add('is-invalid');
+                    mismatchDiv.style.display = 'block';
+                    return false;
+                }
+                pwConfirm.classList.remove('is-invalid');
+                mismatchDiv.style.display = 'none';
+            });
+
+            document.getElementById('editPasswordConfirm').addEventListener('input', function () {
+                this.classList.remove('is-invalid');
+                document.getElementById('editPasswordMismatch').style.display = 'none';
+            });
+        }
+
         if (editUserModal) {
             editUserModal.addEventListener('hidden.bs.modal', function () {
                 resetPasswordToggles(this);
+                var mismatchDiv = document.getElementById('editPasswordMismatch');
+                if (mismatchDiv) mismatchDiv.style.display = 'none';
+                var pwConfirm = document.getElementById('editPasswordConfirm');
+                if (pwConfirm) { pwConfirm.classList.remove('is-invalid'); pwConfirm.value = ''; }
             });
         }
     </script>
