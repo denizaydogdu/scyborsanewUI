@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -21,10 +23,26 @@ import java.util.Map;
  *   <li>USER → {@code /dashboard}</li>
  * </ul>
  *
+ * <p>AJAX endpoint'leri ({@code /ajax/*}) saved request olarak kaydedilmisse temizler —
+ * session-guard.js polling'i beyaz sayfaya yonlendirme sorununu onler.</p>
+ *
  * @see SecurityConfig
  */
 @Component
 public class ScyborsaAuthSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
+
+    /** Shared request cache — SecurityConfig ile ayni bean. */
+    private final HttpSessionRequestCache requestCache;
+
+    /**
+     * Constructor — shared request cache inject edilir.
+     *
+     * @param requestCache yapilandirilmis HttpSessionRequestCache bean
+     */
+    public ScyborsaAuthSuccessHandler(HttpSessionRequestCache requestCache) {
+        this.requestCache = requestCache;
+        setRequestCache(requestCache);
+    }
 
     /**
      * Basarili giris sonrasi yonlendirme yapar.
@@ -50,6 +68,15 @@ public class ScyborsaAuthSuccessHandler extends SavedRequestAwareAuthenticationS
             Object role = detailsMap.get("role");
             session.setAttribute("userAdSoyad", adSoyad != null ? adSoyad.toString() : "");
             session.setAttribute("userRole", role != null ? role.toString() : "");
+        }
+
+        // AJAX endpoint'leri saved request olarak kaydedilmisse temizle —
+        // session-guard.js /ajax/session-check cagriyor, session expired oldugunda
+        // Spring Security bunu saved request olarak kaydediyor. Login sonrasi
+        // kullaniciyi beyaz sayfaya yonlendirmesini onle.
+        SavedRequest savedRequest = requestCache.getRequest(request, response);
+        if (savedRequest != null && savedRequest.getRedirectUrl().contains("/ajax/")) {
+            requestCache.removeRequest(request, response);
         }
 
         super.onAuthenticationSuccess(request, response, authentication);

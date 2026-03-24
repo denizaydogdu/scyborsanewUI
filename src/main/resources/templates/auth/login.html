@@ -198,6 +198,14 @@
             });
         }
 
+        // bfcache (Back/Forward Cache) — browser geri gelince butonu resetle
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted && loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Giriş Yap';
+            }
+        });
+
         // Password show/hide toggle
         var passwordAddon = document.getElementById('password-addon');
         if (passwordAddon) {

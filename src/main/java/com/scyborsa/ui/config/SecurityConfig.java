@@ -8,6 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 /**
@@ -91,8 +92,24 @@ public class SecurityConfig {
                         + "font-src 'self' data: https://fonts.gstatic.com; "
                         + "frame-src https://www.googletagmanager.com https://googleads.g.doubleclick.net https://td.doubleclick.net; "
                         + "connect-src 'self' wss: ws: https://cdn.jsdelivr.net https://cdn.lordicon.com https://www.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://stats.g.doubleclick.net https://googleads.g.doubleclick.net https://*.google-analytics.com https://*.analytics.google.com;"));
-            });
+            })
+            // AJAX endpoint'lerini saved request cache'den haric tut — login sonrasi beyaz sayfa onlemi
+            .requestCache(cache -> cache.requestCache(httpSessionRequestCache()));
         return http.build();
+    }
+
+    /**
+     * Shared request cache bean'i — SecurityConfig ve ScyborsaAuthSuccessHandler
+     * ayni instance'i kullanir. AJAX endpoint'lerinin saved request olarak
+     * kaydedilmesini onler (session-guard.js polling sorunu).
+     *
+     * @return yapilandirilmis HttpSessionRequestCache instance
+     */
+    @Bean
+    HttpSessionRequestCache httpSessionRequestCache() {
+        var cache = new HttpSessionRequestCache();
+        cache.setMatchingRequestParameterName("continue");
+        return cache;
     }
 
     /**
