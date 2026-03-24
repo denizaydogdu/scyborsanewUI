@@ -65,20 +65,27 @@
 							</div>
 						</li>
 
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="#sidebarHaberler" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarHaberler">
+						<li class="nav-item"
+							th:classappend="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/')} ? 'mm-active' : ''">
+							<a class="nav-link menu-link" href="#sidebarHaberler" data-bs-toggle="collapse" role="button"
+							   th:aria-expanded="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/')} ? 'true' : 'false'"
+							   aria-controls="sidebarHaberler">
 								<i class="ri-newspaper-line"></i> <span>Haberler</span>
 							</a>
-							<div class="collapse menu-dropdown" id="sidebarHaberler">
+							<div class="menu-dropdown" id="sidebarHaberler"
+								 th:classappend="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/')} ? 'collapse show' : 'collapse'">
 								<ul class="nav nav-sm flex-column">
 									<li class="nav-item">
-										<a href="/kap-news" class="nav-link">KAP</a>
+										<a href="/kap-news" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/kap-news') or (activeNewsMenu != null and activeNewsMenu == 'KAP')} ? 'active' : ''">KAP</a>
 									</li>
 									<li class="nav-item">
-										<a href="/market-news" class="nav-link">Piyasa Haberleri</a>
+										<a href="/market-news" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/market-news') or (activeNewsMenu != null and activeNewsMenu == 'MARKET')} ? 'active' : ''">Piyasa Haberleri</a>
 									</li>
 									<li class="nav-item">
-										<a href="/world-news" class="nav-link">Dünya Haberleri</a>
+										<a href="/world-news" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/world-news') or (activeNewsMenu != null and activeNewsMenu == 'WORLD')} ? 'active' : ''">Dünya Haberleri</a>
 									</li>
 								</ul>
 							</div>
@@ -131,6 +138,7 @@
 						</li>
 
 						<li class="menu-title"><span><span class="badge bg-info-subtle text-info fs-10">Çok Yakında</span></span></li>
+						<!-- Piyasa & Yatirim Araclari -->
 						<li class="nav-item">
 							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
 								<i class="ri-wallet-3-line"></i> <span>Portföy</span>
@@ -138,12 +146,12 @@
 						</li>
 						<li class="nav-item">
 							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
-								<i class="ri-flow-chart"></i> <span>Akışım</span>
+								<i class="ri-swap-line"></i> <span>Al / Sat</span>
 							</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
-								<i class="ri-robot-line"></i> <span>Kişiselleştirilmiş Yapay Zeka</span>
+								<i class="ri-global-line"></i> <span>ABD Borsası</span>
 							</a>
 						</li>
 						<li class="nav-item">
@@ -156,6 +164,7 @@
 								<i class="ri-exchange-dollar-line"></i> <span>Döviz Kurları</span>
 							</a>
 						</li>
+						<!-- Analiz & Ileri Ozellikler -->
 						<li class="nav-item">
 							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
 								<i class="ri-shield-star-line"></i> <span>KGS Skorları</span>
@@ -163,12 +172,17 @@
 						</li>
 						<li class="nav-item">
 							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
-								<i class="ri-grid-line"></i> <span>Grid Bot Sistemleri</span>
+								<i class="ri-robot-line"></i> <span>Kişiselleştirilmiş Yapay Zeka</span>
 							</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
-								<i class="ri-swap-line"></i> <span>Al / Sat</span>
+								<i class="ri-flow-chart"></i> <span>Akışım</span>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
+								<i class="ri-grid-line"></i> <span>Grid Bot Sistemleri</span>
 							</a>
 						</li>
 

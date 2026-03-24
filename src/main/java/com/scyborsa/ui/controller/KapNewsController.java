@@ -120,6 +120,10 @@ public class KapNewsController {
         log.info("[HABER-DETAY-UI] Sayfa erisimi [newsId={}]", newsId);
         HaberDetayDto haber = kapNewsService.getHaberDetay(newsId);
         model.addAttribute("haber", haber);
+        // Sidebar aktif menu icin haber tipini model'e ekle
+        if (haber != null && haber.getNewsType() != null) {
+            model.addAttribute("activeNewsMenu", haber.getNewsType());
+        }
         return "kapNews/haber-detay";
     }
 }

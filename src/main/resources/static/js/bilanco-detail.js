@@ -418,9 +418,10 @@
                 {badge: '<i class="ri-subtract-line me-1"></i>Gri Kenarlık', badgeColor: 'secondary', desc: 'Veri bulunamadı veya hesaplanamadı.'}
             ]));
 
-            // 4 Alt sekme (pills) - belirgin stil
+            // 4 Alt sekme - ust tablarla ayni stil (nav-tabs-custom)
             var navUl = document.createElement('ul');
-            navUl.className = 'nav nav-pills-custom mb-3';
+            navUl.className = 'nav nav-tabs nav-tabs-custom nav-justified mb-3';
+            navUl.setAttribute('role', 'tablist');
             var pillNames = [
                 {id: 'oran-likidite', label: 'Likidite', icon: 'ri-drop-line', active: true},
                 {id: 'oran-mali', label: 'Mali Yapı', icon: 'ri-bank-line', active: false},
@@ -430,9 +431,11 @@
             for (var p = 0; p < pillNames.length; p++) {
                 var li = document.createElement('li');
                 li.className = 'nav-item';
+                li.setAttribute('role', 'presentation');
                 var a = document.createElement('a');
-                a.className = 'nav-link' + (pillNames[p].active ? ' active' : '');
-                a.setAttribute('data-bs-toggle', 'pill');
+                a.className = 'nav-link fw-semibold py-3' + (pillNames[p].active ? ' active' : '');
+                a.setAttribute('data-bs-toggle', 'tab');
+                a.setAttribute('role', 'tab');
                 a.href = '#' + pillNames[p].id;
                 var pillIcon = document.createElement('i');
                 pillIcon.className = pillNames[p].icon + ' me-1';
