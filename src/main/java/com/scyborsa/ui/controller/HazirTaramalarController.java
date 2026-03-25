@@ -57,9 +57,22 @@ public class HazirTaramalarController {
     public String hazirTaramalar(Model model) {
         log.info("[HAZIR-TARAMALAR-UI] Hazir taramalar sayfasi istendi");
 
-        List<PresetStrategyDto> strategies = hazirTaramalarService.getStrategies();
+        // Gizlenecek stratejiler (kullaniciya gosterilmeyecek)
+        java.util.Set<String> hiddenCodes = java.util.Set.of(
+                "momentum_positive", "williams_r_oversold", "ultimate_oscillator_strong",
+                "macd_positive", "ema_trend_up", "sma_above_order", "sma_below_order", "ichimoku_above_cloud",
+                "volume_spike", "high_volume_breakout", "strong_moneyflow",
+                "bb_squeeze",
+                "price_above_sma50", "oversold_bounce", "high_roc", "dmi_bullish",
+                "trix_positive", "vortex_bullish", "aroon_up_trend", "commodity_channel_strong"
+        );
+        List<PresetStrategyDto> strategies = hazirTaramalarService.getStrategies()
+                .stream()
+                .filter(s -> !hiddenCodes.contains(s.getCode()))
+                .collect(java.util.stream.Collectors.toList());
         model.addAttribute("strategies", strategies);
-        model.addAttribute("categories", List.of("MOMENTUM", "TREND", "HACIM", "VOLATILITE", "KOMPOZIT"));
+        // Kategoriler: HACIM, VOLATILITE, KOMPOZIT tümüyle gizli — sadece MOMENTUM ve TREND kalıyor
+        model.addAttribute("categories", List.of("MOMENTUM", "TREND"));
 
         // Strateji aciklama map'i — JS'e dogrudan JSON olarak gecilir
         Map<String, String> descMap = new LinkedHashMap<>();
