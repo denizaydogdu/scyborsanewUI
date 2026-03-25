@@ -38,12 +38,12 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0" th:text="${stockId + ' Detay'}"></h4>
+                <h4 class="mb-sm-0" th:text="${assetType == 'CRYPTO' and stockDescription != null ? stockDescription + ' (' + stockId + ')' : stockId + ' Detay'}"></h4>
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="/">Anasayfa</a></li>
                         <li class="breadcrumb-item"><a th:href="${breadcrumbCategoryUrl ?: '/tum-hisseler'}" th:text="${breadcrumbCategory ?: 'Hisse Senetleri'}">Hisse Senetleri</a></li>
-                        <li class="breadcrumb-item active" th:text="${stockId}"></li>
+                        <li class="breadcrumb-item active" th:text="${assetType == 'CRYPTO' and stockDescription != null ? stockDescription + ' (' + stockId + ')' : stockId}"></li>
                     </ol>
                 </div>
             </div>
@@ -221,9 +221,9 @@
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h4 class="card-title mb-0">Grafik
                         <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
-                        <span id="chartMarketStatus" class="badge fs-11 ms-2"
+                        <span id="chartMarketStatus" class="badge fs-11 ms-2" th:if="${assetType != 'CRYPTO'}"
                               th:classappend="${marketOpen} ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'"
-                              th:text="${marketOpen} ? 'Seans Açık' : 'Seans Kapalı'">Seans Açık</span>
+                              th:text="${marketOpen} ? 'Seans A&#231;&#305;k' : 'Seans Kapal&#305;'">Seans Açık</span>
                     </h4>
                     <div class="btn-group btn-group-sm" role="group" id="chartPeriodSelector">
                         <button type="button" class="btn btn-outline-primary" data-period="15">15dk</button>
