@@ -1102,7 +1102,7 @@
             }
 
             function updateCryptoDetail(coin) {
-                if (!coin || !coin.currentPrice) return;
+                if (!coin || coin.currentPrice == null) return;
                 // Fiyat
                 var priceEl = document.getElementById('crypto-price');
                 if (priceEl) {
