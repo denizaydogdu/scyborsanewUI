@@ -51,8 +51,39 @@
     </div>
     <!-- end page title -->
 
+    <!-- Kripto Bilgi Header (Crypto) -->
+    <div class="row" th:if="${assetType == 'CRYPTO'}">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <img th:if="${coinImage != null}" th:src="${coinImage}" width="48" height="48" class="rounded-circle" alt="" onerror="this.parentElement.style.display='none'" />
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="mb-1" th:text="${stockDescription}">--</h5>
+                            <p class="text-muted mb-0">
+                                <span class="text-uppercase fw-medium" th:text="${stockId}">--</span>
+                                <span th:if="${coin != null and coin.marketCapRank != null}" class="badge bg-primary-subtle text-primary ms-2" th:text="'#' + ${coin.marketCapRank}">--</span>
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0 text-end">
+                            <h4 class="mb-1">
+                                <span th:if="${stockPrice != null}" class="fw-bold" th:classappend="${stockChangePercent != null and stockChangePercent >= 0} ? 'text-success' : 'text-danger'" th:text="'$' + ${#numbers.formatDecimal(stockPrice, 1, 'COMMA', 2, 'POINT')}">--</span>
+                            </h4>
+                            <span th:if="${stockChangePercent != null}" class="badge" th:classappend="${stockChangePercent >= 0} ? 'bg-success' : 'bg-danger'">
+                                <i th:classappend="${stockChangePercent >= 0} ? 'ri-arrow-right-up-line' : 'ri-arrow-right-down-line'"></i>
+                                <span th:text="${stockChangePercent >= 0 ? '+' : ''} + ${#numbers.formatDecimal(stockChangePercent, 1, 2)} + '%'">--</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Hisse Bilgi Header (Stock) -->
-    <div class="row" th:if="${stockLogoid != null}">
+    <div class="row" th:if="${assetType != 'CRYPTO' and stockLogoid != null}">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
@@ -788,10 +819,12 @@
         window.CHART_CONFIG = {
             symbol: /*[[${stockId}]]*/ '',
             apiBase: /*[[${apiBaseUrl}]]*/ '',
-            assetType: 'STOCK',
-            currency: 'TL',
-            currencyPrefix: false,
-            wsEnabled: true
+            assetType: /*[[${assetType ?: 'STOCK'}]]*/ 'STOCK',
+            currency: /*[[${currencySymbol ?: 'TL'}]]*/ 'TL',
+            currencyPrefix: /*[[${currencyPrefix ?: false}]]*/ false,
+            wsEnabled: /*[[${assetType != 'CRYPTO'}]]*/ true,
+            binanceSymbol: /*[[${binanceSymbol ?: ''}]]*/ '',
+            coinId: /*[[${coinId ?: ''}]]*/ ''
         };
         // Backward compat
         window.STOCK_CHART_SYMBOL = window.CHART_CONFIG.symbol;
@@ -934,7 +967,7 @@
             var sectionEmojis = ['\u{1F4CA}', '\u{1F4C8}', '\u{1F3AF}', '\u{1F4B0}', '\u{1F4DD}'];
 
             function loadAiComment() {
-                if (aiLoaded || !stockCode) return;
+                if (aiLoaded || !stockCode || !document.getElementById('aiCommentContainer')) return;
                 aiLoaded = true;
 
                 fetch('/ajax/stock/' + stockCode + '/ai-comment')

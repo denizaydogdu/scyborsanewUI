@@ -306,11 +306,16 @@ public class CryptoController {
             indicators.add(buildIndicator("Aroon", "neutral"));
         }
 
+        // Stock template 11 sinyal bekler (gc > 5 threshold), crypto 6 sinyal uretir.
+        // Score-circle uyumu icin 11'lik scale'e map'le: round(gc * 11.0 / 6)
+        int scaledGreen = (int) Math.round(greenCount * 11.0 / 6);
+        int scaledRed = (int) Math.round(redCount * 11.0 / 6);
+
         // Tum periyotlara ayni sonucu ata (kripto API tek periyot verisi saglar)
         for (String period : List.of("15M", "1H", "4H", "1D", "1W")) {
             Map<String, Object> periodAnalysis = new HashMap<>();
-            periodAnalysis.put("greenCount", greenCount);
-            periodAnalysis.put("redCount", redCount);
+            periodAnalysis.put("greenCount", scaledGreen);
+            periodAnalysis.put("redCount", scaledRed);
             periodAnalysis.put("indicators", indicators);
             analysisMap.put(period, periodAnalysis);
         }
