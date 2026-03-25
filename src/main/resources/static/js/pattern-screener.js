@@ -173,7 +173,10 @@
                 return response.json();
             })
             .then(function(data) {
-                allPatterns = data.patterns || [];
+                var HIDDEN_PATTERNS = ['Y\u00fckselen Kanal', 'D\u00fc\u015fen Kanal', 'Yatay Kanal', 'Y\u00fckselen Kama', 'D\u00fc\u015fen Kama', 'Dikd\u00f6rtgen'];
+                allPatterns = (data.patterns || []).filter(function(p) {
+                    return HIDDEN_PATTERNS.indexOf(p.patternName) === -1;
+                });
                 applyFilters();
                 renderResults();
             })
