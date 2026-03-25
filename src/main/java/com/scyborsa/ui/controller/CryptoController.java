@@ -4,7 +4,10 @@ import com.scyborsa.ui.dto.CryptoDetailDto;
 import com.scyborsa.ui.dto.CryptoFearGreedDto;
 import com.scyborsa.ui.dto.CryptoGlobalDto;
 import com.scyborsa.ui.dto.CryptoMarketDto;
+import com.scyborsa.ui.dto.TvScreenerResponseModel;
 import com.scyborsa.ui.service.CryptoService;
+import com.scyborsa.ui.util.TwUtils;
+import java.util.ArrayList;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -127,14 +131,25 @@ public class CryptoController {
         model.addAttribute("coinImage", coin.getImage());
         model.addAttribute("coinId", coinId);
 
-        // Stock bolumleri disabled
-        model.addAttribute("hasAnalysisData", false);
+        // Teknik veri mapping — kripto indikatorlerini stock formatina donustur
+        Map<String, Map<String, Object>> analysisMap = buildCryptoAnalysisMap(technical);
+        int greenCount = analysisMap.containsKey("1D")
+                ? (int) analysisMap.get("1D").getOrDefault("greenCount", 0) : 0;
+        String recommendation = calculateRecommendation(greenCount);
+
+        model.addAttribute("hasAnalysisData", !technical.isEmpty());
+        model.addAttribute("analysisMap", analysisMap);
+        model.addAttribute("NO_TIME", buildCryptoNoTime(coin, technical));
+        model.addAttribute("recommendShortTime", recommendation);
+        model.addAttribute("recommendMiddleTime", recommendation);
+        model.addAttribute("recommendLongTime", recommendation);
+
+        // Stock bolumleri disabled (kripto icin AKD/Takas/Orderbook yok)
         model.addAttribute("hasAkdData", false);
         model.addAttribute("hasTakasData", false);
         model.addAttribute("hasOrderbookData", false);
         model.addAttribute("analistTavsiyeleri", null);
         model.addAttribute("marketOpen", true); // crypto 24/7
-        model.addAttribute("NO_TIME", null);
 
         // Tarih
         java.time.LocalDateTime now = java.time.LocalDateTime.now();
@@ -187,6 +202,231 @@ public class CryptoController {
             @RequestParam(defaultValue = "200") Integer limit) {
         String normalized = symbol != null ? symbol.toUpperCase() : "";
         return cryptoService.getOhlcv(normalized, interval, limit);
+    }
+
+    /**
+     * Kripto teknik indikatorlerinden periyot bazli analiz haritasi olusturur.
+     *
+     * <p>6 sinyal hesaplar (MACD, RSI, Stochastic, EMA20, ADX, Aroon) ve
+     * her periyot icin ayni greenCount/redCount degerlerini dondurur.
+     * Kripto API tek periyot verisi sagladigi icin tum periyotlar ayni sonucu alir.</p>
+     *
+     * @param technical kripto teknik indikator verileri
+     * @return periyot anahtarli (15M, 1H, 4H, 1D, 1W) analiz haritasi
+     */
+    private Map<String, Map<String, Object>> buildCryptoAnalysisMap(Map<String, Object> technical) {
+        Map<String, Map<String, Object>> analysisMap = new HashMap<>();
+
+        if (technical == null || technical.isEmpty()) {
+            for (String period : List.of("15M", "1H", "4H", "1D", "1W")) {
+                Map<String, Object> empty = new HashMap<>();
+                empty.put("greenCount", 0);
+                empty.put("redCount", 0);
+                empty.put("indicators", new ArrayList<>());
+                analysisMap.put(period, empty);
+            }
+            return analysisMap;
+        }
+
+        int greenCount = 0;
+        int redCount = 0;
+        List<Map<String, String>> indicators = new ArrayList<>();
+
+        // 1. MACD > MACD.signal → green, else red
+        Double macd = getDouble(technical, "MACD.macd");
+        Double macdSignal = getDouble(technical, "MACD.signal");
+        if (macd != null && macdSignal != null) {
+            boolean positive = macd > macdSignal;
+            indicators.add(buildIndicator("MACD", positive ? "positive" : "negative"));
+            if (positive) greenCount++; else redCount++;
+        } else {
+            indicators.add(buildIndicator("MACD", "neutral"));
+        }
+
+        // 2. RSI 50-70 → green, >70 veya <30 → red
+        Double rsi = getDouble(technical, "RSI");
+        if (rsi != null) {
+            String status;
+            if (rsi >= 50 && rsi <= 70) {
+                status = "positive";
+                greenCount++;
+            } else if (rsi > 70 || rsi < 30) {
+                status = "negative";
+                redCount++;
+            } else {
+                status = "neutral";
+            }
+            indicators.add(buildIndicator("RSI", status));
+        } else {
+            indicators.add(buildIndicator("RSI", "neutral"));
+        }
+
+        // 3. Stoch.K > Stoch.D → green, else red
+        Double stochK = getDouble(technical, "Stoch.K");
+        Double stochD = getDouble(technical, "Stoch.D");
+        if (stochK != null && stochD != null) {
+            boolean positive = stochK > stochD;
+            indicators.add(buildIndicator("Stochastic", positive ? "positive" : "negative"));
+            if (positive) greenCount++; else redCount++;
+        } else {
+            indicators.add(buildIndicator("Stochastic", "neutral"));
+        }
+
+        // 4. close > EMA20 → green, else red
+        Double close = getDouble(technical, "close");
+        Double ema20 = getDouble(technical, "EMA20");
+        if (close != null && ema20 != null) {
+            boolean positive = close > ema20;
+            indicators.add(buildIndicator("EMA20", positive ? "positive" : "negative"));
+            if (positive) greenCount++; else redCount++;
+        } else {
+            indicators.add(buildIndicator("EMA20", "neutral"));
+        }
+
+        // 5. ADX >20 && ADX+DI > ADX-DI → green, else red
+        Double adx = getDouble(technical, "ADX");
+        Double adxPlusDi = getDouble(technical, "ADX+DI");
+        Double adxMinusDi = getDouble(technical, "ADX-DI");
+        if (adx != null && adxPlusDi != null && adxMinusDi != null) {
+            boolean positive = adx > 20 && adxPlusDi > adxMinusDi;
+            indicators.add(buildIndicator("ADX", positive ? "positive" : "negative"));
+            if (positive) greenCount++; else redCount++;
+        } else {
+            indicators.add(buildIndicator("ADX", "neutral"));
+        }
+
+        // 6. Aroon.Up > Aroon.Down → green, else red
+        Double aroonUp = getDouble(technical, "Aroon.Up");
+        Double aroonDown = getDouble(technical, "Aroon.Down");
+        if (aroonUp != null && aroonDown != null) {
+            boolean positive = aroonUp > aroonDown;
+            indicators.add(buildIndicator("Aroon", positive ? "positive" : "negative"));
+            if (positive) greenCount++; else redCount++;
+        } else {
+            indicators.add(buildIndicator("Aroon", "neutral"));
+        }
+
+        // Tum periyotlara ayni sonucu ata (kripto API tek periyot verisi saglar)
+        for (String period : List.of("15M", "1H", "4H", "1D", "1W")) {
+            Map<String, Object> periodAnalysis = new HashMap<>();
+            periodAnalysis.put("greenCount", greenCount);
+            periodAnalysis.put("redCount", redCount);
+            periodAnalysis.put("indicators", indicators);
+            analysisMap.put(period, periodAnalysis);
+        }
+
+        return analysisMap;
+    }
+
+    /**
+     * Kripto teknik verilerini stock detay sayfasinin NO_TIME formatina donusturur.
+     *
+     * <p>{@link TvScreenerResponseModel} olusturur ve d[] array icinde
+     * RSI, MACD, EMA, SMA gibi indikator degerlerini stock formatina map'ler.</p>
+     *
+     * @param coin      kripto detay bilgileri
+     * @param technical kripto teknik indikator verileri
+     * @return stock formatinda TvScreenerResponseModel
+     */
+    private TvScreenerResponseModel buildCryptoNoTime(CryptoDetailDto coin, Map<String, Object> technical) {
+        TvScreenerResponseModel model = new TvScreenerResponseModel();
+
+        if (technical == null || technical.isEmpty()) {
+            model.setData(new ArrayList<>());
+            return model;
+        }
+
+        // 24 elemanlik d[] array — stock detail template'inin beklentisine uygun
+        List<Object> d = new ArrayList<>(24);
+        // d[0-5]: dummy metadata
+        for (int i = 0; i < 6; i++) d.add(null);
+        // d[6]: close
+        d.add(getDouble(technical, "close"));
+        // d[7-11]: null
+        for (int i = 7; i <= 11; i++) d.add(null);
+        // d[12]: RSI
+        d.add(getDouble(technical, "RSI"));
+        // d[13]: MACD.macd
+        d.add(getDouble(technical, "MACD.macd"));
+        // d[14]: MACD.signal
+        d.add(getDouble(technical, "MACD.signal"));
+        // d[15]: Mom (Momentum)
+        d.add(getDouble(technical, "Mom"));
+        // d[16]: ADX
+        d.add(getDouble(technical, "ADX"));
+        // d[17]: EMA20
+        d.add(getDouble(technical, "EMA20"));
+        // d[18]: EMA50
+        d.add(getDouble(technical, "EMA50"));
+        // d[19]: SMA50
+        d.add(getDouble(technical, "SMA50"));
+        // d[20]: SMA200
+        d.add(getDouble(technical, "SMA200"));
+        // d[21]: null (Ichimoku CLine yok)
+        d.add(null);
+        // d[22]: null (Ichimoku BLine yok)
+        d.add(null);
+        // d[23]: null (HullMA yok)
+        d.add(null);
+
+        TvScreenerResponseModel.DataItem item = new TvScreenerResponseModel.DataItem();
+        String symbol = coin.getSymbol() != null ? coin.getSymbol().toUpperCase() : "CRYPTO";
+        item.setS("CRYPTO:" + symbol);
+        item.setD(d);
+
+        model.setData(List.of(item));
+        model.setTotalCount(1);
+
+        return model;
+    }
+
+    /**
+     * Yesil sinyal sayisina gore kripto oneri metni hesaplar.
+     *
+     * <p>6 sinyal uzerinden: 5-6 Guclu Al, 4 Al, 3 Notr, 2 Sat, 0-1 Guclu Sat.</p>
+     *
+     * @param greenCount yesil (pozitif) sinyal sayisi (0-6 arasi)
+     * @return oneri metni (Guclu Al, Al, Notr, Sat, Guclu Sat)
+     */
+    private String calculateRecommendation(int greenCount) {
+        if (greenCount >= 5) return TwUtils.SIGNAL_STRONG_BUY;
+        if (greenCount >= 4) return TwUtils.SIGNAL_BUY;
+        if (greenCount == 3) return TwUtils.SIGNAL_NEUTRAL;
+        if (greenCount >= 2) return TwUtils.SIGNAL_SELL;
+        return TwUtils.SIGNAL_STRONG_SELL;
+    }
+
+    /**
+     * Tek bir indikator icin ad ve durum bilgisi iceren Map olusturur.
+     *
+     * @param name   indikator adi (orn: "MACD", "RSI")
+     * @param status sinyal durumu: "positive", "negative" veya "neutral"
+     * @return indikator bilgi Map'i
+     */
+    private Map<String, String> buildIndicator(String name, String status) {
+        Map<String, String> map = new HashMap<>();
+        map.put("name", name);
+        map.put("status", status);
+        return map;
+    }
+
+    /**
+     * Map'ten null-safe double degeri cikarir.
+     *
+     * @param map kaynak map
+     * @param key aranacak anahtar
+     * @return bulunan Double degeri veya null
+     */
+    private Double getDouble(Map<String, Object> map, String key) {
+        if (map == null) return null;
+        Object val = map.get(key);
+        if (val == null) return null;
+        if (val instanceof Number) return ((Number) val).doubleValue();
+        try {
+            return Double.parseDouble(val.toString());
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private boolean isValidCoinId(String coinId) {
