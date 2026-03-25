@@ -90,9 +90,9 @@
                     </div>
                     <!-- Crypto KPI -->
                     <div class="row g-3 mt-2">
-                        <div class="col-md-4 text-center"><p class="text-muted mb-1 fs-13">Piyasa Değeri</p><h6 id="detail-mcap" class="fw-semibold mb-0" th:text="${coin != null and coin.marketCap != null ? '$' + #numbers.formatDecimal(coin.marketCap / 1000000000, 1, 'COMMA', 2, 'POINT') + ' Milyar' : '--'}">--</h6></div>
-                        <div class="col-md-4 text-center"><p class="text-muted mb-1 fs-13">24s Hacim</p><h6 id="detail-volume" class="fw-semibold mb-0" th:text="${coin != null and coin.totalVolume != null ? '$' + #numbers.formatDecimal(coin.totalVolume / 1000000000, 1, 'COMMA', 2, 'POINT') + ' Milyar' : '--'}">--</h6></div>
-                        <div class="col-md-4 text-center"><p class="text-muted mb-1 fs-13">Dolaşımdaki Arz</p><h6 id="detail-supply" class="fw-semibold mb-0" th:text="${coin != null and coin.circulatingSupply != null ? #numbers.formatDecimal(coin.circulatingSupply / 1000000, 1, 'COMMA', 2, 'POINT') + ' Milyon' : '--'}">--</h6></div>
+                        <div class="col-md-4 text-center"><p class="text-muted mb-1 fs-13">Piyasa Değeri</p><h6 id="detail-mcap" class="fw-semibold mb-0">--</h6></div>
+                        <div class="col-md-4 text-center"><p class="text-muted mb-1 fs-13">24s Hacim</p><h6 id="detail-volume" class="fw-semibold mb-0">--</h6></div>
+                        <div class="col-md-4 text-center"><p class="text-muted mb-1 fs-13">Dolaşımdaki Arz</p><h6 id="detail-supply" class="fw-semibold mb-0">--</h6></div>
                     </div>
                 </div>
             </div>
@@ -1144,6 +1144,10 @@
                 xhr.onerror = xhr.ontimeout = function() { errors++; };
                 xhr.send();
             }
+
+            // Ilk yukleme — SSR bridge'den hemen doldur
+            var initCoin = /*[[${coin}]]*/ null;
+            if (initCoin) updateCryptoDetail(initCoin);
 
             setInterval(poll, POLL_INTERVAL);
         })();
