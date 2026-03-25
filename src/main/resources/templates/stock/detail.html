@@ -260,8 +260,8 @@
                                 <th scope="col">EMA50 <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;50 Günlük Üssel Hareketli Ort.&lt;/b&gt;&lt;br&gt;Orta vadeli trend göstergesi.&lt;br&gt;Fiyat üzerinde: Yükseliş&lt;br&gt;Fiyat altında: Düşüş"></i></th>
                                 <th scope="col">SMA50 <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;50 Günlük Basit Hareketli Ort.&lt;/b&gt;&lt;br&gt;Orta vadeli destek/direnç seviyesi.&lt;br&gt;Fiyat üzerinde: Yükseliş&lt;br&gt;Fiyat altında: Düşüş"></i></th>
                                 <th scope="col">SMA200 <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;200 Günlük Basit Hareketli Ort.&lt;/b&gt;&lt;br&gt;Uzun vadeli ana trend göstergesi.&lt;br&gt;Fiyat üzerinde: Boğa piyasası&lt;br&gt;Fiyat altında: Ayı piyasası"></i></th>
-                                <th scope="col">Ichimoku <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;Ichimoku Bulutu&lt;/b&gt;&lt;br&gt;CLine (Tenkan): Kısa vadeli denge&lt;br&gt;BLine (Kijun): Orta vadeli denge&lt;br&gt;Fiyat her ikisinin üstünde: Yükseliş&lt;br&gt;Fiyat her ikisinin altında: Düşüş"></i></th>
-                                <th scope="col">HULLMA <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;Hull Hareketli Ortalama&lt;/b&gt;&lt;br&gt;Gecikmeyi azaltan hızlı MA.&lt;br&gt;Fiyat üzerinde: Yükseliş&lt;br&gt;Fiyat altında: Düşüş&lt;br&gt;Trend dönüşlerini erken yakalar"></i></th>
+                                <th scope="col" th:if="${assetType != 'CRYPTO'}">Ichimoku <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;Ichimoku Bulutu&lt;/b&gt;&lt;br&gt;CLine (Tenkan): Kısa vadeli denge&lt;br&gt;BLine (Kijun): Orta vadeli denge&lt;br&gt;Fiyat her ikisinin üstünde: Yükseliş&lt;br&gt;Fiyat her ikisinin altında: Düşüş"></i></th>
+                                <th scope="col" th:if="${assetType != 'CRYPTO'}">HULLMA <i class="ri-information-line text-muted ms-1 indicator-info" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="&lt;b&gt;Hull Hareketli Ortalama&lt;/b&gt;&lt;br&gt;Gecikmeyi azaltan hızlı MA.&lt;br&gt;Fiyat üzerinde: Yükseliş&lt;br&gt;Fiyat altında: Düşüş&lt;br&gt;Trend dönüşlerini erken yakalar"></i></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -363,7 +363,8 @@
                                     <span th:if="${data.d[20] == null or data.d[6] == null}">N/A</span>
                                 </td>
 
-                                <!-- Ichimoku => d[21]=CLine, d[22]=BLine -->
+                                <!-- Ichimoku => d[21]=CLine, d[22]=BLine (crypto'da gizli) -->
+                                <th:block th:if="${assetType != 'CRYPTO'}">
                                 <td th:if="${data.d[21] != null and data.d[22] != null and data.d[6] != null}"
                                     th:with="price=${data.d[6]}, cLineVal=${#numbers.formatDecimal(data.d[21], 2, 2)}, bLineVal=${#numbers.formatDecimal(data.d[22], 2, 2)}, cRaw=${data.d[21]}, bRaw=${data.d[22]}"
                                     th:class="${(price > cRaw and price > bRaw) ? 'text-success' : ((price < cRaw and price < bRaw) ? 'text-danger' : 'text-warning')}">
@@ -371,9 +372,10 @@
                                     <span th:text="'BLine: ' + ${bLineVal}"></span>
                                 </td>
                                 <td th:if="${data.d[21] == null or data.d[22] == null or data.d[6] == null}">N/A</td>
+                                </th:block>
 
-                                <!-- HULLMA => d[23] -->
-                                <td>
+                                <!-- HULLMA => d[23] (crypto'da gizli) -->
+                                <td th:if="${assetType != 'CRYPTO'}">
                                     <span th:if="${data.d[23] != null and data.d[6] != null}"
                                           th:with="price=${data.d[6]}, hullmaVal=${#numbers.formatDecimal(data.d[23], 2, 2)}, hullmaRaw=${data.d[23]}"
                                           th:class="${price > hullmaRaw ? 'text-success' : 'text-danger'}">
