@@ -306,16 +306,67 @@ public class CryptoController {
             indicators.add(buildIndicator("Aroon", "neutral"));
         }
 
-        // Stock template 11 sinyal bekler (gc > 5 threshold), crypto 6 sinyal uretir.
-        // Score-circle uyumu icin 11'lik scale'e map'le: round(gc * 11.0 / 6)
-        int scaledGreen = (int) Math.round(greenCount * 11.0 / 6);
-        int scaledRed = (int) Math.round(redCount * 11.0 / 6);
+        // 7. close > EMA50 → green, else red
+        Double ema50 = getDouble(technical, "EMA50");
+        if (close != null && ema50 != null) {
+            boolean positive = close > ema50;
+            indicators.add(buildIndicator("EMA50", positive ? "positive" : "negative"));
+            if (positive) greenCount++; else redCount++;
+        } else {
+            indicators.add(buildIndicator("EMA50", "neutral"));
+        }
 
-        // Tum periyotlara ayni sonucu ata (kripto API tek periyot verisi saglar)
+        // 8. close > SMA50 → green, else red
+        Double sma50 = getDouble(technical, "SMA50");
+        if (close != null && sma50 != null) {
+            boolean positive = close > sma50;
+            indicators.add(buildIndicator("SMA50", positive ? "positive" : "negative"));
+            if (positive) greenCount++; else redCount++;
+        } else {
+            indicators.add(buildIndicator("SMA50", "neutral"));
+        }
+
+        // 9. close > SMA200 → green, else red
+        Double sma200 = getDouble(technical, "SMA200");
+        if (close != null && sma200 != null) {
+            boolean positive = close > sma200;
+            indicators.add(buildIndicator("SMA200", positive ? "positive" : "negative"));
+            if (positive) greenCount++; else redCount++;
+        } else {
+            indicators.add(buildIndicator("SMA200", "neutral"));
+        }
+
+        // 10. CCI20: >100 → red (asiri alim), <-100 → green (asiri satim), else neutral
+        Double cci = getDouble(technical, "CCI20");
+        if (cci != null) {
+            if (cci < -100) {
+                indicators.add(buildIndicator("CCI", "positive"));
+                greenCount++;
+            } else if (cci > 100) {
+                indicators.add(buildIndicator("CCI", "negative"));
+                redCount++;
+            } else {
+                indicators.add(buildIndicator("CCI", "neutral"));
+            }
+        } else {
+            indicators.add(buildIndicator("CCI", "neutral"));
+        }
+
+        // 11. Momentum > 0 → green, else red
+        Double mom = getDouble(technical, "Mom");
+        if (mom != null) {
+            boolean positive = mom > 0;
+            indicators.add(buildIndicator("Momentum", positive ? "positive" : "negative"));
+            if (positive) greenCount++; else redCount++;
+        } else {
+            indicators.add(buildIndicator("Momentum", "neutral"));
+        }
+
+        // 11 sinyal — stock template ile ayni threshold (gc > 5 = yesil, rc > 5 = kirmizi)
         for (String period : List.of("15M", "1H", "4H", "1D", "1W")) {
             Map<String, Object> periodAnalysis = new HashMap<>();
-            periodAnalysis.put("greenCount", scaledGreen);
-            periodAnalysis.put("redCount", scaledRed);
+            periodAnalysis.put("greenCount", greenCount);
+            periodAnalysis.put("redCount", redCount);
             periodAnalysis.put("indicators", indicators);
             analysisMap.put(period, periodAnalysis);
         }

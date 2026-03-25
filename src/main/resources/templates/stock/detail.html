@@ -142,7 +142,7 @@
                                     <th class="time-header">15 Dk.</th>
                                     <th class="time-header">1 Saat</th>
                                     <th class="time-header">4 Saat</th>
-                                    <th class="time-header">1 Gun</th>
+                                    <th class="time-header">1 Gün</th>
                                     <th class="time-header">1 Hafta</th>
                                 </tr>
                                 </thead>
@@ -852,6 +852,7 @@
             "Madrid Ribbon": "EMA serit sistemi. Seritler acilirsa trend guclenir."
         };
 
+        var PERIOD_NAMES = {'15M':'15 Dakika','30M':'30 Dakika','1H':'1 Saat','4H':'4 Saat','1D':'1 G\u00fcn','1W':'1 Hafta'};
         function showIndicatorDetails(buttonEl) {
             var modal = document.getElementById('indicatorDetailsModal');
             var indicatorList = modal.querySelector('.indicator-list');
@@ -863,7 +864,8 @@
             var indicators = periodData.indicators;
             var modalTitle = modal.querySelector('.modal-title');
             if (modalTitle) {
-                modalTitle.textContent = symbol + " - " + period + " Gosterge Detaylari";
+                var periodLabel = PERIOD_NAMES[period] || period;
+                modalTitle.textContent = symbol + " - " + periodLabel + " G\u00f6sterge Detaylar\u0131";
             }
             indicatorList.textContent = '';
             if (Array.isArray(indicators) && indicators.length > 0) {
