@@ -80,13 +80,19 @@
                         </div>
                         <div class="flex-shrink-0 text-end">
                             <h4 class="mb-1">
-                                <span th:if="${stockPrice != null}" class="fw-bold" th:classappend="${stockChangePercent != null and stockChangePercent >= 0} ? 'text-success' : 'text-danger'" th:text="'$' + ${#numbers.formatDecimal(stockPrice, 1, 'COMMA', 2, 'POINT')}">--</span>
+                                <span id="crypto-price" th:if="${stockPrice != null}" class="fw-bold" th:classappend="${stockChangePercent != null and stockChangePercent >= 0} ? 'text-success' : 'text-danger'" th:text="'$' + ${#numbers.formatDecimal(stockPrice, 1, 'COMMA', 2, 'POINT')}">--</span>
                             </h4>
-                            <span th:if="${stockChangePercent != null}" class="badge" th:classappend="${stockChangePercent >= 0} ? 'bg-success' : 'bg-danger'">
-                                <i th:classappend="${stockChangePercent >= 0} ? 'ri-arrow-right-up-line' : 'ri-arrow-right-down-line'"></i>
-                                <span th:text="${stockChangePercent >= 0 ? '+' : ''} + ${#numbers.formatDecimal(stockChangePercent, 1, 2)} + '%'">--</span>
+                            <span id="crypto-badge" th:if="${stockChangePercent != null}" class="badge" th:classappend="${stockChangePercent >= 0} ? 'bg-success' : 'bg-danger'">
+                                <i id="crypto-badge-icon" th:classappend="${stockChangePercent >= 0} ? 'ri-arrow-right-up-line' : 'ri-arrow-right-down-line'"></i>
+                                <span id="crypto-badge-text" th:text="${stockChangePercent >= 0 ? '+' : ''} + ${#numbers.formatDecimal(stockChangePercent, 1, 2)} + '%'">--</span>
                             </span>
                         </div>
+                    </div>
+                    <!-- Crypto KPI -->
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-4 text-center"><p class="text-muted mb-1 fs-13">Piyasa Değeri</p><h6 id="detail-mcap" class="fw-semibold mb-0">--</h6></div>
+                        <div class="col-md-4 text-center"><p class="text-muted mb-1 fs-13">24s Hacim</p><h6 id="detail-volume" class="fw-semibold mb-0">--</h6></div>
+                        <div class="col-md-4 text-center"><p class="text-muted mb-1 fs-13">Dolaşımdaki Arz</p><h6 id="detail-supply" class="fw-semibold mb-0">--</h6></div>
                     </div>
                 </div>
             </div>
@@ -1087,20 +1093,35 @@
                 return '$' + v.toLocaleString('en-US');
             }
 
+            function formatSupply(v) {
+                if (v == null || isNaN(v)) return '--';
+                if (v >= 1e9) return (v / 1e9).toFixed(2) + ' Milyar';
+                if (v >= 1e6) return (v / 1e6).toFixed(2) + ' Milyon';
+                return v.toLocaleString('en-US');
+            }
+
             function updateCryptoDetail(coin) {
                 if (!coin || !coin.currentPrice) return;
-                var priceEl = document.querySelector('.flex-shrink-0.text-end .fw-bold');
+                // Fiyat
+                var priceEl = document.getElementById('crypto-price');
                 if (priceEl) priceEl.textContent = formatUsd(coin.currentPrice);
+                // Badge (icon + text ayri)
                 var chg = coin.priceChangePercentage24h;
-                var badgeEl = document.querySelector('.flex-shrink-0.text-end .badge');
+                var badgeEl = document.getElementById('crypto-badge');
+                var badgeIcon = document.getElementById('crypto-badge-icon');
+                var badgeText = document.getElementById('crypto-badge-text');
                 if (badgeEl && chg != null) {
                     badgeEl.className = 'badge ' + (chg >= 0 ? 'bg-success' : 'bg-danger');
-                    badgeEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+                    if (badgeIcon) badgeIcon.className = chg >= 0 ? 'ri-arrow-right-up-line' : 'ri-arrow-right-down-line';
+                    if (badgeText) badgeText.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
                 }
+                // KPI
                 var mcEl = document.getElementById('detail-mcap');
                 if (mcEl) mcEl.textContent = formatCompact(coin.marketCap);
                 var volEl = document.getElementById('detail-volume');
                 if (volEl) volEl.textContent = formatCompact(coin.totalVolume);
+                var supEl = document.getElementById('detail-supply');
+                if (supEl) supEl.textContent = formatSupply(coin.circulatingSupply);
             }
 
             function poll() {
