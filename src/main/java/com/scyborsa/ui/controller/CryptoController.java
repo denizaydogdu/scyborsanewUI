@@ -207,7 +207,7 @@ public class CryptoController {
     /**
      * Kripto teknik indikatorlerinden periyot bazli analiz haritasi olusturur.
      *
-     * <p>6 sinyal hesaplar (MACD, RSI, Stochastic, EMA20, ADX, Aroon) ve
+     * <p>11 sinyal hesaplar (MACD, RSI, Stochastic, EMA20, ADX, Aroon, EMA50, SMA50, SMA200, CCI, Momentum) ve
      * her periyot icin ayni greenCount/redCount degerlerini dondurur.
      * Kripto API tek periyot verisi sagladigi icin tum periyotlar ayni sonucu alir.</p>
      *
@@ -336,13 +336,13 @@ public class CryptoController {
             indicators.add(buildIndicator("SMA200", "neutral"));
         }
 
-        // 10. CCI20: >100 → red (asiri alim), <-100 → green (asiri satim), else neutral
+        // 10. CCI20: >100 → green (guclu yukselis trendi), <-100 → red (guclu dusus trendi), else neutral
         Double cci = getDouble(technical, "CCI20");
         if (cci != null) {
-            if (cci < -100) {
+            if (cci > 100) {
                 indicators.add(buildIndicator("CCI", "positive"));
                 greenCount++;
-            } else if (cci > 100) {
+            } else if (cci < -100) {
                 indicators.add(buildIndicator("CCI", "negative"));
                 redCount++;
             } else {
@@ -439,16 +439,16 @@ public class CryptoController {
     /**
      * Yesil sinyal sayisina gore kripto oneri metni hesaplar.
      *
-     * <p>6 sinyal uzerinden: 5-6 Guclu Al, 4 Al, 3 Notr, 2 Sat, 0-1 Guclu Sat.</p>
+     * <p>11 sinyal uzerinden: 8+ Guclu Al, 6-7 Al, 5 Notr, 3-4 Sat, 0-2 Guclu Sat.</p>
      *
-     * @param greenCount yesil (pozitif) sinyal sayisi (0-6 arasi)
+     * @param greenCount yesil (pozitif) sinyal sayisi (0-11 arasi)
      * @return oneri metni (Guclu Al, Al, Notr, Sat, Guclu Sat)
      */
     private String calculateRecommendation(int greenCount) {
-        if (greenCount >= 5) return TwUtils.SIGNAL_STRONG_BUY;
-        if (greenCount >= 4) return TwUtils.SIGNAL_BUY;
-        if (greenCount == 3) return TwUtils.SIGNAL_NEUTRAL;
-        if (greenCount >= 2) return TwUtils.SIGNAL_SELL;
+        if (greenCount >= 8) return TwUtils.SIGNAL_STRONG_BUY;
+        if (greenCount >= 6) return TwUtils.SIGNAL_BUY;
+        if (greenCount == 5) return TwUtils.SIGNAL_NEUTRAL;
+        if (greenCount >= 3) return TwUtils.SIGNAL_SELL;
         return TwUtils.SIGNAL_STRONG_SELL;
     }
 
