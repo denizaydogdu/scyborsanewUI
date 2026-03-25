@@ -80,11 +80,11 @@
                         </div>
                         <div class="flex-shrink-0 text-end">
                             <h4 class="mb-1">
-                                <span id="crypto-price" th:if="${stockPrice != null}" class="fw-bold" th:classappend="${stockChangePercent != null and stockChangePercent >= 0} ? 'text-success' : 'text-danger'" th:text="'$' + ${#numbers.formatDecimal(stockPrice, 1, 'COMMA', 2, 'POINT')}">--</span>
+                                <span id="crypto-price" class="fw-bold" th:classappend="${stockChangePercent != null and stockChangePercent >= 0} ? 'text-success' : 'text-danger'" th:text="${stockPrice != null} ? ('$' + ${#numbers.formatDecimal(stockPrice, 1, 'COMMA', 2, 'POINT')}) : '--'">--</span>
                             </h4>
-                            <span id="crypto-badge" th:if="${stockChangePercent != null}" class="badge" th:classappend="${stockChangePercent >= 0} ? 'bg-success' : 'bg-danger'">
-                                <i id="crypto-badge-icon" th:classappend="${stockChangePercent >= 0} ? 'ri-arrow-right-up-line' : 'ri-arrow-right-down-line'"></i>
-                                <span id="crypto-badge-text" th:text="${stockChangePercent >= 0 ? '+' : ''} + ${#numbers.formatDecimal(stockChangePercent, 1, 2)} + '%'">--</span>
+                            <span id="crypto-badge" class="badge" th:classappend="${stockChangePercent != null and stockChangePercent >= 0} ? 'bg-success' : (${stockChangePercent != null} ? 'bg-danger' : 'bg-secondary')">
+                                <i id="crypto-badge-icon" th:classappend="${stockChangePercent != null and stockChangePercent >= 0} ? 'ri-arrow-right-up-line' : 'ri-arrow-right-down-line'"></i>
+                                <span id="crypto-badge-text" th:text="${stockChangePercent != null} ? ((${stockChangePercent >= 0} ? '+' : '') + ${#numbers.formatDecimal(stockChangePercent, 1, 2)} + '%') : '--'">--</span>
                             </span>
                         </div>
                     </div>
@@ -1090,7 +1090,8 @@
                 if (v >= 1e12) return '$' + (v / 1e12).toFixed(2) + ' Trilyon';
                 if (v >= 1e9) return '$' + (v / 1e9).toFixed(2) + ' Milyar';
                 if (v >= 1e6) return '$' + (v / 1e6).toFixed(1) + ' Milyon';
-                return '$' + v.toLocaleString('en-US');
+                if (v >= 1e3) return '$' + (v / 1e3).toFixed(1) + ' Bin';
+                return '$' + v.toLocaleString('tr-TR');
             }
 
             function formatSupply(v) {
@@ -1104,7 +1105,11 @@
                 if (!coin || !coin.currentPrice) return;
                 // Fiyat
                 var priceEl = document.getElementById('crypto-price');
-                if (priceEl) priceEl.textContent = formatUsd(coin.currentPrice);
+                if (priceEl) {
+                    priceEl.textContent = formatUsd(coin.currentPrice);
+                    var pChg = coin.priceChangePercentage24h;
+                    priceEl.className = 'fw-bold ' + (pChg != null && pChg >= 0 ? 'text-success' : 'text-danger');
+                }
                 // Badge (icon + text ayri)
                 var chg = coin.priceChangePercentage24h;
                 var badgeEl = document.getElementById('crypto-badge');

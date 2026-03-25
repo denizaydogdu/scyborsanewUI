@@ -263,9 +263,9 @@
             var limit = 200;
             // Period → interval mapping
             if (period === 'D' || period === '1d') { interval = '1d'; limit = 365; }
-            else if (period === 'W') { interval = '1d'; limit = 52; }
+            else if (period === 'W') { interval = '1w'; limit = 52; }
             else if (period === '15') { interval = '15m'; limit = 200; }
-            else if (period === '30') { interval = '15m'; limit = 400; }
+            else if (period === '30') { interval = '30m'; limit = 200; }
             else if (period === '60' || period === '1h') { interval = '1h'; limit = 200; }
             else if (period === '240' || period === '4h') { interval = '4h'; limit = 200; }
             url = '/ajax/kripto/ohlcv?symbol=' + encodeURIComponent(BINANCE_SYMBOL) + '&interval=' + interval + '&limit=' + limit;
