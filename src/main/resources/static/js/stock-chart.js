@@ -9,8 +9,14 @@
     'use strict';
 
     // ─── Config ─────────────────────────────────────────
-    var SYMBOL = window.STOCK_CHART_SYMBOL || 'THYAO';
-    var API_BASE = (typeof window.STOCK_CHART_API_BASE === 'string') ? window.STOCK_CHART_API_BASE : 'http://localhost:8081';
+    var _cfg = window.CHART_CONFIG || {};
+    var SYMBOL = _cfg.symbol || window.STOCK_CHART_SYMBOL || 'THYAO';
+    var API_BASE = _cfg.apiBase || ((typeof window.STOCK_CHART_API_BASE === 'string') ? window.STOCK_CHART_API_BASE : 'http://localhost:8081');
+    var ASSET_TYPE = _cfg.assetType || 'STOCK';
+    var CURRENCY = _cfg.currency || 'TL';
+    var CURRENCY_PREFIX = _cfg.currencyPrefix || false;
+    var WS_ENABLED = _cfg.wsEnabled !== false;
+    var BINANCE_SYMBOL = _cfg.binanceSymbol || '';
     var WS_URL = API_BASE + '/ws';
 
     console.log('[CHART] ===== Modül yüklendi =====');
@@ -104,10 +110,11 @@
             return;
         }
 
-        priceEl.textContent = price.toLocaleString('tr-TR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }) + ' TL';
+        if (CURRENCY_PREFIX) {
+            priceEl.textContent = '$' + price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: price >= 1 ? 2 : 6});
+        } else {
+            priceEl.textContent = price.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' TL';
+        }
 
         if (changeEl && changePercent != null) {
             var isPositive = changePercent >= 0;
@@ -218,7 +225,8 @@
         var volumes = [];
         bars.forEach(function(bar, idx) {
             // TradingView timestamp zaten Unix saniye — /1000 YAPMA
-            var timeSec = bar.timestamp;
+            // Crypto response'da timestamp 'time' key'inde olabilir
+            var timeSec = bar.timestamp || bar.time || 0;
             candles.push({
                 time: timeSec,
                 open: bar.open,
@@ -248,8 +256,23 @@
         currentPeriod = period;
         var requestId = ++loadRequestId;
 
-        var url = API_BASE + '/api/v1/chart/' + encodeURIComponent(SYMBOL)
-                + '?period=' + encodeURIComponent(period) + '&bars=300';
+        var url;
+        if (ASSET_TYPE === 'CRYPTO') {
+            // Crypto: vApi üzerinden Binance OHLCV
+            var interval = period;
+            var limit = 200;
+            // Period → interval mapping
+            if (period === 'D' || period === '1d') { interval = '1d'; limit = 365; }
+            else if (period === 'W') { interval = '1d'; limit = 52; }
+            else if (period === '15') { interval = '15m'; limit = 200; }
+            else if (period === '30') { interval = '15m'; limit = 400; }
+            else if (period === '60' || period === '1h') { interval = '1h'; limit = 200; }
+            else if (period === '240' || period === '4h') { interval = '4h'; limit = 200; }
+            url = '/ajax/kripto/ohlcv?symbol=' + encodeURIComponent(BINANCE_SYMBOL) + '&interval=' + interval + '&limit=' + limit;
+        } else {
+            url = API_BASE + '/api/v1/chart/' + encodeURIComponent(SYMBOL)
+                    + '?period=' + encodeURIComponent(period) + '&bars=300';
+        }
 
         console.log('[CHART] ▶ REST loadBars() başladı: requestId=' + requestId + ', period=' + period);
         console.log('[CHART] REST URL: ' + url);
@@ -276,8 +299,10 @@
                     hideLoading();
                     return;
                 }
-                console.log('[CHART] REST data alındı: bars=' + (data.bars ? data.bars.length : 'null') + ', type=' + data.type + ', symbol=' + data.symbol);
-                if (!data.bars || data.bars.length === 0) {
+                // Crypto: bare JSON array, Stock: {bars: [...]}
+                var bars = Array.isArray(data) ? data : (data.bars || []);
+                console.log('[CHART] REST data alındı: bars=' + bars.length + ', assetType=' + ASSET_TYPE);
+                if (!bars || bars.length === 0) {
                     candleSeries.setData([]);
                     volumeSeries.setData([]);
                     hideLoading();
@@ -285,15 +310,15 @@
                     return;
                 }
 
-                var mapped = mapBarsToSeries(data.bars);
+                var mapped = mapBarsToSeries(bars);
                 candleSeries.setData(mapped.candles);
                 volumeSeries.setData(mapped.volumes);
                 chart.timeScale().fitContent();
                 hideLoading();
 
                 // Overlay fiyatı güncelle (% sadece price stream'den gelir)
-                if (data.bars.length > 0) {
-                    var lastBar = data.bars[data.bars.length - 1];
+                if (bars.length > 0) {
+                    var lastBar = bars[bars.length - 1];
                     updateOverlayPrice(lastBar.close, lastKnownChp);
                     flashOverlay(lastKnownChp == null || lastKnownChp >= 0);  // initial: chp bazlı
                 }
@@ -323,6 +348,7 @@
 
     // ─── STOMP WebSocket Bağlantısı ─────────────────────
     function connectStomp() {
+        if (!WS_ENABLED) { console.log('[CHART] WS devre dışı → REST fallback'); loadBars(currentPeriod); return; }
         console.log('[CHART] ▶ connectStomp() başladı');
         console.log('[CHART] STOMP WS_URL: ' + WS_URL);
         console.log('[CHART] STOMP state → stompConnected=' + stompConnected + ', stompClient=' + (stompClient ? 'var' : 'null'));

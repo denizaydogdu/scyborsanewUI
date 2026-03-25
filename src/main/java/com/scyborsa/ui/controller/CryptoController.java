@@ -112,7 +112,40 @@ public class CryptoController {
         model.addAttribute("coin", coin);
         model.addAttribute("technical", technical);
         model.addAttribute("binanceSymbol", binanceSymbol);
-        return "kripto/kripto-detail";
+
+        // Asset type
+        model.addAttribute("assetType", "CRYPTO");
+        model.addAttribute("currencySymbol", "$");
+        model.addAttribute("currencyPrefix", true);
+
+        // Stock model attributes (hero header icin)
+        model.addAttribute("stockId", coin.getSymbol() != null ? coin.getSymbol().toUpperCase() : coinId);
+        model.addAttribute("stockDescription", coin.getName());
+        model.addAttribute("stockPrice", coin.getCurrentPrice());
+        model.addAttribute("stockChangePercent", coin.getPriceChangePercentage24h());
+        model.addAttribute("stockVolume", coin.getTotalVolume());
+        model.addAttribute("coinImage", coin.getImage());
+        model.addAttribute("coinId", coinId);
+
+        // Stock bolumleri disabled
+        model.addAttribute("hasAnalysisData", false);
+        model.addAttribute("hasAkdData", false);
+        model.addAttribute("hasTakasData", false);
+        model.addAttribute("hasOrderbookData", false);
+        model.addAttribute("analistTavsiyeleri", null);
+        model.addAttribute("marketOpen", true); // crypto 24/7
+        model.addAttribute("NO_TIME", null);
+
+        // Tarih
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+        model.addAttribute("teknikTarihFull", now.format(java.time.format.DateTimeFormatter.ofPattern("dd MMMM yyyy", java.util.Locale.forLanguageTag("tr"))));
+        model.addAttribute("teknikTarih", now.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+
+        // Breadcrumb
+        model.addAttribute("breadcrumbCategory", "Kripto");
+        model.addAttribute("breadcrumbCategoryUrl", "/kripto");
+
+        return "stock/detail";
     }
 
     /**

@@ -118,6 +118,10 @@ public class StockController {
         try {
             log.info("Stock Detail Page Accessed: {}", stockId);
 
+            model.addAttribute("assetType", "STOCK");
+            model.addAttribute("currencySymbol", "TL");
+            model.addAttribute("currencyPrefix", false);
+
             List<TvScreenerResponseModel> pineScreenerResponseModelList =
                     stockDetailService.getPineScreenerData(stockId);
 

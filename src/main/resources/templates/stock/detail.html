@@ -38,11 +38,11 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0" th:text="${stockId} + ' Detay'"></h4>
+                <h4 class="mb-sm-0" th:text="${assetType == 'CRYPTO' ? stockDescription + ' (' + stockId + ')' : stockId + ' Detay'}"></h4>
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="/">Anasayfa</a></li>
-                        <li class="breadcrumb-item"><a href="#">Hisse Senetleri</a></li>
+                        <li class="breadcrumb-item"><a th:href="${breadcrumbCategoryUrl ?: '/tum-hisseler'}" th:text="${breadcrumbCategory ?: 'Hisse Senetleri'}">Hisse Senetleri</a></li>
                         <li class="breadcrumb-item active" th:text="${stockId}"></li>
                     </ol>
                 </div>
@@ -51,8 +51,8 @@
     </div>
     <!-- end page title -->
 
-    <!-- Hisse Bilgi Header -->
-    <div class="row" th:if="${stockLogoid != null}">
+    <!-- Hisse Bilgi Header (Stock) -->
+    <div class="row" th:if="${assetType != 'CRYPTO' and stockLogoid != null}">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
@@ -90,8 +90,59 @@
         </div>
     </div>
 
+    <!-- Crypto Hero Header -->
+    <div class="row" th:if="${assetType == 'CRYPTO'}">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <img th:if="${coinImage != null}" th:src="${coinImage}" width="48" height="48" class="rounded-circle" onerror="this.parentElement.style.display='none'" />
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h4 class="mb-1" th:text="${stockDescription}">--</h4>
+                            <p class="text-muted mb-0">
+                                <span class="text-uppercase fw-medium" th:text="${stockId}">--</span>
+                                <span th:if="${coin != null and coin.marketCapRank != null}" class="badge bg-primary-subtle text-primary ms-2" th:text="'#' + ${coin.marketCapRank}">--</span>
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0 text-end">
+                            <h3 id="detail-price" class="fw-bold mb-1">--</h3>
+                            <span id="detail-change" class="badge">--</span>
+                        </div>
+                    </div>
+
+                    <!-- Crypto 24h High/Low + KPI -->
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">24s En Dusuk: <span id="detail-low">--</span></small>
+                            <small class="text-muted">24s En Yuksek: <span id="detail-high">--</span></small>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div id="detail-highlow-bar" class="progress-bar bg-primary" style="width:50%"></div>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-4 text-center">
+                            <p class="text-muted mb-1 fs-13">Piyasa Degeri</p>
+                            <h6 id="detail-mcap" class="fw-semibold mb-0">--</h6>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <p class="text-muted mb-1 fs-13">24s Hacim</p>
+                            <h6 id="detail-volume" class="fw-semibold mb-0">--</h6>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <p class="text-muted mb-1 fs-13">Dolasimdaki Arz</p>
+                            <h6 id="detail-supply" class="fw-semibold mb-0">--</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Analiz + Trend Yonu -->
-    <div class="row mb-4" th:if="${hasAnalysisData}">
+    <div class="row mb-4" th:if="${assetType != 'CRYPTO' and hasAnalysisData}">
         <div class="col-12">
             <div class="d-flex">
                 <!-- Analiz Tablosu -->
@@ -173,13 +224,21 @@
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h4 class="card-title mb-0">Grafik
                         <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
-                        <span id="chartMarketStatus" class="badge fs-11 ms-2"
+                        <span th:if="${assetType != 'CRYPTO'}" id="chartMarketStatus" class="badge fs-11 ms-2"
                               th:classappend="${marketOpen} ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'"
                               th:text="${marketOpen} ? 'Seans Açık' : 'Seans Kapalı'">Seans Açık</span>
                     </h4>
-                    <div class="btn-group btn-group-sm" role="group" id="chartPeriodSelector">
+                    <!-- Stock period butonlari -->
+                    <div th:if="${assetType != 'CRYPTO'}" class="btn-group btn-group-sm" role="group" id="chartPeriodSelector">
                         <button type="button" class="btn btn-outline-primary" data-period="15">15dk</button>
                         <button type="button" class="btn btn-outline-primary" data-period="30">30dk</button>
+                        <button type="button" class="btn btn-outline-primary" data-period="60">1sa</button>
+                        <button type="button" class="btn btn-outline-primary" data-period="240">4sa</button>
+                        <button type="button" class="btn btn-primary active" data-period="D">Günlük</button>
+                        <button type="button" class="btn btn-outline-primary" data-period="W">Haftalık</button>
+                    </div>
+                    <!-- Crypto period butonlari -->
+                    <div th:if="${assetType == 'CRYPTO'}" class="btn-group btn-group-sm" id="chartPeriodSelector">
                         <button type="button" class="btn btn-outline-primary" data-period="60">1sa</button>
                         <button type="button" class="btn btn-outline-primary" data-period="240">4sa</button>
                         <button type="button" class="btn btn-primary active" data-period="D">Günlük</button>
@@ -205,8 +264,214 @@
         </div>
     </div>
 
+    <!-- ==================== Crypto Tabs ==================== -->
+    <div class="row" th:if="${assetType == 'CRYPTO'}">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header border-bottom p-0">
+                    <ul class="nav nav-tabs nav-tabs-custom nav-justified card-header-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active fw-semibold py-3" data-bs-toggle="tab" href="#tab-overview" role="tab">
+                                <i class="ri-dashboard-2-line me-1"></i> Genel Bakis
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link fw-semibold py-3" data-bs-toggle="tab" href="#tab-technical" role="tab">
+                                <i class="ri-line-chart-line me-1"></i> Teknik Analiz
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link fw-semibold py-3" data-bs-toggle="tab" href="#tab-market" role="tab">
+                                <i class="ri-bar-chart-2-line me-1"></i> Piyasa Verileri
+                            </a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link fw-semibold py-3" data-bs-toggle="tab" href="#tab-about" role="tab">
+                                <i class="ri-file-list-3-line me-1"></i> Hakkinda
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+
+                        <!-- Tab 1: Genel Bakis -->
+                        <div class="tab-pane fade show active" id="tab-overview" role="tabpanel">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3 text-center">
+                                        <p class="text-muted mb-2 fs-13">Piyasa Degeri</p>
+                                        <h6 id="kpi-mcap" class="fw-semibold mb-0">--</h6>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3 text-center">
+                                        <p class="text-muted mb-2 fs-13">24s Hacim</p>
+                                        <h6 id="kpi-vol" class="fw-semibold mb-0">--</h6>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3 text-center">
+                                        <p class="text-muted mb-2 fs-13">FDV</p>
+                                        <h6 id="kpi-fdv" class="fw-semibold mb-0">--</h6>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3 text-center">
+                                        <p class="text-muted mb-2 fs-13">Dolasimdaki Arz</p>
+                                        <h6 id="kpi-circ" class="fw-semibold mb-0">--</h6>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3 text-center">
+                                        <p class="text-muted mb-2 fs-13">Toplam Arz</p>
+                                        <h6 id="kpi-total" class="fw-semibold mb-0">--</h6>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3 text-center">
+                                        <p class="text-muted mb-2 fs-13">Maksimum Arz</p>
+                                        <h6 id="kpi-max" class="fw-semibold mb-0">--</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-3 mt-3">
+                                <!-- Fear & Greed Gauge -->
+                                <div class="col-md-6">
+                                    <div class="card border mb-0">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="ri-emotion-line me-1"></i>Fear &amp; Greed Endeksi</h6>
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <div id="fear-greed-gauge" style="min-height:200px;"></div>
+                                            <span id="fear-greed-label" class="badge bg-secondary-subtle text-secondary mt-2">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- ATH / ATL -->
+                                <div class="col-md-6">
+                                    <div class="card border mb-0">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="ri-arrow-up-down-line me-1"></i>ATH / ATL Araligi</h6>
+                                        </div>
+                                        <div class="card-body" id="ath-atl-content">--</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 2: Teknik Analiz -->
+                        <div class="tab-pane fade" id="tab-technical" role="tabpanel">
+                            <div class="text-center mb-4">
+                                <h6 class="text-muted mb-2">Teknik Analiz Ozeti</h6>
+                                <span id="aggregate-signal" class="badge fs-14 px-4 py-2">Yukleniyor...</span>
+                                <p id="aggregate-counts" class="text-muted mt-2 fs-12"></p>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="card border mb-0">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="ri-speed-line me-1"></i>Momentum Gostergeleri</h6>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div id="momentum-indicators" class="list-group list-group-flush"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border mb-0">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="ri-line-chart-line me-1"></i>Trend Gostergeleri</h6>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div id="trend-indicators" class="list-group list-group-flush"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border mb-0">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="ri-thunderstorms-line me-1"></i>Volatilite Gostergeleri</h6>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div id="volatility-indicators" class="list-group list-group-flush"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card border mb-0">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="ri-bar-chart-grouped-line me-1"></i>Hareketli Ortalamalar</h6>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm mb-0">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th>Periyot</th>
+                                                            <th>EMA</th>
+                                                            <th>Sinyal</th>
+                                                            <th>SMA</th>
+                                                            <th>Sinyal</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="ma-table-body"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 3: Piyasa Verileri -->
+                        <div class="tab-pane fade" id="tab-market" role="tabpanel">
+                            <h6 class="text-muted mb-3">Fiyat Degisimi</h6>
+                            <div class="table-responsive">
+                                <table class="table table-bordered text-center mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>24s</th>
+                                            <th>7g</th>
+                                            <th>30g</th>
+                                            <th>1y</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td id="change-24h">--</td>
+                                            <td id="change-7d">--</td>
+                                            <td id="change-30d">--</td>
+                                            <td id="change-1y">--</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h6 class="text-muted mb-3 mt-4">Arz Bilgisi</h6>
+                            <div id="supply-content"></div>
+                        </div>
+
+                        <!-- Tab 4: Hakkinda -->
+                        <div class="tab-pane fade" id="tab-about" role="tabpanel">
+                            <div th:if="${coin != null and coin.descriptionTr != null and !coin.descriptionTr.isEmpty()}">
+                                <p th:text="${coin.descriptionTr}"></p>
+                            </div>
+                            <div th:if="${coin != null and (coin.descriptionTr == null or coin.descriptionTr.isEmpty()) and coin.descriptionEn != null and !coin.descriptionEn.isEmpty()}">
+                                <p th:text="${coin.descriptionEn}"></p>
+                            </div>
+                            <div th:if="${coin == null or ((coin.descriptionTr == null or coin.descriptionTr.isEmpty()) and (coin.descriptionEn == null or coin.descriptionEn.isEmpty()))}">
+                                <p class="text-muted">Bu coin hakkinda aciklama bulunmuyor.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Teknik Gostergeler Tablosu -->
-    <div class="row" th:if="${NO_TIME != null and NO_TIME.data != null and !NO_TIME.data.isEmpty()}">
+    <div class="row" th:if="${assetType != 'CRYPTO' and NO_TIME != null and NO_TIME.data != null and !NO_TIME.data.isEmpty()}">
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-header align-items-center d-flex">
@@ -362,7 +627,7 @@
     </div>
 
     <!-- AI Teknik Değerlendirme -->
-    <div class="row">
+    <div class="row" th:if="${assetType != 'CRYPTO'}">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex align-items-center">
@@ -763,7 +1028,8 @@
 </section>
 
 <th:block layout:fragment="pagejs">
-    <script th:inline="javascript">
+    <!-- Stock-only: Gauge signals + indicator data -->
+    <script th:if="${assetType != 'CRYPTO'}" th:inline="javascript">
         /*<![CDATA[*/
         var shortTermSignal = /*[[${recommendShortTime}]]*/ "Nötr";
         var mediumTermSignal = /*[[${recommendMiddleTime}]]*/ "Nötr";
@@ -772,26 +1038,50 @@
         /*]]>*/
     </script>
 
-    <script th:src="@{/assets/js/pages/stock_detail_gauge_component.js}"></script>
+    <script th:if="${assetType != 'CRYPTO'}" th:src="@{/assets/js/pages/stock_detail_gauge_component.js}"></script>
 
     <!-- LightweightCharts v4.1.3 -->
     <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
-    <!-- StompJS v7 -->
-    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
-    <!-- SockJS -->
-    <script th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
-    <!-- Chart symbol + API base + market status injection -->
+    <!-- StompJS v7 (stock only) -->
+    <script th:if="${assetType != 'CRYPTO'}" src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <!-- SockJS (stock only) -->
+    <script th:if="${assetType != 'CRYPTO'}" th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
+
+    <!-- CHART_CONFIG — shared config for stock-chart.js and crypto-detail-sections.js -->
     <script th:inline="javascript">
         /*<![CDATA[*/
-        window.STOCK_CHART_SYMBOL = /*[[${stockId}]]*/ 'THYAO';
-        window.STOCK_CHART_API_BASE = /*[[${apiBaseUrl}]]*/ 'http://localhost:8081';
+        window.CHART_CONFIG = {
+            symbol: /*[[${stockId}]]*/ '',
+            apiBase: /*[[${apiBaseUrl}]]*/ '',
+            assetType: /*[[${assetType ?: 'STOCK'}]]*/ 'STOCK',
+            currency: /*[[${currencySymbol ?: 'TL'}]]*/ 'TL',
+            currencyPrefix: /*[[${currencyPrefix ?: false}]]*/ false,
+            wsEnabled: /*[[${assetType != 'CRYPTO'}]]*/ true,
+            binanceSymbol: /*[[${binanceSymbol ?: ''}]]*/ '',
+            coinId: /*[[${coinId ?: ''}]]*/ ''
+        };
+        // Backward compat
+        window.STOCK_CHART_SYMBOL = window.CHART_CONFIG.symbol;
+        window.STOCK_CHART_API_BASE = window.CHART_CONFIG.apiBase;
         window.MARKET_OPEN = /*[[${marketOpen}]]*/ true;
         /*]]>*/
     </script>
+
     <!-- Chart modülü -->
     <script th:src="@{/js/stock-chart.js}"></script>
 
-    <script>
+    <!-- Crypto-only: ApexCharts + coin data + sections JS -->
+    <script th:if="${assetType == 'CRYPTO'}" th:src="@{/assets/libs/apexcharts/apexcharts.min.js}"></script>
+    <script th:if="${assetType == 'CRYPTO'}" th:inline="javascript">
+        /*<![CDATA[*/
+        window.COIN_DATA = /*[[${coin}]]*/ {};
+        window.INITIAL_TECHNICAL = /*[[${technical}]]*/ {};
+        /*]]>*/
+    </script>
+    <script th:if="${assetType == 'CRYPTO'}" th:src="@{/js/crypto-detail-sections.js}"></script>
+
+    <!-- Stock-only: indicator modal + AI comment + tooltip init -->
+    <script th:if="${assetType != 'CRYPTO'}">
         var indicatorDescriptions = {
             "T3": "Tillson T3 hareketli ortalama. Gecikmeyi azaltarak trendi erken yakalar.",
             "SuperTrend": "ATR bazli trend gostergesi. Fiyat ustte ise yukselis, altta ise dusus.",
