@@ -39,15 +39,21 @@ public class AuthService {
     /**
      * Kullanici giris istegi gonderir.
      *
-     * @param email kullanicinin e-posta adresi
-     * @param password sifre (plain text)
+     * @param email     kullanicinin e-posta adresi
+     * @param password  sifre (plain text)
+     * @param ipAddress istemci IP adresi (nullable)
+     * @param userAgent istemci user-agent bilgisi (nullable)
      * @return giris yaniti; API hatasi durumunda basarisiz yanit
      */
-    public LoginResponseDto login(String email, String password) {
+    public LoginResponseDto login(String email, String password, String ipAddress, String userAgent) {
         try {
+            LoginRequestDto requestDto = new LoginRequestDto(email, password);
+            requestDto.setIpAddress(ipAddress);
+            requestDto.setUserAgent(userAgent);
+
             LoginResponseDto result = webClient.post()
                     .uri(ScyborsaApiEndpoints.AUTH_LOGIN)
-                    .bodyValue(new LoginRequestDto(email, password))
+                    .bodyValue(requestDto)
                     .exchangeToMono(response -> response.bodyToMono(LoginResponseDto.class))
                     .block(Duration.ofSeconds(10));
             return result != null ? result : failResponse(API_ERROR);

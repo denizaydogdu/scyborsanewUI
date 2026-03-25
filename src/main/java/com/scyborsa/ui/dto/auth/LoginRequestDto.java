@@ -12,7 +12,6 @@ import lombok.ToString;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class LoginRequestDto {
 
     /** E-posta adresi. */
@@ -21,4 +20,21 @@ public class LoginRequestDto {
     /** Sifre (plain text). */
     @ToString.Exclude
     private String password;
+
+    /** Istemci IP adresi. */
+    private String ipAddress;
+
+    /** Istemci user-agent bilgisi. */
+    private String userAgent;
+
+    /**
+     * E-posta ve sifre ile LoginRequestDto olusturur (geriye uyumluluk).
+     *
+     * @param email    e-posta adresi
+     * @param password sifre
+     */
+    public LoginRequestDto(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }

@@ -29,7 +29,6 @@
     var DISPLAY_NAMES = {
         'GOLD': 'Alt\u0131n (Ons)',
         'SILVER': 'G\u00fcm\u00fc\u015f (Ons)',
-        'CL1!': 'Ham Petrol (WTI)',
         'BRENT': 'Brent Petrol',
         'HG1!': 'Bak\u0131r',
         'PA1!': 'Paladyum',

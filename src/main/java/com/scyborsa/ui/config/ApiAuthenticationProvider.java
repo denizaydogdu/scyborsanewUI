@@ -2,6 +2,7 @@ package com.scyborsa.ui.config;
 
 import com.scyborsa.ui.dto.auth.LoginResponseDto;
 import com.scyborsa.ui.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -13,7 +14,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 import java.util.Map;
@@ -37,6 +42,7 @@ import java.util.Map;
  * @see AuthService
  * @see SecurityConfig
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ApiAuthenticationProvider implements AuthenticationProvider {
@@ -61,7 +67,34 @@ public class ApiAuthenticationProvider implements AuthenticationProvider {
         String email = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        LoginResponseDto resp = authService.login(email, password);
+        // IP ve User-Agent bilgisini cikar
+        String ipAddress = null;
+        String userAgent = null;
+        if (authentication.getDetails() instanceof WebAuthenticationDetails details) {
+            ipAddress = details.getRemoteAddress();
+        }
+        try {
+            ServletRequestAttributes attrs =
+                    (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+            HttpServletRequest httpRequest = attrs.getRequest();
+            // Nginx X-Real-IP (güvenilir) > X-Forwarded-For (son eleman) > remoteAddr
+            String xRealIp = httpRequest.getHeader("X-Real-IP");
+            if (xRealIp != null && !xRealIp.isBlank()) {
+                ipAddress = xRealIp.trim();
+            } else {
+                String xff = httpRequest.getHeader("X-Forwarded-For");
+                if (xff != null && !xff.isBlank()) {
+                    String[] parts = xff.split(",");
+                    ipAddress = parts[parts.length - 1].trim();
+                }
+            }
+            userAgent = httpRequest.getHeader("User-Agent");
+        } catch (IllegalStateException e) {
+            // RequestContextHolder kullanilabilir degilse (request context yok)
+            log.warn("[AUTH] RequestContextHolder mevcut degil, IP/UA remoteAddress fallback: {}", e.getMessage());
+        }
+
+        LoginResponseDto resp = authService.login(email, password, ipAddress, userAgent);
 
         if (!resp.isSuccess()) {
             String msg = resp.getMessage();

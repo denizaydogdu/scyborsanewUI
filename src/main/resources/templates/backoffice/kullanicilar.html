@@ -59,8 +59,9 @@
                                     <th>E-posta</th>
                                     <th>Ad Soyad</th>
                                     <th>Rol</th>
-                                    <th>Geçerlilik Başlangıç</th>
-                                    <th>Geçerlilik Bitiş</th>
+                                    <th>Son Giriş</th>
+                                    <th>Son IP</th>
+                                    <th>Giriş Sayısı</th>
                                     <th>Durum</th>
                                     <th>İşlem</th>
                                 </tr>
@@ -75,8 +76,17 @@
                                         <span th:if="${user.role == 'ADMIN'}" class="badge bg-primary-subtle text-primary">ADMIN</span>
                                         <span th:unless="${user.role == 'ADMIN'}" class="badge bg-info-subtle text-info">USER</span>
                                     </td>
-                                    <td th:text="${user.validFrom != null ? user.validFrom : '-'}">-</td>
-                                    <td th:text="${user.validTo != null ? user.validTo : '-'}">-</td>
+                                    <td>
+                                        <span th:if="${user.lastLoginDate != null}" th:text="${#temporals.format(user.lastLoginDate, 'dd.MM.yyyy HH:mm')}" class="text-muted fs-12"></span>
+                                        <span th:unless="${user.lastLoginDate != null}" class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <code th:if="${user.lastLoginIp != null}" th:text="${user.lastLoginIp}" class="fs-12"></code>
+                                        <span th:unless="${user.lastLoginIp != null}" class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:text="${user.loginCount != null ? user.loginCount : 0}" class="badge bg-secondary-subtle text-secondary"></span>
+                                    </td>
                                     <td>
                                         <span th:if="${user.aktif}" class="badge bg-success-subtle text-success">Aktif</span>
                                         <span th:unless="${user.aktif}" class="badge bg-danger-subtle text-danger">Pasif</span>
@@ -87,7 +97,7 @@
                                                     th:data-id="${user.id}" th:data-username="${user.username}"
                                                     th:data-email="${user.email}"
                                                     th:data-adsoyad="${user.adSoyad}" th:data-role="${user.role}"
-                                                    th:data-validfrom="${user.validFrom}" th:data-validto="${user.validTo}">
+                                                    th:data-validfrom="${user.validFrom != null ? user.validFrom : ''}" th:data-validto="${user.validTo != null ? user.validTo : ''}">
                                                 <i class="ri-pencil-line"></i>
                                             </button>
                                             <form th:action="@{'/backoffice/kullanicilar/' + ${user.id} + '/aktif'}" method="post" style="display:inline">
