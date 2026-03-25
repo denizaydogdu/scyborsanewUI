@@ -348,7 +348,7 @@
 
     // ─── STOMP WebSocket Bağlantısı ─────────────────────
     function connectStomp() {
-        if (!WS_ENABLED) { console.log('[CHART] WS devre dışı → REST fallback'); loadBars(currentPeriod); return; }
+        if (!WS_ENABLED) { console.log('[CHART] WS devre dışı → REST fallback'); restFallbackFired = true; loadBars(currentPeriod); return; }
         console.log('[CHART] ▶ connectStomp() başladı');
         console.log('[CHART] STOMP WS_URL: ' + WS_URL);
         console.log('[CHART] STOMP state → stompConnected=' + stompConnected + ', stompClient=' + (stompClient ? 'var' : 'null'));
