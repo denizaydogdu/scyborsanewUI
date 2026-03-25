@@ -62,7 +62,7 @@ public class HazirTaramalarController {
                 "momentum_positive", "williams_r_oversold", "ultimate_oscillator_strong",
                 "macd_positive", "ema_trend_up", "sma_above_order", "sma_below_order", "ichimoku_above_cloud",
                 "volume_spike", "high_volume_breakout", "strong_moneyflow",
-                "bb_squeeze",
+                "bb_squeeze", "low_volatility",
                 "price_above_sma50", "oversold_bounce", "high_roc", "dmi_bullish",
                 "trix_positive", "vortex_bullish", "aroon_up_trend", "commodity_channel_strong"
         );
