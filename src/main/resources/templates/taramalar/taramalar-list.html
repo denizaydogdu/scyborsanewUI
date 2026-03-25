@@ -350,6 +350,22 @@ function setToday() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Tarama isimlerini buyuk harf + Turkce formata cevir
+    document.querySelectorAll('#screenerFilter option').forEach(function(opt) {
+        if (!opt.value) return; // "Tumu" atla
+        var raw = opt.value;
+        var display = raw
+            .replace(/[-_]/g, ' ')
+            .toUpperCase()
+            .replace(/\bANKA\b/g, 'ANKA')
+            .replace(/\bEMA\b/g, 'EMA')
+            .replace(/\bMACD\b/g, 'MACD')
+            .replace(/\bRSI\b/g, 'RSI')
+            .replace(/\bSMA\b/g, 'SMA')
+            .replace(/\bVIOP\b/g, 'VIOP');
+        opt.textContent = display;
+    });
+
     // Tooltip init
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
         new bootstrap.Tooltip(el);
