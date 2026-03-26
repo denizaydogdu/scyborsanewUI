@@ -110,12 +110,27 @@ public class AlertService {
      * @return alarm listesi
      */
     public List<PriceAlertDto> getAlerts(String userEmail) {
+        return getAlerts(userEmail, null);
+    }
+
+    /**
+     * Kullanicinin alarmlarini durum filtresine gore getirir.
+     *
+     * @param userEmail kullanici email adresi
+     * @param status    opsiyonel durum filtresi (ACTIVE, TRIGGERED vb.)
+     * @return alarm listesi
+     */
+    public List<PriceAlertDto> getAlerts(String userEmail, String status) {
         try {
             List<PriceAlertDto> result = webClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .path(ScyborsaApiEndpoints.ALERTS)
-                            .queryParam("email", userEmail)
-                            .build())
+                    .uri(uriBuilder -> {
+                        var b = uriBuilder.path(ScyborsaApiEndpoints.ALERTS)
+                                .queryParam("email", userEmail);
+                        if (status != null && !status.isBlank()) {
+                            b.queryParam("status", status);
+                        }
+                        return b.build();
+                    })
                     .retrieve()
                     .bodyToMono(new ParameterizedTypeReference<List<PriceAlertDto>>() {})
                     .block(Duration.ofSeconds(10));

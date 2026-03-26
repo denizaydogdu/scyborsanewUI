@@ -136,6 +136,10 @@
                                     id="openAlertModalBtn">
                                 <i class="ri-alarm-line me-1"></i> Alarm Kur
                             </button>
+                            <a id="stockAlertLink" href="/alarmlar" class="d-none ms-2 mt-2 text-warning fs-12"
+                               style="text-decoration: none;">
+                                <i class="ri-alarm-warning-line me-1"></i><span id="stockAlertCount">0</span> aktif alarm
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -1311,7 +1315,30 @@
                 document.getElementById('alertDirection').value = 'ABOVE';
                 document.getElementById('alertError').classList.add('d-none');
                 document.getElementById('alertSuccess').classList.add('d-none');
+                // Modal kapanınca aktif alarm sayısını güncelle
+                checkStockAlerts();
             });
+
+            // Sayfa yüklenirken bu hisseye aktif alarm var mı kontrol et
+            function checkStockAlerts() {
+                fetch('/ajax/alerts?status=ACTIVE')
+                    .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
+                    .then(function(alerts) {
+                        var stockAlerts = alerts.filter(function(a) {
+                            return a.stockCode === stockCode && a.status === 'ACTIVE';
+                        });
+                        var link = document.getElementById('stockAlertLink');
+                        var countEl = document.getElementById('stockAlertCount');
+                        if (link && countEl && stockAlerts.length > 0) {
+                            countEl.textContent = stockAlerts.length;
+                            link.classList.remove('d-none');
+                        } else if (link) {
+                            link.classList.add('d-none');
+                        }
+                    })
+                    .catch(function() {});
+            }
+            checkStockAlerts();
         })();
     </script>
 </th:block>

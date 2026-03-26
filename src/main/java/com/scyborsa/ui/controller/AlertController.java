@@ -62,6 +62,26 @@ public class AlertController {
      * @param principal oturum acmis kullanici
      * @return okunmamis alarm sayisi
      */
+    /**
+     * Kullanicinin alarmlarini JSON olarak doner (AJAX proxy).
+     *
+     * @param status opsiyonel durum filtresi
+     * @param principal oturum acmis kullanici
+     * @return alarm listesi
+     */
+    @GetMapping("/ajax/alerts")
+    @ResponseBody
+    public List<PriceAlertDto> getAlertsAjax(@RequestParam(required = false) String status,
+                                              Principal principal) {
+        if (principal == null) return Collections.emptyList();
+        try {
+            return alertService.getAlerts(principal.getName(), status);
+        } catch (Exception e) {
+            log.warn("[ALERT-UI] Alarm listesi alinamadi: {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
     @GetMapping("/ajax/alerts/unread-count")
     @ResponseBody
     public Map<String, Object> getUnreadCount(Principal principal) {
