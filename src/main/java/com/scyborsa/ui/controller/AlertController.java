@@ -43,6 +43,7 @@ public class AlertController {
      */
     @GetMapping("/alarmlar")
     public String alarmListPage(Model model, Principal principal) {
+        if (principal == null) return "redirect:/login";
         try {
             List<PriceAlertDto> alerts = alertService.getAlerts(principal.getName());
             model.addAttribute("alerts", alerts);
@@ -54,18 +55,12 @@ public class AlertController {
     }
 
     /**
-     * Okunmamis alarm sayisini JSON olarak doner (AJAX proxy).
-     *
-     * <p><b>HTTP Method:</b> GET</p>
-     * <p><b>Path:</b> {@code /ajax/alerts/unread-count}</p>
-     *
-     * @param principal oturum acmis kullanici
-     * @return okunmamis alarm sayisi
-     */
-    /**
      * Kullanicinin alarmlarini JSON olarak doner (AJAX proxy).
      *
-     * @param status opsiyonel durum filtresi
+     * <p><b>HTTP Method:</b> GET</p>
+     * <p><b>Path:</b> {@code /ajax/alerts}</p>
+     *
+     * @param status    opsiyonel durum filtresi
      * @param principal oturum acmis kullanici
      * @return alarm listesi
      */
@@ -82,6 +77,15 @@ public class AlertController {
         }
     }
 
+    /**
+     * Okunmamis alarm sayisini JSON olarak doner (AJAX proxy).
+     *
+     * <p><b>HTTP Method:</b> GET</p>
+     * <p><b>Path:</b> {@code /ajax/alerts/unread-count}</p>
+     *
+     * @param principal oturum acmis kullanici
+     * @return okunmamis alarm sayisi iceren Map ({@code count} alani)
+     */
     @GetMapping("/ajax/alerts/unread-count")
     @ResponseBody
     public Map<String, Object> getUnreadCount(Principal principal) {
@@ -116,6 +120,34 @@ public class AlertController {
             return ResponseEntity.ok(created);
         } catch (Exception e) {
             log.warn("[ALERT-UI] Alarm olusturulamadi: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * Mevcut bir fiyat alarmini gunceller (AJAX proxy).
+     *
+     * <p><b>HTTP Method:</b> PUT</p>
+     * <p><b>Path:</b> {@code /ajax/alerts/{id}}</p>
+     *
+     * @param id        alarm ID
+     * @param alertDto  guncel alarm bilgileri
+     * @param principal oturum acmis kullanici
+     * @return guncellenmis alarm DTO
+     */
+    @PutMapping("/ajax/alerts/{id}")
+    @ResponseBody
+    public ResponseEntity<PriceAlertDto> updateAlert(@PathVariable Long id,
+                                                     @RequestBody PriceAlertDto alertDto,
+                                                     Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            PriceAlertDto updated = alertService.updateAlert(id, alertDto, principal.getName());
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            log.warn("[ALERT-UI] Alarm guncellenemedi (id={}): {}", id, e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }

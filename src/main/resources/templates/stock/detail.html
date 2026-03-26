@@ -120,26 +120,28 @@
                             <p class="text-muted mb-0" th:text="${stockDescription}">Turk Hava Yollari A.O.</p>
                         </div>
                         <div class="flex-shrink-0 text-end">
-                            <h4 class="mb-1">
+                            <h4 class="mb-0">
                                 <span id="heroPrice" th:text="${#numbers.formatDecimal(stockPrice, 1, 2)} + ' TL'">150,20 TL</span>
                             </h4>
-                            <span id="heroChangeBadge" th:class="${stockChangePercent >= 0 ? 'badge bg-success-subtle text-success' : 'badge bg-danger-subtle text-danger'}">
-                                <i th:class="${stockChangePercent >= 0 ? 'ri-arrow-up-line' : 'ri-arrow-down-line'}"></i>
-                                <span id="heroChangePercent" th:text="${'%' + #numbers.formatDecimal(stockChangePercent, 1, 2)}">%2.35</span>
-                            </span>
-                            <p class="text-muted mb-0 mt-1">
-                                <span class="fw-medium">Hacim:</span>
-                                <span th:text="${stockVolume >= 1000000 ? #numbers.formatDecimal(stockVolume / 1000000, 1, 1) + ' Milyon' : #numbers.formatInteger(stockVolume, 1, 'COMMA')}">45,2 Milyon</span>
-                            </p>
-                            <button type="button" class="btn btn-sm btn-outline-primary mt-2"
-                                    data-bs-toggle="modal" data-bs-target="#priceAlertModal"
-                                    id="openAlertModalBtn">
-                                <i class="ri-alarm-line me-1"></i> Alarm Kur
-                            </button>
-                            <a id="stockAlertLink" href="/alarmlar" class="d-none ms-2 mt-2 text-warning fs-12"
-                               style="text-decoration: none;">
-                                <i class="ri-alarm-warning-line me-1"></i><span id="stockAlertCount">0</span> aktif alarm
-                            </a>
+                            <div class="d-flex align-items-center justify-content-end gap-2 mt-1">
+                                <span id="heroChangeBadge" th:class="${stockChangePercent >= 0 ? 'badge bg-success-subtle text-success' : 'badge bg-danger-subtle text-danger'}">
+                                    <i th:class="${stockChangePercent >= 0 ? 'ri-arrow-up-line' : 'ri-arrow-down-line'}"></i>
+                                    <span id="heroChangePercent" th:text="${'%' + #numbers.formatDecimal(stockChangePercent, 1, 2)}">%2.35</span>
+                                </span>
+                                <span class="text-muted fs-12">
+                                    Hacim: <span th:text="${stockVolume >= 1000000 ? #numbers.formatDecimal(stockVolume / 1000000, 1, 1) + ' Milyon' : #numbers.formatInteger(stockVolume, 1, 'COMMA')}">45,2 Milyon</span>
+                                </span>
+                            </div>
+                            <div th:if="${assetType != 'CRYPTO'}" class="d-flex align-items-center justify-content-end gap-2 mt-2">
+                                <a id="stockAlertLink" href="/alarmlar" class="d-none text-warning fs-12" style="text-decoration: none;">
+                                    <i class="ri-alarm-warning-line me-1"></i><span id="stockAlertCount">0</span> aktif alarm
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                        data-bs-toggle="modal" data-bs-target="#priceAlertModal"
+                                        id="openAlertModalBtn">
+                                    <i class="ri-alarm-line me-1"></i> Alarm Kur
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1238,19 +1240,19 @@
                 successDiv.classList.add('d-none');
 
                 if (!targetPrice || targetPrice <= 0) {
-                    errDiv.textContent = 'Gecerli bir hedef fiyat giriniz.';
+                    errDiv.textContent = 'Geçerli bir hedef fiyat giriniz.';
                     errDiv.classList.remove('d-none');
                     return;
                 }
 
                 if (direction === 'ABOVE' && targetPrice <= stockPrice) {
-                    errDiv.textContent = 'Ustune cikinca alarmi icin hedef fiyat mevcut fiyattan buyuk olmali.';
+                    errDiv.textContent = 'Üstüne çıkınca alarmı için hedef fiyat mevcut fiyattan büyük olmalı.';
                     errDiv.classList.remove('d-none');
                     return;
                 }
 
                 if (direction === 'BELOW' && targetPrice >= stockPrice) {
-                    errDiv.textContent = 'Altina dusunce alarmi icin hedef fiyat mevcut fiyattan kucuk olmali.';
+                    errDiv.textContent = 'Altına düşünce alarmı için hedef fiyat mevcut fiyattan küçük olmalı.';
                     errDiv.classList.remove('d-none');
                     return;
                 }
@@ -1261,7 +1263,7 @@
                 var spinner = document.createElement('span');
                 spinner.className = 'spinner-border spinner-border-sm me-1';
                 createBtn.appendChild(spinner);
-                createBtn.appendChild(document.createTextNode(' Olusturuluyor...'));
+                createBtn.appendChild(document.createTextNode(' Oluşturuluyor...'));
 
                 var payload = {
                     stockCode: stockCode,
@@ -1297,8 +1299,6 @@
                 .catch(function(e) {
                     errDiv.textContent = e.message || 'Bir hata oluştu.';
                     errDiv.classList.remove('d-none');
-                })
-                .finally(function() {
                     createBtn.disabled = false;
                     // Ikon korumasi: DOM API ile ikon + metin geri yukle
                     createBtn.textContent = '';

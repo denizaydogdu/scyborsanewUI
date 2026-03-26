@@ -83,6 +83,31 @@ public class AlertService {
     }
 
     /**
+     * Mevcut bir fiyat alarmini gunceller.
+     *
+     * @param alertId   alarm ID
+     * @param alertDto  guncel alarm bilgileri
+     * @param userEmail kullanici email adresi
+     * @return guncellenmis alarm DTO
+     */
+    public PriceAlertDto updateAlert(Long alertId, PriceAlertDto alertDto, String userEmail) {
+        try {
+            return webClient.put()
+                    .uri(uriBuilder -> uriBuilder
+                            .path(ScyborsaApiEndpoints.ALERTS + "/" + alertId)
+                            .queryParam("email", userEmail)
+                            .build())
+                    .bodyValue(alertDto)
+                    .retrieve()
+                    .bodyToMono(PriceAlertDto.class)
+                    .block(Duration.ofSeconds(10));
+        } catch (Exception e) {
+            log.warn("[ALERT-UI] Alarm guncellenemedi (id={}): {}", alertId, e.getMessage());
+            throw e;
+        }
+    }
+
+    /**
      * Tum alarmlari okundu olarak isaretler.
      *
      * @param userEmail kullanici email adresi

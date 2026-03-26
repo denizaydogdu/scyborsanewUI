@@ -137,6 +137,7 @@
                                     <th>Durum</th>
                                     <th>Not</th>
                                     <th>Tarih</th>
+                                    <th>Tetiklenme Zamanı</th>
                                     <th class="text-center">İşlem</th>
                                 </tr>
                             </thead>
@@ -164,17 +165,29 @@
                                     </td>
                                     <td th:text="${alert.note ?: '-'}">-</td>
                                     <td th:text="${alert.createTime != null ? #temporals.format(alert.createTime, 'dd.MM.yyyy HH:mm') : '-'}">-</td>
+                                    <td th:text="${alert.triggeredAt != null ? #temporals.format(alert.triggeredAt, 'dd.MM.yyyy HH:mm') : '-'}">-</td>
                                     <td class="text-center">
+                                        <button th:if="${alert.status == 'ACTIVE'}"
+                                                class="btn btn-sm btn-soft-primary edit-alert-btn me-1"
+                                                th:data-alert-id="${alert.id}"
+                                                th:data-stock-code="${alert.stockCode}"
+                                                th:data-direction="${alert.direction}"
+                                                th:data-target-price="${alert.targetPrice}"
+                                                th:data-note="${alert.note}"
+                                                data-bs-toggle="modal" data-bs-target="#editAlertModal"
+                                                title="Alarmı Düzenle">
+                                            <i class="ri-pencil-line"></i>
+                                        </button>
                                         <button th:if="${alert.status == 'ACTIVE'}"
                                                 class="btn btn-sm btn-soft-danger cancel-alert-btn"
                                                 th:data-alert-id="${alert.id}"
                                                 title="Alarmı İptal Et">
-                                            <i class="ri-close-line"></i>
+                                            <i class="ri-delete-bin-line me-1"></i> İptal
                                         </button>
                                     </td>
                                 </tr>
                                 <tr th:if="${alerts == null or #lists.isEmpty(alerts)}">
-                                    <td colspan="8" class="text-center text-muted py-4">
+                                    <td colspan="9" class="text-center text-muted py-4">
                                         <i class="ri-alarm-line fs-24 d-block mb-2"></i>
                                         Henüz alarm oluşturulmamış. Hisse detay sayfasından alarm kurabilirsiniz.
                                     </td>
@@ -186,26 +199,98 @@
             </div>
         </div>
     </div>
+    <!-- Alarm Düzenle Modal -->
+    <div class="modal fade" id="editAlertModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ri-pencil-line me-1"></i> Alarm Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editAlertId">
+                    <div class="mb-3">
+                        <label class="form-label">Hisse</label>
+                        <input type="text" class="form-control" id="editAlertStockCode" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Yön</label>
+                        <select class="form-select" id="editAlertDirection">
+                            <option value="ABOVE">Üstüne Çıkınca &#8593;</option>
+                            <option value="BELOW">Altına Düşünce &#8595;</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Hedef Fiyat (&#8378;)</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="editAlertTargetPrice"
+                                   placeholder="0,00" inputmode="decimal"
+                                   style="text-align: left; font-size: 1.1rem; font-weight: 600;">
+                            <span class="input-group-text">&#8378;</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Not (opsiyonel)</label>
+                        <input type="text" class="form-control" id="editAlertNote" maxlength="200"
+                               placeholder="Örn: Destek kırılımı">
+                    </div>
+                    <div id="editAlertError" class="alert alert-danger d-none"></div>
+                    <div id="editAlertSuccess" class="alert alert-success d-none"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" id="saveEditAlertBtn">
+                        <i class="ri-save-line me-1"></i> Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 </body>
 
 <th:block layout:fragment="pagejs">
     <script>
         (function() {
+            var csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+            var csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
+            function getCsrfHeaders() {
+                var headers = { 'Content-Type': 'application/json' };
+                if (csrfHeader && csrfToken) headers[csrfHeader] = csrfToken;
+                return headers;
+            }
+
+            /** Yön hücresini DOM API ile günceller (XSS-safe). */
+            function updateDirectionCell(cell, direction) {
+                cell.textContent = '';
+                var badge = document.createElement('span');
+                var icon = document.createElement('i');
+                if (direction === 'ABOVE') {
+                    badge.className = 'badge bg-success-subtle text-success';
+                    icon.className = 'ri-arrow-up-line';
+                    badge.appendChild(icon);
+                    badge.appendChild(document.createTextNode(' Üstüne Çıkınca'));
+                } else {
+                    badge.className = 'badge bg-danger-subtle text-danger';
+                    icon.className = 'ri-arrow-down-line';
+                    badge.appendChild(icon);
+                    badge.appendChild(document.createTextNode(' Altına Düşünce'));
+                }
+                cell.appendChild(badge);
+            }
+
+            // ========== İptal Butonu ==========
             document.querySelectorAll('.cancel-alert-btn').forEach(function(btn) {
                 btn.addEventListener('click', function() {
                     var alertId = this.getAttribute('data-alert-id');
                     if (!confirm('Bu alarmı iptal etmek istediğinize emin misiniz?')) return;
 
-                    var csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
-                    var csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
-                    var headers = {};
-                    if (csrfHeader && csrfToken) headers[csrfHeader] = csrfToken;
-
                     var row = document.getElementById('alert-row-' + alertId);
-                    fetch('/ajax/alerts/' + alertId, { method: 'DELETE', headers: headers })
+                    fetch('/ajax/alerts/' + alertId, { method: 'DELETE', headers: getCsrfHeaders() })
                         .then(function(r) {
-                            if (r.ok && row) {
+                            if (!r.ok) throw new Error('HTTP ' + r.status);
+                            if (row) {
                                 row.style.opacity = '0.5';
                                 var statusCell = row.children[4];
                                 if (statusCell) {
@@ -215,7 +300,7 @@
                                     badge.textContent = 'İptal';
                                     statusCell.appendChild(badge);
                                 }
-                                var actionCell = row.children[7];
+                                var actionCell = row.children[8];
                                 if (actionCell) actionCell.textContent = '';
                             }
                         })
@@ -224,6 +309,110 @@
                         });
                 });
             });
+
+            // ========== Düzenle Modal — Populate ==========
+            var editModal = document.getElementById('editAlertModal');
+            if (editModal) {
+                editModal.addEventListener('show.bs.modal', function(event) {
+                    var btn = event.relatedTarget;
+                    if (!btn) return;
+                    document.getElementById('editAlertId').value = btn.getAttribute('data-alert-id') || '';
+                    document.getElementById('editAlertStockCode').value = btn.getAttribute('data-stock-code') || '';
+                    document.getElementById('editAlertDirection').value = btn.getAttribute('data-direction') || 'ABOVE';
+
+                    var price = btn.getAttribute('data-target-price') || '';
+                    document.getElementById('editAlertTargetPrice').value = price.replace('.', ',');
+
+                    document.getElementById('editAlertNote').value = btn.getAttribute('data-note') || '';
+
+                    document.getElementById('editAlertError').classList.add('d-none');
+                    document.getElementById('editAlertSuccess').classList.add('d-none');
+                    document.getElementById('saveEditAlertBtn').disabled = false;
+                });
+            }
+
+            // ========== Düzenle Modal — Kaydet ==========
+            var saveBtn = document.getElementById('saveEditAlertBtn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', function() {
+                    var errorEl = document.getElementById('editAlertError');
+                    var successEl = document.getElementById('editAlertSuccess');
+                    errorEl.classList.add('d-none');
+                    successEl.classList.add('d-none');
+
+                    var alertId = document.getElementById('editAlertId').value;
+                    var direction = document.getElementById('editAlertDirection').value;
+                    var rawPrice = document.getElementById('editAlertTargetPrice').value.replace(/,/g, '.');
+                    var targetPrice = parseFloat(rawPrice);
+                    var note = document.getElementById('editAlertNote').value.trim();
+                    var stockCode = document.getElementById('editAlertStockCode').value;
+
+                    if (!targetPrice || targetPrice <= 0 || isNaN(targetPrice)) {
+                        errorEl.textContent = 'Geçerli bir hedef fiyat giriniz.';
+                        errorEl.classList.remove('d-none');
+                        return;
+                    }
+
+                    saveBtn.disabled = true;
+
+                    var body = {
+                        stockCode: stockCode,
+                        direction: direction,
+                        targetPrice: targetPrice,
+                        note: note || null
+                    };
+
+                    fetch('/ajax/alerts/' + alertId, {
+                        method: 'PUT',
+                        headers: getCsrfHeaders(),
+                        body: JSON.stringify(body)
+                    })
+                    .then(function(r) {
+                        if (!r.ok) throw new Error('Güncelleme başarısız');
+                        return r.json();
+                    })
+                    .then(function(data) {
+                        successEl.textContent = 'Alarm başarıyla güncellendi.';
+                        successEl.classList.remove('d-none');
+
+                        // Tablo satırını güncelle (DOM API — XSS-safe)
+                        var row = document.getElementById('alert-row-' + alertId);
+                        if (row) {
+                            // Yön (index 1)
+                            var dirCell = row.children[1];
+                            if (dirCell) updateDirectionCell(dirCell, data.direction);
+
+                            // Hedef Fiyat (index 2)
+                            var priceCell = row.children[2];
+                            if (priceCell) {
+                                priceCell.textContent = data.targetPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TL';
+                            }
+                            // Not (index 5)
+                            var noteCell = row.children[5];
+                            if (noteCell) {
+                                noteCell.textContent = data.note || '-';
+                            }
+                            // Düzenle butonundaki data-* güncelle
+                            var editBtn = row.querySelector('.edit-alert-btn');
+                            if (editBtn) {
+                                editBtn.setAttribute('data-direction', data.direction);
+                                editBtn.setAttribute('data-target-price', data.targetPrice);
+                                editBtn.setAttribute('data-note', data.note || '');
+                            }
+                        }
+
+                        setTimeout(function() {
+                            var bsModal = bootstrap.Modal.getInstance(editModal);
+                            if (bsModal) bsModal.hide();
+                        }, 800);
+                    })
+                    .catch(function(err) {
+                        errorEl.textContent = 'Alarm güncellenirken hata oluştu: ' + err.message;
+                        errorEl.classList.remove('d-none');
+                        saveBtn.disabled = false;
+                    });
+                });
+            }
         })();
     </script>
 </th:block>
