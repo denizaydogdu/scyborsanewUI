@@ -68,6 +68,7 @@ public class ScyborsaAuthSuccessHandler extends SavedRequestAwareAuthenticationS
             Object role = detailsMap.get("role");
             session.setAttribute("userAdSoyad", adSoyad != null ? adSoyad.toString() : "");
             session.setAttribute("userRole", role != null ? role.toString() : "");
+            session.setAttribute("userEmail", authentication.getName());
         }
 
         // AJAX endpoint'leri saved request olarak kaydedilmisse temizle —

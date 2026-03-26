@@ -261,4 +261,15 @@ public final class ScyborsaApiEndpoints {
     /** Finansal oranlar endpoint'i. {@code {symbol}} path variable icerir. */
     public static final String BILANCO_RASYO = "/api/v1/bilanco/{symbol}/rasyo";
 
+    // ── Fiyat Alarmlari ──────────────────────────────────────
+
+    /** Fiyat alarmlari CRUD endpoint'i. */
+    public static final String ALERTS = "/api/v1/alerts";
+
+    /** Okunmamis alarm sayisi endpoint'i. */
+    public static final String ALERTS_UNREAD_COUNT = "/api/v1/alerts/unread-count";
+
+    /** Tum alarmlari okundu isaretle endpoint'i. */
+    public static final String ALERTS_READ_ALL = "/api/v1/alerts/read-all";
+
 }

@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Alarmlarım')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <!-- Sayfa Basligi -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">Alarmlarım</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="/dashboard">Ana Sayfa</a></li>
+                        <li class="breadcrumb-item active">Alarmlarım</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Kartlari -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Toplam Alarm</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-3">
+                        <div>
+                            <h4 class="fs-22 fw-semibold mb-0" id="totalAlarms"
+                                th:text="${alerts != null ? #lists.size(alerts) : 0}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-alarm-line text-primary"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Aktif</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-3">
+                        <div>
+                            <h4 class="fs-22 fw-semibold mb-0 text-success" id="activeAlarms"
+                                th:text="${alerts != null ? #lists.size(alerts.?[status == 'ACTIVE']) : 0}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-checkbox-circle-line text-success"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Tetiklenen</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-3">
+                        <div>
+                            <h4 class="fs-22 fw-semibold mb-0 text-warning" id="triggeredAlarms"
+                                th:text="${alerts != null ? #lists.size(alerts.?[status == 'TRIGGERED']) : 0}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-notification-3-line text-warning"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">İptal Edilen</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-3">
+                        <div>
+                            <h4 class="fs-22 fw-semibold mb-0 text-danger" id="cancelledAlarms"
+                                th:text="${alerts != null ? #lists.size(alerts.?[status == 'CANCELLED']) : 0}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-close-circle-line text-danger"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alarm Tablosu -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Fiyat Alarmları</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-nowrap align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Hisse</th>
+                                    <th>Yön</th>
+                                    <th class="text-end">Hedef Fiyat</th>
+                                    <th class="text-end">Oluşturma Fiyatı</th>
+                                    <th>Durum</th>
+                                    <th>Not</th>
+                                    <th>Tarih</th>
+                                    <th class="text-center">İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="alert : ${alerts}" th:id="'alert-row-' + ${alert.id}">
+                                    <td>
+                                        <a th:href="@{'/stock/detail/' + ${alert.stockCode}}" class="fw-medium">
+                                            <span th:text="${alert.stockCode}">THYAO</span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span th:if="${alert.direction == 'ABOVE'}" class="badge bg-success-subtle text-success">
+                                            <i class="ri-arrow-up-line"></i> Üstüne Çıkınca
+                                        </span>
+                                        <span th:if="${alert.direction == 'BELOW'}" class="badge bg-danger-subtle text-danger">
+                                            <i class="ri-arrow-down-line"></i> Altına Düşünce
+                                        </span>
+                                    </td>
+                                    <td class="text-end" th:text="${#numbers.formatDecimal(alert.targetPrice, 1, 2) + ' TL'}">0,00 TL</td>
+                                    <td class="text-end" th:text="${alert.priceAtCreation != null ? #numbers.formatDecimal(alert.priceAtCreation, 1, 2) + ' TL' : '-'}">0,00 TL</td>
+                                    <td>
+                                        <span th:if="${alert.status == 'ACTIVE'}" class="badge bg-success">Aktif</span>
+                                        <span th:if="${alert.status == 'TRIGGERED'}" class="badge bg-warning">Tetiklendi</span>
+                                        <span th:if="${alert.status == 'CANCELLED'}" class="badge bg-secondary">İptal</span>
+                                    </td>
+                                    <td th:text="${alert.note ?: '-'}">-</td>
+                                    <td th:text="${alert.createTime != null ? #temporals.format(alert.createTime, 'dd.MM.yyyy HH:mm') : '-'}">-</td>
+                                    <td class="text-center">
+                                        <button th:if="${alert.status == 'ACTIVE'}"
+                                                class="btn btn-sm btn-soft-danger cancel-alert-btn"
+                                                th:data-alert-id="${alert.id}"
+                                                title="Alarmı İptal Et">
+                                            <i class="ri-close-line"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr th:if="${alerts == null or #lists.isEmpty(alerts)}">
+                                    <td colspan="8" class="text-center text-muted py-4">
+                                        <i class="ri-alarm-line fs-24 d-block mb-2"></i>
+                                        Henüz alarm oluşturulmamış. Hisse detay sayfasından alarm kurabilirsiniz.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+
+<th:block layout:fragment="pagejs">
+    <script>
+        (function() {
+            document.querySelectorAll('.cancel-alert-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var alertId = this.getAttribute('data-alert-id');
+                    if (!confirm('Bu alarmı iptal etmek istediğinize emin misiniz?')) return;
+
+                    var csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+                    var csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+                    var headers = {};
+                    if (csrfHeader && csrfToken) headers[csrfHeader] = csrfToken;
+
+                    var row = document.getElementById('alert-row-' + alertId);
+                    fetch('/ajax/alerts/' + alertId, { method: 'DELETE', headers: headers })
+                        .then(function(r) {
+                            if (r.ok && row) {
+                                row.style.opacity = '0.5';
+                                var statusCell = row.children[4];
+                                if (statusCell) {
+                                    statusCell.textContent = '';
+                                    var badge = document.createElement('span');
+                                    badge.className = 'badge bg-secondary';
+                                    badge.textContent = 'İptal';
+                                    statusCell.appendChild(badge);
+                                }
+                                var actionCell = row.children[7];
+                                if (actionCell) actionCell.textContent = '';
+                            }
+                        })
+                        .catch(function() {
+                            alert('Alarm iptal edilemedi.');
+                        });
+                });
+            });
+        })();
+    </script>
+</th:block>
+
+</html>

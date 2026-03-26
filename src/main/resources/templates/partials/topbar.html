@@ -49,6 +49,45 @@
 
 					<div class="d-flex align-items-center">
 
+						<!-- Bildirimler (Fiyat Alarmlari) -->
+						<div class="dropdown topbar-head-dropdown ms-1 header-item" id="notificationDropdown">
+							<button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle"
+									id="page-header-notifications-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside"
+									aria-haspopup="true" aria-expanded="false">
+								<i class="bx bx-bell fs-22"></i>
+								<span class="position-absolute topbar-badge fs-10 translate-middle badge rounded-pill bg-danger"
+									  id="notification-badge" style="display:none;">0</span>
+							</button>
+							<div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"
+								 aria-labelledby="page-header-notifications-dropdown">
+								<div class="dropdown-head bg-primary bg-pattern rounded-top">
+									<div class="p-3">
+										<div class="row align-items-center">
+											<div class="col">
+												<h6 class="m-0 fs-16 fw-semibold text-white">Bildirimler</h6>
+											</div>
+											<div class="col-auto">
+												<a href="javascript:void(0);" id="mark-all-read"
+												   class="badge bg-white-subtle text-white fs-13">
+													Tümünü Okundu İşaretle</a>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div id="notification-list" class="p-2" style="max-height: 300px; overflow-y: auto;">
+									<div class="text-center text-muted py-3" id="no-notifications">
+										<i class="ri-notification-off-line fs-24 mb-2 d-block"></i>
+										Bildirim yok
+									</div>
+								</div>
+								<div class="p-2 border-top">
+									<a href="/alarmlar" class="btn btn-sm btn-light w-100">
+										Tüm Alarmları Görüntüle <i class="ri-arrow-right-s-line"></i>
+									</a>
+								</div>
+							</div>
+						</div>
+
 						<div class="dropdown d-md-none topbar-head-dropdown header-item">
 							<button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" id="page-header-search-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<i class="bx bx-search fs-22"></i>
@@ -86,19 +125,19 @@
 										  style="width:32px;height:32px;background:linear-gradient(135deg,#405189,#0ab39c);color:#fff;font-size:13px;font-weight:600;"
 										  th:text="${session.userAdSoyad != null ? session.userAdSoyad.substring(0,1).toUpperCase() : 'U'}"></span>
 									<span class="text-start ms-xl-2">
-										<span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text" th:text="${session.userAdSoyad ?: 'Kullanıcı'}">Kullanici</span>
+										<span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text" th:text="${session.userAdSoyad ?: 'Kullanıcı'}">Kullanıcı</span>
 										<span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text" th:text="${session.userRole == 'ADMIN' ? 'Yönetici' : 'Kullanıcı'}">Yonetici</span>
 									</span>
 								</span>
 							</button>
 							<div class="dropdown-menu dropdown-menu-end">
-								<h6 class="dropdown-header">Hos Geldiniz!</h6>
+								<h6 class="dropdown-header">Hoş Geldiniz!</h6>
 								<a class="dropdown-item" href="/profil"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Profil</span></a>
 								<div class="dropdown-divider"></div>
 								<form th:action="@{/logout}" method="post" class="d-inline">
 									<button type="submit" class="dropdown-item">
 										<i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>
-										<span class="align-middle">Cikis</span>
+										<span class="align-middle">Çıkış</span>
 									</button>
 								</form>
 							</div>

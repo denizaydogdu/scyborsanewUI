@@ -100,7 +100,7 @@
     </div>
 
     <!-- Hisse Bilgi Header (Stock) -->
-    <div class="row" th:if="${assetType != 'CRYPTO' and stockLogoid != null}">
+    <div class="row" th:if="${assetType != 'CRYPTO'}">
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
@@ -131,8 +131,66 @@
                                 <span class="fw-medium">Hacim:</span>
                                 <span th:text="${stockVolume >= 1000000 ? #numbers.formatDecimal(stockVolume / 1000000, 1, 1) + ' Milyon' : #numbers.formatInteger(stockVolume, 1, 'COMMA')}">45,2 Milyon</span>
                             </p>
+                            <button type="button" class="btn btn-sm btn-outline-primary mt-2"
+                                    data-bs-toggle="modal" data-bs-target="#priceAlertModal"
+                                    id="openAlertModalBtn">
+                                <i class="ri-alarm-line me-1"></i> Alarm Kur
+                            </button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fiyat Alarm Modal (sadece STOCK icin) -->
+    <div class="modal fade" id="priceAlertModal" tabindex="-1" th:if="${assetType != 'CRYPTO'}">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ri-alarm-line me-1"></i> Fiyat Alarmı</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Hisse</label>
+                        <input type="text" class="form-control" id="alertStockCode"
+                               th:value="${stockId}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mevcut Fiyat</label>
+                        <input type="text" class="form-control" id="alertCurrentPrice"
+                               th:value="${#numbers.formatDecimal(stockPrice, 1, 2) + ' TL'}" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Yön</label>
+                        <select class="form-select" id="alertDirection">
+                            <option value="ABOVE">Üstüne Çıkınca ↑</option>
+                            <option value="BELOW">Altına Düşünce ↓</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Hedef Fiyat (₺)</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="alertTargetPrice"
+                                   placeholder="0,00" inputmode="decimal"
+                                   style="text-align: left; font-size: 1.1rem; font-weight: 600;">
+                            <span class="input-group-text">₺</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Not (opsiyonel)</label>
+                        <input type="text" class="form-control" id="alertNote" maxlength="200"
+                               placeholder="Örn: Destek kırılımı">
+                    </div>
+                    <div id="alertError" class="alert alert-danger d-none" role="alert"></div>
+                    <div id="alertSuccess" class="alert alert-success d-none" role="alert"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" id="createAlertBtn">
+                        <i class="ri-alarm-line me-1"></i> Alarm Kur
+                    </button>
                 </div>
             </div>
         </div>
@@ -1150,6 +1208,110 @@
             if (initCoin) updateCryptoDetail(initCoin);
 
             setInterval(poll, POLL_INTERVAL);
+        })();
+    </script>
+
+    <!-- Fiyat Alarm Olusturma (sadece STOCK icin) -->
+    <script th:if="${assetType != 'CRYPTO'}">
+        (function() {
+            var createBtn = document.getElementById('createAlertBtn');
+            if (!createBtn) return;
+
+            var stockCode = /*[[${stockId}]]*/ '';
+            var stockPrice = /*[[${stockPrice}]]*/ 0;
+            var csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+            var csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
+            createBtn.addEventListener('click', function() {
+                var direction = document.getElementById('alertDirection').value;
+                var rawPrice = document.getElementById('alertTargetPrice').value.replace(/,/g, '.').trim();
+                var targetPrice = parseFloat(rawPrice);
+                var note = document.getElementById('alertNote').value.trim();
+                var errDiv = document.getElementById('alertError');
+                var successDiv = document.getElementById('alertSuccess');
+
+                errDiv.classList.add('d-none');
+                successDiv.classList.add('d-none');
+
+                if (!targetPrice || targetPrice <= 0) {
+                    errDiv.textContent = 'Gecerli bir hedef fiyat giriniz.';
+                    errDiv.classList.remove('d-none');
+                    return;
+                }
+
+                if (direction === 'ABOVE' && targetPrice <= stockPrice) {
+                    errDiv.textContent = 'Ustune cikinca alarmi icin hedef fiyat mevcut fiyattan buyuk olmali.';
+                    errDiv.classList.remove('d-none');
+                    return;
+                }
+
+                if (direction === 'BELOW' && targetPrice >= stockPrice) {
+                    errDiv.textContent = 'Altina dusunce alarmi icin hedef fiyat mevcut fiyattan kucuk olmali.';
+                    errDiv.classList.remove('d-none');
+                    return;
+                }
+
+                createBtn.disabled = true;
+                // Ikon korumasi: DOM API ile spinner + metin
+                createBtn.textContent = '';
+                var spinner = document.createElement('span');
+                spinner.className = 'spinner-border spinner-border-sm me-1';
+                createBtn.appendChild(spinner);
+                createBtn.appendChild(document.createTextNode(' Olusturuluyor...'));
+
+                var payload = {
+                    stockCode: stockCode,
+                    direction: direction,
+                    targetPrice: targetPrice,
+                    priceAtCreation: stockPrice,
+                    note: note || null
+                };
+
+                var fetchHeaders = { 'Content-Type': 'application/json' };
+                if (csrfHeader && csrfToken) fetchHeaders[csrfHeader] = csrfToken;
+
+                fetch('/ajax/alerts', {
+                    method: 'POST',
+                    headers: fetchHeaders,
+                    body: JSON.stringify(payload)
+                })
+                .then(function(r) {
+                    if (!r.ok) throw new Error('Alarm olusturulamadi');
+                    return r.json();
+                })
+                .then(function() {
+                    successDiv.textContent = 'Alarm basariyla olusturuldu!';
+                    successDiv.classList.remove('d-none');
+                    document.getElementById('alertTargetPrice').value = '';
+                    document.getElementById('alertNote').value = '';
+                    setTimeout(function() {
+                        var modal = bootstrap.Modal.getInstance(document.getElementById('priceAlertModal'));
+                        if (modal) modal.hide();
+                        successDiv.classList.add('d-none');
+                    }, 1500);
+                })
+                .catch(function(e) {
+                    errDiv.textContent = e.message || 'Bir hata olustu.';
+                    errDiv.classList.remove('d-none');
+                })
+                .finally(function() {
+                    createBtn.disabled = false;
+                    // Ikon korumasi: DOM API ile ikon + metin geri yukle
+                    createBtn.textContent = '';
+                    var icon = document.createElement('i');
+                    icon.className = 'ri-alarm-line me-1';
+                    createBtn.appendChild(icon);
+                    createBtn.appendChild(document.createTextNode(' Alarm Kur'));
+                });
+            });
+
+            document.getElementById('priceAlertModal').addEventListener('hidden.bs.modal', function() {
+                document.getElementById('alertTargetPrice').value = '';
+                document.getElementById('alertNote').value = '';
+                document.getElementById('alertDirection').value = 'ABOVE';
+                document.getElementById('alertError').classList.add('d-none');
+                document.getElementById('alertSuccess').classList.add('d-none');
+            });
         })();
     </script>
 </th:block>

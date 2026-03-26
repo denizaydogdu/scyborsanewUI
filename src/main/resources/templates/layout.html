@@ -6,7 +6,7 @@
 	<div th:replace="~{partials/head-css :: head-css}"></div>
 </head>
 
-<body data-sidebar="dark" data-layout-mode="light">
+<body data-sidebar="dark" data-layout-mode="light" th:data-user-email="${userEmail}" th:data-api-base="${apiBaseUrl}">
 	<!-- Google Tag Manager (noscript) -->
 	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WN5GTRFB"
 	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -41,6 +41,11 @@
 	<script th:src="@{/js/stock-search.js}"></script>
 	<!-- Session Guard — oturum bitince login'e yonlendir -->
 	<script th:src="@{/js/session-guard.js}"></script>
+	<!-- StompJS + SockJS (alarm bildirimler icin global) -->
+	<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+	<script th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
+	<!-- Alarm Bildirim Sistemi -->
+	<script th:src="@{/js/alarm-notifications.js}"></script>
 </body>
 
 </html>
