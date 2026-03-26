@@ -1212,7 +1212,7 @@
     </script>
 
     <!-- Fiyat Alarm Olusturma (sadece STOCK icin) -->
-    <script th:if="${assetType != 'CRYPTO'}">
+    <script th:if="${assetType != 'CRYPTO'}" th:inline="javascript">
         (function() {
             var createBtn = document.getElementById('createAlertBtn');
             if (!createBtn) return;
