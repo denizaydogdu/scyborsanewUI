@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -33,16 +32,16 @@ public class PriceAlertDto {
     private String direction;
 
     /** Hedef fiyat. */
-    private BigDecimal targetPrice;
+    private Double targetPrice;
 
     /** Alarm olusturuldugundaki fiyat. */
-    private BigDecimal priceAtCreation;
+    private Double priceAtCreation;
 
     /** Alarm durumu: ACTIVE, TRIGGERED, CANCELLED. */
     private String status;
 
     /** Tetiklendigi andaki fiyat. */
-    private BigDecimal triggerPrice;
+    private Double triggerPrice;
 
     /** Tetiklenme zamani. */
     private LocalDateTime triggeredAt;
@@ -57,8 +56,8 @@ public class PriceAlertDto {
     private LocalDateTime createTime;
 
     /** Mevcut fiyat (hesaplanan alan). */
-    private BigDecimal currentPrice;
+    private Double currentPrice;
 
     /** Hedef fiyata uzaklik yuzdesi (hesaplanan alan). */
-    private BigDecimal distancePercent;
+    private Double distancePercent;
 }

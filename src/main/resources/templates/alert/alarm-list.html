@@ -225,6 +225,7 @@
                         <div class="input-group">
                             <input type="text" class="form-control" id="editAlertTargetPrice"
                                    placeholder="0,00" inputmode="decimal"
+                                   oninput="this.value = this.value.replace(/[^0-9.,]/g, '')"
                                    style="text-align: left; font-size: 1.1rem; font-weight: 600;">
                             <span class="input-group-text">&#8378;</span>
                         </div>

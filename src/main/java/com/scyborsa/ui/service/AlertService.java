@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,12 +67,20 @@ public class AlertService {
      */
     public PriceAlertDto createAlert(PriceAlertDto alertDto, String userEmail) {
         try {
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("stockCode", alertDto.getStockCode());
+            requestBody.put("direction", alertDto.getDirection());
+            requestBody.put("targetPrice", alertDto.getTargetPrice());
+            requestBody.put("priceAtCreation", alertDto.getPriceAtCreation());
+            requestBody.put("note", alertDto.getNote());
+            requestBody.put("stockName", alertDto.getStockName());
+
             return webClient.post()
                     .uri(uriBuilder -> uriBuilder
                             .path(ScyborsaApiEndpoints.ALERTS)
                             .queryParam("email", userEmail)
                             .build())
-                    .bodyValue(alertDto)
+                    .bodyValue(requestBody)
                     .retrieve()
                     .bodyToMono(PriceAlertDto.class)
                     .block(Duration.ofSeconds(10));
@@ -92,12 +101,18 @@ public class AlertService {
      */
     public PriceAlertDto updateAlert(Long alertId, PriceAlertDto alertDto, String userEmail) {
         try {
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("stockCode", alertDto.getStockCode());
+            requestBody.put("direction", alertDto.getDirection());
+            requestBody.put("targetPrice", alertDto.getTargetPrice());
+            requestBody.put("note", alertDto.getNote());
+
             return webClient.put()
                     .uri(uriBuilder -> uriBuilder
                             .path(ScyborsaApiEndpoints.ALERTS + "/" + alertId)
                             .queryParam("email", userEmail)
                             .build())
-                    .bodyValue(alertDto)
+                    .bodyValue(requestBody)
                     .retrieve()
                     .bodyToMono(PriceAlertDto.class)
                     .block(Duration.ofSeconds(10));
