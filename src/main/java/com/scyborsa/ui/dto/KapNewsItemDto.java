@@ -41,6 +41,9 @@ public class KapNewsItemDto {
     /** Iliskili semboller listesi. */
     private List<RelatedSymbolDto> relatedSymbols;
 
+    /** Haberdeki iliskili sembollerden herhangi birinin katılım endeksinde olup olmadığı. */
+    private boolean katilim;
+
     /**
      * Iliskili sembol bilgisi.
      */

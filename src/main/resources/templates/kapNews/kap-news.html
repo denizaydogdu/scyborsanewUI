@@ -50,6 +50,7 @@
                                               th:text="${sym.symbol != null and sym.symbol.contains(':') ? sym.symbol.substring(sym.symbol.indexOf(':') + 1) : sym.symbol}">
                                         </span>
                                     </th:block>
+                                    <span th:if="${item.katilim}" class="badge bg-success bg-opacity-25 text-success ms-1" style="font-size: 0.65rem; padding: 1px 4px;" title="Katılım Endeksi">K</span>
                                 </td>
                                 <td>
                                     <a th:if="${item.storyPath != null}" th:href="@{/haber/{id}(id=${item.id})}"

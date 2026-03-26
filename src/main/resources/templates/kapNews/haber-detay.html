@@ -18,9 +18,9 @@
                 <h4 class="mb-sm-0" th:text="${haber != null ? haber.title : 'Haber Bulunamadi'}">Haber Detay</h4>
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="/market-news">Haberler</a></li>
-                        <li class="breadcrumb-item active">Detay</li>
+                        <li class="breadcrumb-item"><a href="/dashboard">Ana Sayfa</a></li>
+                        <li class="breadcrumb-item"><a th:href="${haber != null and haber.newsType == 'MARKET' ? '/market-news' : (haber != null and haber.newsType == 'WORLD' ? '/world-news' : '/kap-news')}" th:text="${haber != null and haber.newsType == 'MARKET' ? 'Piyasa Haberleri' : (haber != null and haber.newsType == 'WORLD' ? 'Dünya Haberleri' : 'KAP Bildirimleri')}">Haberler</a></li>
+                        <li class="breadcrumb-item active">Haber Detay&#305;</li>
                     </ol>
                 </div>
             </div>

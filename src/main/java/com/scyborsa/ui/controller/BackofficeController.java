@@ -352,6 +352,7 @@ public class BackofficeController {
             log.error("[BACKOFFICE-UI] Kullanici olusturma hatasi", e);
             String errorDetail = e.getMessage();
             if (errorDetail != null && (errorDetail.contains("zaten mevcut")
+                    || errorDetail.contains("zaten kullanılıyor")
                     || errorDetail.contains("zorunludur")
                     || errorDetail.contains("Gecersiz rol"))) {
                 redirectAttributes.addFlashAttribute("errorMsg", errorDetail);
@@ -382,6 +383,7 @@ public class BackofficeController {
             log.error("[BACKOFFICE-UI] Kullanici guncelleme hatasi: id={}", id, e);
             String errorDetail = e.getMessage();
             if (errorDetail != null && (errorDetail.contains("zaten mevcut")
+                    || errorDetail.contains("zaten kullanılıyor")
                     || errorDetail.contains("zorunludur")
                     || errorDetail.contains("Gecersiz rol"))) {
                 redirectAttributes.addFlashAttribute("errorMsg", errorDetail);

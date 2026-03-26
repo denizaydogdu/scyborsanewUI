@@ -38,16 +38,21 @@
 						<li class="menu-title"><span data-key="t-menu">Menu</span></li>
 
 						<li class="nav-item">
-							<a class="nav-link menu-link" href="/dashboard">
+							<a class="nav-link menu-link" href="/dashboard"
+							   th:classappend="${requestURI == '/dashboard'} ? 'active' : ''">
 								<i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">Anasayfa</span>
 							</a>
 						</li>
 
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="#sidebarStocks" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarStocks">
+						<li class="nav-item"
+							th:classappend="${#strings.startsWith(requestURI, '/tum-hisseler') or #strings.startsWith(requestURI, '/bist100') or #strings.startsWith(requestURI, '/bist50') or #strings.startsWith(requestURI, '/bist30') or #strings.startsWith(requestURI, '/stock/detail')} ? 'mm-active' : ''">
+							<a class="nav-link menu-link" href="#sidebarStocks" data-bs-toggle="collapse" role="button"
+							   th:aria-expanded="${#strings.startsWith(requestURI, '/tum-hisseler') or #strings.startsWith(requestURI, '/bist100') or #strings.startsWith(requestURI, '/bist50') or #strings.startsWith(requestURI, '/bist30') or #strings.startsWith(requestURI, '/stock/detail')} ? 'true' : 'false'"
+							   aria-controls="sidebarStocks">
 								<i class="ri-stock-line"></i> <span>Hisse Senetleri</span>
 							</a>
-							<div class="collapse menu-dropdown" id="sidebarStocks">
+							<div class="menu-dropdown" id="sidebarStocks"
+								 th:classappend="${#strings.startsWith(requestURI, '/tum-hisseler') or #strings.startsWith(requestURI, '/bist100') or #strings.startsWith(requestURI, '/bist50') or #strings.startsWith(requestURI, '/bist30') or #strings.startsWith(requestURI, '/stock/detail')} ? 'collapse show' : 'collapse'">
 								<ul class="nav nav-sm flex-column">
 									<li class="nav-item">
 										<a href="/tum-hisseler" class="nav-link">Tüm Hisseler</a>
@@ -92,13 +97,15 @@
 						</li>
 
 						<li class="nav-item">
-							<a class="nav-link menu-link" href="/sektorler">
+							<a class="nav-link menu-link" href="/sektorler"
+							   th:classappend="${#strings.startsWith(requestURI, '/sektorler') or #strings.startsWith(requestURI, '/sector/')} ? 'active' : ''">
 								<i class="ri-pie-chart-line"></i> <span>Sektörler</span>
 							</a>
 						</li>
 
 						<li class="nav-item">
-							<a class="nav-link menu-link" href="/fonlar">
+							<a class="nav-link menu-link" href="/fonlar"
+							   th:classappend="${#strings.startsWith(requestURI, '/fonlar')} ? 'active' : ''">
 								<i class="ri-funds-line"></i> <span>Fonlar</span>
 							</a>
 						</li>
@@ -118,7 +125,8 @@
 						</li>
 
 						<li class="nav-item">
-							<a class="nav-link menu-link" href="/analist-tavsiyeleri">
+							<a class="nav-link menu-link" href="/analist-tavsiyeleri"
+							   th:classappend="${#strings.startsWith(requestURI, '/analist-tavsiyeleri')} ? 'active' : ''">
 								<i class="ri-line-chart-line"></i> <span>Analist Tavsiyeleri</span>
 							</a>
 						</li>
@@ -194,11 +202,15 @@
 						</li>
 
 						<li class="menu-title" sec:authorize="hasRole('ROLE_ADMIN')"><span>Yönetim</span></li>
-						<li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')">
-							<a class="nav-link menu-link" href="#sidebarBackoffice" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarBackoffice">
+						<li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')"
+							th:classappend="${#strings.startsWith(requestURI, '/backoffice')} ? 'mm-active' : ''">
+							<a class="nav-link menu-link" href="#sidebarBackoffice" data-bs-toggle="collapse" role="button"
+							   th:aria-expanded="${#strings.startsWith(requestURI, '/backoffice')} ? 'true' : 'false'"
+							   aria-controls="sidebarBackoffice">
 								<i class="ri-shield-user-line"></i> <span>Yönetim Paneli</span>
 							</a>
-							<div class="collapse menu-dropdown" id="sidebarBackoffice">
+							<div class="menu-dropdown" id="sidebarBackoffice"
+								 th:classappend="${#strings.startsWith(requestURI, '/backoffice')} ? 'collapse show' : 'collapse'">
 								<ul class="nav nav-sm flex-column">
 									<li class="nav-item">
 										<a href="/backoffice" class="nav-link">Dashboard</a>

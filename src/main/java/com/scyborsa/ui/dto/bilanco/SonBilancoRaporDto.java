@@ -1,5 +1,6 @@
 package com.scyborsa.ui.dto.bilanco;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -54,4 +55,8 @@ public class SonBilancoRaporDto {
 
     /** KAP bildirim indeks numarasi. */
     private Integer disclosureIndex;
+
+    /** Katilim endeksi uyesi mi. */
+    @JsonProperty("katilim")
+    private boolean katilim;
 }

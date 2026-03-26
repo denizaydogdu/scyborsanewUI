@@ -52,6 +52,7 @@
                                         <a th:href="@{/stock/detail/{id}(id=${stock.ticker})}"
                                            class="fw-semibold text-primary"
                                            th:text="${stock.ticker}">GARAN</a>
+                                        <span th:if="${stock.katilim}" class="badge bg-success bg-opacity-25 text-success ms-1" style="font-size: 0.65rem; padding: 1px 4px;" title="Katılım Endeksi">K</span>
                                     </div>
                                 </td>
                                 <td th:text="${stock.description}">Garanti BBVA</td>

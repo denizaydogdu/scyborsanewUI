@@ -1694,23 +1694,7 @@ File: Main Js File
 	}
 
 	function initMenuItemScroll() {
-		setTimeout(function () {
-			var sidebarMenu = document.getElementById("navbar-nav");
-			if (sidebarMenu) {
-				var activeMenu = sidebarMenu.querySelector(".nav-item .active");
-				var offset = activeMenu ? activeMenu.offsetTop : 0;
-				if (offset > 300) {
-					var verticalMenu = document.getElementsByClassName("app-menu") ? document.getElementsByClassName("app-menu")[0] : "";
-					if (verticalMenu && verticalMenu.querySelector(".simplebar-content-wrapper")) {
-						setTimeout(function () {
-							offset == 330 ?
-								(verticalMenu.querySelector(".simplebar-content-wrapper").scrollTop = offset + 85) :
-								(verticalMenu.querySelector(".simplebar-content-wrapper").scrollTop = offset);
-						}, 0);
-					}
-				}
-			}
-		}, 250);
+		// Sidebar scroll devre disi — menü her zaman en üstte kalacak
 	}
 
 	// add change event listener on right layout setting

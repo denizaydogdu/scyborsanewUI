@@ -71,7 +71,8 @@ public class ProfilService {
      * @param password yeni sifre (bos ise gonderilmez)
      * @throws RuntimeException API hatasi durumunda
      */
-    public void updateProfil(Long id, String adSoyad, String password) {
+    public void updateProfil(Long id, String adSoyad, String password,
+                             String telegramUsername, String phoneNumber) {
         log.info("[PROFIL-UI] Profil guncelleme: id={}", id);
         try {
             Map<String, String> body = new java.util.HashMap<>();
@@ -79,6 +80,8 @@ public class ProfilService {
             if (password != null && !password.isBlank()) {
                 body.put("password", password);
             }
+            body.put("telegramUsername", telegramUsername);
+            body.put("phoneNumber", phoneNumber);
 
             webClient.put()
                     .uri(ScyborsaApiEndpoints.USERS_PROFIL, id)

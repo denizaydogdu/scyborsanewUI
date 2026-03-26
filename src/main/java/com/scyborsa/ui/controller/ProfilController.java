@@ -69,6 +69,8 @@ public class ProfilController {
     @PostMapping("/profil")
     public String updateProfil(@RequestParam String adSoyad,
                                @RequestParam(required = false) String password,
+                               @RequestParam(required = false) String telegramUsername,
+                               @RequestParam(required = false) String phoneNumber,
                                Principal principal,
                                RedirectAttributes redirectAttributes) {
         String email = principal.getName();
@@ -84,12 +86,14 @@ public class ProfilController {
                 return "redirect:/profil";
             }
 
-            profilService.updateProfil(user.getId(), adSoyad, password);
+            profilService.updateProfil(user.getId(), adSoyad, password, telegramUsername, phoneNumber);
             redirectAttributes.addFlashAttribute("successMsg", "Profil bilgileriniz basariyla guncellendi.");
         } catch (Exception e) {
             log.error("[PROFIL-UI] Profil guncelleme hatasi: email={}", email, e);
             String errorDetail = e.getMessage();
-            if (errorDetail != null && errorDetail.contains("zorunludur")) {
+            if (errorDetail != null && (errorDetail.contains("zorunludur")
+                    || errorDetail.contains("zaten kullanılıyor")
+                    || errorDetail.contains("zaten mevcut"))) {
                 redirectAttributes.addFlashAttribute("errorMsg", errorDetail);
             } else {
                 redirectAttributes.addFlashAttribute("errorMsg",

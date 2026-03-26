@@ -62,6 +62,10 @@
                                     <th>Son Giriş</th>
                                     <th>Son IP</th>
                                     <th>Giriş Sayısı</th>
+                                    <th>Grup</th>
+                                    <th>Telegram</th>
+                                    <th>Telefon</th>
+                                    <th>Bitiş</th>
                                     <th>Durum</th>
                                     <th>İşlem</th>
                                 </tr>
@@ -88,6 +92,24 @@
                                         <span th:text="${user.loginCount != null ? user.loginCount : 0}" class="badge bg-secondary-subtle text-secondary"></span>
                                     </td>
                                     <td>
+                                        <span th:if="${user.userGroup == 'OZEL'}" class="badge bg-warning-subtle text-warning">Özel</span>
+                                        <span th:if="${user.userGroup == 'TELEGRAM'}" class="badge bg-info-subtle text-info">Telegram</span>
+                                        <span th:if="${user.userGroup == null or user.userGroup == 'STANDART'}" class="badge bg-secondary-subtle text-secondary">Standart</span>
+                                        <span th:if="${user.userGroup != null and user.userGroup != 'STANDART' and user.userGroup != 'OZEL' and user.userGroup != 'TELEGRAM'}" class="badge bg-primary-subtle text-primary" th:text="${user.userGroup}"></span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${user.telegramUsername != null and !user.telegramUsername.isEmpty()}" th:text="'@' + ${user.telegramUsername}" class="text-info fs-12"></span>
+                                        <span th:unless="${user.telegramUsername != null and !user.telegramUsername.isEmpty()}" class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${user.phoneNumber != null and !user.phoneNumber.isEmpty()}" th:text="${user.phoneNumber}" class="text-muted fs-12"></span>
+                                        <span th:unless="${user.phoneNumber != null and !user.phoneNumber.isEmpty()}" class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${user.validTo != null}" th:text="${#temporals.format(user.validTo, 'dd.MM.yyyy')}" th:classappend="${user.validTo.isBefore(T(java.time.LocalDate).now()) ? 'text-danger fw-semibold' : 'text-muted'}" class="fs-12"></span>
+                                        <span th:unless="${user.validTo != null}" class="text-muted">-</span>
+                                    </td>
+                                    <td>
                                         <span th:if="${user.aktif}" class="badge bg-success-subtle text-success">Aktif</span>
                                         <span th:unless="${user.aktif}" class="badge bg-danger-subtle text-danger">Pasif</span>
                                     </td>
@@ -97,7 +119,10 @@
                                                     th:data-id="${user.id}" th:data-username="${user.username}"
                                                     th:data-email="${user.email}"
                                                     th:data-adsoyad="${user.adSoyad}" th:data-role="${user.role}"
-                                                    th:data-validfrom="${user.validFrom != null ? user.validFrom : ''}" th:data-validto="${user.validTo != null ? user.validTo : ''}">
+                                                    th:data-validfrom="${user.validFrom != null ? user.validFrom : ''}" th:data-validto="${user.validTo != null ? user.validTo : ''}"
+                                                    th:data-usergroup="${user.userGroup != null ? user.userGroup : 'STANDART'}"
+                                                    th:data-telegramusername="${user.telegramUsername != null ? user.telegramUsername : ''}"
+                                                    th:data-phonenumber="${user.phoneNumber != null ? user.phoneNumber : ''}">
                                                 <i class="ri-pencil-line"></i>
                                             </button>
                                             <form th:action="@{'/backoffice/kullanicilar/' + ${user.id} + '/aktif'}" method="post" style="display:inline">
@@ -177,6 +202,32 @@
                                 <option value="ADMIN">ADMIN</option>
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Kullanıcı Grubu</label>
+                            <select name="userGroup" class="form-select">
+                                <option value="STANDART">Standart</option>
+                                <option value="OZEL">Özel</option>
+                                <option value="TELEGRAM">Telegram</option>
+                                <option value="MART2026">Mart 2026</option>
+                                <option value="NISAN2026">Nisan 2026</option>
+                                <option value="MAYIS2026">Mayıs 2026</option>
+                                <option value="HAZIRAN2026">Haziran 2026</option>
+                                <option value="TEMMUZ2026">Temmuz 2026</option>
+                                <option value="AGUSTOS2026">Ağustos 2026</option>
+                                <option value="EYLUL2026">Eylül 2026</option>
+                                <option value="EKIM2026">Ekim 2026</option>
+                                <option value="KASIM2026">Kasım 2026</option>
+                                <option value="ARALIK2026">Aralık 2026</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Telegram Adı</label>
+                            <input type="text" name="telegramUsername" class="form-control" placeholder="Örn: MacroTrader">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Telefon Numarası</label>
+                            <input type="text" name="phoneNumber" class="form-control" placeholder="Örn: 555 444 33 22">
+                        </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Geçerlilik Başlangıç</label>
@@ -250,6 +301,32 @@
                                 <option value="ADMIN">ADMIN</option>
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Kullanıcı Grubu</label>
+                            <select name="userGroup" class="form-select">
+                                <option value="STANDART">Standart</option>
+                                <option value="OZEL">Özel</option>
+                                <option value="TELEGRAM">Telegram</option>
+                                <option value="MART2026">Mart 2026</option>
+                                <option value="NISAN2026">Nisan 2026</option>
+                                <option value="MAYIS2026">Mayıs 2026</option>
+                                <option value="HAZIRAN2026">Haziran 2026</option>
+                                <option value="TEMMUZ2026">Temmuz 2026</option>
+                                <option value="AGUSTOS2026">Ağustos 2026</option>
+                                <option value="EYLUL2026">Eylül 2026</option>
+                                <option value="EKIM2026">Ekim 2026</option>
+                                <option value="KASIM2026">Kasım 2026</option>
+                                <option value="ARALIK2026">Aralık 2026</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Telegram Adı</label>
+                            <input type="text" name="telegramUsername" class="form-control" placeholder="Örn: MacroTrader">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Telefon Numarası</label>
+                            <input type="text" name="phoneNumber" class="form-control" placeholder="Örn: 555 444 33 22">
+                        </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Geçerlilik Başlangıç</label>
@@ -286,6 +363,9 @@
                 form.querySelector('[name=role]').value = btn.getAttribute('data-role') || 'USER';
                 form.querySelector('[name=validFrom]').value = btn.getAttribute('data-validfrom') || '';
                 form.querySelector('[name=validTo]').value = btn.getAttribute('data-validto') || '';
+                form.querySelector('[name=userGroup]').value = btn.getAttribute('data-usergroup') || 'STANDART';
+                form.querySelector('[name=telegramUsername]').value = btn.getAttribute('data-telegramusername') || '';
+                form.querySelector('[name=phoneNumber]').value = btn.getAttribute('data-phonenumber') || '';
                 form.querySelector('[name=password]').value = '';
             });
         }

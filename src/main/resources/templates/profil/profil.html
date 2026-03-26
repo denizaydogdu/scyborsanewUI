@@ -55,6 +55,23 @@
                                    oninput="this.setCustomValidity('')">
                         </div>
 
+                        <!-- Telegram Adi -->
+                        <div class="mb-3">
+                            <label class="form-label">Telegram Adı</label>
+                            <div class="input-group">
+                                <span class="input-group-text">@</span>
+                                <input type="text" name="telegramUsername" class="form-control"
+                                       th:value="${user.telegramUsername}" placeholder="Telegram kullanıcı adı">
+                            </div>
+                        </div>
+
+                        <!-- Telefon Numarasi -->
+                        <div class="mb-3">
+                            <label class="form-label">Telefon Numarası</label>
+                            <input type="text" name="phoneNumber" class="form-control"
+                                   th:value="${user.phoneNumber}" placeholder="Örn: 555 444 33 22">
+                        </div>
+
                         <!-- Sifre (opsiyonel) -->
                         <div class="mb-3">
                             <label class="form-label">Yeni Şifre <small class="text-muted">(boş bırakılırsa değişmez)</small></label>

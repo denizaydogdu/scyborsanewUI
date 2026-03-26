@@ -1,5 +1,6 @@
 package com.scyborsa.ui.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -39,4 +40,8 @@ public class HazirTaramaStockDto {
 
     /** 90 gunluk ortalama hacim. */
     private Double avgVolume90d;
+
+    /** Katilim endeksi uyesi mi. */
+    @JsonProperty("katilim")
+    private boolean katilim;
 }

@@ -19,7 +19,7 @@
 		<!-- Toastify-JS yüklenmesini tetikler (plugins.js toast-list attribute'u arar) -->
 		<div toast-list style="display:none"></div>
 		<!-- start page title -->
-		<div th:replace="~{partials/page-title :: page-title('Anasayfa','Scyborsa')}"></div>
+		<div th:replace="~{partials/page-title :: page-title('Ana Sayfa','Ana Sayfa')}"></div>
 		<!-- end page title -->
 		<div class="row">
 			<div class="col-xxl-3">
@@ -1588,6 +1588,7 @@
 											<img th:if="${stock.logoid != null and !stock.logoid.isEmpty()}" th:src="@{/img/stock-logos/{logoid}(logoid=${stock.logoid})}"
 												 class="rounded-circle me-2" width="16" height="16" alt="" />
 											<span class="fs-12 fw-medium text-body me-2" th:text="${stock.ticker}">--</span>
+											<span th:if="${stock.katilim}" class="badge bg-success bg-opacity-25 text-success ms-1" style="font-size: 0.65rem; padding: 1px 4px;" title="Katılım Endeksi">K</span>
 											<span class="fs-11 text-muted me-auto text-truncate" style="max-width:120px" th:text="${stock.description}">--</span>
 											<span class="fs-12 text-body me-2" th:text="${#numbers.formatDecimal(stock.price, 1, 'COMMA', 2, 'POINT') + '₺'}">--</span>
 											<span class="fs-12 fw-medium"
@@ -1642,6 +1643,7 @@
 											<img th:if="${stock.logoid != null and !stock.logoid.isEmpty()}" th:src="@{/img/stock-logos/{logoid}(logoid=${stock.logoid})}"
 												 class="rounded-circle me-2" width="16" height="16" alt="" />
 											<span class="fs-12 fw-medium text-body me-2" th:text="${stock.ticker}">--</span>
+											<span th:if="${stock.katilim}" class="badge bg-success bg-opacity-25 text-success ms-1" style="font-size: 0.65rem; padding: 1px 4px;" title="Katılım Endeksi">K</span>
 											<span class="fs-11 text-muted me-auto text-truncate" style="max-width:120px" th:text="${stock.description}">--</span>
 											<span class="fs-12 text-body me-2" th:text="${#numbers.formatDecimal(stock.price, 1, 'COMMA', 2, 'POINT') + '₺'}">--</span>
 											<span class="fs-12 fw-medium"
@@ -1814,6 +1816,14 @@
 				var title = document.createElement('h6');
 				title.className = 'mb-1';
 				title.textContent = (d.stockCode || '') + ' ';
+				if (d.katilim) {
+					var kBadge = document.createElement('span');
+					kBadge.className = 'badge bg-success bg-opacity-25 text-success ms-1';
+					kBadge.style.cssText = 'font-size:0.65rem;padding:1px 4px;';
+					kBadge.title = 'Katılım Endeksi';
+					kBadge.textContent = 'K';
+					title.appendChild(kBadge);
+				}
 				var subtitle = document.createElement('span');
 				subtitle.className = 'text-muted fw-normal';
 				subtitle.textContent = 'Temettü Ödeme';

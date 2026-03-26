@@ -34,4 +34,7 @@ public class DividendDto {
 
     /** Para birimi (ornegin TRY, USD). */
     private String currency;
+
+    /** Hissenin katılım endeksinde olup olmadığı. */
+    private boolean katilim;
 }

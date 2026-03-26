@@ -1,6 +1,7 @@
 package com.scyborsa.ui.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,6 +40,10 @@ public class AnalistTavsiyeDto {
 
     /** Ek dosyalar (PDF raporlar). */
     private List<AttachmentInfo> attachments;
+
+    /** Katilim endeksi uyesi mi. */
+    @JsonProperty("katilim")
+    private boolean katilim;
 
     /**
      * Araci kurum bilgisi.

@@ -750,6 +750,14 @@ function renderMoversList(listId, stocks, isGainer) {
         var tickerEl = document.createElement('h6');
         tickerEl.className = 'mb-1';
         tickerEl.textContent = stock.ticker;
+        if (stock.katilim) {
+            var kBadge = document.createElement('span');
+            kBadge.className = 'badge bg-success bg-opacity-25 text-success ms-1';
+            kBadge.style.cssText = 'font-size:0.65rem;padding:1px 4px;';
+            kBadge.title = 'Katılım Endeksi';
+            kBadge.textContent = 'K';
+            tickerEl.appendChild(kBadge);
+        }
         var descEl = document.createElement('p');
         descEl.className = 'text-muted mb-0 fs-13';
         descEl.textContent = stock.description || '';
@@ -830,6 +838,14 @@ function renderVolumeList(stocks) {
         var tickerEl = document.createElement('h6');
         tickerEl.className = 'mb-1';
         tickerEl.textContent = stock.ticker;
+        if (stock.katilim) {
+            var kBadge = document.createElement('span');
+            kBadge.className = 'badge bg-success bg-opacity-25 text-success ms-1';
+            kBadge.style.cssText = 'font-size:0.65rem;padding:1px 4px;';
+            kBadge.title = 'Katılım Endeksi';
+            kBadge.textContent = 'K';
+            tickerEl.appendChild(kBadge);
+        }
         var descEl = document.createElement('p');
         descEl.className = 'text-muted mb-0 fs-13';
         descEl.textContent = stock.description || '';
@@ -1023,6 +1039,16 @@ function renderKapNewsList(items) {
                 stockBadge.textContent = ticker;
                 headerDiv.appendChild(stockBadge);
             });
+        }
+
+        // Katılım Endeksi badge
+        if (item.katilim) {
+            var kBadge = document.createElement('span');
+            kBadge.className = 'badge bg-success bg-opacity-25 text-success ms-1';
+            kBadge.style.cssText = 'font-size:0.65rem;padding:1px 4px;';
+            kBadge.title = 'Katılım Endeksi';
+            kBadge.textContent = 'K';
+            headerDiv.appendChild(kBadge);
         }
 
         // Saat (sağa yasla)

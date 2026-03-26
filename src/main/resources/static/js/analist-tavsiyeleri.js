@@ -284,6 +284,14 @@
         stockLink.className = 'fw-semibold text-primary';
         stockCode.textContent = '';
         stockCode.appendChild(stockLink);
+        if (item.katilim) {
+            var kBadge = document.createElement('span');
+            kBadge.className = 'badge bg-success bg-opacity-25 text-success ms-1';
+            kBadge.style.cssText = 'font-size:0.65rem;padding:1px 4px;';
+            kBadge.title = 'Katılım Endeksi';
+            kBadge.textContent = 'K';
+            stockCode.appendChild(kBadge);
+        }
         stockInfo.appendChild(stockCode);
 
         // API title alani donmuyor, sadece stockCode gosterilir
