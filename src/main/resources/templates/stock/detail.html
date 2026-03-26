@@ -1276,11 +1276,11 @@
                     body: JSON.stringify(payload)
                 })
                 .then(function(r) {
-                    if (!r.ok) throw new Error('Alarm olusturulamadi');
+                    if (!r.ok) throw new Error('Alarm oluşturulamadı');
                     return r.json();
                 })
                 .then(function() {
-                    successDiv.textContent = 'Alarm basariyla olusturuldu!';
+                    successDiv.textContent = 'Alarm başarıyla oluşturuldu!';
                     successDiv.classList.remove('d-none');
                     document.getElementById('alertTargetPrice').value = '';
                     document.getElementById('alertNote').value = '';
@@ -1291,7 +1291,7 @@
                     }, 1500);
                 })
                 .catch(function(e) {
-                    errDiv.textContent = e.message || 'Bir hata olustu.';
+                    errDiv.textContent = e.message || 'Bir hata oluştu.';
                     errDiv.classList.remove('d-none');
                 })
                 .finally(function() {
