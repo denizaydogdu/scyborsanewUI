@@ -138,6 +138,7 @@
                                     <th>Not</th>
                                     <th>Tarih</th>
                                     <th>Tetiklenme Zamanı</th>
+                                    <th>İptal Tarihi</th>
                                     <th class="text-center">İşlem</th>
                                 </tr>
                             </thead>
@@ -166,6 +167,7 @@
                                     <td th:text="${alert.note ?: '-'}">-</td>
                                     <td th:text="${alert.createTime != null ? #temporals.format(alert.createTime, 'dd.MM.yyyy HH:mm') : '-'}">-</td>
                                     <td th:text="${alert.triggeredAt != null ? #temporals.format(alert.triggeredAt, 'dd.MM.yyyy HH:mm') : '-'}">-</td>
+                                    <td th:text="${alert.cancelledAt != null ? #temporals.format(alert.cancelledAt, 'dd.MM.yyyy HH:mm') : '-'}">-</td>
                                     <td class="text-center">
                                         <button th:if="${alert.status == 'ACTIVE'}"
                                                 class="btn btn-sm btn-soft-primary edit-alert-btn me-1"
@@ -187,7 +189,7 @@
                                     </td>
                                 </tr>
                                 <tr th:if="${alerts == null or #lists.isEmpty(alerts)}">
-                                    <td colspan="9" class="text-center text-muted py-4">
+                                    <td colspan="10" class="text-center text-muted py-4">
                                         <i class="ri-alarm-line fs-24 d-block mb-2"></i>
                                         Henüz alarm oluşturulmamış. Hisse detay sayfasından alarm kurabilirsiniz.
                                     </td>
@@ -291,19 +293,8 @@
                     fetch('/ajax/alerts/' + alertId, { method: 'DELETE', headers: getCsrfHeaders() })
                         .then(function(r) {
                             if (!r.ok) throw new Error('HTTP ' + r.status);
-                            if (row) {
-                                row.style.opacity = '0.5';
-                                var statusCell = row.children[4];
-                                if (statusCell) {
-                                    statusCell.textContent = '';
-                                    var badge = document.createElement('span');
-                                    badge.className = 'badge bg-secondary';
-                                    badge.textContent = 'İptal';
-                                    statusCell.appendChild(badge);
-                                }
-                                var actionCell = row.children[8];
-                                if (actionCell) actionCell.textContent = '';
-                            }
+                            if (row) row.style.opacity = '0.5';
+                            setTimeout(function() { location.reload(); }, 500);
                         })
                         .catch(function() {
                             alert('Alarm iptal edilemedi.');
