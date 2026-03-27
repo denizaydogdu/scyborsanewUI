@@ -1225,11 +1225,31 @@
             if (!createBtn) return;
 
             var stockCode = /*[[${stockId}]]*/ '';
-            var stockPrice = /*[[${stockPrice}]]*/ 0;
             var csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
             var csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
+            // Hero'dan canlı fiyatı oku
+            function getLivePrice() {
+                var heroEl = document.getElementById('heroPrice');
+                if (heroEl) {
+                    var text = heroEl.textContent.replace(/[^0-9.,]/g, '').replace(/\./g, '').replace(',', '.');
+                    var p = parseFloat(text);
+                    if (!isNaN(p) && p > 0) return p;
+                }
+                return /*[[${stockPrice}]]*/ 0; // fallback SSR fiyat
+            }
+
+            // Modal açıldığında canlı fiyatı göster
+            var alertModal = document.getElementById('priceAlertModal');
+            if (alertModal) {
+                alertModal.addEventListener('show.bs.modal', function() {
+                    var livePrice = getLivePrice();
+                    document.getElementById('alertCurrentPrice').value = livePrice.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' TL';
+                });
+            }
+
             createBtn.addEventListener('click', function() {
+                var stockPrice = getLivePrice(); // her click'te canlı fiyat
                 var direction = document.getElementById('alertDirection').value;
                 var rawPrice = document.getElementById('alertTargetPrice').value.replace(/,/g, '.').trim();
                 var targetPrice = parseFloat(rawPrice);
@@ -1295,6 +1315,12 @@
                         var modal = bootstrap.Modal.getInstance(document.getElementById('priceAlertModal'));
                         if (modal) modal.hide();
                         successDiv.classList.add('d-none');
+                        createBtn.disabled = false;
+                        createBtn.textContent = '';
+                        var icon = document.createElement('i');
+                        icon.className = 'ri-alarm-line me-1';
+                        createBtn.appendChild(icon);
+                        createBtn.appendChild(document.createTextNode(' Alarm Kur'));
                     }, 1500);
                 })
                 .catch(function(e) {
