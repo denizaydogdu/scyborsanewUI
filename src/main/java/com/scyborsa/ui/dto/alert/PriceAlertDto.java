@@ -63,4 +63,7 @@ public class PriceAlertDto {
 
     /** Hedef fiyata uzaklik yuzdesi (hesaplanan alan). */
     private Double distancePercent;
+
+    /** Alarmi olusturan kullanicinin email adresi. */
+    private String userEmail;
 }

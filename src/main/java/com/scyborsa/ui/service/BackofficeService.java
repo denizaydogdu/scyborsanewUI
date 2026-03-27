@@ -7,6 +7,7 @@ import com.scyborsa.ui.dto.ModelPortfoyKurumDto;
 import com.scyborsa.ui.dto.ScreenerResultSummaryDto;
 import com.scyborsa.ui.dto.StockDto;
 import com.scyborsa.ui.dto.UserDto;
+import com.scyborsa.ui.dto.alert.PriceAlertDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -437,6 +438,28 @@ public class BackofficeService {
         } catch (Exception e) {
             log.error("[BACKOFFICE-UI] Kullanici aktif toggle hatasi: id={}", id, e);
             throw new RuntimeException("Kullanici durumu degistirilemedi", e);
+        }
+    }
+
+    // ── Alarm Yonetimi ──────────────────────────────────
+
+    /**
+     * Tum kullanicilarin alarmlarini getirir (admin panel icin).
+     *
+     * @return tum alarm listesi; hata durumunda bos liste
+     */
+    public List<PriceAlertDto> getAllAlarms() {
+        log.info("[BACKOFFICE-UI] Tum alarmlar isteniyor");
+        try {
+            List<PriceAlertDto> result = webClient.get()
+                    .uri(ScyborsaApiEndpoints.ALERTS_ADMIN_ALL)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<List<PriceAlertDto>>() {})
+                    .block();
+            return result != null ? result : List.of();
+        } catch (Exception e) {
+            log.error("[BACKOFFICE-UI] Alarm listesi alinamadi", e);
+            return List.of();
         }
     }
 

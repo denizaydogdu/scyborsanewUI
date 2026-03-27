@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Alarm Yönetimi')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Alarm Yönetimi', 'Yönetim')}"></div>
+
+    <!-- KPI Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Toplam</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4">
+                                <span th:text="${toplam}">0</span>
+                            </h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-primary-subtle rounded fs-3">
+                                <i class="ri-alarm-line text-primary"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Aktif</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4">
+                                <span class="text-success" th:text="${aktif}">0</span>
+                            </h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-success-subtle rounded fs-3">
+                                <i class="ri-checkbox-circle-line text-success"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Tetiklenen</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4">
+                                <span class="text-warning" th:text="${tetiklenen}">0</span>
+                            </h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-warning-subtle rounded fs-3">
+                                <i class="ri-notification-3-line text-warning"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">İptal</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4">
+                                <span class="text-danger" th:text="${iptal}">0</span>
+                            </h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-danger-subtle rounded fs-3">
+                                <i class="ri-close-circle-line text-danger"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Tüm Alarmlar</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Empty state -->
+                    <div th:if="${alarmlar == null or #lists.isEmpty(alarmlar)}" class="text-center py-5">
+                        <i class="ri-alarm-line fs-1 text-muted"></i>
+                        <h5 class="mt-3 text-muted">Henüz alarm oluşturulmamış</h5>
+                    </div>
+
+                    <!-- Table -->
+                    <div th:unless="${alarmlar == null or #lists.isEmpty(alarmlar)}" class="table-responsive">
+                        <table class="table table-bordered table-nowrap align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Kullanıcı</th>
+                                    <th>Hisse</th>
+                                    <th>Yön</th>
+                                    <th>Hedef Fiyat</th>
+                                    <th>Oluşturma Fiyatı</th>
+                                    <th>Durum</th>
+                                    <th>Tarih</th>
+                                    <th>Tetiklenme</th>
+                                    <th>İptal Tarihi</th>
+                                    <th>Not</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="alarm, iter : ${alarmlar}"
+                                    th:styleappend="${alarm.status != 'ACTIVE'} ? 'opacity: 0.5;' : ''">
+                                    <td th:text="${iter.count}">1</td>
+                                    <td th:text="${alarm.userEmail != null ? alarm.userEmail : '-'}" class="text-muted fs-12">user@test.com</td>
+                                    <td>
+                                        <span class="fw-semibold" th:text="${alarm.stockCode}">THYAO</span>
+                                        <small th:if="${alarm.stockName != null}" class="text-muted d-block" th:text="${alarm.stockName}"></small>
+                                    </td>
+                                    <td>
+                                        <span th:if="${alarm.direction == 'ABOVE'}" class="badge bg-success-subtle text-success">Üstüne</span>
+                                        <span th:if="${alarm.direction == 'BELOW'}" class="badge bg-danger-subtle text-danger">Altına</span>
+                                        <span th:if="${alarm.direction != 'ABOVE' and alarm.direction != 'BELOW'}" class="text-muted" th:text="${alarm.direction}">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${alarm.targetPrice != null}" th:text="${#numbers.formatDecimal(alarm.targetPrice, 1, 2)} + ' TL'"></span>
+                                        <span th:unless="${alarm.targetPrice != null}" class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${alarm.priceAtCreation != null}" th:text="${#numbers.formatDecimal(alarm.priceAtCreation, 1, 2)} + ' TL'" class="text-muted"></span>
+                                        <span th:unless="${alarm.priceAtCreation != null}" class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${alarm.status == 'ACTIVE'}" class="badge bg-success-subtle text-success">Aktif</span>
+                                        <span th:if="${alarm.status == 'TRIGGERED'}" class="badge bg-warning-subtle text-warning">Tetiklendi</span>
+                                        <span th:if="${alarm.status == 'CANCELLED'}" class="badge bg-danger-subtle text-danger">İptal</span>
+                                        <span th:if="${alarm.status == 'EXPIRED'}" class="badge bg-secondary-subtle text-secondary">Süresi Doldu</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${alarm.createTime != null}" th:text="${#temporals.format(alarm.createTime, 'dd.MM.yyyy HH:mm')}" class="text-muted fs-12"></span>
+                                        <span th:unless="${alarm.createTime != null}" class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${alarm.triggeredAt != null}" th:text="${#temporals.format(alarm.triggeredAt, 'dd.MM.yyyy HH:mm')}" class="text-muted fs-12"></span>
+                                        <span th:unless="${alarm.triggeredAt != null}" class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${alarm.cancelledAt != null}" th:text="${#temporals.format(alarm.cancelledAt, 'dd.MM.yyyy HH:mm')}" class="text-muted fs-12"></span>
+                                        <span th:unless="${alarm.cancelledAt != null}" class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${alarm.note != null and !alarm.note.isEmpty()}" th:text="${alarm.note}" class="text-muted fs-12" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;"></span>
+                                        <span th:unless="${alarm.note != null and !alarm.note.isEmpty()}" class="text-muted">-</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+
+</html>

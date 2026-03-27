@@ -6,6 +6,7 @@ import com.scyborsa.ui.dto.ModelPortfoyKurumDto;
 import com.scyborsa.ui.dto.ScreenerResultSummaryDto;
 import com.scyborsa.ui.dto.StockDto;
 import com.scyborsa.ui.dto.UserDto;
+import com.scyborsa.ui.dto.alert.PriceAlertDto;
 import com.scyborsa.ui.service.BackofficeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -316,6 +317,32 @@ public class BackofficeController {
         model.addAttribute("stats", stats);
         model.addAttribute("taramalar", taramalar);
         return "backoffice/taramalar";
+    }
+
+    // ── Alarm Yonetimi ──────────────────────────────────
+
+    /**
+     * Alarm yonetimi sayfasini goruntular (tum kullanicilarin alarmlari).
+     *
+     * @param model Thymeleaf model nesnesi
+     * @return {@code "backoffice/alarmlar"} template adi
+     */
+    @GetMapping("/alarmlar")
+    public String alarmlar(Model model) {
+        List<PriceAlertDto> alarmlar = backofficeService.getAllAlarms();
+        model.addAttribute("alarmlar", alarmlar);
+
+        // KPI hesaplamalari
+        long toplam = alarmlar.size();
+        long aktif = alarmlar.stream().filter(a -> "ACTIVE".equals(a.getStatus())).count();
+        long tetiklenen = alarmlar.stream().filter(a -> "TRIGGERED".equals(a.getStatus())).count();
+        long iptal = alarmlar.stream().filter(a -> "CANCELLED".equals(a.getStatus())).count();
+        model.addAttribute("toplam", toplam);
+        model.addAttribute("aktif", aktif);
+        model.addAttribute("tetiklenen", tetiklenen);
+        model.addAttribute("iptal", iptal);
+
+        return "backoffice/alarmlar";
     }
 
     // ── Kullanicilar ──────────────────────────────────────

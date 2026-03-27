@@ -272,4 +272,7 @@ public final class ScyborsaApiEndpoints {
     /** Tum alarmlari okundu isaretle endpoint'i. */
     public static final String ALERTS_READ_ALL = "/api/v1/alerts/read-all";
 
+    /** Admin: tum kullanicilarin alarmlarini listeleyen endpoint'i. */
+    public static final String ALERTS_ADMIN_ALL = "/api/v1/alerts/admin/all";
+
 }
