@@ -133,12 +133,12 @@
                                     <th>Hisse</th>
                                     <th>Yön</th>
                                     <th class="text-end">Hedef Fiyat</th>
-                                    <th>Durum</th>
                                     <th class="text-center">Tarih</th>
                                     <th class="text-center">Tetiklenme Zamanı</th>
                                     <th class="text-center">Oluşturma Fiyatı</th>
                                     <th class="text-center">İptal Tarihi</th>
                                     <th class="text-center">Not</th>
+                                    <th>Durum</th>
                                     <th class="text-center">İşlem</th>
                                 </tr>
                             </thead>
@@ -159,16 +159,16 @@
                                         </span>
                                     </td>
                                     <td class="text-end" th:text="${#numbers.formatDecimal(alert.targetPrice, 1, 2) + ' TL'}">0,00 TL</td>
-                                    <td>
-                                        <span th:if="${alert.status == 'ACTIVE'}" class="badge bg-success">Aktif</span>
-                                        <span th:if="${alert.status == 'TRIGGERED'}" class="badge bg-warning">Tetiklendi</span>
-                                        <span th:if="${alert.status == 'CANCELLED'}" class="badge bg-secondary">İptal</span>
-                                    </td>
                                     <td class="text-center" th:text="${alert.createTime != null ? #temporals.format(alert.createTime, 'dd.MM.yyyy HH:mm') : '-'}">-</td>
                                     <td class="text-center" th:text="${alert.triggeredAt != null ? #temporals.format(alert.triggeredAt, 'dd.MM.yyyy HH:mm') : '-'}">-</td>
                                     <td class="text-center" th:text="${alert.priceAtCreation != null ? #numbers.formatDecimal(alert.priceAtCreation, 1, 2) + ' TL' : '-'}">-</td>
                                     <td class="text-center" th:text="${alert.cancelledAt != null ? #temporals.format(alert.cancelledAt, 'dd.MM.yyyy HH:mm') : '-'}">-</td>
                                     <td class="text-center" th:text="${alert.note ?: '-'}">-</td>
+                                    <td>
+                                        <span th:if="${alert.status == 'ACTIVE'}" class="badge bg-success">Aktif</span>
+                                        <span th:if="${alert.status == 'TRIGGERED'}" class="badge bg-warning">Tetiklendi</span>
+                                        <span th:if="${alert.status == 'CANCELLED'}" class="badge bg-secondary">İptal</span>
+                                    </td>
                                     <td class="text-center">
                                         <button th:if="${alert.status == 'ACTIVE'}"
                                                 class="btn btn-sm btn-soft-primary edit-alert-btn me-1"
@@ -381,7 +381,7 @@
                                 priceCell.textContent = data.targetPrice.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TL';
                             }
                             // Not (index 5)
-                            var noteCell = row.children[8]; // Not (index 8)
+                            var noteCell = row.children[7]; // Not (index 7)
                             if (noteCell) {
                                 noteCell.textContent = data.note || '-';
                             }
