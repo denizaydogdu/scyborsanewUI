@@ -143,7 +143,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="alert : ${alerts}" th:id="'alert-row-' + ${alert.id}">
+                                <tr th:each="alert : ${alerts}" th:id="'alert-row-' + ${alert.id}"
+                                    th:style="${alert.status != 'ACTIVE'} ? 'opacity: 0.5;' : ''">
                                     <td>
                                         <a th:href="@{'/stock/detail/' + ${alert.stockCode}}" class="fw-medium">
                                             <span th:text="${alert.stockCode}">THYAO</span>
