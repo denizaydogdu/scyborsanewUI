@@ -21,6 +21,7 @@
     if (!badge) return;
 
     var unreadCount = 0;
+    var seenAlertIds = {};
     var USER_EMAIL = document.body.getAttribute('data-user-email') || '';
     var API_BASE = document.body.getAttribute('data-api-base') || '';
     var csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
@@ -47,6 +48,8 @@
      * @param {Object} notif bildirim nesnesi (stockCode, direction, message)
      */
     function addNotification(notif) {
+        if (notif.alertId && seenAlertIds[notif.alertId]) return;
+        if (notif.alertId) seenAlertIds[notif.alertId] = true;
         if (noNotif) noNotif.style.display = 'none';
 
         var isAbove = notif.direction === 'ABOVE';
@@ -87,7 +90,7 @@
         var clockIcon = document.createElement('i');
         clockIcon.className = 'mdi mdi-clock-outline';
         time.appendChild(clockIcon);
-        time.appendChild(document.createTextNode(' Az once'));
+        time.appendChild(document.createTextNode(' ' + formatRelativeTime(notif.triggeredAt)));
         content.appendChild(time);
 
         row.appendChild(iconWrap);
@@ -97,16 +100,61 @@
         list.insertBefore(div, list.firstChild);
     }
 
-    // 1. Okunmamis alarm sayisini getir
+    /**
+     * Tetiklenme zamanini relative formata cevirir.
+     * @param {string|null} triggeredAt ISO tarih string veya null
+     * @returns {string} "Az önce", "5dk önce", "2 saat önce", "Dün", vb.
+     */
+    function formatRelativeTime(triggeredAt) {
+        if (!triggeredAt) return 'Az önce';
+        try {
+            var triggered = new Date(triggeredAt);
+            var now = new Date();
+            var diffMs = now - triggered;
+            var diffMin = Math.floor(diffMs / 60000);
+            var diffHour = Math.floor(diffMs / 3600000);
+            var diffDay = Math.floor(diffMs / 86400000);
+
+            if (diffMin < 1) return 'Az önce';
+            if (diffMin < 60) return diffMin + 'dk önce';
+            if (diffHour < 24) return diffHour + ' saat önce';
+            if (diffDay === 1) return 'Dün';
+            if (diffDay < 7) return diffDay + ' gün önce';
+            return triggered.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        } catch (e) {
+            return 'Az önce';
+        }
+    }
+
+    // 1. Okunmamis alarm sayisini getir + dropdown'a gecmis alarmlari yukle
     if (USER_EMAIL) {
+        // Badge count
         fetch('/ajax/alerts/unread-count')
             .then(function(r) { if (!r.ok) throw new Error('failed'); return r.json(); })
             .then(function(data) {
                 updateBadge(data.count || 0);
             })
-            .catch(function() {
-                // Sessizce basarisiz — alarm servisi henuz hazir olmayabilir
-            });
+            .catch(function() {});
+
+        // Tetiklenmis ama okunmamis alarmlari dropdown'a yukle (offline gecmisi)
+        fetch('/ajax/alerts?status=TRIGGERED')
+            .then(function(r) { if (!r.ok) throw new Error('failed'); return r.json(); })
+            .then(function(alerts) {
+                var unread = alerts.filter(function(a) { return !a.readAt; });
+                if (unread.length > 0 && noNotif) noNotif.style.display = 'none';
+                unread.forEach(function(a) {
+                    addNotification({
+                        alertId: a.id,
+                        stockCode: a.stockCode,
+                        direction: a.direction,
+                        message: a.triggerPrice
+                            ? (a.direction === 'ABOVE' ? 'üstüne çıktı' : 'altına düştü') + ' (' + Number(a.triggerPrice).toLocaleString('tr-TR', {minimumFractionDigits:2}) + '₺)'
+                            : (a.direction === 'ABOVE' ? 'üstüne çıktı' : 'altına düştü'),
+                        triggeredAt: a.triggeredAt
+                    });
+                });
+            })
+            .catch(function() {});
     }
 
     // 2. STOMP baglantisi — gercek zamanli bildirimler
@@ -156,6 +204,7 @@
                         items[i].remove();
                     }
                     if (noNotif) noNotif.style.display = '';
+                    seenAlertIds = {};
                 })
                 .catch(function() {
                     // Sessizce basarisiz

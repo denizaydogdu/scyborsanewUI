@@ -1225,6 +1225,7 @@
             if (!createBtn) return;
 
             var stockCode = /*[[${stockId}]]*/ '';
+            var stockName = /*[[${stockDescription}]]*/ '';
             var csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
             var csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
@@ -1288,6 +1289,7 @@
 
                 var payload = {
                     stockCode: stockCode,
+                    stockName: stockName,
                     direction: direction,
                     targetPrice: targetPrice,
                     priceAtCreation: stockPrice,
@@ -1315,12 +1317,6 @@
                         var modal = bootstrap.Modal.getInstance(document.getElementById('priceAlertModal'));
                         if (modal) modal.hide();
                         successDiv.classList.add('d-none');
-                        createBtn.disabled = false;
-                        createBtn.textContent = '';
-                        var icon = document.createElement('i');
-                        icon.className = 'ri-alarm-line me-1';
-                        createBtn.appendChild(icon);
-                        createBtn.appendChild(document.createTextNode(' Alarm Kur'));
                     }, 1500);
                 })
                 .catch(function(e) {
@@ -1342,6 +1338,13 @@
                 document.getElementById('alertDirection').value = 'ABOVE';
                 document.getElementById('alertError').classList.add('d-none');
                 document.getElementById('alertSuccess').classList.add('d-none');
+                // Buton durumunu sıfırla
+                createBtn.disabled = false;
+                createBtn.textContent = '';
+                var resetIcon = document.createElement('i');
+                resetIcon.className = 'ri-alarm-line me-1';
+                createBtn.appendChild(resetIcon);
+                createBtn.appendChild(document.createTextNode(' Alarm Kur'));
                 // Modal kapanınca aktif alarm sayısını güncelle
                 checkStockAlerts();
             });
