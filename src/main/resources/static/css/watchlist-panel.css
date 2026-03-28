@@ -11,7 +11,7 @@
     width: 320px;
     background: var(--vz-card-bg, #fff);
     border-left: 1px solid var(--vz-border-color, #e9ebec);
-    z-index: 1001;
+    z-index: 999; /* topbar (1002) ve dropdown'lardan düşük */
     transform: translateX(calc(100% - 40px)); /* Kapalıyken 40px ince şerit görünür */
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
@@ -54,15 +54,16 @@ body.watchlist-panel-open .main-content {
 }
 
 #wp-collapsed-strip .wp-strip-icon {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
-    color: var(--vz-secondary-color, #878a99);
-    font-size: 18px;
+    border-radius: 6px;
+    color: var(--vz-body-color, #495057);
+    font-size: 20px;
     transition: all 0.15s;
+    cursor: pointer;
 }
 
 #wp-collapsed-strip .wp-strip-icon:hover {
