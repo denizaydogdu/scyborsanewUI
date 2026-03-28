@@ -101,6 +101,9 @@
             loadData();
             connectStomp();
         }
+
+        // ApexCharts ve diğer responsive bileşenlerin yeniden boyutlanması
+        setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 350);
     }
 
     /**
@@ -114,6 +117,9 @@
 
         var backdrop = document.getElementById('watchlist-panel-backdrop');
         if (backdrop) backdrop.classList.remove('show');
+
+        // ApexCharts ve diğer responsive bileşenlerin yeniden boyutlanması
+        setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 350);
     }
 
     /**
