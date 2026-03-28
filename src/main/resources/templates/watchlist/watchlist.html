@@ -44,16 +44,16 @@
                         <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#createWatchlistModal">
                             <i class="ri-add-line"></i> Yeni Liste
                         </button>
-                        <button class="btn btn-sm btn-soft-primary" id="editWatchlistBtn" data-bs-toggle="modal" data-bs-target="#editWatchlistModal"
+                        <button class="btn btn-sm btn-soft-primary" id="editWatchlistBtn"
                                 th:disabled="${watchlists == null or #lists.isEmpty(watchlists)}">
                             <i class="ri-pencil-line"></i>
                         </button>
-                        <button class="btn btn-sm btn-soft-danger" id="deleteWatchlistBtn" data-bs-toggle="modal" data-bs-target="#deleteWatchlistModal"
+                        <button class="btn btn-sm btn-soft-danger" id="deleteWatchlistBtn"
                                 th:disabled="${watchlists == null or #lists.isEmpty(watchlists)}">
                             <i class="ri-delete-bin-line"></i>
                         </button>
                         <div class="flex-grow-1"></div>
-                        <button class="btn btn-sm btn-primary" id="addStockBtn" data-bs-toggle="modal" data-bs-target="#addStockModal"
+                        <button class="btn btn-sm btn-primary" id="addStockBtn"
                                 th:disabled="${watchlists == null or #lists.isEmpty(watchlists)}">
                             <i class="ri-add-circle-line me-1"></i> Hisse Ekle
                         </button>
@@ -100,7 +100,7 @@
                                               th:text="${(stock.changePercent >= 0 ? '+' : '') + #numbers.formatDecimal(stock.changePercent, 1, 2) + '%'}"></span>
                                         <span th:if="${stock.changePercent == null}">-</span>
                                     </td>
-                                    <td class="text-end volume-cell" th:data-volume="${stock.volume}"></td>
+                                    <td class="text-end volume-cell" th:data-volume="${stock.volume}">-</td>
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-soft-danger remove-stock-btn"
                                                 th:data-stock-code="${stock.stockCode}" title="Listeden Çıkar">
@@ -200,6 +200,9 @@
                     <div id="addStockResults" class="list-group" style="max-height: 300px; overflow-y: auto;"></div>
                     <div id="addStockError" class="alert alert-danger d-none mt-2"></div>
                     <div id="addStockSuccess" class="alert alert-success d-none mt-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Kapat</button>
                 </div>
             </div>
         </div>

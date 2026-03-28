@@ -232,6 +232,17 @@
     }
 
     /**
+     * Liste yoksa düzenle/sil/hisse ekle butonlarını devre dışı bırakır.
+     */
+    function disableActionButtons() {
+        var btns = ['editWatchlistBtn', 'deleteWatchlistBtn', 'addStockBtn'];
+        btns.forEach(function(id) {
+            var btn = document.getElementById(id);
+            if (btn) btn.disabled = true;
+        });
+    }
+
+    /**
      * Belirli bir hisse satırını tablodan kaldırır.
      * @param {string} code hisse kodu
      */
@@ -426,6 +437,7 @@
                 } else {
                     currentWatchlistId = null;
                     renderStocks([]);
+                    disableActionButtons();
                 }
             }
 
@@ -472,9 +484,14 @@
             var emptyRow = document.getElementById('emptyRow');
             if (emptyRow) emptyRow.remove();
 
-            // Yeni satırı ekle
+            // Yeni satırı ekle (duplicate guard)
             var tbody = document.getElementById('watchlistTableBody');
-            if (tbody) tbody.appendChild(createStockRow(stock));
+            if (tbody) {
+                var existingRow = tbody.querySelector('tr[data-stock-code="' + (stock.stockCode || '') + '"]');
+                if (!existingRow) {
+                    tbody.appendChild(createStockRow(stock));
+                }
+            }
         })
         .catch(function(err) {
             errorEl.textContent = err.message || 'Hisse eklenemedi.';
@@ -501,7 +518,6 @@
         })
         .catch(function(err) {
             console.warn('[WATCHLIST] Hisse çıkarılamadı:', err);
-            alert('Hisse listeden çıkarılırken bir hata oluştu.');
         });
     }
 
@@ -670,8 +686,8 @@
                 var rows = tbody.querySelectorAll('tr[data-stock-code]');
                 var ids = [];
                 rows.forEach(function(r) {
-                    var itemId = parseInt(r.getAttribute('data-item-id'));
-                    if (itemId) ids.push(itemId);
+                    var raw = r.getAttribute('data-item-id');
+                    if (raw !== null && raw !== '') ids.push(parseInt(raw, 10));
                 });
                 if (currentWatchlistId && ids.length > 0) {
                     reorderStocks(currentWatchlistId, ids);
@@ -772,6 +788,36 @@
             selectEl.addEventListener('change', function() {
                 currentWatchlistId = parseInt(this.value);
                 loadWatchlistStocks(currentWatchlistId);
+            });
+        }
+
+        // ── Düzenle butonu — programmatic modal open ──
+        var editBtn = document.getElementById('editWatchlistBtn');
+        if (editBtn) {
+            editBtn.addEventListener('click', function() {
+                if (!currentWatchlistId || this.disabled) return;
+                var modal = new bootstrap.Modal(document.getElementById('editWatchlistModal'));
+                modal.show();
+            });
+        }
+
+        // ── Sil butonu — programmatic modal open ──
+        var deleteBtn = document.getElementById('deleteWatchlistBtn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function() {
+                if (!currentWatchlistId || this.disabled) return;
+                var modal = new bootstrap.Modal(document.getElementById('deleteWatchlistModal'));
+                modal.show();
+            });
+        }
+
+        // ── Hisse Ekle butonu — programmatic modal open ──
+        var addStockBtnEl = document.getElementById('addStockBtn');
+        if (addStockBtnEl) {
+            addStockBtnEl.addEventListener('click', function() {
+                if (!currentWatchlistId || this.disabled) return;
+                var modal = new bootstrap.Modal(document.getElementById('addStockModal'));
+                modal.show();
             });
         }
 
