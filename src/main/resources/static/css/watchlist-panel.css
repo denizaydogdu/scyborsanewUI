@@ -45,11 +45,11 @@ body.watchlist-panel-open #page-topbar .navbar-header {
     padding-right: 325px;
 }
 
-/* ── Collapsed Strip (kapalıyken görünen ince şerit) ── */
+/* ── Collapsed Strip (kapalıyken görünen ince şerit — panelin SOL kenarında) ── */
 #wp-collapsed-strip {
     position: absolute;
     top: 0;
-    right: 0;
+    left: 0;
     width: 50px;
     height: 100%;
     display: flex;
@@ -59,7 +59,7 @@ body.watchlist-panel-open #page-topbar .navbar-header {
     gap: 16px;
     cursor: pointer;
     background: var(--vz-card-bg, #fff);
-    border-left: 1px solid var(--vz-border-color, #e9ebec);
+    border-right: 1px solid var(--vz-border-color, #e9ebec);
     z-index: 2;
 }
 
