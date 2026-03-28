@@ -35,7 +35,16 @@ body.watchlist-panel-open .main-content {
     margin-right: 320px;
 }
 
-/* Topbar'a DOKUNMA — her zaman full genişlik, sabit, sağa full yanaşık */
+/* Topbar — sağa full yanaşık, boşluk olmasın */
+#page-topbar {
+    right: 0 !important;
+}
+#page-topbar .layout-width {
+    max-width: 100% !important;
+}
+#page-topbar .navbar-header {
+    padding-right: 10px !important;
+}
 
 /* ── Collapsed Strip (kapalıyken görünen ince şerit — panelin SOL kenarında) ── */
 #wp-collapsed-strip {
