@@ -1,0 +1,94 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="watchlist-panel" th:remove="tag">
+        <!-- Watchlist Sliding Panel -->
+        <div id="watchlist-panel">
+            <!-- Header -->
+            <div class="watchlist-panel-header">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h6 class="mb-0 fw-semibold">Takip Listesi</h6>
+                    <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary rounded-circle"
+                            id="watchlist-panel-close" title="Kapat">
+                        <i class="ri-close-line fs-18"></i>
+                    </button>
+                </div>
+                <select id="wp-watchlist-select" class="form-select form-select-sm">
+                    <option value="">Liste seçiniz...</option>
+                </select>
+                <div class="d-flex gap-1 mt-2">
+                    <button type="button" class="btn btn-soft-primary btn-sm flex-fill" id="wp-new-list-btn">
+                        <i class="ri-add-line align-bottom me-1"></i>Yeni
+                    </button>
+                    <button type="button" class="btn btn-soft-success btn-sm flex-fill" id="wp-add-stock-btn">
+                        <i class="ri-add-circle-line align-bottom me-1"></i>Hisse Ekle
+                    </button>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="watchlist-panel-body">
+                <div id="wp-stock-list"></div>
+                <div class="wp-empty-state" id="wp-empty-state" style="display:none;">
+                    <i class="ri-list-check fs-36 text-muted d-block mb-2"></i>
+                    <span class="text-muted">Henüz hisse eklenmedi</span>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="watchlist-panel-footer">
+                <a th:href="@{/takip-listeleri}" class="text-primary fw-medium">
+                    Tüm Listeyi Görüntüle <i class="ri-arrow-right-s-line align-bottom"></i>
+                </a>
+            </div>
+
+            <!-- Yeni Liste Modal (inline) -->
+            <div id="wp-new-list-modal" class="wp-inline-modal" style="display:none;">
+                <div class="wp-inline-modal-content">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="fw-semibold">Yeni Liste Oluştur</span>
+                        <button type="button" class="btn-close btn-close-sm" id="wp-new-list-modal-close"></button>
+                    </div>
+                    <div class="mb-2">
+                        <input type="text" class="form-control form-control-sm" id="wp-new-list-name"
+                               placeholder="Liste adı" maxlength="50" />
+                    </div>
+                    <div class="d-flex gap-1">
+                        <button type="button" class="btn btn-primary btn-sm flex-fill" id="wp-new-list-save">
+                            Oluştur
+                        </button>
+                        <button type="button" class="btn btn-light btn-sm" id="wp-new-list-cancel">
+                            İptal
+                        </button>
+                    </div>
+                    <div class="alert alert-danger alert-sm mt-2 mb-0 py-1 px-2 fs-12" id="wp-new-list-error"
+                         style="display:none;"></div>
+                </div>
+            </div>
+
+            <!-- Hisse Ekle Modal (inline) -->
+            <div id="wp-add-stock-modal" class="wp-inline-modal" style="display:none;">
+                <div class="wp-inline-modal-content">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="fw-semibold">Hisse Ekle</span>
+                        <button type="button" class="btn-close btn-close-sm" id="wp-add-stock-modal-close"></button>
+                    </div>
+                    <div class="position-relative mb-2">
+                        <input type="text" class="form-control form-control-sm" id="wp-add-stock-search"
+                               placeholder="Hisse kodu veya adı ara..." autocomplete="off" />
+                        <div id="wp-add-stock-results" class="wp-search-results" style="display:none;"></div>
+                    </div>
+                    <div class="alert alert-success alert-sm mt-2 mb-0 py-1 px-2 fs-12" id="wp-add-stock-success"
+                         style="display:none;"></div>
+                    <div class="alert alert-danger alert-sm mt-2 mb-0 py-1 px-2 fs-12" id="wp-add-stock-error"
+                         style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile backdrop -->
+        <div id="watchlist-panel-backdrop"></div>
+    </div>
+</body>
+
+</html>

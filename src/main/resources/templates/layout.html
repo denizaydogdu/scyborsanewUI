@@ -4,9 +4,13 @@
 	<th:block layout:fragment="pagetitle" />
 	<!-- Page CSS -->
 	<div th:replace="~{partials/head-css :: head-css}"></div>
+	<!-- Watchlist Panel CSS -->
+	<link th:href="@{/css/watchlist-panel.css}" rel="stylesheet" type="text/css" />
 </head>
 
 <body data-sidebar="dark" data-layout-mode="light" th:data-user-email="${userEmail}" th:data-api-base="${apiBaseUrl}">
+	<!-- Layout shift prevention: restore watchlist panel state before paint -->
+	<script>if(localStorage.getItem('wp_open')==='true')document.body.classList.add('watchlist-panel-open');</script>
 	<!-- Google Tag Manager (noscript) -->
 	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WN5GTRFB"
 	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -15,6 +19,9 @@
 		<div th:replace="~{partials/topbar :: topbar}"></div>
 
 		<div th:replace="~{partials/sidebar :: sidebar}"></div>
+
+		<!-- Watchlist Sliding Panel -->
+		<div th:replace="~{partials/watchlist-panel :: watchlist-panel}"></div>
 
 		<div class="main-content">
 			<div class="page-content">
@@ -46,6 +53,10 @@
 	<script th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
 	<!-- Alarm Bildirim Sistemi -->
 	<script th:src="@{/js/alarm-notifications.js}"></script>
+	<!-- SortableJS (drag-drop for watchlist) -->
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+	<!-- Watchlist Panel JS -->
+	<script th:src="@{/js/watchlist-panel.js}"></script>
 </body>
 
 </html>
