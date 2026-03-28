@@ -146,6 +146,13 @@
 						</li>
 
 						<li class="nav-item">
+							<a class="nav-link menu-link" href="/takip-listeleri"
+							   th:classappend="${#strings.startsWith(requestURI, '/takip-listeleri')} ? 'active' : ''">
+								<i class="ri-list-check"></i> <span>Takip Listeleri</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
 							<a class="nav-link menu-link" href="/taramalar"
 							   th:classappend="${#strings.startsWith(requestURI, '/taramalar')} ? 'active' : ''">
 								<i class="ri-scan-line"></i> <span>SCY Taramalar</span>

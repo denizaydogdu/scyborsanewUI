@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Takip Listeleri')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <!-- Sayfa Basligi -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 class="mb-sm-0">Takip Listeleri</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="/dashboard">Ana Sayfa</a></li>
+                        <li class="breadcrumb-item active">Takip Listeleri</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Takip Listesi Tablosu -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <!-- Watchlist Select -->
+                        <select class="form-select" id="watchlistSelect" style="max-width: 280px;">
+                            <option th:each="wl : ${watchlists}" th:value="${wl.id}" th:text="${wl.name}"
+                                    th:data-description="${wl.description}"
+                                    th:selected="${activeWatchlist != null and wl.id == activeWatchlist.id}">
+                            </option>
+                        </select>
+
+                        <!-- Action Buttons -->
+                        <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#createWatchlistModal">
+                            <i class="ri-add-line"></i> Yeni Liste
+                        </button>
+                        <button class="btn btn-sm btn-soft-primary" id="editWatchlistBtn" data-bs-toggle="modal" data-bs-target="#editWatchlistModal">
+                            <i class="ri-pencil-line"></i>
+                        </button>
+                        <button class="btn btn-sm btn-soft-danger" id="deleteWatchlistBtn" data-bs-toggle="modal" data-bs-target="#deleteWatchlistModal">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                        <div class="flex-grow-1"></div>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addStockModal">
+                            <i class="ri-add-circle-line me-1"></i> Hisse Ekle
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-nowrap align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 30px;"></th>
+                                    <th style="width: 50px;">Logo</th>
+                                    <th>Hisse</th>
+                                    <th class="text-end">Fiyat</th>
+                                    <th class="text-end">Degisim %</th>
+                                    <th class="text-end">Hacim</th>
+                                    <th class="text-center" style="width: 60px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="watchlistTableBody">
+                                <tr th:each="stock : ${stocks}" th:data-stock-code="${stock.stockCode}" th:data-item-id="${stock.id}">
+                                    <td class="drag-handle" style="cursor: grab;"><i class="ri-drag-move-2-line text-muted"></i></td>
+                                    <td>
+                                        <div class="avatar-xs">
+                                            <img th:if="${stock.logoid != null}" th:src="'/img/stock-logos/' + ${stock.logoid}"
+                                                 class="rounded-circle" style="width:32px;height:32px;"
+                                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                                            <div class="avatar-title rounded-circle bg-light text-dark fw-semibold"
+                                                 style="font-size:0.55rem;width:32px;height:32px;"
+                                                 th:style="${stock.logoid != null} ? 'display:none;font-size:0.55rem;width:32px;height:32px;' : 'font-size:0.55rem;width:32px;height:32px;'"
+                                                 th:text="${stock.stockCode != null ? (stock.stockCode.length() > 4 ? stock.stockCode.substring(0, 4) : stock.stockCode) : '?'}"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{/stock/detail/{code}(code=${stock.stockCode})}" class="fw-semibold text-primary"
+                                           th:text="${stock.stockCode}"></a>
+                                        <p class="text-muted mb-0 fs-12" th:text="${stock.stockName}"></p>
+                                    </td>
+                                    <td class="text-end price-cell"
+                                        th:text="${stock.price != null ? #numbers.formatDecimal(stock.price, 1, 2) + ' TL' : '-'}"></td>
+                                    <td class="text-end change-cell">
+                                        <span th:if="${stock.changePercent != null}"
+                                              th:classappend="${stock.changePercent >= 0 ? 'text-success' : 'text-danger'}"
+                                              th:text="${(stock.changePercent >= 0 ? '+' : '') + #numbers.formatDecimal(stock.changePercent, 1, 2) + '%'}"></span>
+                                        <span th:if="${stock.changePercent == null}">-</span>
+                                    </td>
+                                    <td class="text-end volume-cell" th:data-volume="${stock.volume}"></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-soft-danger remove-stock-btn"
+                                                th:data-stock-code="${stock.stockCode}" title="Listeden Cikar">
+                                            <i class="ri-close-line"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- Empty state -->
+                                <tr id="emptyRow" th:if="${stocks == null or #lists.isEmpty(stocks)}">
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        <i class="ri-list-check fs-24 d-block mb-2"></i>
+                                        Bu listede henuz hisse yok. "Hisse Ekle" ile baslayin.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yeni Liste Olustur Modal -->
+    <div class="modal fade" id="createWatchlistModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ri-add-line me-1"></i> Yeni Takip Listesi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Liste Adi</label>
+                        <input type="text" class="form-control" id="newWlName" maxlength="50" placeholder="Ornegin: Teknoloji Hisseleri">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Aciklama (opsiyonel)</label>
+                        <input type="text" class="form-control" id="newWlDesc" maxlength="200" placeholder="Kisa bir aciklama">
+                    </div>
+                    <div id="createWlError" class="alert alert-danger d-none"></div>
+                    <div id="createWlSuccess" class="alert alert-success d-none"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Iptal</button>
+                    <button type="button" class="btn btn-success" id="saveNewWatchlistBtn">
+                        <i class="ri-save-line me-1"></i> Olustur
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste Duzenle Modal -->
+    <div class="modal fade" id="editWatchlistModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ri-pencil-line me-1"></i> Liste Duzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editWlId">
+                    <div class="mb-3">
+                        <label class="form-label">Liste Adi</label>
+                        <input type="text" class="form-control" id="editWlName" maxlength="50">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Aciklama (opsiyonel)</label>
+                        <input type="text" class="form-control" id="editWlDesc" maxlength="200">
+                    </div>
+                    <div id="editWlError" class="alert alert-danger d-none"></div>
+                    <div id="editWlSuccess" class="alert alert-success d-none"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Iptal</button>
+                    <button type="button" class="btn btn-primary" id="saveEditWlBtn">
+                        <i class="ri-save-line me-1"></i> Kaydet
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hisse Ekle Modal -->
+    <div class="modal fade" id="addStockModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ri-add-circle-line me-1"></i> Hisse Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Hisse Ara</label>
+                        <input type="text" class="form-control" id="addStockSearch" placeholder="Hisse kodu veya adi yazin..." autocomplete="off">
+                    </div>
+                    <div id="addStockResults" class="list-group" style="max-height: 300px; overflow-y: auto;"></div>
+                    <div id="addStockError" class="alert alert-danger d-none mt-2"></div>
+                    <div id="addStockSuccess" class="alert alert-success d-none mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste Sil Onay Modal -->
+    <div class="modal fade" id="deleteWatchlistModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="ri-delete-bin-line me-1"></i> Liste Sil</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>"<strong id="deleteWlName"></strong>" listesini silmek istediginize emin misiniz?</p>
+                    <p class="text-muted fs-12">Bu islem geri alinamaz. Listedeki tum hisseler de kaldirilacaktir.</p>
+                    <div id="deleteWlError" class="alert alert-danger d-none"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Vazgec</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteWlBtn">
+                        <i class="ri-delete-bin-line me-1"></i> Sil
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+
+<th:block layout:fragment="pagejs">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+    <script th:src="@{/js/watchlist.js}"></script>
+</th:block>
+
+</html>

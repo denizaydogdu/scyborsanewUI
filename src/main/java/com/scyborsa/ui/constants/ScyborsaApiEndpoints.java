@@ -275,4 +275,15 @@ public final class ScyborsaApiEndpoints {
     /** Admin: tum kullanicilarin alarmlarini listeleyen endpoint'i. */
     public static final String ALERTS_ADMIN_ALL = "/api/v1/alerts/admin/all";
 
+    // ── Takip Listeleri (Watchlists) ─────────────────────────
+
+    /** Takip listesi CRUD endpoint'i. */
+    public static final String WATCHLISTS = "/api/v1/watchlists";
+
+    /** Takip listesi hisse CRUD endpoint'i. {@code {id}} path variable icerir. */
+    public static final String WATCHLIST_STOCKS = "/api/v1/watchlists/{id}/stocks";
+
+    /** Takip listesi hisse siralama endpoint'i. {@code {id}} path variable icerir. */
+    public static final String WATCHLIST_STOCKS_REORDER = "/api/v1/watchlists/{id}/stocks/reorder";
+
 }
