@@ -43,7 +43,7 @@ body.watchlist-panel-open .main-content {
     max-width: 100% !important;
 }
 #page-topbar .navbar-header {
-    padding-right: 10px !important;
+    padding-right: 0 !important;
 }
 
 /* ── Collapsed Strip (kapalıyken görünen ince şerit — panelin SOL kenarında) ── */
