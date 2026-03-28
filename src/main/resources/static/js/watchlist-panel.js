@@ -252,13 +252,30 @@
         div.setAttribute('data-code', code);
         div.setAttribute('data-item-id', itemId);
 
-        // Drag handle
-        var handle = document.createElement('span');
-        handle.className = 'drag-handle';
-        var handleIcon = document.createElement('i');
-        handleIcon.className = 'ri-drag-move-2-line';
-        handle.appendChild(handleIcon);
-        div.appendChild(handle);
+        // Hisse logosu (avatar)
+        var avatarWrap = document.createElement('div');
+        avatarWrap.className = 'wp-stock-avatar flex-shrink-0';
+
+        var fallbackDiv = document.createElement('div');
+        fallbackDiv.className = 'avatar-title rounded-circle fw-semibold';
+        fallbackDiv.style.cssText = 'width:28px;height:28px;font-size:0.5rem;background:transparent;color:#495057;border:1.5px solid #ced4da;';
+        fallbackDiv.textContent = code.length > 4 ? code.substring(0, 4) : code;
+
+        if (stock.logoid) {
+            var img = document.createElement('img');
+            img.src = '/img/stock-logos/' + stock.logoid;
+            img.alt = code;
+            img.className = 'rounded-circle';
+            img.style.cssText = 'width:28px;height:28px;';
+            img.onerror = function() {
+                img.style.display = 'none';
+                fallbackDiv.style.display = 'flex';
+            };
+            fallbackDiv.style.display = 'none';
+            avatarWrap.appendChild(img);
+        }
+        avatarWrap.appendChild(fallbackDiv);
+        div.appendChild(avatarWrap);
 
         // Hisse kodu link
         var link = document.createElement('a');
@@ -670,7 +687,7 @@
         }
 
         stockListEl._sortableInstance = new Sortable(stockListEl, {
-            handle: '.drag-handle',
+            handle: '.wp-stock-avatar',
             animation: 150,
             ghostClass: 'wp-drag-ghost',
             onEnd: function() {

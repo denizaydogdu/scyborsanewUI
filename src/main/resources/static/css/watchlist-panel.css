@@ -140,17 +140,9 @@ body.watchlist-panel-open .main-content {
     background: var(--vz-light, #f3f6f9);
 }
 
-.wp-stock-item .drag-handle {
+.wp-stock-avatar {
     cursor: grab;
-    color: var(--vz-secondary-color, #878a99);
-    font-size: 14px;
-    opacity: 0.4;
-    transition: opacity 0.15s;
     flex-shrink: 0;
-}
-
-.wp-stock-item:hover .drag-handle {
-    opacity: 1;
 }
 
 .wp-stock-code {
