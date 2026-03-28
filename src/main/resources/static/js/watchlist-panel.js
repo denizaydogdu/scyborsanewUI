@@ -278,7 +278,7 @@
         // Fiyat
         var priceSpan = document.createElement('span');
         priceSpan.className = 'wp-stock-price';
-        priceSpan.textContent = formatPrice(stock.price);
+        priceSpan.textContent = formatPrice(stock.lastPrice != null ? stock.lastPrice : stock.price);
         div.appendChild(priceSpan);
 
         // Degisim
