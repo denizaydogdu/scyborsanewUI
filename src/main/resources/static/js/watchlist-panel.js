@@ -327,6 +327,45 @@
     /**
      * Aktif watchlist'e hisse ekler.
      * @param {string} code hisse kodu
+     * Seçili takip listesini siler.
+     */
+    function deleteWatchlist() {
+        if (!currentWatchlistId) return;
+
+        var selectedOpt = selectEl ? selectEl.options[selectEl.selectedIndex] : null;
+        var listName = selectedOpt ? selectedOpt.textContent : '';
+
+        if (!confirm('"' + listName + '" listesini silmek istediğinize emin misiniz?')) return;
+
+        fetch('/ajax/watchlists/' + currentWatchlistId, {
+            method: 'DELETE',
+            headers: getCsrfHeadersNoContent()
+        })
+        .then(function(r) {
+            if (!r.ok) throw new Error('Silme başarısız');
+
+            // Dropdown'dan kaldır
+            if (selectedOpt) selectedOpt.remove();
+
+            // İlk listeye geç veya boşalt
+            if (selectEl && selectEl.options.length > 0) {
+                selectEl.selectedIndex = 0;
+                currentWatchlistId = parseInt(selectEl.value, 10);
+                localStorage.setItem('wp_active_wl', String(currentWatchlistId));
+                loadStocks(currentWatchlistId);
+            } else {
+                currentWatchlistId = null;
+                localStorage.removeItem('wp_active_wl');
+                renderStockList([]);
+            }
+        })
+        .catch(function(err) {
+            console.warn('[WP] Liste silinemedi:', err);
+            alert(err.message || 'Liste silinemedi');
+        });
+    }
+
+    /**
      * @param {string} name hisse adi
      */
     function addStock(code, name) {
@@ -778,6 +817,12 @@
                     }
                 }
             });
+        }
+
+        // ── Liste Sil butonu ──────────────────────────────
+        var deleteListBtn = document.getElementById('wp-delete-list-btn');
+        if (deleteListBtn) {
+            deleteListBtn.addEventListener('click', deleteWatchlist);
         }
 
         // ── Yeni Liste Modal ──────────────────────────────
