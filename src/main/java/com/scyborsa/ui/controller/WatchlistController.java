@@ -258,7 +258,7 @@ public class WatchlistController {
             watchlistService.removeStock(id, stockCode, principal.getName());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            log.warn("[WATCHLIST-UI] Hisse cikarilAmadi (watchlistId={}, stockCode={}): {}",
+            log.warn("[WATCHLIST-UI] Hisse çıkarılamadı (watchlistId={}, stockCode={}): {}",
                     id, stockCode, e.getMessage());
             return ResponseEntity.internalServerError().build();
         }

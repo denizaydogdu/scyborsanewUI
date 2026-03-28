@@ -212,14 +212,14 @@ public class WatchlistService {
             webClient.delete()
                     .uri(uriBuilder -> uriBuilder
                             .path(ScyborsaApiEndpoints.WATCHLIST_STOCKS
-                                    .replace("{id}", watchlistId.toString()) + "/" + stockCode)
+                                    .replace("{id}", watchlistId.toString()) + "/{stockCode}")
                             .queryParam("email", userEmail)
-                            .build())
+                            .build(stockCode))
                     .retrieve()
                     .bodyToMono(Void.class)
                     .block(Duration.ofSeconds(10));
         } catch (Exception e) {
-            log.warn("[WATCHLIST-UI] Hisse cikarilAmadi (watchlistId={}, stockCode={}, email={}): {}",
+            log.warn("[WATCHLIST-UI] Hisse çıkarılamadı (watchlistId={}, stockCode={}, email={}): {}",
                     watchlistId, stockCode, userEmail, e.getMessage());
         }
     }

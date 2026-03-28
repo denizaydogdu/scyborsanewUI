@@ -432,7 +432,7 @@
                 // İlk listeye geç
                 if (select.options.length > 0) {
                     select.selectedIndex = 0;
-                    currentWatchlistId = parseInt(select.value);
+                    currentWatchlistId = parseInt(select.value, 10);
                     loadWatchlistStocks(currentWatchlistId);
                 } else {
                     currentWatchlistId = null;
@@ -780,13 +780,13 @@
     function init() {
         var selectEl = document.getElementById('watchlistSelect');
         if (selectEl && selectEl.value) {
-            currentWatchlistId = parseInt(selectEl.value);
+            currentWatchlistId = parseInt(selectEl.value, 10);
         }
 
         // Dropdown değişince hisseleri yükle
         if (selectEl) {
             selectEl.addEventListener('change', function() {
-                currentWatchlistId = parseInt(this.value);
+                currentWatchlistId = parseInt(this.value, 10);
                 loadWatchlistStocks(currentWatchlistId);
             });
         }
@@ -853,7 +853,7 @@
                 var id = document.getElementById('editWlId').value;
                 var name = document.getElementById('editWlName').value;
                 var desc = document.getElementById('editWlDesc').value;
-                if (id) updateWatchlist(parseInt(id), name, desc);
+                if (id) updateWatchlist(parseInt(id, 10), name, desc);
             });
         }
 

@@ -67,7 +67,7 @@
         var iconWrap = document.createElement('div');
         iconWrap.className = 'flex-shrink-0 avatar-xs me-3';
         var iconSpan = document.createElement('span');
-        iconSpan.className = 'avatar-title bg-primary-subtle text-primary rounded-circle fs-16';
+        iconSpan.className = 'avatar-title bg-light rounded-circle fs-16';
         var icon = document.createElement('i');
         icon.className = isAbove ? 'ri-arrow-up-line text-success' : 'ri-arrow-down-line text-danger';
         iconSpan.appendChild(icon);
