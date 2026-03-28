@@ -587,25 +587,60 @@
 
         for (var i = 0; i < results.length; i++) {
             (function(stock) {
-                var item = document.createElement('button');
-                item.type = 'button';
-                item.className = 'wp-search-result-item';
-
                 var ticker = stock.ticker || '';
+                var desc = stock.description || '';
+                var logoid = stock.logoid || '';
+
+                var item = document.createElement('a');
+                item.href = 'javascript:void(0);';
+                item.className = 'wp-search-result-item dropdown-item py-2';
+
+                var wrapper = document.createElement('div');
+                wrapper.className = 'd-flex align-items-center';
+
+                // Logo veya fallback (header arama pattern'i)
+                if (logoid && logoid.length > 0) {
+                    var img = document.createElement('img');
+                    img.src = '/img/stock-logos/' + logoid;
+                    img.className = 'rounded-circle me-2';
+                    img.style.cssText = 'width:28px;height:28px;min-width:28px;object-fit:contain;';
+                    img.onerror = function() {
+                        var fb = document.createElement('div');
+                        fb.className = 'rounded-circle me-2 d-flex align-items-center justify-content-center border';
+                        fb.style.cssText = 'width:28px;height:28px;min-width:28px;font-size:10px;font-weight:600;background:#fff;';
+                        fb.textContent = ticker.substring(0, 4);
+                        img.parentNode.replaceChild(fb, img);
+                    };
+                    wrapper.appendChild(img);
+                } else {
+                    var fallback = document.createElement('div');
+                    fallback.className = 'rounded-circle me-2 d-flex align-items-center justify-content-center border';
+                    fallback.style.cssText = 'width:28px;height:28px;min-width:28px;font-size:10px;font-weight:600;background:#fff;';
+                    fallback.textContent = ticker.substring(0, 4);
+                    wrapper.appendChild(fallback);
+                }
+
+                // Ticker + açıklama (alt satır)
+                var textDiv = document.createElement('div');
+                textDiv.className = 'overflow-hidden';
 
                 var tickerSpan = document.createElement('span');
                 tickerSpan.className = 'fw-semibold';
                 tickerSpan.textContent = ticker;
-                item.appendChild(tickerSpan);
+                textDiv.appendChild(tickerSpan);
 
-                var descSpan = document.createElement('span');
-                descSpan.className = 'text-muted fs-12 ms-2 text-truncate';
-                descSpan.style.maxWidth = '160px';
-                descSpan.textContent = stock.description || '';
-                item.appendChild(descSpan);
+                var descP = document.createElement('p');
+                descP.className = 'text-muted mb-0 fs-12 text-truncate';
+                descP.style.maxWidth = '220px';
+                descP.textContent = desc;
+                textDiv.appendChild(descP);
 
-                item.addEventListener('click', function() {
-                    addStock(ticker, stock.description || '');
+                wrapper.appendChild(textDiv);
+                item.appendChild(wrapper);
+
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    addStock(ticker, desc);
                 });
 
                 container.appendChild(item);

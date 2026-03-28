@@ -268,18 +268,18 @@ body.watchlist-panel-open .main-content {
     border: 1px solid var(--vz-border-color, #e9ebec);
     border-top: none;
     border-radius: 0 0 4px 4px;
-    max-height: 200px;
+    max-height: 280px;
     overflow-y: auto;
     z-index: 10;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .wp-search-result-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 10px;
+    display: block;
+    padding: 8px 12px;
     font-size: 13px;
+    text-decoration: none;
+    color: var(--vz-body-color, #212529);
     cursor: pointer;
     border-bottom: 1px solid var(--vz-border-color, #e9ebec);
     transition: background 0.1s;
