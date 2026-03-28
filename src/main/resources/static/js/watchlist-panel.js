@@ -153,7 +153,7 @@
                     emptyOpt.disabled = true;
                     emptyOpt.selected = true;
                     selectEl.appendChild(emptyOpt);
-                    renderStockList([]);
+                    renderNoList();
                     return;
                 }
 
@@ -216,6 +216,35 @@
      * Hisse listesini panel icerisine render eder (DOM API, XSS-safe).
      * @param {Array} stocks hisse dizisi
      */
+    /**
+     * Liste yokken gösterilecek mesaj ve buton durumu.
+     */
+    function renderNoList() {
+        if (!stockListEl) return;
+        while (stockListEl.firstChild) stockListEl.removeChild(stockListEl.firstChild);
+
+        var emptyDiv = document.createElement('div');
+        emptyDiv.className = 'text-center text-muted py-5';
+        var emptyIcon = document.createElement('i');
+        emptyIcon.className = 'ri-bar-chart-grouped-line fs-36 d-block mb-2';
+        emptyDiv.appendChild(emptyIcon);
+        var text = document.createElement('p');
+        text.className = 'mb-2';
+        text.textContent = 'Henüz takip listeniz yok.';
+        emptyDiv.appendChild(text);
+        var subText = document.createElement('p');
+        subText.className = 'fs-12';
+        subText.textContent = '"Yeni Liste" ile ilk listenizi oluşturun.';
+        emptyDiv.appendChild(subText);
+        stockListEl.appendChild(emptyDiv);
+
+        // Hisse Ekle ve Sil butonlarını pasif yap
+        var addBtn = document.getElementById('wp-add-stock-btn');
+        if (addBtn) addBtn.disabled = true;
+        var delBtn = document.getElementById('wp-delete-list-btn');
+        if (delBtn) delBtn.disabled = true;
+    }
+
     function renderStockList(stocks) {
         if (!stockListEl) return;
 
@@ -356,7 +385,7 @@
             } else {
                 currentWatchlistId = null;
                 localStorage.removeItem('wp_active_wl');
-                renderStockList([]);
+                renderNoList();
             }
         })
         .catch(function(err) {
@@ -476,6 +505,12 @@
             localStorage.setItem('wp_active_wl', String(currentWatchlistId));
 
             renderStockList([]);
+
+            // Butonları aktif et
+            var addBtn = document.getElementById('wp-add-stock-btn');
+            if (addBtn) addBtn.disabled = false;
+            var delBtn = document.getElementById('wp-delete-list-btn');
+            if (delBtn) delBtn.disabled = false;
 
             // Modal'ı kapat ve input'u temizle
             var modalInput = document.getElementById('wp-new-list-name');
