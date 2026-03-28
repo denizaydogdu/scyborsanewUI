@@ -29,15 +29,18 @@ public class WatchlistStockDto {
     /** Hisse logo ID'si (StockLogoService enrichment). */
     private String logoid;
 
-    /** Son fiyat. */
-    private Double price;
+    /** Siralama (displayOrder). */
+    private Integer displayOrder;
+
+    /** Son fiyat (API: lastPrice). */
+    private Double lastPrice;
+
+    /** Fiyat degisimi (mutlak). */
+    private Double change;
 
     /** Gunluk degisim yuzdesi. */
     private Double changePercent;
 
     /** Islem hacmi. */
     private Double volume;
-
-    /** Siralama (displayOrder). */
-    private Integer sortOrder;
 }

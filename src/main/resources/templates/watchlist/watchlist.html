@@ -94,7 +94,7 @@
                                         </div>
                                     </td>
                                     <td class="text-end price-cell"
-                                        th:text="${stock.price != null ? #numbers.formatDecimal(stock.price, 1, 2) + ' TL' : '-'}"></td>
+                                        th:text="${stock.lastPrice != null ? #numbers.formatDecimal(stock.lastPrice, 1, 2) + ' TL' : '-'}"></td>
                                     <td class="text-end change-cell">
                                         <span th:if="${stock.changePercent != null}"
                                               th:classappend="${stock.changePercent >= 0 ? 'text-success' : 'text-danger'}"

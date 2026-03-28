@@ -157,7 +157,7 @@
         // Fiyat
         var tdPrice = document.createElement('td');
         tdPrice.className = 'text-end price-cell';
-        tdPrice.textContent = formatPrice(stock.price);
+        tdPrice.textContent = formatPrice(stock.lastPrice != null ? stock.lastPrice : stock.price);
         tr.appendChild(tdPrice);
 
         // Değişim
