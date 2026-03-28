@@ -1,13 +1,13 @@
 /**
- * Takip Listeleri sayfasi JavaScript.
+ * Takip Listeleri sayfası JavaScript.
  *
- * Watchlist CRUD, hisse ekleme/cikarma, drag-drop siralama,
- * STOMP WebSocket canli fiyat guncellemesi ve autocomplete arama.
+ * Watchlist CRUD, hisse ekleme/çıkarma, drag-drop sıralama,
+ * STOMP WebSocket canlı fiyat güncellemesi ve autocomplete arama.
  *
  * Gereksinimler:
  * - body[data-user-email] attribute (GlobalModelAdvice)
  * - body[data-api-base] attribute (GlobalModelAdvice)
- * - SockJS + StompJs kutuphane (layout.html)
+ * - SockJS + StompJs kütüphane (layout.html)
  * - SortableJS (CDN, watchlist.html pagejs)
  * - CSRF meta tag'leri (head-css.html)
  */
@@ -25,7 +25,7 @@
     var csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
     /**
-     * CSRF header'li fetch headers olusturur.
+     * CSRF header'li fetch headers oluşturur.
      * @returns {Object} Content-Type + CSRF header
      */
     function getCsrfHeaders() {
@@ -35,7 +35,7 @@
     }
 
     /**
-     * CSRF header'li (Content-Type'siz) fetch headers olusturur.
+     * CSRF header'li (Content-Type'sız) fetch headers oluşturur.
      * @returns {Object} Sadece CSRF header
      */
     function getCsrfHeadersNoContent() {
@@ -44,12 +44,12 @@
         return h;
     }
 
-    // ── Format Helpers (Turkce) ────────────────────────────
+    // ── Format Helpers (Türkçe) ────────────────────────────
 
     /**
-     * Fiyat degerini Turkce formata cevirir.
-     * @param {number} val fiyat degeri
-     * @returns {string} "245,60 TL" formatinda
+     * Fiyat değerini Türkçe formata çevirir.
+     * @param {number} val fiyat değeri
+     * @returns {string} "245,60 TL" formatında
      */
     function formatPrice(val) {
         if (val == null || isNaN(val)) return '-';
@@ -57,9 +57,9 @@
     }
 
     /**
-     * Degisim yuzdesini Turkce formata cevirir.
-     * @param {number} val degisim yuzdesi
-     * @returns {string} "+2,34%" veya "-0,52%" formatinda
+     * Değişim yüzdesini Türkçe formata çevirir.
+     * @param {number} val değişim yüzdesi
+     * @returns {string} "+2,34%" veya "-0,52%" formatında
      */
     function formatChange(val) {
         if (val == null || isNaN(val)) return '-';
@@ -68,9 +68,9 @@
     }
 
     /**
-     * Hacim degerini Turkce formata cevirir (Milyar/Milyon/Bin).
-     * @param {number} val hacim degeri
-     * @returns {string} "1,2 Milyar" / "890 Milyon" / "125 Bin" formatinda
+     * Hacim değerini Türkçe formata çevirir (Milyar/Milyon/Bin).
+     * @param {number} val hacim değeri
+     * @returns {string} "1,2 Milyar" / "890 Milyon" / "125 Bin" formatında
      */
     function formatVolume(val) {
         if (val == null || isNaN(val) || val === 0) return '-';
@@ -90,7 +90,7 @@
     // ── DOM Helpers ────────────────────────────────────────
 
     /**
-     * Tek bir hisse satiri icin DOM elementi olusturur (XSS-safe, innerHTML yok).
+     * Tek bir hisse satırı için DOM elementi oluşturur (XSS-safe, innerHTML yok).
      * @param {Object} stock hisse verisi (stockCode, stockName, logoid, price, changePercent, volume, sortOrder)
      * @returns {HTMLElement} <tr> elementi
      */
@@ -154,7 +154,7 @@
         tdPrice.textContent = formatPrice(stock.price);
         tr.appendChild(tdPrice);
 
-        // Degisim
+        // Değişim
         var tdChange = document.createElement('td');
         tdChange.className = 'text-end change-cell';
         if (stock.changePercent != null) {
@@ -179,7 +179,7 @@
         var removeBtn = document.createElement('button');
         removeBtn.className = 'btn btn-sm btn-soft-danger remove-stock-btn';
         removeBtn.setAttribute('data-stock-code', stock.stockCode || '');
-        removeBtn.title = 'Listeden Cikar';
+        removeBtn.title = 'Listeden Çıkar';
         var removeIcon = document.createElement('i');
         removeIcon.className = 'ri-close-line';
         removeBtn.appendChild(removeIcon);
@@ -197,7 +197,7 @@
         var tbody = document.getElementById('watchlistTableBody');
         if (!tbody) return;
 
-        // Mevcut satirlari temizle
+        // Mevcut satırları temizle
         while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
 
         if (!stocks || stocks.length === 0) {
@@ -209,7 +209,7 @@
             var emptyIcon = document.createElement('i');
             emptyIcon.className = 'ri-list-check fs-24 d-block mb-2';
             emptyTd.appendChild(emptyIcon);
-            emptyTd.appendChild(document.createTextNode('Bu listede henuz hisse yok. "Hisse Ekle" ile baslayin.'));
+            emptyTd.appendChild(document.createTextNode('Bu listede henüz hisse yok. "Hisse Ekle" ile başlayın.'));
             emptyTr.appendChild(emptyTd);
             tbody.appendChild(emptyTr);
             return;
@@ -221,14 +221,14 @@
     }
 
     /**
-     * Belirli bir hisse satirini tablodan kaldirir.
+     * Belirli bir hisse satırını tablodan kaldırır.
      * @param {string} code hisse kodu
      */
     function removeStockRow(code) {
         var row = document.querySelector('#watchlistTableBody tr[data-stock-code="' + code + '"]');
         if (row) row.remove();
 
-        // Tablo bos kaldiysa empty state goster
+        // Tablo boş kaldıysa empty state göster
         var remaining = document.querySelectorAll('#watchlistTableBody tr[data-stock-code]');
         if (remaining.length === 0) {
             renderStocks([]);
@@ -238,7 +238,7 @@
     // ── Watchlist CRUD ─────────────────────────────────────
 
     /**
-     * Belirli bir watchlist'in hisselerini yukler.
+     * Belirli bir watchlist'in hisselerini yükler.
      * @param {number} wlId watchlist ID
      */
     function loadWatchlistStocks(wlId) {
@@ -257,9 +257,9 @@
     }
 
     /**
-     * Yeni watchlist olusturur.
-     * @param {string} name liste adi
-     * @param {string} desc aciklama
+     * Yeni watchlist oluşturur.
+     * @param {string} name liste adı
+     * @param {string} desc açıklama
      */
     function createWatchlist(name, desc) {
         var errorEl = document.getElementById('createWlError');
@@ -269,7 +269,7 @@
         successEl.classList.add('d-none');
 
         if (!name || name.trim().length === 0) {
-            errorEl.textContent = 'Liste adi bos olamaz.';
+            errorEl.textContent = 'Liste adı boş olamaz.';
             errorEl.classList.remove('d-none');
             return;
         }
@@ -282,14 +282,14 @@
             body: JSON.stringify({ name: name.trim(), description: (desc || '').trim() })
         })
         .then(function(r) {
-            if (!r.ok) return r.text().then(function(t) { throw new Error(t || 'Olusturma basarisiz'); });
+            if (!r.ok) return r.text().then(function(t) { throw new Error(t || 'Oluşturma başarısız'); });
             return r.json();
         })
         .then(function(wl) {
-            successEl.textContent = 'Liste olusturuldu.';
+            successEl.textContent = 'Liste oluşturuldu.';
             successEl.classList.remove('d-none');
 
-            // Dropdown'a ekle ve sec
+            // Dropdown'a ekle ve seç
             var select = document.getElementById('watchlistSelect');
             if (select) {
                 var opt = document.createElement('option');
@@ -312,17 +312,17 @@
             }, 600);
         })
         .catch(function(err) {
-            errorEl.textContent = err.message || 'Liste olusturulamadi.';
+            errorEl.textContent = err.message || 'Liste oluşturulamadı.';
             errorEl.classList.remove('d-none');
             saveBtn.disabled = false;
         });
     }
 
     /**
-     * Mevcut watchlist'i gunceller.
+     * Mevcut watchlist'i günceller.
      * @param {number} id watchlist ID
      * @param {string} name yeni ad
-     * @param {string} desc yeni aciklama
+     * @param {string} desc yeni açıklama
      */
     function updateWatchlist(id, name, desc) {
         var errorEl = document.getElementById('editWlError');
@@ -332,7 +332,7 @@
         successEl.classList.add('d-none');
 
         if (!name || name.trim().length === 0) {
-            errorEl.textContent = 'Liste adi bos olamaz.';
+            errorEl.textContent = 'Liste adı boş olamaz.';
             errorEl.classList.remove('d-none');
             return;
         }
@@ -345,14 +345,14 @@
             body: JSON.stringify({ name: name.trim(), description: (desc || '').trim() })
         })
         .then(function(r) {
-            if (!r.ok) return r.text().then(function(t) { throw new Error(t || 'Guncelleme basarisiz'); });
+            if (!r.ok) return r.text().then(function(t) { throw new Error(t || 'Güncelleme başarısız'); });
             return r.json();
         })
         .then(function(wl) {
-            successEl.textContent = 'Liste guncellendi.';
+            successEl.textContent = 'Liste güncellendi.';
             successEl.classList.remove('d-none');
 
-            // Dropdown option textini guncelle
+            // Dropdown option textini güncelle
             var select = document.getElementById('watchlistSelect');
             if (select) {
                 var opts = select.options;
@@ -373,7 +373,7 @@
             }, 600);
         })
         .catch(function(err) {
-            errorEl.textContent = err.message || 'Liste guncellenemedi.';
+            errorEl.textContent = err.message || 'Liste güncellenemedi.';
             errorEl.classList.remove('d-none');
             saveBtn.disabled = false;
         });
@@ -395,8 +395,8 @@
             headers: getCsrfHeadersNoContent()
         })
         .then(function(r) {
-            if (!r.ok) return r.text().then(function(t) { throw new Error(t || 'Silme basarisiz'); });
-            // Dropdown'dan kaldir
+            if (!r.ok) return r.text().then(function(t) { throw new Error(t || 'Silme başarısız'); });
+            // Dropdown'dan kaldır
             var select = document.getElementById('watchlistSelect');
             if (select) {
                 var opts = select.options;
@@ -406,7 +406,7 @@
                         break;
                     }
                 }
-                // Ilk listeye gec
+                // İlk listeye geç
                 if (select.options.length > 0) {
                     select.selectedIndex = 0;
                     currentWatchlistId = parseInt(select.value);
@@ -434,7 +434,7 @@
      * Watchlist'e hisse ekler.
      * @param {number} wlId watchlist ID
      * @param {string} stockCode hisse kodu
-     * @param {string} stockName hisse adi
+     * @param {string} stockName hisse adı
      */
     function addStockToWatchlist(wlId, stockCode, stockName) {
         var errorEl = document.getElementById('addStockError');
@@ -448,19 +448,19 @@
             body: JSON.stringify({ stockCode: stockCode, stockName: stockName || '' })
         })
         .then(function(r) {
-            if (!r.ok) return r.text().then(function(t) { throw new Error(t || 'Ekleme basarisiz'); });
+            if (!r.ok) return r.text().then(function(t) { throw new Error(t || 'Ekleme başarısız'); });
             return r.json();
         })
         .then(function(stock) {
-            successEl.textContent = stockCode + ' basariyla eklendi.';
+            successEl.textContent = stockCode + ' başarıyla eklendi.';
             successEl.classList.remove('d-none');
             setTimeout(function() { successEl.classList.add('d-none'); }, 2000);
 
-            // Empty state'i kaldir
+            // Empty state'i kaldır
             var emptyRow = document.getElementById('emptyRow');
             if (emptyRow) emptyRow.remove();
 
-            // Yeni satiri ekle
+            // Yeni satırı ekle
             var tbody = document.getElementById('watchlistTableBody');
             if (tbody) tbody.appendChild(createStockRow(stock));
         })
@@ -472,7 +472,7 @@
     }
 
     /**
-     * Watchlist'ten hisse cikarir.
+     * Watchlist'ten hisse çıkarır.
      * @param {number} wlId watchlist ID
      * @param {string} stockCode hisse kodu
      */
@@ -484,19 +484,19 @@
             headers: getCsrfHeadersNoContent()
         })
         .then(function(r) {
-            if (!r.ok) throw new Error('Cikarma basarisiz');
+            if (!r.ok) throw new Error('Çıkarma başarısız');
             removeStockRow(stockCode);
         })
         .catch(function(err) {
-            console.warn('[WATCHLIST] Hisse cikarilamadi:', err);
-            alert('Hisse listeden cikarilirken bir hata olustu.');
+            console.warn('[WATCHLIST] Hisse çıkarılamadı:', err);
+            alert('Hisse listeden çıkarılırken bir hata oluştu.');
         });
     }
 
     /**
-     * Hisse siralamasini gunceller.
+     * Hisse sıralamasını günceller.
      * @param {number} wlId watchlist ID
-     * @param {Array<number>} itemIds sirali item ID listesi
+     * @param {Array<number>} itemIds sıralı item ID listesi
      */
     function reorderStocks(wlId, itemIds) {
         fetch('/ajax/watchlists/' + wlId + '/stocks/reorder', {
@@ -505,15 +505,15 @@
             body: JSON.stringify({ itemIds: itemIds })
         })
         .catch(function() {
-            // Siralama kaydetme basarisiz — sessizce atla
+            // Sıralama kaydetme başarısız — sessizce atla
         });
     }
 
     // ── Stock Search (Hisse Ekle Modal) ────────────────────
 
     /**
-     * Hisse listesini API'den ceker ve cache'ler.
-     * @param {Function} cb veri hazir oldugunda cagirilacak fonksiyon
+     * Hisse listesini API'den çeker ve cache'ler.
+     * @param {Function} cb veri hazır olduğunda çağırılacak fonksiyon
      */
     function ensureStockCache(cb) {
         if (stockCache) {
@@ -540,10 +540,10 @@
     }
 
     /**
-     * Hisse listesini sorgu metnine gore filtreler. Ticker eslesmesi once.
+     * Hisse listesini sorgu metnine göre filtreler. Ticker eşleşmesi önce.
      * @param {Array} stocks hisse listesi
-     * @param {string} query arama metni (kucuk harf)
-     * @returns {Array} filtrelenmis liste (max 8)
+     * @param {string} query arama metni (küçük harf)
+     * @returns {Array} filtrelenmiş liste (max 8)
      */
     function filterStocks(stocks, query) {
         var tickerMatches = [];
@@ -568,9 +568,9 @@
     }
 
     /**
-     * Arama sonuclarini dropdown'a render eder (DOM API, XSS-safe).
-     * @param {HTMLElement} container sonuc container'i
-     * @param {Array} results filtrelenmis hisse listesi
+     * Arama sonuçlarını dropdown'a render eder (DOM API, XSS-safe).
+     * @param {HTMLElement} container sonuç container'ı
+     * @param {Array} results filtrelenmiş hisse listesi
      */
     function renderSearchResults(container, results) {
         while (container.firstChild) container.removeChild(container.firstChild);
@@ -578,7 +578,7 @@
         if (results.length === 0) {
             var emptyDiv = document.createElement('div');
             emptyDiv.className = 'list-group-item text-muted text-center py-3';
-            emptyDiv.textContent = 'Sonuc bulunamadi';
+            emptyDiv.textContent = 'Sonuç bulunamadı';
             container.appendChild(emptyDiv);
             return;
         }
@@ -639,13 +639,13 @@
     // ── SortableJS ─────────────────────────────────────────
 
     /**
-     * Tablo satirlarinda drag-drop siralamayi baslatir.
+     * Tablo satırlarında drag-drop sıralamayı başlatır.
      */
     function initSortable() {
         var tbody = document.getElementById('watchlistTableBody');
         if (!tbody || typeof Sortable === 'undefined') return;
 
-        // Onceki Sortable instance'i temizle
+        // Önceki Sortable instance'ı temizle
         if (tbody._sortableInstance) {
             tbody._sortableInstance.destroy();
         }
@@ -671,7 +671,7 @@
     // ── STOMP WebSocket ────────────────────────────────────
 
     /**
-     * STOMP WebSocket baglantisi kurar ve watchlist fiyat guncellemelerini dinler.
+     * STOMP WebSocket bağlantısı kurar ve watchlist fiyat güncellemelerini dinler.
      */
     function initWebSocket() {
         var USER_EMAIL = document.body.getAttribute('data-user-email') || '';
@@ -693,13 +693,13 @@
                     var data = JSON.parse(msg.body);
                     updateRowPrices(data);
                 } catch(e) {
-                    // JSON parse hatasi — sessizce atla
+                    // JSON parse hatası — sessizce atla
                 }
             });
         };
 
         stompClient.onStompError = function() {
-            // STOMP hatasi — reconnect otomatik
+            // STOMP hatası — reconnect otomatik
         };
 
         stompClient.activate();
@@ -712,14 +712,14 @@
     }
 
     /**
-     * Tablo satirindaki fiyat/degisim/hacim degerlerini gunceller (DOM API, XSS-safe).
-     * @param {Object} data fiyat guncelleme verisi (stockCode, lastPrice, changePercent, volume)
+     * Tablo satırındaki fiyat/değişim/hacim değerlerini günceller (DOM API, XSS-safe).
+     * @param {Object} data fiyat güncelleme verisi (stockCode, lastPrice, changePercent, volume)
      */
     function updateRowPrices(data) {
         var row = document.querySelector('#watchlistTableBody tr[data-stock-code="' + data.stockCode + '"]');
         if (!row) return;
 
-        // Fiyat hucresini guncelle
+        // Fiyat hücresini güncelle
         var priceCell = row.querySelector('.price-cell');
         if (priceCell && data.lastPrice != null) {
             priceCell.textContent = formatPrice(data.lastPrice);
@@ -727,7 +727,7 @@
             setTimeout(function() { priceCell.classList.remove('bg-soft-warning'); }, 800);
         }
 
-        // Degisim hucresini guncelle (DOM API, innerHTML yok)
+        // Değişim hücresini güncelle (DOM API, innerHTML yok)
         var changeCell = row.querySelector('.change-cell');
         if (changeCell && data.changePercent != null) {
             while (changeCell.firstChild) changeCell.removeChild(changeCell.firstChild);
@@ -737,7 +737,7 @@
             changeCell.appendChild(span);
         }
 
-        // Hacim hucresini guncelle
+        // Hacim hücresini güncelle
         var volumeCell = row.querySelector('.volume-cell');
         if (volumeCell && data.volume != null) {
             volumeCell.textContent = formatVolume(data.volume);
@@ -747,7 +747,7 @@
     // ── Initialization ─────────────────────────────────────
 
     /**
-     * Sayfa baslatma fonksiyonu. Event listener'lari baglar.
+     * Sayfa başlatma fonksiyonu. Event listener'ları bağlar.
      */
     function init() {
         var selectEl = document.getElementById('watchlistSelect');
@@ -755,7 +755,7 @@
             currentWatchlistId = parseInt(selectEl.value);
         }
 
-        // Dropdown degisince hisseleri yukle
+        // Dropdown değişince hisseleri yükle
         if (selectEl) {
             selectEl.addEventListener('change', function() {
                 currentWatchlistId = parseInt(this.value);
@@ -763,7 +763,7 @@
             });
         }
 
-        // ── Yeni Liste Olustur ──
+        // ── Yeni Liste Oluştur ──
         var saveNewBtn = document.getElementById('saveNewWatchlistBtn');
         if (saveNewBtn) {
             saveNewBtn.addEventListener('click', function() {
@@ -773,7 +773,7 @@
             });
         }
 
-        // ── Liste Duzenle Modal — show'da doldur ──
+        // ── Liste Düzenle Modal — show'da doldur ──
         var editModal = document.getElementById('editWatchlistModal');
         if (editModal) {
             editModal.addEventListener('show.bs.modal', function() {
@@ -798,7 +798,7 @@
             });
         }
 
-        // ── Liste Sil Modal — show'da adi goster ──
+        // ── Liste Sil Modal — show'da adı göster ──
         var deleteModal = document.getElementById('deleteWatchlistModal');
         if (deleteModal) {
             deleteModal.addEventListener('show.bs.modal', function() {
@@ -837,7 +837,7 @@
             });
         }
 
-        // Modal kapandiginda arama alanini temizle
+        // Modal kapandığında arama alanını temizle
         var addStockModal = document.getElementById('addStockModal');
         if (addStockModal) {
             addStockModal.addEventListener('hidden.bs.modal', function() {
@@ -864,7 +864,7 @@
             });
         }
 
-        // ── Ilk yukleme: hacim hucreleri formatlama ──
+        // ── İlk yükleme: hacim hücreleri formatlama ──
         document.querySelectorAll('.volume-cell[data-volume]').forEach(function(cell) {
             var v = parseFloat(cell.getAttribute('data-volume'));
             if (!isNaN(v)) cell.textContent = formatVolume(v);
