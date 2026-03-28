@@ -720,9 +720,23 @@
         }
 
         // Collapsed strip tıklama → panel aç
-        var collapsedStrip = document.getElementById('wp-collapsed-strip');
-        if (collapsedStrip) {
-            collapsedStrip.addEventListener('click', openPanel);
+        // Sağ şerit — hamburger sol menüyü toggle eder
+        var stripHamburger = document.getElementById('wp-strip-hamburger');
+        if (stripHamburger) {
+            stripHamburger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var hiddenBtn = document.getElementById('topnav-hamburger-icon');
+                if (hiddenBtn) hiddenBtn.click(); // Velzon app.js toggle'ını tetikle
+            });
+        }
+
+        // Sağ şerit — liste ikonu paneli açar
+        var stripWatchlist = document.getElementById('wp-strip-watchlist');
+        if (stripWatchlist) {
+            stripWatchlist.addEventListener('click', function(e) {
+                e.stopPropagation();
+                openPanel();
+            });
         }
 
         // Backdrop (mobile)

@@ -12,7 +12,7 @@
     background: var(--vz-card-bg, #fff);
     border-left: 1px solid var(--vz-border-color, #e9ebec);
     z-index: 999; /* topbar (1002) ve dropdown'lardan düşük */
-    transform: translateX(calc(100% - 40px)); /* Kapalıyken 40px ince şerit görünür */
+    transform: translateX(calc(100% - 50px)); /* Kapalıyken 50px ince şerit görünür */
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
@@ -26,7 +26,7 @@
 
 /* Kapalı şerit — her zaman 40px margin */
 .main-content {
-    margin-right: 40px;
+    margin-right: 50px;
     transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -40,7 +40,7 @@ body.watchlist-panel-open .main-content {
     position: absolute;
     top: 0;
     right: 0;
-    width: 40px;
+    width: 50px;
     height: 100%;
     display: flex;
     flex-direction: column;
