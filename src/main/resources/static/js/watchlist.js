@@ -221,6 +221,17 @@
     }
 
     /**
+     * Liste varsa düzenle/sil/hisse ekle butonlarını aktif eder.
+     */
+    function enableActionButtons() {
+        var btns = ['editWatchlistBtn', 'deleteWatchlistBtn', 'addStockBtn'];
+        btns.forEach(function(id) {
+            var btn = document.getElementById(id);
+            if (btn) btn.disabled = false;
+        });
+    }
+
+    /**
      * Belirli bir hisse satırını tablodan kaldırır.
      * @param {string} code hisse kodu
      */
@@ -302,6 +313,7 @@
                 loadWatchlistStocks(wl.id);
             }
 
+            enableActionButtons();
             saveBtn.disabled = false;
             setTimeout(function() {
                 var modal = bootstrap.Modal.getInstance(document.getElementById('createWatchlistModal'));
@@ -776,9 +788,10 @@
         // ── Liste Düzenle Modal — show'da doldur ──
         var editModal = document.getElementById('editWatchlistModal');
         if (editModal) {
-            editModal.addEventListener('show.bs.modal', function() {
+            editModal.addEventListener('show.bs.modal', function(event) {
+                if (!currentWatchlistId) { event.preventDefault(); return; }
                 var select = document.getElementById('watchlistSelect');
-                if (!select || !select.value) return;
+                if (!select || !select.value) { event.preventDefault(); return; }
                 var selectedOpt = select.options[select.selectedIndex];
                 document.getElementById('editWlId').value = select.value;
                 document.getElementById('editWlName').value = selectedOpt ? selectedOpt.textContent : '';
@@ -801,7 +814,8 @@
         // ── Liste Sil Modal — show'da adı göster ──
         var deleteModal = document.getElementById('deleteWatchlistModal');
         if (deleteModal) {
-            deleteModal.addEventListener('show.bs.modal', function() {
+            deleteModal.addEventListener('show.bs.modal', function(event) {
+                if (!currentWatchlistId) { event.preventDefault(); return; }
                 var select = document.getElementById('watchlistSelect');
                 var nameEl = document.getElementById('deleteWlName');
                 if (select && nameEl) {
@@ -837,9 +851,18 @@
             });
         }
 
-        // Modal kapandığında arama alanını temizle
+        // Liste yoksa Hisse Ekle modalını engelle ve uyarı göster
         var addStockModal = document.getElementById('addStockModal');
         if (addStockModal) {
+            addStockModal.addEventListener('show.bs.modal', function(event) {
+                if (!currentWatchlistId) {
+                    event.preventDefault();
+                    alert('Önce bir takip listesi oluşturmanız gerekiyor.');
+                    return;
+                }
+            });
+
+            // Modal kapandığında arama alanını temizle
             addStockModal.addEventListener('hidden.bs.modal', function() {
                 if (searchInput) searchInput.value = '';
                 if (searchResults) {
