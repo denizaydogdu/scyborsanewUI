@@ -719,6 +719,12 @@
             closeBtn.addEventListener('click', closePanel);
         }
 
+        // Collapsed strip tıklama → panel aç
+        var collapsedStrip = document.getElementById('wp-collapsed-strip');
+        if (collapsedStrip) {
+            collapsedStrip.addEventListener('click', openPanel);
+        }
+
         // Backdrop (mobile)
         var backdrop = document.getElementById('watchlist-panel-backdrop');
         if (backdrop) {

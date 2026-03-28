@@ -12,7 +12,7 @@
     background: var(--vz-card-bg, #fff);
     border-left: 1px solid var(--vz-border-color, #e9ebec);
     z-index: 1001;
-    transform: translateX(100%);
+    transform: translateX(calc(100% - 40px)); /* Kapalıyken 40px ince şerit görünür */
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
@@ -24,14 +24,69 @@
     transform: translateX(0);
 }
 
-/* Main content push effect */
-body.watchlist-panel-open .main-content {
-    margin-right: 320px;
+/* Kapalı şerit — her zaman 40px margin */
+.main-content {
+    margin-right: 40px;
     transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.main-content {
-    transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Main content push effect — açıkken 320px */
+body.watchlist-panel-open .main-content {
+    margin-right: 320px;
+}
+
+/* ── Collapsed Strip (kapalıyken görünen ince şerit) ── */
+#wp-collapsed-strip {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 12px;
+    gap: 16px;
+    cursor: pointer;
+    background: var(--vz-card-bg, #fff);
+    border-left: 1px solid var(--vz-border-color, #e9ebec);
+    z-index: 2;
+}
+
+#wp-collapsed-strip .wp-strip-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    color: var(--vz-secondary-color, #878a99);
+    font-size: 18px;
+    transition: all 0.15s;
+}
+
+#wp-collapsed-strip .wp-strip-icon:hover {
+    background: var(--vz-light, #f3f6f9);
+    color: var(--vz-primary, #405189);
+}
+
+/* Panel açıkken strip'i gizle */
+#watchlist-panel.open #wp-collapsed-strip {
+    display: none;
+}
+
+/* Panel açıkken içerik görünsün */
+.watchlist-panel-header,
+.watchlist-panel-body,
+.watchlist-panel-footer {
+    transition: opacity 0.2s;
+}
+
+#watchlist-panel:not(.open) .watchlist-panel-header,
+#watchlist-panel:not(.open) .watchlist-panel-body,
+#watchlist-panel:not(.open) .watchlist-panel-footer {
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* ── Header ── */
@@ -260,10 +315,19 @@ body.watchlist-panel-open #watchlist-panel-toggle {
         width: 100%;
         top: 0;
         z-index: 1060;
+        transform: translateX(100%); /* Mobile'da tamamen gizli */
     }
 
-    body.watchlist-panel-open .main-content {
-        margin-right: 0;
+    #watchlist-panel.open {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-right: 0 !important; /* Mobile'da ince şerit yok */
+    }
+
+    #wp-collapsed-strip {
+        display: none !important; /* Mobile'da strip gizli */
     }
 
     body.watchlist-panel-open #watchlist-panel-backdrop {
