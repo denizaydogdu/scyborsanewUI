@@ -109,6 +109,27 @@ body.watchlist-panel-open .main-content {
 }
 
 /* ── Body ── */
+/* ── Kolon Başlıkları ── */
+.wp-column-header {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--vz-secondary-color, #878a99);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--vz-border-color, #e9ebec);
+    background: var(--vz-light, #f3f6f9);
+    flex-shrink: 0;
+}
+.wp-col-logo { width: 28px; flex-shrink: 0; }
+.wp-col-code { min-width: 55px; }
+.wp-col-price { min-width: 55px; text-align: right; }
+.wp-col-change { min-width: 55px; text-align: right; }
+.wp-col-action { width: 20px; flex-shrink: 0; }
+
 .watchlist-panel-body {
     flex: 1;
     overflow-y: auto;
