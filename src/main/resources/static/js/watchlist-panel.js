@@ -421,11 +421,10 @@
 
             renderStockList([]);
 
-            // Modal'i kapat ve input'u temizle
+            // Modal'ı kapat ve input'u temizle
             var modalInput = document.getElementById('wp-new-list-name');
             if (modalInput) modalInput.value = '';
-            var modalEl = document.getElementById('wp-new-list-modal');
-            if (modalEl) modalEl.style.display = 'none';
+            if (window._wpCloseNewListModal) window._wpCloseNewListModal();
         })
         .catch(function(err) {
             console.warn('[WP] Liste oluşturulamadı:', err);
@@ -776,34 +775,18 @@
      */
     function wireNewListModal() {
         var newListBtn = document.getElementById('wp-new-list-btn');
-        var newListModal = document.getElementById('wp-new-list-modal');
-        var newListClose = document.getElementById('wp-new-list-modal-close');
-        var newListCancel = document.getElementById('wp-new-list-cancel');
+        var newListModalEl = document.getElementById('wp-new-list-modal');
         var newListSave = document.getElementById('wp-new-list-save');
         var newListInput = document.getElementById('wp-new-list-name');
+        var bsNewListModal = newListModalEl ? new bootstrap.Modal(newListModalEl) : null;
 
-        if (newListBtn && newListModal) {
+        if (newListBtn && bsNewListModal) {
             newListBtn.addEventListener('click', function() {
-                newListModal.style.display = 'block';
-                // Hisse Ekle modal'ini kapat
-                var addStockModal = document.getElementById('wp-add-stock-modal');
-                if (addStockModal) addStockModal.style.display = 'none';
-                if (newListInput) {
-                    newListInput.value = '';
-                    newListInput.focus();
-                }
-            });
-        }
-
-        if (newListClose && newListModal) {
-            newListClose.addEventListener('click', function() {
-                newListModal.style.display = 'none';
-            });
-        }
-
-        if (newListCancel && newListModal) {
-            newListCancel.addEventListener('click', function() {
-                newListModal.style.display = 'none';
+                if (newListInput) { newListInput.value = ''; }
+                var errorEl = document.getElementById('wp-new-list-error');
+                if (errorEl) errorEl.classList.add('d-none');
+                bsNewListModal.show();
+                setTimeout(function() { if (newListInput) newListInput.focus(); }, 300);
             });
         }
 
@@ -819,11 +802,13 @@
                     e.preventDefault();
                     createWatchlist(newListInput.value);
                 }
-                if (e.key === 'Escape' && newListModal) {
-                    newListModal.style.display = 'none';
-                }
             });
         }
+
+        // Başarılı oluşturma sonrası modalı kapat
+        window._wpCloseNewListModal = function() {
+            if (bsNewListModal) bsNewListModal.hide();
+        };
     }
 
     /**
@@ -831,28 +816,27 @@
      */
     function wireAddStockSearch() {
         var addStockBtn = document.getElementById('wp-add-stock-btn');
-        var addStockModal = document.getElementById('wp-add-stock-modal');
-        var addStockClose = document.getElementById('wp-add-stock-modal-close');
+        var addStockModalEl = document.getElementById('wp-add-stock-modal');
         var searchInput = document.getElementById('wp-add-stock-search');
         var searchResults = document.getElementById('wp-add-stock-results');
+        var bsAddStockModal = addStockModalEl ? new bootstrap.Modal(addStockModalEl) : null;
 
-        if (addStockBtn && addStockModal) {
+        if (addStockBtn && bsAddStockModal) {
             addStockBtn.addEventListener('click', function() {
-                var isVisible = addStockModal.style.display === 'block';
-                addStockModal.style.display = isVisible ? 'none' : 'block';
-                // Yeni Liste modal'ini kapat
-                var newListModal = document.getElementById('wp-new-list-modal');
-                if (newListModal) newListModal.style.display = 'none';
-                if (!isVisible && searchInput) {
-                    searchInput.value = '';
-                    searchInput.focus();
-                }
+                if (searchInput) searchInput.value = '';
+                if (searchResults) { searchResults.style.display = 'none'; while (searchResults.firstChild) searchResults.removeChild(searchResults.firstChild); }
+                var successEl = document.getElementById('wp-add-stock-success');
+                var errorEl = document.getElementById('wp-add-stock-error');
+                if (successEl) successEl.classList.add('d-none');
+                if (errorEl) errorEl.classList.add('d-none');
+                bsAddStockModal.show();
+                setTimeout(function() { if (searchInput) searchInput.focus(); }, 300);
             });
         }
 
-        if (addStockClose && addStockModal) {
-            addStockClose.addEventListener('click', function() {
-                addStockModal.style.display = 'none';
+        // Modal kapandığında arama temizle
+        if (addStockModalEl) {
+            addStockModalEl.addEventListener('hidden.bs.modal', function() {
                 clearSearchInput();
             });
         }

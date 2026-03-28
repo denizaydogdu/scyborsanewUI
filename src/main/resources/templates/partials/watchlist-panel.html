@@ -38,43 +38,54 @@
                 </a>
             </div>
 
-            <!-- Yeni Liste Modal (inline) -->
-            <div id="wp-new-list-modal" class="wp-inline-modal" style="display:none;">
-                <div class="wp-inline-modal-content">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="fw-semibold">Yeni Liste Oluştur</span>
-                        <button type="button" class="btn-close btn-close-sm" id="wp-new-list-modal-close"></button>
+        </div>
+
+        <!-- Yeni Liste Modal (Bootstrap 5 popup) -->
+        <div class="modal fade" id="wp-new-list-modal" tabindex="-1">
+            <div class="modal-dialog modal-sm modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header py-2">
+                        <h6 class="modal-title"><i class="ri-add-line me-1"></i> Yeni Takip Listesi</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
                     </div>
-                    <div class="mb-2">
-                        <input type="text" class="form-control form-control-sm" id="wp-new-list-name"
-                               placeholder="Liste adı" maxlength="50" />
+                    <div class="modal-body py-3">
+                        <div class="mb-2">
+                            <label class="form-label fs-13">Liste Adı</label>
+                            <input type="text" class="form-control form-control-sm" id="wp-new-list-name"
+                                   placeholder="Örneğin: Teknoloji Hisseleri" maxlength="50" />
+                        </div>
+                        <div class="alert alert-danger mt-2 mb-0 py-1 px-2 fs-12 d-none" id="wp-new-list-error"></div>
                     </div>
-                    <div class="d-flex gap-1">
-                        <button type="button" class="btn btn-primary btn-sm flex-fill" id="wp-new-list-save">
-                            Oluştur
+                    <div class="modal-footer py-2">
+                        <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">İptal</button>
+                        <button type="button" class="btn btn-success btn-sm" id="wp-new-list-save">
+                            <i class="ri-save-line me-1"></i> Oluştur
                         </button>
-                        <button type="button" class="btn btn-light btn-sm" id="wp-new-list-cancel">
-                            İptal
-                        </button>
                     </div>
-                    <div class="alert alert-danger alert-sm mt-2 mb-0 py-1 px-2 fs-12 d-none" id="wp-new-list-error"></div>
                 </div>
             </div>
+        </div>
 
-            <!-- Hisse Ekle Modal (inline) -->
-            <div id="wp-add-stock-modal" class="wp-inline-modal" style="display:none;">
-                <div class="wp-inline-modal-content">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="fw-semibold">Hisse Ekle</span>
-                        <button type="button" class="btn-close btn-close-sm" id="wp-add-stock-modal-close"></button>
+        <!-- Hisse Ekle Modal (Bootstrap 5 popup) -->
+        <div class="modal fade" id="wp-add-stock-modal" tabindex="-1">
+            <div class="modal-dialog modal-sm modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header py-2">
+                        <h6 class="modal-title"><i class="ri-add-circle-line me-1"></i> Hisse Ekle</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
                     </div>
-                    <div class="position-relative mb-2">
-                        <input type="text" class="form-control form-control-sm" id="wp-add-stock-search"
-                               placeholder="Hisse kodu veya adı ara..." autocomplete="off" />
-                        <div id="wp-add-stock-results" class="wp-search-results" style="display:none;"></div>
+                    <div class="modal-body py-3">
+                        <div class="position-relative mb-2">
+                            <input type="text" class="form-control form-control-sm" id="wp-add-stock-search"
+                                   placeholder="Hisse kodu veya adı ara..." autocomplete="off" />
+                            <div id="wp-add-stock-results" class="wp-search-results" style="display:none;"></div>
+                        </div>
+                        <div class="alert alert-success mt-2 mb-0 py-1 px-2 fs-12 d-none" id="wp-add-stock-success"></div>
+                        <div class="alert alert-danger mt-2 mb-0 py-1 px-2 fs-12 d-none" id="wp-add-stock-error"></div>
                     </div>
-                    <div class="alert alert-success alert-sm mt-2 mb-0 py-1 px-2 fs-12 d-none" id="wp-add-stock-success"></div>
-                    <div class="alert alert-danger alert-sm mt-2 mb-0 py-1 px-2 fs-12 d-none" id="wp-add-stock-error"></div>
+                    <div class="modal-footer py-2">
+                        <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">Kapat</button>
+                    </div>
                 </div>
             </div>
         </div>
