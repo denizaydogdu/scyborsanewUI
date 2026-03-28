@@ -24,26 +24,18 @@
     transform: translateX(0);
 }
 
-/* Kapalı şerit — her zaman 50px margin (content + topbar) */
+/* Kapalı şerit — content sağdan 50px margin */
 .main-content {
     margin-right: 50px;
     transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Topbar sağdan şerit genişliği kadar padding — avatar çakışmasını önler */
-#page-topbar {
-    right: 50px;
-    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Main content push effect — açıkken 320px */
+/* Açık panel — content sağdan 320px margin */
 body.watchlist-panel-open .main-content {
     margin-right: 320px;
 }
 
-body.watchlist-panel-open #page-topbar {
-    right: 320px;
-}
+/* Topbar'a DOKUNMA — her zaman full genişlik, sabit, sağa full yanaşık */
 
 /* ── Collapsed Strip (kapalıyken görünen ince şerit — panelin SOL kenarında) ── */
 #wp-collapsed-strip {
@@ -335,10 +327,6 @@ body.watchlist-panel-open #watchlist-panel-toggle {
 
     .main-content {
         margin-right: 0 !important; /* Mobile'da ince şerit yok */
-    }
-
-    #page-topbar {
-        right: 0 !important; /* Mobile'da topbar full genişlik */
     }
 
     #wp-collapsed-strip {
