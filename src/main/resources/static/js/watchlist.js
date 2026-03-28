@@ -108,44 +108,50 @@
         tdDrag.appendChild(dragIcon);
         tr.appendChild(tdDrag);
 
-        // Logo
-        var tdLogo = document.createElement('td');
-        var avatarDiv = document.createElement('div');
-        avatarDiv.className = 'avatar-xs';
+        // Hisse (logo + kod + ad — /tum-hisseler pattern'i)
+        var tdStock = document.createElement('td');
+        var flexDiv = document.createElement('div');
+        flexDiv.className = 'd-flex align-items-center';
+
+        // Avatar
+        var avatarWrap = document.createElement('div');
+        avatarWrap.className = 'flex-shrink-0 avatar-xs me-2';
+        var code = stock.stockCode || '?';
 
         var fallbackDiv = document.createElement('div');
-        fallbackDiv.className = 'avatar-title rounded-circle bg-light text-dark fw-semibold';
-        fallbackDiv.style.cssText = 'font-size:0.55rem;width:32px;height:32px;';
-        var code = stock.stockCode || '?';
+        fallbackDiv.className = 'avatar-title rounded-circle fw-semibold';
+        fallbackDiv.style.cssText = 'background:transparent;color:#495057;border:1.5px solid #ced4da;font-size:0.55rem;';
         fallbackDiv.textContent = code.length > 4 ? code.substring(0, 4) : code;
 
         if (stock.logoid) {
             var img = document.createElement('img');
             img.src = '/img/stock-logos/' + stock.logoid;
-            img.className = 'rounded-circle';
-            img.style.cssText = 'width:32px;height:32px;';
+            img.alt = code;
+            img.className = 'avatar-xs rounded-circle';
             img.onerror = function() {
                 img.style.display = 'none';
                 fallbackDiv.style.display = 'flex';
             };
             fallbackDiv.style.display = 'none';
-            avatarDiv.appendChild(img);
+            avatarWrap.appendChild(img);
         }
-        avatarDiv.appendChild(fallbackDiv);
-        tdLogo.appendChild(avatarDiv);
-        tr.appendChild(tdLogo);
+        avatarWrap.appendChild(fallbackDiv);
+        flexDiv.appendChild(avatarWrap);
 
-        // Hisse bilgisi
-        var tdStock = document.createElement('td');
+        // Kod + Ad
+        var infoDiv = document.createElement('div');
         var link = document.createElement('a');
-        link.href = '/stock/detail/' + encodeURIComponent(stock.stockCode || '');
+        link.href = '/stock/detail/' + encodeURIComponent(code);
         link.className = 'fw-semibold text-primary';
-        link.textContent = stock.stockCode || '';
-        tdStock.appendChild(link);
+        link.textContent = code;
+        infoDiv.appendChild(link);
         var nameP = document.createElement('p');
         nameP.className = 'text-muted mb-0 fs-12';
         nameP.textContent = stock.stockName || '';
-        tdStock.appendChild(nameP);
+        infoDiv.appendChild(nameP);
+        flexDiv.appendChild(infoDiv);
+
+        tdStock.appendChild(flexDiv);
         tr.appendChild(tdStock);
 
         // Fiyat
@@ -166,12 +172,6 @@
             tdChange.textContent = '-';
         }
         tr.appendChild(tdChange);
-
-        // Hacim
-        var tdVolume = document.createElement('td');
-        tdVolume.className = 'text-end volume-cell';
-        tdVolume.textContent = formatVolume(stock.volume);
-        tr.appendChild(tdVolume);
 
         // Sil butonu
         var tdAction = document.createElement('td');
@@ -204,7 +204,7 @@
             var emptyTr = document.createElement('tr');
             emptyTr.id = 'emptyRow';
             var emptyTd = document.createElement('td');
-            emptyTd.colSpan = 7;
+            emptyTd.colSpan = 5;
             emptyTd.className = 'text-center text-muted py-4';
             var emptyIcon = document.createElement('i');
             emptyIcon.className = 'ri-list-check fs-24 d-block mb-2';
@@ -765,11 +765,6 @@
             changeCell.appendChild(span);
         }
 
-        // Hacim hücresini güncelle
-        var volumeCell = row.querySelector('.volume-cell');
-        if (volumeCell && data.volume != null) {
-            volumeCell.textContent = formatVolume(data.volume);
-        }
     }
 
     // ── Initialization ─────────────────────────────────────
@@ -932,12 +927,6 @@
                 }
             });
         }
-
-        // ── İlk yükleme: hacim hücreleri formatlama ──
-        document.querySelectorAll('.volume-cell[data-volume]').forEach(function(cell) {
-            var v = parseFloat(cell.getAttribute('data-volume'));
-            if (!isNaN(v)) cell.textContent = formatVolume(v);
-        });
 
         initSortable();
         initWebSocket();

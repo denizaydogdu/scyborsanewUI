@@ -65,11 +65,9 @@
                             <thead class="table-light">
                                 <tr>
                                     <th style="width: 30px;"></th>
-                                    <th style="width: 50px;">Logo</th>
                                     <th>Hisse</th>
                                     <th class="text-end">Fiyat</th>
                                     <th class="text-end">Değişim %</th>
-                                    <th class="text-end">Hacim</th>
                                     <th class="text-center" style="width: 60px;"></th>
                                 </tr>
                             </thead>
@@ -77,20 +75,23 @@
                                 <tr th:each="stock : ${stocks}" th:data-stock-code="${stock.stockCode}" th:data-item-id="${stock.id}">
                                     <td class="drag-handle" style="cursor: grab;"><i class="ri-drag-move-2-line text-muted"></i></td>
                                     <td>
-                                        <div class="avatar-xs">
-                                            <img th:if="${stock.logoid != null}" th:src="'/img/stock-logos/' + ${stock.logoid}"
-                                                 class="rounded-circle" style="width:32px;height:32px;"
-                                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-                                            <div class="avatar-title rounded-circle bg-light text-dark fw-semibold"
-                                                 style="font-size:0.55rem;width:32px;height:32px;"
-                                                 th:style="${stock.logoid != null} ? 'display:none;font-size:0.55rem;width:32px;height:32px;' : 'font-size:0.55rem;width:32px;height:32px;'"
-                                                 th:text="${stock.stockCode != null ? (stock.stockCode.length() > 4 ? stock.stockCode.substring(0, 4) : stock.stockCode) : '?'}"></div>
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 avatar-xs me-2">
+                                                <img th:if="${stock.logoid != null and !stock.logoid.isEmpty()}"
+                                                     th:src="'/img/stock-logos/' + ${stock.logoid}"
+                                                     th:alt="${stock.stockCode}"
+                                                     class="avatar-xs rounded-circle"
+                                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                                                <div th:style="'background:transparent;color:#495057;border:1.5px solid #ced4da;font-size:0.55rem' + (${stock.logoid != null and !stock.logoid.isEmpty()} ? ';display:none' : '')"
+                                                     class="avatar-title rounded-circle fw-semibold"
+                                                     th:text="${stock.stockCode != null ? (stock.stockCode.length() > 4 ? stock.stockCode.substring(0, 4) : stock.stockCode) : '?'}"></div>
+                                            </div>
+                                            <div>
+                                                <a th:href="@{/stock/detail/{code}(code=${stock.stockCode})}" class="fw-semibold text-primary"
+                                                   th:text="${stock.stockCode}"></a>
+                                                <p class="text-muted mb-0 fs-12" th:text="${stock.stockName}"></p>
+                                            </div>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <a th:href="@{/stock/detail/{code}(code=${stock.stockCode})}" class="fw-semibold text-primary"
-                                           th:text="${stock.stockCode}"></a>
-                                        <p class="text-muted mb-0 fs-12" th:text="${stock.stockName}"></p>
                                     </td>
                                     <td class="text-end price-cell"
                                         th:text="${stock.price != null ? #numbers.formatDecimal(stock.price, 1, 2) + ' TL' : '-'}"></td>
@@ -100,7 +101,6 @@
                                               th:text="${(stock.changePercent >= 0 ? '+' : '') + #numbers.formatDecimal(stock.changePercent, 1, 2) + '%'}"></span>
                                         <span th:if="${stock.changePercent == null}">-</span>
                                     </td>
-                                    <td class="text-end volume-cell" th:data-volume="${stock.volume}">-</td>
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-soft-danger remove-stock-btn"
                                                 th:data-stock-code="${stock.stockCode}" title="Listeden Çıkar">
@@ -110,7 +110,7 @@
                                 </tr>
                                 <!-- Empty state -->
                                 <tr id="emptyRow" th:if="${stocks == null or #lists.isEmpty(stocks)}">
-                                    <td colspan="7" class="text-center text-muted py-4">
+                                    <td colspan="5" class="text-center text-muted py-4">
                                         <i class="ri-list-check fs-24 d-block mb-2"></i>
                                         Bu listede henüz hisse yok. "Hisse Ekle" ile başlayın.
                                     </td>
