@@ -520,15 +520,15 @@
      */
     function renderSearchResults(container, results) {
         while (container.firstChild) container.removeChild(container.firstChild);
-        container.style.display = results.length > 0 ? 'block' : 'none';
-
         if (results.length === 0) {
             var emptyDiv = document.createElement('div');
-            emptyDiv.className = 'wp-search-item text-muted text-center py-2';
+            emptyDiv.className = 'wp-search-result-item text-muted text-center py-2';
             emptyDiv.textContent = 'Sonuç bulunamadı';
             container.appendChild(emptyDiv);
+            container.style.display = 'block';
             return;
         }
+        container.style.display = 'block';
 
         for (var i = 0; i < results.length; i++) {
             (function(stock) {

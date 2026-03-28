@@ -277,9 +277,8 @@ body.watchlist-panel-open #watchlist-panel-toggle {
 }
 
 .watchlist-panel-body::-webkit-scrollbar-thumb {
-    background: var(--vz-secondary-color, #878a99);
+    background: rgba(135, 138, 153, 0.5);
     border-radius: 2px;
-    opacity: 0.5;
 }
 
 .watchlist-panel-body::-webkit-scrollbar-track {

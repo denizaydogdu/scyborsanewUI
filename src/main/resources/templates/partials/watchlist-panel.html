@@ -29,10 +29,6 @@
             <!-- Body -->
             <div class="watchlist-panel-body">
                 <div id="wp-stock-list"></div>
-                <div class="wp-empty-state" id="wp-empty-state" style="display:none;">
-                    <i class="ri-list-check fs-36 text-muted d-block mb-2"></i>
-                    <span class="text-muted">Henüz hisse eklenmedi</span>
-                </div>
             </div>
 
             <!-- Footer -->
@@ -61,8 +57,7 @@
                             İptal
                         </button>
                     </div>
-                    <div class="alert alert-danger alert-sm mt-2 mb-0 py-1 px-2 fs-12" id="wp-new-list-error"
-                         style="display:none;"></div>
+                    <div class="alert alert-danger alert-sm mt-2 mb-0 py-1 px-2 fs-12 d-none" id="wp-new-list-error"></div>
                 </div>
             </div>
 
@@ -78,10 +73,8 @@
                                placeholder="Hisse kodu veya adı ara..." autocomplete="off" />
                         <div id="wp-add-stock-results" class="wp-search-results" style="display:none;"></div>
                     </div>
-                    <div class="alert alert-success alert-sm mt-2 mb-0 py-1 px-2 fs-12" id="wp-add-stock-success"
-                         style="display:none;"></div>
-                    <div class="alert alert-danger alert-sm mt-2 mb-0 py-1 px-2 fs-12" id="wp-add-stock-error"
-                         style="display:none;"></div>
+                    <div class="alert alert-success alert-sm mt-2 mb-0 py-1 px-2 fs-12 d-none" id="wp-add-stock-success"></div>
+                    <div class="alert alert-danger alert-sm mt-2 mb-0 py-1 px-2 fs-12 d-none" id="wp-add-stock-error"></div>
                 </div>
             </div>
         </div>

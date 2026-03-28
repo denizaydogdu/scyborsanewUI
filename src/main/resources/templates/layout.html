@@ -40,6 +40,8 @@
 
 
 	<div th:replace="~{partials/vendor-scripts :: scripts}"></div>
+	<!-- SortableJS (drag-drop — pagejs'den once yukle, watchlist.js bagimli) -->
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
 
 	<th:block layout:fragment="pagejs" />
 	<!-- App js -->
@@ -53,8 +55,6 @@
 	<script th:src="@{/webjars/sockjs-client/sockjs.min.js}"></script>
 	<!-- Alarm Bildirim Sistemi -->
 	<script th:src="@{/js/alarm-notifications.js}"></script>
-	<!-- SortableJS (drag-drop for watchlist) -->
-	<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
 	<!-- Watchlist Panel JS -->
 	<script th:src="@{/js/watchlist-panel.js}"></script>
 </body>
