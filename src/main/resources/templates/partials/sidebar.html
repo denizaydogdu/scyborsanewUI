@@ -139,6 +139,13 @@
 						</li>
 
 						<li class="nav-item">
+							<a class="nav-link menu-link" href="/takas-analizi"
+							   th:classappend="${#strings.startsWith(requestURI, '/takas-analizi')} ? 'active' : ''">
+								<i class="ri-exchange-funds-line"></i> <span data-key="t-takas-analizi">Takas Analizi</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
 							<a class="nav-link menu-link" href="/alarmlar"
 							   th:classappend="${#strings.startsWith(requestURI, '/alarmlar')} ? 'active' : ''">
 								<i class="ri-alarm-line"></i> <span>Alarmlarım</span>

@@ -87,17 +87,18 @@
 </section>
 
 <th:block layout:fragment="pagejs">
+    <script th:src="@{/js/market-hours.js}"></script>
     <script>
         // Hacim degerlerini K/M/B formatina donustur
         document.querySelectorAll('.volume-cell').forEach(function(cell) {
             var vol = parseFloat(cell.getAttribute('data-volume'));
             if (isNaN(vol)) return;
             if (vol >= 1e9) {
-                cell.textContent = (vol / 1e9).toFixed(2) + 'B';
+                cell.textContent = (vol / 1e9).toFixed(2) + ' Milyar';
             } else if (vol >= 1e6) {
-                cell.textContent = (vol / 1e6).toFixed(2) + 'M';
+                cell.textContent = (vol / 1e6).toFixed(2) + ' Milyon';
             } else if (vol >= 1e3) {
-                cell.textContent = (vol / 1e3).toFixed(1) + 'K';
+                cell.textContent = (vol / 1e3).toFixed(1) + ' Bin';
             }
         });
 
@@ -158,10 +159,20 @@
             });
         })();
 
-        // 60 saniyede bir sayfa otomatik yenilenir
-        setInterval(function() {
-            window.location.reload();
-        }, 60000);
+        // Seans durumuna gore adaptive sayfa yenileme
+        (function() {
+            var LIVE_INTERVAL = 60000;      // 60s (seans ici)
+            var OFFHOURS_INTERVAL = 300000; // 5dk (seans disi)
+
+            function getReloadInterval() {
+                if (window.ScyborsaMarketHours) {
+                    return window.ScyborsaMarketHours.isMarketOpen() ? LIVE_INTERVAL : OFFHOURS_INTERVAL;
+                }
+                return OFFHOURS_INTERVAL;
+            }
+
+            setTimeout(function() { window.location.reload(); }, getReloadInterval());
+        })();
     </script>
 </th:block>
 </body>

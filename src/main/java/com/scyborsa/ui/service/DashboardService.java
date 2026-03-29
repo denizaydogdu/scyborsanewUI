@@ -21,16 +21,33 @@ import java.util.stream.Collectors;
  *
  * <p>scyborsaApi'deki dashboard endpoint'lerini WebClient ile cagirarak
  * piyasa sentiment ve endeks performans verilerini getirir.</p>
+ *
+ * <p>Her endpoint icin volatile cache bulunur (30s TTL). SSR + hemen arkasindan
+ * gelen AJAX isteklerinde double-fetch engeller. Locking yok — worst case
+ * 2 concurrent fetch, zararsiz.</p>
  */
 @Slf4j
 @Service
 public class DashboardService {
+
+    /** UI-side cache TTL — 30 saniye. API cache'den kisa, SSR+AJAX double-fetch engeli. */
+    private static final long UI_CACHE_TTL_MS = 30_000L;
 
     /** scyborsaApi'ye HTTP istekleri gondermek icin kullanilan WebClient. */
     private final WebClient webClient;
 
     /** Sektor verilerini saglayan servis. */
     private final SectorService sectorService;
+
+    // --- Volatile cache alanlari ---
+    private volatile DashboardSentimentDto cachedSentiment;
+    private volatile long sentimentCacheTs;
+    private volatile List<IndexPerformanceDto> cachedIndexes;
+    private volatile long indexesCacheTs;
+    private volatile List<GlobalMarketDto> cachedGlobalMarkets;
+    private volatile long globalMarketsCacheTs;
+    private volatile List<SectorSummaryDto> cachedSectors;
+    private volatile long sectorsCacheTs;
 
     /**
      * Constructor -- WebClient.Builder ve SectorService inject eder.
@@ -52,6 +69,11 @@ public class DashboardService {
      * @return sentiment verileri; hata durumunda tum degerleri 0.0 olan fallback DTO
      */
     public DashboardSentimentDto getSentiment() {
+        long now = System.currentTimeMillis();
+        if (cachedSentiment != null && (now - sentimentCacheTs) < UI_CACHE_TTL_MS) {
+            log.debug("[DASHBOARD-UI] Sentiment cache hit");
+            return cachedSentiment;
+        }
         log.debug("[DASHBOARD-UI] Sentiment verileri isteniyor");
         try {
             DashboardSentimentDto result = webClient.get()
@@ -59,9 +81,16 @@ public class DashboardService {
                     .retrieve()
                     .bodyToMono(DashboardSentimentDto.class)
                     .block(Duration.ofSeconds(10));
-            return result != null ? result : emptySentiment();
+            DashboardSentimentDto value = result != null ? result : emptySentiment();
+            cachedSentiment = value;
+            sentimentCacheTs = System.currentTimeMillis();
+            return value;
         } catch (Exception e) {
             log.warn("[DASHBOARD-UI] Sentiment verileri alinamadi, fallback kullaniliyor", e);
+            if (cachedSentiment != null) {
+                sentimentCacheTs = System.currentTimeMillis();
+                return cachedSentiment;
+            }
             return emptySentiment();
         }
     }
@@ -76,6 +105,11 @@ public class DashboardService {
      * @return endeks performans listesi; hata durumunda bos liste
      */
     public List<IndexPerformanceDto> getIndexPerformances() {
+        long now = System.currentTimeMillis();
+        if (cachedIndexes != null && (now - indexesCacheTs) < UI_CACHE_TTL_MS) {
+            log.debug("[DASHBOARD-UI] Index performance cache hit");
+            return cachedIndexes;
+        }
         log.debug("[DASHBOARD-UI] Index performance verileri isteniyor");
         try {
             List<IndexPerformanceDto> result = webClient.get()
@@ -84,9 +118,16 @@ public class DashboardService {
                     .bodyToFlux(IndexPerformanceDto.class)
                     .collectList()
                     .block(Duration.ofSeconds(10));
-            return result != null ? result : Collections.emptyList();
+            List<IndexPerformanceDto> value = result != null ? result : Collections.emptyList();
+            cachedIndexes = value;
+            indexesCacheTs = System.currentTimeMillis();
+            return value;
         } catch (Exception e) {
             log.warn("[DASHBOARD-UI] Index performance verileri alinamadi", e);
+            if (cachedIndexes != null) {
+                indexesCacheTs = System.currentTimeMillis();
+                return cachedIndexes;
+            }
             return Collections.emptyList();
         }
     }
@@ -124,6 +165,11 @@ public class DashboardService {
      * @return global piyasa listesi; hata durumunda bos liste
      */
     public List<GlobalMarketDto> getGlobalMarkets() {
+        long now = System.currentTimeMillis();
+        if (cachedGlobalMarkets != null && (now - globalMarketsCacheTs) < UI_CACHE_TTL_MS) {
+            log.debug("[DASHBOARD-UI] Global market cache hit");
+            return cachedGlobalMarkets;
+        }
         log.debug("[DASHBOARD-UI] Global market verileri isteniyor");
         try {
             List<GlobalMarketDto> result = webClient.get()
@@ -132,9 +178,16 @@ public class DashboardService {
                     .bodyToFlux(GlobalMarketDto.class)
                     .collectList()
                     .block(Duration.ofSeconds(10));
-            return result != null ? result : Collections.emptyList();
+            List<GlobalMarketDto> value = result != null ? result : Collections.emptyList();
+            cachedGlobalMarkets = value;
+            globalMarketsCacheTs = System.currentTimeMillis();
+            return value;
         } catch (Exception e) {
             log.warn("[DASHBOARD-UI] Global market verileri alinamadi", e);
+            if (cachedGlobalMarkets != null) {
+                globalMarketsCacheTs = System.currentTimeMillis();
+                return cachedGlobalMarkets;
+            }
             return Collections.emptyList();
         }
     }
@@ -177,10 +230,22 @@ public class DashboardService {
      * @return sektor ozet listesi; hata durumunda bos liste
      */
     public List<SectorSummaryDto> getSectorSummaries() {
+        long now = System.currentTimeMillis();
+        if (cachedSectors != null && (now - sectorsCacheTs) < UI_CACHE_TTL_MS) {
+            log.debug("[DASHBOARD-UI] Sektor ozetleri cache hit");
+            return cachedSectors;
+        }
         try {
-            return sectorService.getSectorSummaries();
+            List<SectorSummaryDto> value = sectorService.getSectorSummaries();
+            cachedSectors = value;
+            sectorsCacheTs = System.currentTimeMillis();
+            return value;
         } catch (Exception e) {
             log.warn("[DASHBOARD-UI] Sektor ozetleri alinamadi", e);
+            if (cachedSectors != null) {
+                sectorsCacheTs = System.currentTimeMillis();
+                return cachedSectors;
+            }
             return Collections.emptyList();
         }
     }

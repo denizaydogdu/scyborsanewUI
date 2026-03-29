@@ -3,7 +3,6 @@ package com.scyborsa.ui.controller;
 import com.scyborsa.ui.dto.DashboardSentimentDto;
 import com.scyborsa.ui.dto.GlobalMarketDto;
 import com.scyborsa.ui.dto.IndexPerformanceDto;
-import com.scyborsa.ui.dto.MoneyFlowResponse;
 import com.scyborsa.ui.dto.SectorStockDto;
 import com.scyborsa.ui.dto.SectorSummaryDto;
 import com.scyborsa.ui.service.Bist100Service;

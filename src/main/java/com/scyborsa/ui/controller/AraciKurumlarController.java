@@ -2,6 +2,7 @@ package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.AraciKurumAkdListDto;
 import com.scyborsa.ui.dto.AraciKurumDetailDto;
+import com.scyborsa.ui.dto.BrokerageTakasListDto;
 import com.scyborsa.ui.service.AraciKurumListService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,6 +83,44 @@ public class AraciKurumlarController {
         }
 
         return "araciKurumlar/araci-kurumlar-list";
+    }
+
+    /**
+     * Takas analizi sayfasini gosterir.
+     *
+     * <p>Araci kurumlarin takas (saklama) dagilimini, piyasa paylarini
+     * ve haftalik degisimlerini gosteren sayfayi sunar.</p>
+     *
+     * @param model Thymeleaf model
+     * @return template adi
+     */
+    @GetMapping("/takas-analizi")
+    public String takasAnalizi(Model model) {
+        log.info("[ARACI-KURUM-UI] Takas analizi sayfasi istendi");
+
+        BrokerageTakasListDto response = araciKurumListService.getTakasListesi();
+
+        if (response != null && response.getItems() != null && !response.getItems().isEmpty()) {
+            var items = response.getItems();
+            model.addAttribute("kurumlar", items);
+            model.addAttribute("kurumSayisi", items.size());
+
+            // Toplam piyasa degeri
+            double totalMarketValue = items.stream()
+                    .mapToDouble(BrokerageTakasListDto.BrokerageTakasItemDto::getLastValue)
+                    .sum();
+            model.addAttribute("totalMarketValue", totalMarketValue);
+
+            // En buyuk kurum (liste zaten sirali)
+            model.addAttribute("topKurum", items.get(0));
+        } else {
+            model.addAttribute("kurumlar", Collections.emptyList());
+            model.addAttribute("kurumSayisi", 0);
+            model.addAttribute("totalMarketValue", 0.0);
+            model.addAttribute("topKurum", null);
+        }
+
+        return "araciKurumlar/takas-analizi";
     }
 
     /**

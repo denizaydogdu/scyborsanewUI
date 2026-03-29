@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Takas Analizi')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title-3('Takas Analizi', 'Aracı Kurumlar', '/araci-kurumlar')}"></div>
+
+    <!-- Row 1: 3 KPI Cards -->
+    <div class="row">
+        <!-- KPI 1: Toplam Piyasa Değeri -->
+        <div class="col-xl-4 col-md-4">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Toplam Piyasa Değeri</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4">
+                                <span class="total-market-value" th:attr="data-value=${totalMarketValue}">-</span>
+                            </h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3 border">
+                                <i class="ri-money-dollar-circle-line text-primary"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI 2: Kurum Sayısı -->
+        <div class="col-xl-4 col-md-4">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Kurum Sayısı</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4" th:text="${kurumSayisi}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3 border">
+                                <i class="ri-building-line text-info"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI 3: En Büyük Kurum -->
+        <div class="col-xl-4 col-md-4">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1 overflow-hidden">
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">En Büyük Kurum</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4" th:if="${topKurum != null}">
+                                <span th:text="${topKurum.title}">-</span>
+                                <small class="text-muted fs-14 d-block mt-1" th:text="${topKurum.formattedLast}">-</small>
+                            </h4>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4" th:if="${topKurum == null}">Veri yok</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3 border">
+                                <i class="ri-trophy-line text-warning"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ana Kart: Takas Dağılımı Tablosu -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1">Takas Dağılımı</h4>
+                    <div class="flex-shrink-0">
+                        <span class="badge bg-primary-subtle text-primary" th:text="${kurumSayisi} + ' Kurum'">0 Kurum</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Empty state -->
+                    <div th:if="${#lists.isEmpty(kurumlar)}" class="text-center py-5">
+                        <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                   colors="primary:#405189,secondary:#0ab39c" style="width:75px;height:75px"></lord-icon>
+                        <h5 class="mt-2">Veri Bulunamadı</h5>
+                        <p class="text-muted mb-0">Aracı kurum takas dağılım verisi yüklenemedi.</p>
+                    </div>
+
+                    <!-- Data table -->
+                    <div th:if="${!#lists.isEmpty(kurumlar)}" class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="takasTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="width:50px">#</th>
+                                    <th scope="col" class="sortable" data-sort="kurum">Kurum</th>
+                                    <th scope="col" class="sortable text-end" data-sort="guncelDeger">Güncel Değer</th>
+                                    <th scope="col" class="sortable text-end" data-sort="haftalikDegisim">Haftalık Değişim</th>
+                                    <th scope="col" class="sortable text-end" data-sort="piyasaPayi">Piyasa Payı %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="kurum, stat : ${kurumlar}">
+                                    <td th:text="${stat.index + 1}">1</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <!-- Logo + fallback -->
+                                            <div class="avatar-xs me-2 flex-shrink-0">
+                                                <img th:if="${kurum.logoUrl != null and !kurum.logoUrl.isEmpty()}"
+                                                     th:src="${kurum.logoUrl}"
+                                                     class="rounded-circle img-fluid"
+                                                     style="width:32px;height:32px;object-fit:contain"
+                                                     th:alt="${kurum.shortTitle}"
+                                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                                                <div class="avatar-title rounded-circle bg-light text-primary border"
+                                                     th:style="'width:32px;height:32px;font-size:11px' + (${kurum.logoUrl != null and !kurum.logoUrl.isEmpty()} ? ';display:none' : '')"
+                                                     th:text="${kurum.shortTitle != null ? kurum.shortTitle.substring(0, T(java.lang.Math).min(3, kurum.shortTitle.length())).toUpperCase() : '?'}">?</div>
+                                            </div>
+                                            <div>
+                                                <span class="fw-medium text-body" th:text="${kurum.title}">Kurum Adi</span>
+                                                <small class="text-muted d-block" th:text="${kurum.code}">CODE</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end fw-medium" th:attr="data-value=${kurum.lastValue}" th:text="${kurum.formattedLast}">0</td>
+                                    <td class="text-end"
+                                        th:attr="data-value=${kurum.weeklyChange}"
+                                        th:classappend="${kurum.weeklyChange > 0 ? 'text-success fw-medium' : (kurum.weeklyChange < 0 ? 'text-danger fw-medium' : '')}">
+                                        <span th:if="${kurum.weeklyChange > 0}" th:text="'+' + ${#numbers.formatDecimal(kurum.weeklyChange, 1, 2)} + '%'">0%</span>
+                                        <span th:if="${kurum.weeklyChange < 0}" th:text="${#numbers.formatDecimal(kurum.weeklyChange, 1, 2)} + '%'">0%</span>
+                                        <span th:if="${kurum.weeklyChange == 0}" class="text-muted">0,00%</span>
+                                    </td>
+                                    <td class="text-end" th:attr="data-value=${kurum.percentage}">
+                                        <div class="d-flex align-items-center justify-content-end gap-2">
+                                            <span th:text="${#numbers.formatDecimal(kurum.percentage, 1, 2)} + '%'">0%</span>
+                                            <div class="progress progress-sm" style="width:60px;height:5px">
+                                                <div class="progress-bar bg-primary" role="progressbar"
+                                                     th:style="'width:' + ${kurum.percentage} + '%'"
+                                                     th:attr="aria-valuenow=${kurum.percentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<th:block layout:fragment="pagejs">
+<style>
+    #takasTable th.sortable { cursor: pointer; position: relative; padding-right: 20px !important; }
+    #takasTable th.sortable::after { content: '\2195'; position: absolute; right: 6px; top: 50%; transform: translateY(-50%); opacity: 0.3; font-size: 12px; }
+    #takasTable th.sortable.sorting_asc::after { content: '\2191'; opacity: 0.8; }
+    #takasTable th.sortable.sorting_desc::after { content: '\2193'; opacity: 0.8; }
+</style>
+<script>
+(function() {
+    'use strict';
+
+    // Hacim formatlama (Turkce: Trilyon, Milyar, Milyon, Bin)
+    function formatVolume(value) {
+        var v = Math.abs(value);
+        var sign = value < 0 ? '-' : '';
+        if (v >= 1e12) return sign + (v / 1e12).toFixed(2) + ' Trilyon';
+        if (v >= 1e9) return sign + (v / 1e9).toFixed(2) + ' Milyar';
+        if (v >= 1e6) return sign + (v / 1e6).toFixed(2) + ' Milyon';
+        if (v >= 1e3) return sign + (v / 1e3).toFixed(1) + ' Bin';
+        return sign + v.toLocaleString('tr-TR');
+    }
+
+    // Format total market value in KPI card
+    document.querySelectorAll('.total-market-value').forEach(function(el) {
+        var value = parseFloat(el.getAttribute('data-value'));
+        if (!isNaN(value) && value > 0) {
+            el.textContent = formatVolume(value);
+        }
+    });
+
+    // Column sorting
+    var table = document.getElementById('takasTable');
+    if (table) {
+        var headers = table.querySelectorAll('th.sortable');
+        var tbody = table.querySelector('tbody');
+        var currentSort = { col: null, asc: true };
+
+        headers.forEach(function(header) {
+            header.addEventListener('click', function() {
+                var sortKey = this.getAttribute('data-sort');
+                var colIndex = Array.from(this.parentElement.children).indexOf(this);
+                var asc = (currentSort.col === sortKey) ? !currentSort.asc : false; // default desc
+
+                var rows = Array.from(tbody.querySelectorAll('tr'));
+                rows.sort(function(a, b) {
+                    var aVal, bVal;
+                    if (sortKey === 'kurum') {
+                        var aEl = a.cells[colIndex].querySelector('.fw-medium');
+                        var bEl = b.cells[colIndex].querySelector('.fw-medium');
+                        aVal = aEl ? aEl.textContent.trim().toLowerCase() : '';
+                        bVal = bEl ? bEl.textContent.trim().toLowerCase() : '';
+                        return asc ? aVal.localeCompare(bVal, 'tr') : bVal.localeCompare(aVal, 'tr');
+                    } else {
+                        var aCellVal = a.cells[colIndex].getAttribute('data-value');
+                        var bCellVal = b.cells[colIndex].getAttribute('data-value');
+                        aVal = aCellVal ? parseFloat(aCellVal) : 0;
+                        bVal = bCellVal ? parseFloat(bCellVal) : 0;
+                        return asc ? aVal - bVal : bVal - aVal;
+                    }
+                });
+
+                rows.forEach(function(row, idx) {
+                    row.cells[0].textContent = idx + 1;
+                    tbody.appendChild(row);
+                });
+
+                // Update sort indicators
+                headers.forEach(function(h) { h.classList.remove('sorting_asc', 'sorting_desc'); });
+                this.classList.add(asc ? 'sorting_asc' : 'sorting_desc');
+                currentSort = { col: sortKey, asc: asc };
+            });
+        });
+    }
+
+})();
+</script>
+</th:block>
+</body>
+
+</html>

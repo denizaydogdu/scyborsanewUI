@@ -10,8 +10,21 @@
     'use strict';
 
     var REFRESH_INTERVAL = 60000;
+    var OFFHOURS_REFRESH_INTERVAL = 120000; // 2 dakika (seans disi — forex/kripto 7/24)
     var ERROR_RETRY_DELAY = 120000;
     var MAX_CONSECUTIVE_ERRORS = 3;
+
+    /**
+     * Piyasa durumuna gore uygun polling araligini doner.
+     * Seans aciksa 60s, kapaliysa 2dk (forex/kripto 7/24 islem gorur).
+     * @returns {number} Milisaniye cinsinden polling araligi
+     */
+    function getRefreshInterval() {
+        if (window.ScyborsaMarketHours) {
+            return window.ScyborsaMarketHours.isMarketOpen() ? REFRESH_INTERVAL : OFFHOURS_REFRESH_INTERVAL;
+        }
+        return OFFHOURS_REFRESH_INTERVAL;
+    }
 
     var consecutiveErrors = 0;
     var refreshTimer = null;
@@ -230,7 +243,7 @@
                         }
                         consecutiveErrors = 0;
                     }
-                    scheduleNext(REFRESH_INTERVAL);
+                    scheduleNext(getRefreshInterval());
                 } catch (e) {
                     console.warn('[GLOBAL-MARKET] JSON parse hatasi:', e);
                     handleError();
@@ -254,7 +267,7 @@
             consecutiveErrors = 0;
             scheduleNext(ERROR_RETRY_DELAY);
         } else {
-            scheduleNext(REFRESH_INTERVAL);
+            scheduleNext(getRefreshInterval());
         }
     }
 
@@ -267,7 +280,7 @@
         // SSR verisi varsa hemen render et
         if (window.initialGlobalMarkets && window.initialGlobalMarkets.length > 0) {
             renderSlider(window.initialGlobalMarkets);
-            scheduleNext(REFRESH_INTERVAL);
+            scheduleNext(getRefreshInterval());
         } else {
             // SSR bossa hemen fetch yap (60s bekleme)
             fetchData();

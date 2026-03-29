@@ -10,8 +10,21 @@
     'use strict';
 
     var REFRESH_INTERVAL = 30000;       // 30 saniye
+    var OFFHOURS_REFRESH_INTERVAL = 300000; // 5 dakika (seans disi)
     var ERROR_RETRY_DELAY = 120000;     // 2 dakika
     var MAX_CONSECUTIVE_ERRORS = 3;
+
+    /**
+     * Piyasa durumuna gore uygun polling araligini doner.
+     * Seans aciksa 30s, kapaliysa 5dk.
+     * @returns {number} Milisaniye cinsinden polling araligi
+     */
+    function getRefreshInterval() {
+        if (window.ScyborsaMarketHours) {
+            return window.ScyborsaMarketHours.isMarketOpen() ? REFRESH_INTERVAL : OFFHOURS_REFRESH_INTERVAL;
+        }
+        return OFFHOURS_REFRESH_INTERVAL;
+    }
 
     var consecutiveErrors = 0;
     var refreshTimer = null;
@@ -124,7 +137,7 @@
                     var data = JSON.parse(xhr.responseText);
                     processData(data);
                     consecutiveErrors = 0;
-                    scheduleNext(REFRESH_INTERVAL);
+                    scheduleNext(getRefreshInterval());
                 } catch (e) {
                     console.warn('[INDEX-SWIPER] JSON parse hatasi:', e);
                     handleError();
@@ -156,7 +169,7 @@
             consecutiveErrors = 0;
             scheduleNext(ERROR_RETRY_DELAY);
         } else {
-            scheduleNext(REFRESH_INTERVAL);
+            scheduleNext(getRefreshInterval());
         }
     }
 
@@ -178,7 +191,7 @@
         if (window.initialIndexData && window.initialIndexData.length > 0) {
             processData(window.initialIndexData);
         }
-        scheduleNext(REFRESH_INTERVAL);
+        scheduleNext(getRefreshInterval());
     }
 
     // DOMContentLoaded ile baslat

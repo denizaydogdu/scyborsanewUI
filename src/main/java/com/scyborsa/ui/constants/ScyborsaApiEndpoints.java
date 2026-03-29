@@ -187,6 +187,9 @@ public final class ScyborsaApiEndpoints {
     /** Aracı kurum piyasa geneli AKD dağılım listesi endpoint'i. */
     public static final String ARACI_KURUMLAR_AKD_LIST = "/api/v1/araci-kurumlar/akd-list";
 
+    /** Aracı kurum takas (saklama) dağılım listesi endpoint'i. */
+    public static final String ARACI_KURUMLAR_TAKAS_LIST = "/api/v1/araci-kurumlar/takas-list";
+
     /** Aracı kurum hisse bazlı AKD detay endpoint'i. {@code {code}} path variable içerir. */
     public static final String ARACI_KURUM_AKD_DETAIL = "/api/v1/araci-kurumlar/{code}/akd-detail";
 
