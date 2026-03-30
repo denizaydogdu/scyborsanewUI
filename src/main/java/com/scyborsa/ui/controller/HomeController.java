@@ -51,13 +51,20 @@ public class HomeController {
     /**
      * Public landing page gorunumunu doner.
      *
+     * <p>Giris yapmis kullanicilari dashboard'a yonlendirir.
+     * Giris yapmamis kullanicilara landing sayfasini gosterir.</p>
+     *
      * <p><b>HTTP Method:</b> GET</p>
      * <p><b>Path:</b> {@code /}</p>
      *
-     * @return {@code "landing"} — public landing page
+     * @param principal giris yapmis kullanici bilgisi (null ise anonim)
+     * @return giris yapmissa redirect, degilse landing sayfasi
      */
     @GetMapping("/")
-    public String landing() {
+    public String landing(Principal principal) {
+        if (principal != null) {
+            return "redirect:/dashboard";
+        }
         return "landing";
     }
 
