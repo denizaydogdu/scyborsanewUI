@@ -204,8 +204,9 @@
                         alertId: a.id,
                         stockCode: a.stockCode,
                         direction: a.direction,
-                        message: a.triggerPrice
-                            ? (a.direction === 'ABOVE' ? 'hedefe ulaştı ≥' : 'hedefe ulaştı ≤') + ' ' + Number(a.triggerPrice).toLocaleString('tr-TR', {minimumFractionDigits:2}) + '₺'
+                        message: a.targetPrice
+                            ? (a.direction === 'ABOVE' ? 'hedefe ulaştı ≥' : 'hedefe ulaştı ≤') + ' ' + Number(a.targetPrice).toLocaleString('tr-TR', {minimumFractionDigits:2}) + '₺'
+                              + (a.triggerPrice ? ' (' + Number(a.triggerPrice).toLocaleString('tr-TR', {minimumFractionDigits:2}) + '₺)' : '')
                             : (a.direction === 'ABOVE' ? 'hedefe ulaştı' : 'hedefe ulaştı'),
                         triggeredAt: a.triggeredAt
                     });
