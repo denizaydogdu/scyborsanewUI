@@ -47,7 +47,8 @@ public class SecurityConfig {
         http
             .authenticationProvider(authProvider)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/ws-auth-check", "/robots.txt", "/assets/**", "/css/**", "/js/**", "/img/**",
+                .requestMatchers("/", "/login", "/sifremi-unuttum", "/ajax/verify-identity", "/ajax/reset-password",
+                                 "/ws-auth-check", "/robots.txt", "/assets/**", "/css/**", "/js/**", "/img/**",
                                  "/webjars/**", "/favicon.ico", "/error",
                                  "/.well-known/**").permitAll()
                 .requestMatchers("/backoffice/**").hasRole("ADMIN")

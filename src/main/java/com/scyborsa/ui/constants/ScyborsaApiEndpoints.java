@@ -73,6 +73,12 @@ public final class ScyborsaApiEndpoints {
     /** Kullanici giris endpoint'i. */
     public static final String AUTH_LOGIN = "/api/v1/auth/login";
 
+    /** Kimlik dogrulama (sifre sifirlama adim 1) endpoint'i. */
+    public static final String AUTH_VERIFY_IDENTITY = "/api/v1/auth/verify-identity";
+
+    /** Sifre sifirlama endpoint'i. */
+    public static final String AUTH_RESET_PASSWORD = "/api/v1/auth/reset-password";
+
     // ── Kullanici CRUD ────────────────────────────────────
 
     /** Kullanici listesi endpoint'i. */

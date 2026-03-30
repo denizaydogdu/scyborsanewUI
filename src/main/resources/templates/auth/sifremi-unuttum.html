@@ -1,0 +1,377 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="tr" data-layout="vertical" data-topbar="light"
+      data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Şifremi Unuttum | Scyborsa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-WN5GTRFB');</script>
+    <!-- End Google Tag Manager -->
+    <script th:src="@{/assets/js/layout.js}"></script>
+    <link th:href="@{/assets/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/custom.min.css}" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WN5GTRFB"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <div class="auth-page-wrapper pt-5">
+        <!-- auth page bg -->
+        <div class="auth-one-bg-position auth-one-bg" id="auth-particles">
+            <div class="bg-overlay"></div>
+            <div class="shape">
+                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1440 120">
+                    <path d="M 0,36 C 144,53.6 432,123.2 720,124 C 1008,124.8 1296,56.8 1440,40L1440 140L0 140z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- auth page content -->
+        <div class="auth-page-content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center mt-sm-5 mb-4 text-white-50">
+                            <div>
+                                <a th:href="@{/}" class="d-inline-block auth-logo">
+                                    <img th:src="@{/assets/images/logo-light.svg}" alt="Scyborsa" height="32">
+                                </a>
+                            </div>
+                            <p class="mt-3 fs-15 fw-medium">Borsa Verisi İşleme Platformu</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-md-8 col-lg-6 col-xl-5">
+                        <div class="card mt-4">
+                            <div class="card-body p-4">
+
+                                <!-- ══════════ STEP 1: Kimlik Doğrulama ══════════ -->
+                                <div id="step1">
+                                    <div class="text-center mt-2">
+                                        <h5 class="text-primary">Şifremi Unuttum</h5>
+                                        <p class="text-muted">E-posta adresinizi ve telefon numaranızı girerek kimliğinizi doğrulayın.</p>
+                                    </div>
+
+                                    <!-- Hata mesaji -->
+                                    <div id="step1Error" class="alert alert-danger alert-dismissible fade show mt-3 d-none" role="alert">
+                                        <i class="ri-error-warning-line me-1"></i> <span id="step1ErrorMsg"></span>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+                                    </div>
+
+                                    <div class="p-2 mt-4">
+                                        <form id="verifyForm" novalidate>
+                                            <div class="mb-3">
+                                                <label for="verifyEmail" class="form-label">E-posta</label>
+                                                <input type="email" class="form-control" id="verifyEmail" name="email"
+                                                       placeholder="E-posta adresinizi girin" required autofocus>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="verifyPhone" class="form-label">Telefon Numarası</label>
+                                                <input type="tel" class="form-control" id="verifyPhone" name="phoneNumber"
+                                                       placeholder="5XXXXXXXXX" required
+                                                       inputmode="numeric"
+                                                       oninput="this.value = this.value.replace(/[^0-9]/g, '');"
+                                                       minlength="10" maxlength="10">
+                                                <small class="text-muted">Başında 0 veya 90 olmadan 10 haneli giriniz. Örnek: <strong>5423553988</strong></small>
+                                            </div>
+
+                                            <div class="mt-4">
+                                                <button class="btn btn-success w-100" type="submit" id="verifyBtn">Doğrula</button>
+                                            </div>
+                                        </form>
+
+                                        <div class="mt-4 text-center">
+                                            <a th:href="@{/login}" class="text-muted"><i class="ri-arrow-left-line align-middle me-1"></i>Giriş sayfasına dön</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ══════════ STEP 2: Yeni Şifre ══════════ -->
+                                <div id="step2" class="d-none">
+                                    <div class="text-center mt-2">
+                                        <h5 class="text-primary">Yeni Şifre Belirleyin</h5>
+                                        <p class="text-muted">En az 6 karakter uzunluğunda yeni bir şifre girin.</p>
+                                    </div>
+
+                                    <!-- Hata mesaji -->
+                                    <div id="step2Error" class="alert alert-danger alert-dismissible fade show mt-3 d-none" role="alert">
+                                        <i class="ri-error-warning-line me-1"></i> <span id="step2ErrorMsg"></span>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+                                    </div>
+
+                                    <div class="p-2 mt-4">
+                                        <form id="resetForm" novalidate>
+                                            <div class="mb-3">
+                                                <label class="form-label" for="newPassword">Yeni Şifre</label>
+                                                <div class="position-relative auth-pass-inputgroup mb-3">
+                                                    <input type="password" class="form-control pe-5 password-input"
+                                                           placeholder="Yeni şifrenizi girin" id="newPassword" name="newPassword"
+                                                           required minlength="6">
+                                                    <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon"
+                                                            type="button" data-toggle-password="newPassword">
+                                                        <i class="ri-eye-fill align-middle"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label" for="confirmPassword">Şifre Tekrar</label>
+                                                <div class="position-relative auth-pass-inputgroup mb-3">
+                                                    <input type="password" class="form-control pe-5 password-input"
+                                                           placeholder="Şifrenizi tekrar girin" id="confirmPassword" name="confirmPassword"
+                                                           required minlength="6">
+                                                    <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon"
+                                                            type="button" data-toggle-password="confirmPassword">
+                                                        <i class="ri-eye-fill align-middle"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-4">
+                                                <button class="btn btn-success w-100" type="submit" id="resetBtn">Şifreyi Güncelle</button>
+                                            </div>
+                                        </form>
+
+                                        <div class="mt-4 text-center">
+                                            <a th:href="@{/login}" class="text-muted"><i class="ri-arrow-left-line align-middle me-1"></i>Giriş sayfasına dön</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ══════════ STEP 3: Başarılı ══════════ -->
+                                <div id="step3" class="d-none">
+                                    <div class="text-center mt-2 mb-4 pt-4 pb-2">
+                                        <div class="mb-4">
+                                            <div class="avatar-lg mx-auto">
+                                                <div class="avatar-title bg-light text-success display-5 rounded-circle">
+                                                    <i class="ri-checkbox-circle-fill"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h5 class="text-primary">Şifreniz başarıyla güncellendi!</h5>
+                                        <p class="text-muted">Yeni şifreniz ile giriş yapabilirsiniz.</p>
+                                        <div class="mt-4">
+                                            <a th:href="@{/login}" class="btn btn-success w-100">Giriş Yap</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Ana Sayfa linki -->
+                        <div class="mt-4 text-center">
+                            <a th:href="@{/}" class="text-muted">
+                                <i class="ri-arrow-left-line align-middle me-1"></i> Ana Sayfa
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="text-center">
+                            <p class="mb-0 text-muted">&copy; <span id="currentYear"></span> Scyborsa</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script th:src="@{/assets/libs/bootstrap/js/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/libs/simplebar/simplebar.min.js}"></script>
+    <script th:src="@{/assets/libs/node-waves/waves.min.js}"></script>
+    <script th:src="@{/assets/libs/feather-icons/feather.min.js}"></script>
+    <script th:src="@{/assets/js/pages/plugins/lord-icon-2.1.0.js}"></script>
+    <script th:src="@{/assets/js/plugins.js}"></script>
+
+    <script>
+        // Current year for footer
+        var yearEl = document.getElementById('currentYear');
+        if (yearEl) { yearEl.textContent = new Date().getFullYear(); }
+
+        // CSRF token
+        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        // State — verified email+phone for step 2
+        var verifiedEmail = '';
+        var verifiedPhone = '';
+
+        // ── Helper: set button loading state ──
+        function setLoading(btn, loading, originalText) {
+            if (loading) {
+                btn.disabled = true;
+                btn.textContent = '';
+                var spinner = document.createElement('span');
+                spinner.className = 'spinner-border spinner-border-sm me-1';
+                spinner.setAttribute('role', 'status');
+                spinner.setAttribute('aria-hidden', 'true');
+                btn.appendChild(spinner);
+                btn.appendChild(document.createTextNode(' Lütfen bekleyin...'));
+            } else {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        }
+
+        // ── Helper: show error ──
+        function showError(containerId, msgId, message) {
+            var container = document.getElementById(containerId);
+            var msgEl = document.getElementById(msgId);
+            msgEl.textContent = message;
+            container.classList.remove('d-none');
+        }
+
+        // ── Helper: hide error ──
+        function hideError(containerId) {
+            document.getElementById(containerId).classList.add('d-none');
+        }
+
+        // ── STEP 1: Verify identity ──
+        var verifyForm = document.getElementById('verifyForm');
+        var verifyBtn = document.getElementById('verifyBtn');
+
+        verifyForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            hideError('step1Error');
+
+            var email = document.getElementById('verifyEmail').value.trim();
+            var phone = document.getElementById('verifyPhone').value.trim();
+
+            if (!email || !phone) {
+                showError('step1Error', 'step1ErrorMsg', 'Lütfen tüm alanları doldurun.');
+                return;
+            }
+
+            setLoading(verifyBtn, true);
+
+            fetch('/ajax/verify-identity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify({ email: email, phoneNumber: phone })
+            })
+            .then(function(res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            })
+            .then(function(data) {
+                setLoading(verifyBtn, false, 'Doğrula');
+                if (data.success) {
+                    verifiedEmail = email;
+                    verifiedPhone = phone;
+                    document.getElementById('step1').classList.add('d-none');
+                    document.getElementById('step2').classList.remove('d-none');
+                } else {
+                    showError('step1Error', 'step1ErrorMsg', data.message || 'Kimlik doğrulanamadı.');
+                }
+            })
+            .catch(function() {
+                setLoading(verifyBtn, false, 'Doğrula');
+                showError('step1Error', 'step1ErrorMsg', 'Bağlantı hatası. Lütfen tekrar deneyin.');
+            });
+        });
+
+        // ── STEP 2: Reset password ──
+        var resetForm = document.getElementById('resetForm');
+        var resetBtn = document.getElementById('resetBtn');
+
+        resetForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            hideError('step2Error');
+
+            var newPw = document.getElementById('newPassword').value;
+            var confirmPw = document.getElementById('confirmPassword').value;
+
+            if (!newPw || !confirmPw) {
+                showError('step2Error', 'step2ErrorMsg', 'Lütfen tüm alanları doldurun.');
+                return;
+            }
+
+            if (newPw.length < 6) {
+                showError('step2Error', 'step2ErrorMsg', 'Şifre en az 6 karakter olmalıdır.');
+                return;
+            }
+
+            if (newPw !== confirmPw) {
+                showError('step2Error', 'step2ErrorMsg', 'Şifreler eşleşmiyor.');
+                return;
+            }
+
+            setLoading(resetBtn, true);
+
+            fetch('/ajax/reset-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify({
+                    email: verifiedEmail,
+                    phoneNumber: verifiedPhone,
+                    newPassword: newPw
+                })
+            })
+            .then(function(res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            })
+            .then(function(data) {
+                setLoading(resetBtn, false, 'Şifreyi Güncelle');
+                if (data.success) {
+                    document.getElementById('step2').classList.add('d-none');
+                    document.getElementById('step3').classList.remove('d-none');
+                } else {
+                    showError('step2Error', 'step2ErrorMsg', data.message || 'Şifre güncellenemedi.');
+                }
+            })
+            .catch(function() {
+                setLoading(resetBtn, false, 'Şifreyi Güncelle');
+                showError('step2Error', 'step2ErrorMsg', 'Bağlantı hatası. Lütfen tekrar deneyin.');
+            });
+        });
+
+        // ── Password show/hide toggles ──
+        document.querySelectorAll('[data-toggle-password]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var targetId = this.getAttribute('data-toggle-password');
+                var input = document.getElementById(targetId);
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    this.querySelector('i').classList.replace('ri-eye-fill', 'ri-eye-off-fill');
+                } else {
+                    input.type = 'password';
+                    this.querySelector('i').classList.replace('ri-eye-off-fill', 'ri-eye-fill');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

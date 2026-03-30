@@ -5,6 +5,7 @@ import com.scyborsa.ui.dto.GlobalMarketDto;
 import com.scyborsa.ui.dto.IndexPerformanceDto;
 import com.scyborsa.ui.dto.SectorStockDto;
 import com.scyborsa.ui.dto.SectorSummaryDto;
+import com.scyborsa.ui.service.AuthService;
 import com.scyborsa.ui.service.Bist100Service;
 import com.scyborsa.ui.service.DashboardService;
 import com.scyborsa.ui.service.DividendService;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import org.springframework.http.HttpStatus;
@@ -32,6 +35,9 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
+
+    /** Kimlik dogrulama ve sifre sifirlama islemlerini saglayan servis. */
+    private final AuthService authService;
 
     /** Dashboard verilerini saglayan servis. */
     private final DashboardService dashboardService;
@@ -74,6 +80,65 @@ public class HomeController {
             return isAdmin ? "redirect:/backoffice" : "redirect:/dashboard";
         }
         return "auth/login";
+    }
+
+    /**
+     * Sifremi unuttum sayfasini goruntular.
+     *
+     * <p><b>HTTP Method:</b> GET</p>
+     * <p><b>Path:</b> {@code /sifremi-unuttum}</p>
+     *
+     * @return {@code "auth/sifremi-unuttum"} — sifre sifirlama sayfasi
+     */
+    @GetMapping("/sifremi-unuttum")
+    public String sifremiUnuttum() {
+        return "auth/sifremi-unuttum";
+    }
+
+    /**
+     * Kimlik dogrulama AJAX endpoint'i (sifre sifirlama adim 1).
+     *
+     * <p>E-posta ve telefon numarasini API'ye iletir, dogrulama sonucunu doner.</p>
+     *
+     * <p><b>HTTP Method:</b> POST</p>
+     * <p><b>Path:</b> {@code /ajax/verify-identity}</p>
+     *
+     * @param body email ve phoneNumber iceren request body
+     * @return dogrulama sonucu (success, message)
+     */
+    @PostMapping("/ajax/verify-identity")
+    @ResponseBody
+    public Map<String, Object> verifyIdentity(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String phoneNumber = body.get("phoneNumber");
+        if (email == null || email.isBlank() || phoneNumber == null || phoneNumber.isBlank()) {
+            return Map.of("success", false, "message", "Geçersiz istek.");
+        }
+        return authService.verifyIdentity(email, phoneNumber);
+    }
+
+    /**
+     * Sifre sifirlama AJAX endpoint'i (sifre sifirlama adim 2).
+     *
+     * <p>Dogrulanmis kullanicinin yeni sifresini API'ye iletir.</p>
+     *
+     * <p><b>HTTP Method:</b> POST</p>
+     * <p><b>Path:</b> {@code /ajax/reset-password}</p>
+     *
+     * @param body email, phoneNumber ve newPassword iceren request body
+     * @return sifirlama sonucu (success, message)
+     */
+    @PostMapping("/ajax/reset-password")
+    @ResponseBody
+    public Map<String, Object> resetPassword(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String phoneNumber = body.get("phoneNumber");
+        String newPassword = body.get("newPassword");
+        if (email == null || email.isBlank() || phoneNumber == null || phoneNumber.isBlank()
+                || newPassword == null || newPassword.isBlank()) {
+            return Map.of("success", false, "message", "Geçersiz istek.");
+        }
+        return authService.resetPassword(email, phoneNumber, newPassword);
     }
 
     /**

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
+import java.util.Map;
 
 /**
  * Authentication servis sinifi.
@@ -60,6 +61,59 @@ public class AuthService {
         } catch (Exception e) {
             log.error("[AUTH-UI] API bağlantı hatası", e);
             return failResponse(API_ERROR);
+        }
+    }
+
+    /**
+     * Kimlik dogrulama istegi gonderir (sifre sifirlama adim 1).
+     *
+     * <p>E-posta ve telefon numarasi eslesiyorsa basarili yanit doner.</p>
+     *
+     * @param email       kullanicinin e-posta adresi
+     * @param phoneNumber kullanicinin telefon numarasi
+     * @return dogrulama sonucu (success, message)
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> verifyIdentity(String email, String phoneNumber) {
+        try {
+            Map<String, String> body = Map.of("email", email, "phoneNumber", phoneNumber);
+            Map<String, Object> result = webClient.post()
+                    .uri(ScyborsaApiEndpoints.AUTH_VERIFY_IDENTITY)
+                    .bodyValue(body)
+                    .retrieve()
+                    .bodyToMono(Map.class)
+                    .block(Duration.ofSeconds(10));
+            return result != null ? result : Map.of("success", false, "message", API_ERROR);
+        } catch (Exception e) {
+            log.error("[AUTH-UI] Kimlik dogrulama API hatasi", e);
+            return Map.of("success", false, "message", "Sistem hatasi. Lutfen daha sonra tekrar deneyiniz.");
+        }
+    }
+
+    /**
+     * Sifre sifirlama istegi gonderir (sifre sifirlama adim 2).
+     *
+     * <p>Kimlik dogrulanmis kullanicinin sifresini gunceller.</p>
+     *
+     * @param email       kullanicinin e-posta adresi
+     * @param phoneNumber kullanicinin telefon numarasi
+     * @param newPassword yeni sifre
+     * @return sifirlama sonucu (success, message)
+     */
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> resetPassword(String email, String phoneNumber, String newPassword) {
+        try {
+            Map<String, String> body = Map.of("email", email, "phoneNumber", phoneNumber, "newPassword", newPassword);
+            Map<String, Object> result = webClient.post()
+                    .uri(ScyborsaApiEndpoints.AUTH_RESET_PASSWORD)
+                    .bodyValue(body)
+                    .retrieve()
+                    .bodyToMono(Map.class)
+                    .block(Duration.ofSeconds(10));
+            return result != null ? result : Map.of("success", false, "message", API_ERROR);
+        } catch (Exception e) {
+            log.error("[AUTH-UI] Sifre sifirlama API hatasi", e);
+            return Map.of("success", false, "message", "Sistem hatasi. Lutfen daha sonra tekrar deneyiniz.");
         }
     }
 
