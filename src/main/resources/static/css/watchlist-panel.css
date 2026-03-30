@@ -221,16 +221,6 @@ body.watchlist-panel-open .main-content {
     opacity: 1;
 }
 
-/* ── Price Flash Animation ── */
-@keyframes wp-flash {
-    0% { background: rgba(255, 193, 7, 0.3); }
-    100% { background: transparent; }
-}
-
-.wp-price-flash {
-    animation: wp-flash 600ms ease-out;
-}
-
 /* ── Empty State ── */
 .wp-empty-state {
     display: flex;

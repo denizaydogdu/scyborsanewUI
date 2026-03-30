@@ -748,14 +748,22 @@
         }
     }
 
+    /** Per-stock onceki fiyat takibi (tick yon algılama icin). */
+    var prevPrices = {};
+
+    /** Per-stock flash timer (onceki timer'i temizlemek icin). */
+    var flashTimers = {};
+
     /**
-     * Hisse fiyat/degisim bilgisini gunceller ve flash animasyonu uygular.
+     * Hisse fiyat/degisim bilgisini gunceller ve yon bazli flash animasyonu uygular.
+     * Yesil (yukselis) / kirmizi (dusus) flash — stock detail hero price pattern.
      * @param {Object} data fiyat guncelleme verisi (stockCode, lastPrice, changePercent)
      */
     function updateStockPrice(data) {
         if (!stockListEl || !data || !data.stockCode) return;
 
-        var escaped = CSS.escape(data.stockCode);
+        var code = data.stockCode;
+        var escaped = CSS.escape(code);
         var item = stockListEl.querySelector(
             '.wp-stock-item[data-code="' + escaped + '"]'
         );
@@ -781,11 +789,29 @@
             }
         }
 
-        // Flash animasyonu
-        item.classList.add('wp-price-flash');
-        setTimeout(function() {
-            item.classList.remove('wp-price-flash');
-        }, 600);
+        // Yon bazli flash (yesil/kirmizi) — hero price pattern
+        var tickUp = (prevPrices[code] == null) || (data.lastPrice >= prevPrices[code]);
+        if (data.lastPrice != null) {
+            prevPrices[code] = data.lastPrice;
+        }
+
+        // Onceki timer'i temizle
+        if (flashTimers[code]) clearTimeout(flashTimers[code]);
+
+        // 1) Parlak flash (tick bazli)
+        item.style.transition = 'background 0.15s ease';
+        item.style.borderRadius = '6px';
+        item.style.background = tickUp
+            ? 'rgba(10,179,156,0.35)'   // yesil parlak
+            : 'rgba(240,101,72,0.35)';  // kirmizi parlak
+
+        // 2) 500ms sonra kalici renk (gunluk degisim bazli)
+        flashTimers[code] = setTimeout(function() {
+            var dayPositive = data.changePercent == null || data.changePercent >= 0;
+            item.style.background = dayPositive
+                ? 'rgba(10,179,156,0.15)'   // yesil fade
+                : 'rgba(240,101,72,0.15)';  // kirmizi fade
+        }, 500);
     }
 
     // ── SortableJS ─────────────────────────────────────────
