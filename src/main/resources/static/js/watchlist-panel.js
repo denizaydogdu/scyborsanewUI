@@ -805,13 +805,10 @@
             ? 'rgba(10,179,156,0.35)'   // yesil parlak
             : 'rgba(240,101,72,0.35)';  // kirmizi parlak
 
-        // 2) 500ms sonra kalici renk (gunluk degisim bazli)
+        // 2) 500ms sonra transparan'a don
         flashTimers[code] = setTimeout(function() {
-            var dayPositive = data.changePercent == null || data.changePercent >= 0;
-            item.style.background = dayPositive
-                ? 'rgba(10,179,156,0.15)'   // yesil fade
-                : 'rgba(240,101,72,0.15)';  // kirmizi fade
-        }, 500);
+            item.style.background = 'transparent';
+        }, 1500);
     }
 
     // ── SortableJS ─────────────────────────────────────────

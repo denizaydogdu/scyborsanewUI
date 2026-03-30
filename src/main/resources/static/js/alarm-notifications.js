@@ -27,6 +27,9 @@
     var csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
     var csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
+    var bellIcon = document.querySelector('#page-header-notifications-dropdown .bx-bell');
+    var bellPulseTimer = null;
+
     /**
      * Badge sayisini gunceller.
      *
@@ -40,6 +43,59 @@
         } else {
             badge.style.display = 'none';
         }
+    }
+
+    /**
+     * Zil ikonuna dikkat cekici animasyon uygular.
+     * Kullanici bildirim dropdown'ina tiklayana kadar sallanir.
+     */
+    function animateBell() {
+        if (!bellIcon) return;
+
+        // Badge pulse efekti (onceki timer'i temizle — stacking engeli)
+        badge.style.transition = 'transform 0.3s ease';
+        badge.style.transform = 'scale(1.4)';
+        if (bellPulseTimer) clearTimeout(bellPulseTimer);
+        bellPulseTimer = setTimeout(function() {
+            badge.style.transform = 'scale(1)';
+            bellPulseTimer = null;
+        }, 300);
+
+        // Zil sallama — kullanici tiklayana kadar devam eder
+        bellIcon.classList.add('bell-shake');
+    }
+
+    /**
+     * Zil sallamayi durdurur.
+     */
+    function stopBellShake() {
+        if (bellIcon) bellIcon.classList.remove('bell-shake');
+    }
+
+    /**
+     * Dropdown acildiginda: zil durdur + okunmamis bildirimleri otomatik okundu isaretle.
+     * Boylece sonraki sayfa gecislerinde zil tekrar sallanmaz.
+     */
+    var bellBtn = document.getElementById('page-header-notifications-dropdown');
+    if (bellBtn) {
+        bellBtn.addEventListener('click', function() {
+            stopBellShake();
+            // Okunmamis bildirim varsa otomatik okundu isaretle (DB guncelle)
+            if (unreadCount > 0 && USER_EMAIL) {
+                var countAtClick = unreadCount;
+                var headers = {};
+                if (csrfHeader && csrfToken) headers[csrfHeader] = csrfToken;
+                fetch('/ajax/alerts/read-all', { method: 'PUT', headers: headers })
+                    .then(function(r) {
+                        if (!r.ok) return;
+                        // Fetch sirasinda yeni STOMP alarm geldiyse onu koruma
+                        var newArrived = unreadCount - countAtClick;
+                        updateBadge(newArrived > 0 ? newArrived : 0);
+                        seenAlertIds = {};
+                    })
+                    .catch(function() {});
+            }
+        });
     }
 
     /**
@@ -133,6 +189,7 @@
             .then(function(r) { if (!r.ok) throw new Error('failed'); return r.json(); })
             .then(function(data) {
                 updateBadge(data.count || 0);
+                if (data.count > 0) animateBell();
             })
             .catch(function() {});
 
@@ -175,6 +232,9 @@
                     var notif = JSON.parse(msg.body);
                     updateBadge(unreadCount + 1);
                     addNotification(notif);
+                    // Dropdown aciksa sallama (kullanici zaten bakiyor)
+                    var isOpen = bellBtn && bellBtn.getAttribute('aria-expanded') === 'true';
+                    if (!isOpen) animateBell();
                 } catch (e) {
                     // JSON parse hatasi — sessizce atla
                 }
@@ -198,6 +258,7 @@
                 .then(function(r) {
                     if (!r.ok) return;
                     updateBadge(0);
+                    stopBellShake();
                     // Listedeki bildirim ogelerini temizle
                     var items = list.querySelectorAll('.notification-item');
                     for (var i = 0; i < items.length; i++) {
