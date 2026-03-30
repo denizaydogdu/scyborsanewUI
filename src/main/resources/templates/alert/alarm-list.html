@@ -152,10 +152,10 @@
                                     </td>
                                     <td>
                                         <span th:if="${alert.direction == 'ABOVE'}" class="badge bg-success-subtle text-success">
-                                            <i class="ri-arrow-up-line"></i> Üstüne Çıkınca
+                                            <i class="ri-arrow-up-line"></i> Fiyat ≥ Hedefe Ulaşınca
                                         </span>
                                         <span th:if="${alert.direction == 'BELOW'}" class="badge bg-danger-subtle text-danger">
-                                            <i class="ri-arrow-down-line"></i> Altına Düşünce
+                                            <i class="ri-arrow-down-line"></i> Fiyat ≤ Hedefe Ulaşınca
                                         </span>
                                     </td>
                                     <td class="text-end" th:text="${#numbers.formatDecimal(alert.targetPrice, 1, 2) + ' TL'}">0,00 TL</td>
@@ -219,8 +219,8 @@
                     <div class="mb-3">
                         <label class="form-label">Yön</label>
                         <select class="form-select" id="editAlertDirection">
-                            <option value="ABOVE">Üstüne Çıkınca &#8593;</option>
-                            <option value="BELOW">Altına Düşünce &#8595;</option>
+                            <option value="ABOVE">Fiyat ≥ Hedefe Ulaşınca ↑</option>
+                            <option value="BELOW">Fiyat ≤ Hedefe Ulaşınca ↓</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -274,12 +274,12 @@
                     badge.className = 'badge bg-success-subtle text-success';
                     icon.className = 'ri-arrow-up-line';
                     badge.appendChild(icon);
-                    badge.appendChild(document.createTextNode(' Üstüne Çıkınca'));
+                    badge.appendChild(document.createTextNode(' Fiyat ≥ Hedefe Ulaşınca'));
                 } else {
                     badge.className = 'badge bg-danger-subtle text-danger';
                     icon.className = 'ri-arrow-down-line';
                     badge.appendChild(icon);
-                    badge.appendChild(document.createTextNode(' Altına Düşünce'));
+                    badge.appendChild(document.createTextNode(' Fiyat ≤ Hedefe Ulaşınca'));
                 }
                 cell.appendChild(badge);
             }

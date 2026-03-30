@@ -171,8 +171,8 @@
                     <div class="mb-3">
                         <label class="form-label">Yön</label>
                         <select class="form-select" id="alertDirection">
-                            <option value="ABOVE">Üstüne Çıkınca ↑</option>
-                            <option value="BELOW">Altına Düşünce ↓</option>
+                            <option value="ABOVE">Fiyat ≥ Hedefe Ulaşınca ↑</option>
+                            <option value="BELOW">Fiyat ≤ Hedefe Ulaşınca ↓</option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -1229,15 +1229,32 @@
             var csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
             var csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
 
-            // Hero'dan canlı fiyatı oku
+            // Canli fiyat takibi — WS'den gelen son fiyat veya SSR fiyat
+            var latestLivePrice = /*[[${stockPrice}]]*/ 0;
+
+            // WS fiyat guncellemesinden canli fiyati yakala
+            // (stock-chart.js updatePriceDisplay heroPrice'i guncellerken)
+            var origHeroEl = document.getElementById('heroPrice');
+            if (origHeroEl) {
+                var observer = new MutationObserver(function() {
+                    var text = origHeroEl.textContent.replace(/[^0-9.,]/g, '');
+                    // Turkce format: 121,60 → 121.60
+                    // Ingilizce format: 121.60 → 121.60 (virgul yoksa noktayi koru)
+                    var parsed;
+                    if (text.indexOf(',') >= 0) {
+                        // Turkce: nokta binlik, virgul ondalik
+                        parsed = parseFloat(text.replace(/\./g, '').replace(',', '.'));
+                    } else {
+                        // Ingilizce veya noktasiz: nokta ondalik
+                        parsed = parseFloat(text);
+                    }
+                    if (!isNaN(parsed) && parsed > 0) latestLivePrice = parsed;
+                });
+                observer.observe(origHeroEl, { childList: true, characterData: true, subtree: true });
+            }
+
             function getLivePrice() {
-                var heroEl = document.getElementById('heroPrice');
-                if (heroEl) {
-                    var text = heroEl.textContent.replace(/[^0-9.,]/g, '').replace(/\./g, '').replace(',', '.');
-                    var p = parseFloat(text);
-                    if (!isNaN(p) && p > 0) return p;
-                }
-                return /*[[${stockPrice}]]*/ 0; // fallback SSR fiyat
+                return latestLivePrice > 0 ? latestLivePrice : (/*[[${stockPrice}]]*/ 0);
             }
 
             // Modal açıldığında canlı fiyatı göster
@@ -1268,13 +1285,13 @@
                 }
 
                 if (direction === 'ABOVE' && targetPrice <= stockPrice) {
-                    errDiv.textContent = 'Üstüne çıkınca alarmı için hedef fiyat mevcut fiyattan büyük olmalı.';
+                    errDiv.textContent = 'Fiyat ≥ alarmı için hedef fiyat mevcut fiyattan büyük olmalı.';
                     errDiv.classList.remove('d-none');
                     return;
                 }
 
                 if (direction === 'BELOW' && targetPrice >= stockPrice) {
-                    errDiv.textContent = 'Altına düşünce alarmı için hedef fiyat mevcut fiyattan küçük olmalı.';
+                    errDiv.textContent = 'Fiyat ≤ alarmı için hedef fiyat mevcut fiyattan küçük olmalı.';
                     errDiv.classList.remove('d-none');
                     return;
                 }

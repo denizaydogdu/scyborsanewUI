@@ -150,8 +150,8 @@
                                         <small th:if="${alarm.stockName != null}" class="text-muted d-block" th:text="${alarm.stockName}"></small>
                                     </td>
                                     <td>
-                                        <span th:if="${alarm.direction == 'ABOVE'}" class="badge bg-success-subtle text-success">Üstüne</span>
-                                        <span th:if="${alarm.direction == 'BELOW'}" class="badge bg-danger-subtle text-danger">Altına</span>
+                                        <span th:if="${alarm.direction == 'ABOVE'}" class="badge bg-success-subtle text-success">Fiyat ≥</span>
+                                        <span th:if="${alarm.direction == 'BELOW'}" class="badge bg-danger-subtle text-danger">Fiyat ≤</span>
                                         <span th:if="${alarm.direction != 'ABOVE' and alarm.direction != 'BELOW'}" class="text-muted" th:text="${alarm.direction}">-</span>
                                     </td>
                                     <td>
