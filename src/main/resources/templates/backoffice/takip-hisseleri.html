@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Takip Hisseleri Yönetimi')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Takip Hisseleri Yönetimi', 'Yönetim')}"></div>
+
+    <!-- Flash messages -->
+    <div class="row" th:if="${successMsg}">
+        <div class="col-12">
+            <div class="alert alert-success alert-dismissible fade show" role="alert" th:text="${successMsg}"></div>
+        </div>
+    </div>
+    <div class="row" th:if="${errorMsg}">
+        <div class="col-12">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" th:text="${errorMsg}"></div>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row">
+        <div class="col-xl-4 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Toplam Öneri</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4" th:text="${toplam}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-bar-chart-box-line text-primary"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Kazandıran</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4 text-success" th:text="${kazandiran}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-arrow-up-circle-line text-success"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Ortalama Getiri %</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-4">
+                        <div>
+                            <h4 class="fs-22 fw-semibold ff-secondary mb-4" th:text="${'%' + ortalamaGetiri}">%0.00</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-percent-line text-info"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <h5 class="card-title mb-0 flex-grow-1">Takip Hisseleri</h5>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addTakipHisseModal">
+                            <i class="ri-add-line me-1"></i> Yeni Takip Hissesi
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Empty state -->
+                    <div th:if="${takipHisseleri == null or #lists.isEmpty(takipHisseleri)}" class="text-center py-5">
+                        <i class="ri-focus-2-line fs-1 text-muted"></i>
+                        <h5 class="mt-3 text-muted">Henüz takip hissesi eklenmemiş</h5>
+                    </div>
+
+                    <!-- Table -->
+                    <div th:unless="${takipHisseleri == null or #lists.isEmpty(takipHisseleri)}" class="table-responsive">
+                        <table class="table table-bordered table-nowrap align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Hisse Kodu</th>
+                                    <th>Hisse Adı</th>
+                                    <th>Vade</th>
+                                    <th>Giriş Fiyatı</th>
+                                    <th>Giriş Tarihi</th>
+                                    <th>Güncel Fiyat</th>
+                                    <th>Getiri %</th>
+                                    <th>Hedef</th>
+                                    <th>Stop</th>
+                                    <th>Not</th>
+                                    <th>Durum</th>
+                                    <th>İşlem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="th, iter : ${takipHisseleri}">
+                                    <td th:text="${iter.count}">1</td>
+                                    <td th:text="${th.hisseKodu}">THYAO</td>
+                                    <td th:text="${th.hisseAdi}">THY</td>
+                                    <td>
+                                        <span th:if="${th.vade == 'KISA_VADE'}" class="badge bg-info-subtle text-info">Kısa Vade</span>
+                                        <span th:if="${th.vade == 'ORTA_VADE'}" class="badge bg-warning-subtle text-warning">Orta Vade</span>
+                                        <span th:if="${th.vade == 'UZUN_VADE'}" class="badge bg-primary-subtle text-primary">Uzun Vade</span>
+                                    </td>
+                                    <td th:text="${th.girisFiyati != null ? #numbers.formatDecimal(th.girisFiyati, 1, 'COMMA', 2, 'POINT') + ' ₺' : '-'}">0,00 &#8378;</td>
+                                    <td th:text="${th.girisTarihi != null ? th.girisTarihi : '-'}">-</td>
+                                    <td th:text="${th.guncelFiyat != null ? #numbers.formatDecimal(th.guncelFiyat, 1, 'COMMA', 2, 'POINT') + ' ₺' : '-'}">0,00 &#8378;</td>
+                                    <td>
+                                        <span th:if="${th.getiriYuzde != null and th.getiriYuzde > 0}" class="text-success fw-semibold" th:text="${'%' + #numbers.formatDecimal(th.getiriYuzde, 1, 'COMMA', 2, 'POINT')}">%0,00</span>
+                                        <span th:if="${th.getiriYuzde != null and th.getiriYuzde < 0}" class="text-danger fw-semibold" th:text="${'%' + #numbers.formatDecimal(th.getiriYuzde, 1, 'COMMA', 2, 'POINT')}">%0,00</span>
+                                        <span th:if="${th.getiriYuzde == null or th.getiriYuzde == 0}" class="text-muted">%0,00</span>
+                                    </td>
+                                    <td th:text="${th.hedefFiyat != null ? #numbers.formatDecimal(th.hedefFiyat, 1, 'COMMA', 2, 'POINT') + ' ₺' : '-'}">-</td>
+                                    <td th:text="${th.zararDurdur != null ? #numbers.formatDecimal(th.zararDurdur, 1, 'COMMA', 2, 'POINT') + ' ₺' : '-'}">-</td>
+                                    <td>
+                                        <span th:if="${th.notAciklama != null}" th:text="${#strings.abbreviate(th.notAciklama, 30)}" class="text-muted fs-12"></span>
+                                        <span th:unless="${th.notAciklama != null}" class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${th.aktif}" class="badge bg-success-subtle text-success">Aktif</span>
+                                        <span th:unless="${th.aktif}" class="badge bg-danger-subtle text-danger">Pasif</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button type="button" class="btn btn-sm btn-soft-primary" data-bs-toggle="modal" data-bs-target="#editTakipHisseModal"
+                                                    th:data-id="${th.id}"
+                                                    th:data-hissekodu="${th.hisseKodu}"
+                                                    th:data-hisseadi="${th.hisseAdi}"
+                                                    th:data-vade="${th.vade}"
+                                                    th:data-girisfiyati="${th.girisFiyati}"
+                                                    th:data-giristarihi="${th.girisTarihi}"
+                                                    th:data-hedeffiyat="${th.hedefFiyat}"
+                                                    th:data-zarardurdur="${th.zararDurdur}"
+                                                    th:data-notaciklama="${th.notAciklama}"
+                                                    th:data-sirano="${th.siraNo}">
+                                                <i class="ri-pencil-line"></i>
+                                            </button>
+                                            <form th:unless="${th.aktif}" th:action="@{'/backoffice/takip-hisseleri/' + ${th.id} + '/aktif'}" method="post" style="display:inline">
+                                                <button type="submit" class="btn btn-sm btn-soft-success" title="Aktifleştir"><i class="ri-checkbox-circle-line"></i></button>
+                                            </form>
+                                            <form th:if="${th.aktif}" th:action="@{'/backoffice/takip-hisseleri/' + ${th.id} + '/sil'}" method="post" style="display:inline"
+                                                  onsubmit="return confirm('Bu takip hissesini pasife almak istediğinize emin misiniz?')">
+                                                <button type="submit" class="btn btn-sm btn-soft-danger" title="Pasife Al"><i class="ri-close-circle-line"></i></button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<th:block layout:fragment="modal">
+    <!-- Ekle Modal -->
+    <div class="modal fade" id="addTakipHisseModal" tabindex="-1" aria-labelledby="addTakipHisseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form th:action="@{/backoffice/takip-hisseleri}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addTakipHisseModalLabel">Yeni Takip Hissesi Ekle</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hisse Kodu</label>
+                                <input type="text" name="hisseKodu" class="form-control" required placeholder="Örn: THYAO">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hisse Adı</label>
+                                <input type="text" name="hisseAdi" class="form-control" placeholder="Örn: Türk Hava Yolları">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Vade</label>
+                                <select name="vade" class="form-select" required>
+                                    <option value="KISA_VADE">Kısa Vade</option>
+                                    <option value="ORTA_VADE">Orta Vade</option>
+                                    <option value="UZUN_VADE">Uzun Vade</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giriş Fiyatı</label>
+                                <input type="number" name="girisFiyati" class="form-control" step="0.01" min="0.01" required placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giriş Tarihi</label>
+                                <input type="date" name="girisTarihi" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Sıra No</label>
+                                <input type="number" name="siraNo" class="form-control" value="1">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hedef Fiyat</label>
+                                <input type="number" name="hedefFiyat" class="form-control" step="0.01" min="0.01" placeholder="0.00">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Zarar Durdur</label>
+                                <input type="number" name="zararDurdur" class="form-control" step="0.01" min="0.01" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Not / Açıklama</label>
+                            <textarea name="notAciklama" class="form-control" rows="3" placeholder="Opsiyonel not..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Düzenle Modal -->
+    <div class="modal fade" id="editTakipHisseModal" tabindex="-1" aria-labelledby="editTakipHisseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="editTakipHisseForm" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editTakipHisseModalLabel">Takip Hissesi Düzenle</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hisse Kodu</label>
+                                <input type="text" name="hisseKodu" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hisse Adı</label>
+                                <input type="text" name="hisseAdi" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Vade</label>
+                                <select name="vade" class="form-select" required>
+                                    <option value="KISA_VADE">Kısa Vade</option>
+                                    <option value="ORTA_VADE">Orta Vade</option>
+                                    <option value="UZUN_VADE">Uzun Vade</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giriş Fiyatı</label>
+                                <input type="number" name="girisFiyati" class="form-control" step="0.01" min="0.01" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giriş Tarihi</label>
+                                <input type="date" name="girisTarihi" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Sıra No</label>
+                                <input type="number" name="siraNo" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Hedef Fiyat</label>
+                                <input type="number" name="hedefFiyat" class="form-control" step="0.01" min="0.01">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Zarar Durdur</label>
+                                <input type="number" name="zararDurdur" class="form-control" step="0.01" min="0.01">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Not / Açıklama</label>
+                            <textarea name="notAciklama" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">Güncelle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block layout:fragment="pagejs">
+    <script>
+        var editTakipHisseModal = document.getElementById('editTakipHisseModal');
+        if (editTakipHisseModal) {
+            editTakipHisseModal.addEventListener('show.bs.modal', function (event) {
+                var btn = event.relatedTarget;
+                var form = editTakipHisseModal.querySelector('form');
+                form.action = '/backoffice/takip-hisseleri/' + btn.getAttribute('data-id');
+                form.querySelector('[name=hisseKodu]').value = btn.getAttribute('data-hissekodu') || '';
+                form.querySelector('[name=hisseAdi]').value = btn.getAttribute('data-hisseadi') || '';
+                form.querySelector('[name=vade]').value = btn.getAttribute('data-vade') || 'KISA_VADE';
+                form.querySelector('[name=girisFiyati]').value = btn.getAttribute('data-girisfiyati') || '';
+                form.querySelector('[name=girisTarihi]').value = btn.getAttribute('data-giristarihi') || '';
+                form.querySelector('[name=hedefFiyat]').value = btn.getAttribute('data-hedeffiyat') || '';
+                form.querySelector('[name=zararDurdur]').value = btn.getAttribute('data-zarardurdur') || '';
+                form.querySelector('[name=notAciklama]').value = btn.getAttribute('data-notaciklama') || '';
+                form.querySelector('[name=siraNo]').value = btn.getAttribute('data-sirano') || '';
+            });
+        }
+    </script>
+</th:block>
+</body>
+
+</html>

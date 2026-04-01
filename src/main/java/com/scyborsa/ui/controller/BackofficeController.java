@@ -7,7 +7,9 @@ import com.scyborsa.ui.dto.ScreenerResultSummaryDto;
 import com.scyborsa.ui.dto.StockDto;
 import com.scyborsa.ui.dto.UserDto;
 import com.scyborsa.ui.dto.alert.PriceAlertDto;
+import com.scyborsa.ui.dto.TakipHisseDto;
 import com.scyborsa.ui.service.BackofficeService;
+import com.scyborsa.ui.service.TakipHisseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -15,7 +17,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Backoffice yonetim paneli SSR controller'i.
@@ -33,6 +37,9 @@ public class BackofficeController {
 
     /** Backoffice yonetim islemlerini saglayan servis. */
     private final BackofficeService backofficeService;
+
+    /** Takip hissesi CRUD islemlerini saglayan servis. */
+    private final TakipHisseService takipHisseService;
 
     // ── Dashboard ────────────────────────────────────────
 
@@ -353,10 +360,31 @@ public class BackofficeController {
      * @param model Thymeleaf model nesnesi
      * @return {@code "backoffice/kullanicilar"} template adi
      */
+    /** Kullanici grubu secenekleri (enum deger → gorunen ad). */
+    private static final Map<String, String> USER_GROUP_OPTIONS;
+    static {
+        LinkedHashMap<String, String> m = new LinkedHashMap<>();
+        m.put("STANDART", "Standart");
+        m.put("OZEL", "Özel");
+        m.put("TELEGRAM", "Telegram");
+        m.put("MART2026", "Mart 2026");
+        m.put("NISAN2026", "Nisan 2026");
+        m.put("MAYIS2026", "Mayıs 2026");
+        m.put("HAZIRAN2026", "Haziran 2026");
+        m.put("TEMMUZ2026", "Temmuz 2026");
+        m.put("AGUSTOS2026", "Ağustos 2026");
+        m.put("EYLUL2026", "Eylül 2026");
+        m.put("EKIM2026", "Ekim 2026");
+        m.put("KASIM2026", "Kasım 2026");
+        m.put("ARALIK2026", "Aralık 2026");
+        USER_GROUP_OPTIONS = java.util.Collections.unmodifiableMap(m);
+    }
+
     @GetMapping("/kullanicilar")
     public String kullanicilar(Model model) {
         List<UserDto> kullanicilar = backofficeService.getTumKullanicilar();
         model.addAttribute("kullanicilar", kullanicilar);
+        model.addAttribute("userGroupOptions", USER_GROUP_OPTIONS);
         return "backoffice/kullanicilar";
     }
 
@@ -381,7 +409,8 @@ public class BackofficeController {
             if (errorDetail != null && (errorDetail.contains("zaten mevcut")
                     || errorDetail.contains("zaten kullanılıyor")
                     || errorDetail.contains("zorunludur")
-                    || errorDetail.contains("Gecersiz rol"))) {
+                    || errorDetail.contains("Gecersiz rol")
+                    || errorDetail.contains("tarihinden sonra olamaz"))) {
                 redirectAttributes.addFlashAttribute("errorMsg", errorDetail);
             } else {
                 redirectAttributes.addFlashAttribute("errorMsg",
@@ -412,7 +441,8 @@ public class BackofficeController {
             if (errorDetail != null && (errorDetail.contains("zaten mevcut")
                     || errorDetail.contains("zaten kullanılıyor")
                     || errorDetail.contains("zorunludur")
-                    || errorDetail.contains("Gecersiz rol"))) {
+                    || errorDetail.contains("Gecersiz rol")
+                    || errorDetail.contains("tarihinden sonra olamaz"))) {
                 redirectAttributes.addFlashAttribute("errorMsg", errorDetail);
             } else {
                 redirectAttributes.addFlashAttribute("errorMsg",
@@ -440,5 +470,120 @@ public class BackofficeController {
             redirectAttributes.addFlashAttribute("errorMsg", "Kullanici durum degistirme isleminde bir hata olustu. Lutfen tekrar deneyiniz.");
         }
         return "redirect:/backoffice/kullanicilar";
+    }
+
+    // ── Takip Hisseleri ──────────────────────────────────
+
+    /**
+     * Takip hisseleri yonetimi sayfasini goruntular.
+     *
+     * @param model Thymeleaf model nesnesi
+     * @return {@code "backoffice/takip-hisseleri"} template adi
+     */
+    @GetMapping("/takip-hisseleri")
+    public String takipHisseleri(Model model) {
+        List<TakipHisseDto> takipHisseleri = takipHisseService.getTumTakipHisseleri();
+        model.addAttribute("takipHisseleri", takipHisseleri);
+
+        // KPI hesaplamaları — sadece aktif kayıtlar üzerinden
+        List<TakipHisseDto> aktifler = takipHisseleri.stream()
+                .filter(t -> Boolean.TRUE.equals(t.getAktif()))
+                .toList();
+        long toplam = aktifler.size();
+        long kazandiran = aktifler.stream()
+                .filter(t -> t.getGetiriYuzde() != null && t.getGetiriYuzde() > 0)
+                .count();
+        double ortalamaGetiri = aktifler.stream()
+                .filter(t -> t.getGetiriYuzde() != null)
+                .mapToDouble(TakipHisseDto::getGetiriYuzde)
+                .average()
+                .orElse(0.0);
+        model.addAttribute("toplam", toplam);
+        model.addAttribute("kazandiran", kazandiran);
+        model.addAttribute("ortalamaGetiri", String.format("%.2f", ortalamaGetiri));
+
+        return "backoffice/takip-hisseleri";
+    }
+
+    /**
+     * Yeni takip hissesi olusturur.
+     *
+     * @param dto takip hissesi bilgileri
+     * @param redirectAttributes flash mesaj icin
+     * @return redirect URL
+     */
+    @PostMapping("/takip-hisseleri")
+    public String createTakipHisse(@ModelAttribute TakipHisseDto dto,
+                                   RedirectAttributes redirectAttributes) {
+        try {
+            takipHisseService.createTakipHisse(dto);
+            redirectAttributes.addFlashAttribute("successMsg", dto.getHisseKodu() + " takip hissesi oluşturuldu.");
+        } catch (Exception e) {
+            log.error("[BACKOFFICE-UI] Takip hissesi olusturma hatasi", e);
+            redirectAttributes.addFlashAttribute("errorMsg", "Takip hissesi oluşturma işleminde bir hata oluştu. Lütfen tekrar deneyiniz.");
+        }
+        return "redirect:/backoffice/takip-hisseleri";
+    }
+
+    /**
+     * Mevcut takip hissesini gunceller.
+     *
+     * @param id takip hissesi ID'si
+     * @param dto yeni takip hissesi bilgileri
+     * @param redirectAttributes flash mesaj icin
+     * @return redirect URL
+     */
+    @PostMapping("/takip-hisseleri/{id}")
+    public String updateTakipHisse(@PathVariable Long id,
+                                   @ModelAttribute TakipHisseDto dto,
+                                   RedirectAttributes redirectAttributes) {
+        try {
+            takipHisseService.updateTakipHisse(id, dto);
+            redirectAttributes.addFlashAttribute("successMsg", "Takip hissesi güncellendi.");
+        } catch (Exception e) {
+            log.error("[BACKOFFICE-UI] Takip hissesi guncelleme hatasi: id={}", id, e);
+            redirectAttributes.addFlashAttribute("errorMsg", "Takip hissesi güncelleme işleminde bir hata oluştu. Lütfen tekrar deneyiniz.");
+        }
+        return "redirect:/backoffice/takip-hisseleri";
+    }
+
+    /**
+     * Takip hissesini siler (soft delete).
+     *
+     * @param id takip hissesi ID'si
+     * @param redirectAttributes flash mesaj icin
+     * @return redirect URL
+     */
+    @PostMapping("/takip-hisseleri/{id}/sil")
+    public String deleteTakipHisse(@PathVariable Long id,
+                                   RedirectAttributes redirectAttributes) {
+        try {
+            takipHisseService.deleteTakipHisse(id);
+            redirectAttributes.addFlashAttribute("successMsg", "Takip hissesi pasife alındı.");
+        } catch (Exception e) {
+            log.error("[BACKOFFICE-UI] Takip hissesi silme hatasi: id={}", id, e);
+            redirectAttributes.addFlashAttribute("errorMsg", "Takip hissesi silme işleminde bir hata oluştu. Lütfen tekrar deneyiniz.");
+        }
+        return "redirect:/backoffice/takip-hisseleri";
+    }
+
+    /**
+     * Pasif takip hissesini aktiflestirir.
+     *
+     * @param id takip hissesi ID'si
+     * @param redirectAttributes flash mesaj icin
+     * @return redirect URL
+     */
+    @PostMapping("/takip-hisseleri/{id}/aktif")
+    public String activateTakipHisse(@PathVariable Long id,
+                                     RedirectAttributes redirectAttributes) {
+        try {
+            takipHisseService.activateTakipHisse(id);
+            redirectAttributes.addFlashAttribute("successMsg", "Takip hissesi aktifleştirildi.");
+        } catch (Exception e) {
+            log.error("[BACKOFFICE-UI] Takip hissesi aktiflestirme hatasi: id={}", id, e);
+            redirectAttributes.addFlashAttribute("errorMsg", "Takip hissesi aktifleştirme işleminde bir hata oluştu. Lütfen tekrar deneyiniz.");
+        }
+        return "redirect:/backoffice/takip-hisseleri";
     }
 }

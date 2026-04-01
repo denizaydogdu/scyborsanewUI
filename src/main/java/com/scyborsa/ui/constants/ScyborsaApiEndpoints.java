@@ -295,4 +295,18 @@ public final class ScyborsaApiEndpoints {
     /** Takip listesi hisse siralama endpoint'i. {@code {id}} path variable icerir. */
     public static final String WATCHLIST_STOCKS_REORDER = "/api/v1/watchlists/{id}/stocks/reorder";
 
+    // ── Takip Hisseleri ─────────────────────────────────────
+
+    /** Aktif takip hisseleri listesi endpoint'i. */
+    public static final String TAKIP_HISSELERI = "/api/v1/takip-hisseleri";
+
+    /** Tum takip hisseleri (aktif + pasif) endpoint'i. */
+    public static final String TAKIP_HISSELERI_TUMU = "/api/v1/takip-hisseleri/tumu";
+
+    /** Takip hissesi ID'ye gore endpoint'i. {@code {id}} path variable icerir. */
+    public static final String TAKIP_HISSELERI_BY_ID = "/api/v1/takip-hisseleri/{id}";
+
+    /** Takip hissesi aktiflestirme endpoint'i. {@code {id}} path variable icerir. */
+    public static final String TAKIP_HISSELERI_AKTIF = "/api/v1/takip-hisseleri/{id}/aktif";
+
 }

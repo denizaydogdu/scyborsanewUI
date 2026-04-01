@@ -132,6 +132,13 @@
 						</li>
 
 						<li class="nav-item">
+							<a class="nav-link menu-link" href="/takip-hisseleri"
+							   th:classappend="${#strings.startsWith(requestURI, '/takip-hisseleri')} ? 'active' : ''">
+								<i class="ri-focus-2-line"></i> <span>SCY Takip Hisseleri</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
 							<a class="nav-link menu-link" href="/araci-kurumlar"
 							   th:classappend="${#strings.startsWith(requestURI, '/araci-kurumlar')} ? 'active' : ''">
 								<i class="ri-building-line"></i> <span data-key="t-araci-kurumlar">Aracı Kurumlar</span>
@@ -254,6 +261,9 @@
 									</li>
 									<li class="nav-item">
 										<a href="/backoffice/alarmlar" class="nav-link">Alarm Yönetimi</a>
+									</li>
+									<li class="nav-item">
+										<a href="/backoffice/takip-hisseleri" class="nav-link">SCY Takip Hisseleri</a>
 									</li>
 								</ul>
 							</div>
