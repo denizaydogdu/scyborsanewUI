@@ -82,18 +82,6 @@
                                     <i class="ri-eye-off-line"></i>
                                 </button>
                             </div>
-                            <!-- Şifre kuralları -->
-                            <div id="pwRules" class="mt-2" style="display:none;">
-                                <small id="ruleLen" class="d-block text-muted"><i class="ri-close-circle-line me-1"></i>En az 6 karakter</small>
-                                <small id="ruleUpper" class="d-block text-muted"><i class="ri-close-circle-line me-1"></i>En az 1 büyük harf</small>
-                                <small id="ruleLower" class="d-block text-muted"><i class="ri-close-circle-line me-1"></i>En az 1 küçük harf</small>
-                                <small id="ruleDigit" class="d-block text-muted"><i class="ri-close-circle-line me-1"></i>En az 1 rakam</small>
-                                <!-- Güç göstergesi -->
-                                <div class="progress mt-2" style="height: 6px;">
-                                    <div id="pwStrength" class="progress-bar" role="progressbar" style="width: 0%"></div>
-                                </div>
-                                <small id="pwStrengthText" class="text-muted"></small>
-                            </div>
                         </div>
 
                         <!-- Sifre Tekrar -->
@@ -154,53 +142,6 @@
             var pw = document.getElementById('password');
             var pwc = document.getElementById('passwordConfirm');
             var form = pw.closest('form');
-            var rulesBox = document.getElementById('pwRules');
-
-            // Kural elementleri
-            var rules = {
-                len:   document.getElementById('ruleLen'),
-                upper: document.getElementById('ruleUpper'),
-                lower: document.getElementById('ruleLower'),
-                digit: document.getElementById('ruleDigit')
-            };
-            var strengthBar = document.getElementById('pwStrength');
-            var strengthText = document.getElementById('pwStrengthText');
-
-            function setRule(el, passed) {
-                if (passed) {
-                    el.classList.remove('text-muted');
-                    el.classList.add('text-success');
-                    el.querySelector('i').className = 'ri-checkbox-circle-line me-1';
-                } else {
-                    el.classList.remove('text-success');
-                    el.classList.add('text-muted');
-                    el.querySelector('i').className = 'ri-close-circle-line me-1';
-                }
-            }
-
-            function checkRules(val) {
-                var len = val.length >= 6;
-                var upper = /[A-Z]/.test(val);
-                var lower = /[a-z]/.test(val);
-                var digit = /[0-9]/.test(val);
-
-                setRule(rules.len, len);
-                setRule(rules.upper, upper);
-                setRule(rules.lower, lower);
-                setRule(rules.digit, digit);
-
-                // Güç hesapla (0-4)
-                var score = (len ? 1 : 0) + (upper ? 1 : 0) + (lower ? 1 : 0) + (digit ? 1 : 0);
-                var pct = score * 25;
-                var colors = ['', 'bg-danger', 'bg-warning', 'bg-info', 'bg-success'];
-                var labels = ['', 'Zayıf', 'Orta', 'İyi', 'Güçlü'];
-
-                strengthBar.style.width = pct + '%';
-                strengthBar.className = 'progress-bar ' + (colors[score] || '');
-                strengthText.textContent = labels[score] || '';
-
-                return len && upper && lower && digit;
-            }
 
             function validateMatch() {
                 if (pw.value && pw.value !== pwc.value) {
@@ -212,43 +153,20 @@
                 }
             }
 
-            pw.addEventListener('focus', function () {
-                rulesBox.style.display = 'block';
-            });
-
-            pw.addEventListener('input', function () {
-                var val = pw.value;
-                if (val) {
-                    rulesBox.style.display = 'block';
-                    var allPassed = checkRules(val);
-                    if (!allPassed) {
-                        pw.setCustomValidity('Şifre kurallarını karşılamıyor');
-                    } else {
-                        pw.setCustomValidity('');
-                    }
-                } else {
-                    rulesBox.style.display = 'none';
-                    pw.setCustomValidity('');
-                }
-                validateMatch();
-            });
-
+            pw.addEventListener('input', validateMatch);
             pwc.addEventListener('input', validateMatch);
 
             form.addEventListener('submit', function (e) {
-                // Şifre girilmişse kuralları kontrol et
-                if (pw.value) {
-                    if (!checkRules(pw.value)) {
-                        e.preventDefault();
-                        pw.focus();
-                        return;
-                    }
-                    if (pw.value !== pwc.value) {
-                        e.preventDefault();
-                        pwc.classList.add('is-invalid');
-                        pwc.focus();
-                        return;
-                    }
+                if (pwc.value && !pw.value) {
+                    e.preventDefault();
+                    pw.classList.add('is-invalid');
+                    pw.focus();
+                    return;
+                }
+                if (pw.value && pw.value !== pwc.value) {
+                    e.preventDefault();
+                    pwc.classList.add('is-invalid');
+                    pwc.focus();
                 }
             });
         })();

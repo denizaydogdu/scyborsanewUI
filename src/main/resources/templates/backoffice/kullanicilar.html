@@ -169,8 +169,7 @@
                         <div class="mb-3">
                             <label class="form-label">Şifre</label>
                             <div class="input-group">
-                                <input type="password" name="password" id="addPassword" class="form-control" required placeholder="Şifre" minlength="6"
-                                       oninvalid="this.setCustomValidity(this.validity.valueMissing ? 'Lütfen şifre girin' : this.validity.tooShort ? 'Şifre en az 6 karakter olmalı' : '')"
+                                <input type="password" name="password" id="addPassword" class="form-control" required placeholder="Şifre"                                       oninvalid="this.setCustomValidity(this.validity.valueMissing ? 'Lütfen şifre girin' : this.validity.tooShort ? 'Şifre en az 6 karakter olmalı' : '')"
                                        oninput="this.setCustomValidity('')">
                                 <button type="button" class="btn btn-outline-secondary password-toggle" data-target="addPassword" tabindex="-1">
                                     <i class="ri-eye-off-line"></i>
@@ -205,19 +204,8 @@
                         <div class="mb-3">
                             <label class="form-label">Kullanıcı Grubu</label>
                             <select name="userGroup" class="form-select">
-                                <option value="STANDART">Standart</option>
-                                <option value="OZEL">Özel</option>
-                                <option value="TELEGRAM">Telegram</option>
-                                <option value="MART2026">Mart 2026</option>
-                                <option value="NISAN2026">Nisan 2026</option>
-                                <option value="MAYIS2026">Mayıs 2026</option>
-                                <option value="HAZIRAN2026">Haziran 2026</option>
-                                <option value="TEMMUZ2026">Temmuz 2026</option>
-                                <option value="AGUSTOS2026">Ağustos 2026</option>
-                                <option value="EYLUL2026">Eylül 2026</option>
-                                <option value="EKIM2026">Ekim 2026</option>
-                                <option value="KASIM2026">Kasım 2026</option>
-                                <option value="ARALIK2026">Aralık 2026</option>
+                                <option th:each="entry : ${userGroupOptions}"
+                                        th:value="${entry.key}" th:text="${entry.value}"></option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -304,19 +292,8 @@
                         <div class="mb-3">
                             <label class="form-label">Kullanıcı Grubu</label>
                             <select name="userGroup" class="form-select">
-                                <option value="STANDART">Standart</option>
-                                <option value="OZEL">Özel</option>
-                                <option value="TELEGRAM">Telegram</option>
-                                <option value="MART2026">Mart 2026</option>
-                                <option value="NISAN2026">Nisan 2026</option>
-                                <option value="MAYIS2026">Mayıs 2026</option>
-                                <option value="HAZIRAN2026">Haziran 2026</option>
-                                <option value="TEMMUZ2026">Temmuz 2026</option>
-                                <option value="AGUSTOS2026">Ağustos 2026</option>
-                                <option value="EYLUL2026">Eylül 2026</option>
-                                <option value="EKIM2026">Ekim 2026</option>
-                                <option value="KASIM2026">Kasım 2026</option>
-                                <option value="ARALIK2026">Aralık 2026</option>
+                                <option th:each="entry : ${userGroupOptions}"
+                                        th:value="${entry.key}" th:text="${entry.value}"></option>
                             </select>
                         </div>
                         <div class="mb-3">
