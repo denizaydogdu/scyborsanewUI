@@ -61,6 +61,15 @@ public class TakipHisseDto {
     /** Aktif/pasif durumu. */
     private Boolean aktif;
 
+    /** Maliyet fiyati (ortalama alis maliyeti). */
+    private Double maliyetFiyati;
+
+    /** Maliyet getiri yuzdesi (%). */
+    private Double maliyetGetiriYuzde;
+
+    /** Resim URL (grafik screenshot). */
+    private String resimUrl;
+
     /** Siralama numarasi. */
     private Integer siraNo;
 

@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.LinkedHashMap;
@@ -514,9 +515,13 @@ public class BackofficeController {
      */
     @PostMapping("/takip-hisseleri")
     public String createTakipHisse(@ModelAttribute TakipHisseDto dto,
+                                   @RequestParam(value = "resim", required = false) MultipartFile resim,
                                    RedirectAttributes redirectAttributes) {
         try {
-            takipHisseService.createTakipHisse(dto);
+            TakipHisseDto created = takipHisseService.createTakipHisse(dto);
+            if (resim != null && !resim.isEmpty() && created != null && created.getId() != null) {
+                takipHisseService.uploadImage(created.getId(), resim);
+            }
             redirectAttributes.addFlashAttribute("successMsg", dto.getHisseKodu() + " takip hissesi oluşturuldu.");
         } catch (Exception e) {
             log.error("[BACKOFFICE-UI] Takip hissesi olusturma hatasi", e);
@@ -536,9 +541,13 @@ public class BackofficeController {
     @PostMapping("/takip-hisseleri/{id}")
     public String updateTakipHisse(@PathVariable Long id,
                                    @ModelAttribute TakipHisseDto dto,
+                                   @RequestParam(value = "resim", required = false) MultipartFile resim,
                                    RedirectAttributes redirectAttributes) {
         try {
             takipHisseService.updateTakipHisse(id, dto);
+            if (resim != null && !resim.isEmpty()) {
+                takipHisseService.uploadImage(id, resim);
+            }
             redirectAttributes.addFlashAttribute("successMsg", "Takip hissesi güncellendi.");
         } catch (Exception e) {
             log.error("[BACKOFFICE-UI] Takip hissesi guncelleme hatasi: id={}", id, e);

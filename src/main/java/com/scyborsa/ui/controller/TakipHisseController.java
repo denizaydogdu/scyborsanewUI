@@ -4,11 +4,16 @@ import com.scyborsa.ui.dto.TakipHisseDto;
 import com.scyborsa.ui.service.TakipHisseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.CacheControl;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -63,5 +68,34 @@ public class TakipHisseController {
     @ResponseBody
     public List<TakipHisseDto> getAktifTakipHisseleriAjax() {
         return takipHisseService.getAktifTakipHisseleri();
+    }
+
+    /**
+     * Takip hissesi resim proxy endpoint'i.
+     *
+     * <p>scyborsaApi'deki resim dosyalarini UI domain'i uzerinden sunar.
+     * 1 gun cache header'i ile doner.</p>
+     *
+     * @param filename resim dosya adi
+     * @return resim byte verisi veya 404
+     */
+    @GetMapping("/takip-hisseleri/images/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<byte[]> proxyImage(@PathVariable String filename) {
+        try {
+            byte[] data = takipHisseService.getImage(filename);
+            if (data == null) return ResponseEntity.notFound().build();
+            String ext = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase();
+            MediaType mediaType = switch (ext) {
+                case "png" -> MediaType.IMAGE_PNG;
+                case "webp" -> MediaType.valueOf("image/webp");
+                default -> MediaType.IMAGE_JPEG;
+            };
+            return ResponseEntity.ok().contentType(mediaType)
+                    .cacheControl(CacheControl.maxAge(Duration.ofDays(1)).cachePublic())
+                    .body(data);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

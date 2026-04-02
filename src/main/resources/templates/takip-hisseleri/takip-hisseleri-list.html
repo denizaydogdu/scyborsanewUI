@@ -107,6 +107,16 @@
                                 <li class="nav-item"><a class="nav-link" data-vade="UZUN_VADE" href="javascript:void(0);" role="tab" aria-selected="false">Uzun Vade</a></li>
                             </ul>
                         </div>
+                        <!-- Orta: Vade Açıklamaları -->
+                        <div class="col-auto d-none d-md-block">
+                            <div class="text-muted fs-12">
+                                <span class="badge bg-info-subtle text-info me-1">Kısa Vade</span> Haftalık hedef
+                                <span class="mx-1">•</span>
+                                <span class="badge bg-warning-subtle text-warning me-1">Orta Vade</span> Aylık hedef
+                                <span class="mx-1">•</span>
+                                <span class="badge bg-primary-subtle text-primary me-1">Uzun Vade</span> 3 Aylık hedef
+                            </div>
+                        </div>
                         <!-- Sağ: Arama -->
                         <div class="col">
                             <div class="search-box">
@@ -134,6 +144,10 @@
                                 <th class="sortable" data-col="getiriYuzde" data-type="num" style="width: 100px; cursor:pointer;">Getiri % <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
                                 <th class="sortable" data-col="hedefFiyat" data-type="num" style="width: 110px; cursor:pointer;">Hedef <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
                                 <th class="sortable" data-col="zararDurdur" data-type="num" style="width: 110px; cursor:pointer;">Stop Loss <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th style="width: 160px;">Açıklama</th>
+                                <th class="sortable" data-col="maliyetFiyati" data-type="num" style="width: 110px; cursor:pointer;">Maliyet <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="maliyetGetiriYuzde" data-type="num" style="width: 100px; cursor:pointer;">Maliyet Getiri % <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th style="width: 70px;">Grafik</th>
                                 <th style="width: 120px;">Durum</th>
                             </tr>
                             </thead>
@@ -163,6 +177,23 @@
     </div>
 
 </section>
+
+<th:block layout:fragment="modal">
+    <!-- Grafik Resim Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalTitle">Grafik</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-2">
+                    <img id="imageModalImg" src="" class="img-fluid" alt="Grafik">
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
 
 <th:block layout:fragment="pagejs">
     <script th:inline="javascript">

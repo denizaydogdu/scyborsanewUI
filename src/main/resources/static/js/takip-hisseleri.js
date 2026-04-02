@@ -324,6 +324,68 @@
         tdStop.textContent = formatPrice(item.zararDurdur);
         tr.appendChild(tdStop);
 
+        // Açıklama
+        var tdAciklama = document.createElement('td');
+        if (item.notAciklama) {
+            var aciklamaSpan = document.createElement('span');
+            aciklamaSpan.className = 'text-muted fs-12';
+            aciklamaSpan.textContent = item.notAciklama.length > 40 ? item.notAciklama.substring(0, 40) + '...' : item.notAciklama;
+            if (item.notAciklama.length > 40) {
+                aciklamaSpan.title = item.notAciklama;
+                aciklamaSpan.style.cursor = 'help';
+            }
+            tdAciklama.appendChild(aciklamaSpan);
+        } else {
+            tdAciklama.textContent = '-';
+            tdAciklama.className = 'text-muted';
+        }
+        tr.appendChild(tdAciklama);
+
+        // Maliyet Fiyatı
+        var tdMaliyet = document.createElement('td');
+        tdMaliyet.className = 'fw-semibold';
+        tdMaliyet.textContent = formatPrice(item.maliyetFiyati);
+        tr.appendChild(tdMaliyet);
+
+        // Maliyet Getiri %
+        var tdMaliyetGetiri = document.createElement('td');
+        tdMaliyetGetiri.className = 'fw-bold';
+        if (item.maliyetGetiriYuzde != null) {
+            tdMaliyetGetiri.textContent = formatPercent(item.maliyetGetiriYuzde);
+            if (item.maliyetGetiriYuzde > 0) {
+                tdMaliyetGetiri.classList.add('text-success');
+            } else if (item.maliyetGetiriYuzde < 0) {
+                tdMaliyetGetiri.classList.add('text-danger');
+            }
+        } else {
+            tdMaliyetGetiri.textContent = '-';
+            tdMaliyetGetiri.classList.add('text-muted');
+        }
+        tr.appendChild(tdMaliyetGetiri);
+
+        // Grafik (resim thumbnail)
+        var tdGrafik = document.createElement('td');
+        if (item.resimUrl) {
+            var imgThumb = document.createElement('img');
+            imgThumb.src = '/takip-hisseleri/images/' + item.resimUrl;
+            imgThumb.alt = 'Grafik';
+            imgThumb.className = 'rounded';
+            imgThumb.style.cssText = 'width:40px;height:40px;object-fit:cover;cursor:pointer;';
+            imgThumb.addEventListener('click', function () {
+                var modalTitle = document.getElementById('imageModalTitle');
+                var modalImg = document.getElementById('imageModalImg');
+                if (modalTitle) modalTitle.textContent = (item.hisseKodu || '') + ' Grafik';
+                if (modalImg) modalImg.src = '/takip-hisseleri/images/' + item.resimUrl;
+                var modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                modal.show();
+            });
+            tdGrafik.appendChild(imgThumb);
+        } else {
+            tdGrafik.textContent = '-';
+            tdGrafik.className = 'text-muted';
+        }
+        tr.appendChild(tdGrafik);
+
         // Durum
         var tdDurum = document.createElement('td');
         var durumBadge = document.createElement('span');

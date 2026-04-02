@@ -126,6 +126,8 @@
                                     <th>Hedef</th>
                                     <th>Stop</th>
                                     <th>Not</th>
+                                    <th>Maliyet</th>
+                                    <th>Resim</th>
                                     <th>Durum</th>
                                     <th>İşlem</th>
                                 </tr>
@@ -154,6 +156,11 @@
                                         <span th:if="${th.notAciklama != null}" th:text="${#strings.abbreviate(th.notAciklama, 30)}" class="text-muted fs-12"></span>
                                         <span th:unless="${th.notAciklama != null}" class="text-muted">-</span>
                                     </td>
+                                    <td th:text="${th.maliyetFiyati != null ? #numbers.formatDecimal(th.maliyetFiyati, 1, 'COMMA', 2, 'POINT') + ' ₺' : '-'}">-</td>
+                                    <td>
+                                        <img th:if="${th.resimUrl != null}" th:src="@{'/takip-hisseleri/images/' + ${th.resimUrl}}" alt="Grafik" class="img-thumbnail" style="max-height:40px;max-width:60px;">
+                                        <span th:unless="${th.resimUrl != null}" class="text-muted">-</span>
+                                    </td>
                                     <td>
                                         <span th:if="${th.aktif}" class="badge bg-success-subtle text-success">Aktif</span>
                                         <span th:unless="${th.aktif}" class="badge bg-danger-subtle text-danger">Pasif</span>
@@ -170,6 +177,8 @@
                                                     th:data-hedeffiyat="${th.hedefFiyat}"
                                                     th:data-zarardurdur="${th.zararDurdur}"
                                                     th:data-notaciklama="${th.notAciklama}"
+                                                    th:data-maliyetfiyati="${th.maliyetFiyati}"
+                                                    th:data-resimurl="${th.resimUrl}"
                                                     th:data-sirano="${th.siraNo}">
                                                 <i class="ri-pencil-line"></i>
                                             </button>
@@ -198,7 +207,7 @@
     <div class="modal fade" id="addTakipHisseModal" tabindex="-1" aria-labelledby="addTakipHisseModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form th:action="@{/backoffice/takip-hisseleri}" method="post">
+                <form th:action="@{/backoffice/takip-hisseleri}" method="post" enctype="multipart/form-data">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addTakipHisseModalLabel">Yeni Takip Hissesi Ekle</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
@@ -248,6 +257,17 @@
                                 <input type="number" name="zararDurdur" class="form-control" step="0.01" min="0.01" placeholder="0.00">
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Maliyet Fiyatı</label>
+                                <input type="number" name="maliyetFiyati" class="form-control" step="0.01" min="0.01" placeholder="0.00">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Resim</label>
+                                <input type="file" name="resim" class="form-control" accept="image/png,image/jpeg,image/webp">
+                                <div class="form-text">Max 5MB</div>
+                            </div>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label">Not / Açıklama</label>
                             <textarea name="notAciklama" class="form-control" rows="3" placeholder="Opsiyonel not..."></textarea>
@@ -266,7 +286,7 @@
     <div class="modal fade" id="editTakipHisseModal" tabindex="-1" aria-labelledby="editTakipHisseModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="editTakipHisseForm" method="post">
+                <form id="editTakipHisseForm" method="post" enctype="multipart/form-data">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <div class="modal-header">
                         <h5 class="modal-title" id="editTakipHisseModalLabel">Takip Hissesi Düzenle</h5>
@@ -317,6 +337,20 @@
                                 <input type="number" name="zararDurdur" class="form-control" step="0.01" min="0.01">
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Maliyet Fiyatı</label>
+                                <input type="number" name="maliyetFiyati" class="form-control" step="0.01" min="0.01">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Resim</label>
+                                <input type="file" name="resim" class="form-control" accept="image/png,image/jpeg,image/webp">
+                                <div class="form-text">Max 5MB</div>
+                                <div id="editImagePreview" class="mt-2" style="display:none;">
+                                    <img id="editImagePreviewImg" src="" alt="Mevcut resim" class="img-thumbnail" style="max-height:80px;">
+                                </div>
+                            </div>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label">Not / Açıklama</label>
                             <textarea name="notAciklama" class="form-control" rows="3"></textarea>
@@ -348,7 +382,20 @@
                 form.querySelector('[name=hedefFiyat]').value = btn.getAttribute('data-hedeffiyat') || '';
                 form.querySelector('[name=zararDurdur]').value = btn.getAttribute('data-zarardurdur') || '';
                 form.querySelector('[name=notAciklama]').value = btn.getAttribute('data-notaciklama') || '';
+                form.querySelector('[name=maliyetFiyati]').value = btn.getAttribute('data-maliyetfiyati') || '';
                 form.querySelector('[name=siraNo]').value = btn.getAttribute('data-sirano') || '';
+
+                // Resim preview
+                var resimUrl = btn.getAttribute('data-resimurl');
+                var previewDiv = document.getElementById('editImagePreview');
+                var previewImg = document.getElementById('editImagePreviewImg');
+                if (resimUrl) {
+                    previewImg.src = '/takip-hisseleri/images/' + resimUrl;
+                    previewDiv.style.display = '';
+                } else {
+                    previewDiv.style.display = 'none';
+                    previewImg.src = '';
+                }
             });
         }
     </script>

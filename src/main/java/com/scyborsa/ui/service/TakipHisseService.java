@@ -3,7 +3,11 @@ package com.scyborsa.ui.service;
 import com.scyborsa.ui.constants.ScyborsaApiEndpoints;
 import com.scyborsa.ui.dto.TakipHisseDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
@@ -87,17 +91,19 @@ public class TakipHisseService {
      * <p>scyborsaApi'deki {@code POST /api/v1/takip-hisseleri} endpoint'ini cagirir.</p>
      *
      * @param dto olusturulacak takip hissesi bilgileri
+     * @return olusturulan takip hissesi DTO'su
      */
-    public void createTakipHisse(TakipHisseDto dto) {
+    public TakipHisseDto createTakipHisse(TakipHisseDto dto) {
         log.debug("[TAKIP-HISSE-UI] Takip hissesi oluşturuluyor: {}", dto.getHisseKodu());
         try {
-            webClient.post()
+            TakipHisseDto created = webClient.post()
                     .uri(ScyborsaApiEndpoints.TAKIP_HISSELERI)
                     .bodyValue(dto)
                     .retrieve()
-                    .toBodilessEntity()
+                    .bodyToMono(TakipHisseDto.class)
                     .block(Duration.ofSeconds(10));
             log.info("[TAKIP-HISSE-UI] Takip hissesi oluşturuldu: {}", dto.getHisseKodu());
+            return created;
         } catch (Exception e) {
             log.error("[TAKIP-HISSE-UI] Takip hissesi oluşturma başarısız: {}", dto.getHisseKodu(), e);
             throw new RuntimeException("Takip hissesi oluşturulamadı", e);
@@ -169,6 +175,54 @@ public class TakipHisseService {
         } catch (Exception e) {
             log.error("[TAKIP-HISSE-UI] Takip hissesi aktifleştirme başarısız: id={}", id, e);
             throw new RuntimeException("Takip hissesi aktifleştirilemedi", e);
+        }
+    }
+
+    /**
+     * scyborsaApi'ye takip hissesi resmi yukler.
+     *
+     * <p>scyborsaApi'deki {@code POST /api/v1/takip-hisseleri/{id}/resim} endpoint'ini cagirir.</p>
+     *
+     * @param id takip hissesi ID'si
+     * @param file yuklenecek resim dosyasi
+     */
+    public void uploadImage(Long id, MultipartFile file) {
+        try {
+            webClient.post()
+                    .uri(ScyborsaApiEndpoints.TAKIP_HISSELERI_BY_ID + "/resim", id)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .body(BodyInserters.fromMultipartData("resim",
+                            new ByteArrayResource(file.getBytes()) {
+                                @Override
+                                public String getFilename() {
+                                    return file.getOriginalFilename();
+                                }
+                            }))
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block(Duration.ofSeconds(15));
+            log.info("[TAKIP-HISSE-UI] Resim yüklendi: id={}", id);
+        } catch (Exception e) {
+            log.error("[TAKIP-HISSE-UI] Resim yükleme başarısız: id={}", id, e);
+        }
+    }
+
+    /**
+     * scyborsaApi'den takip hissesi resmini getirir (proxy).
+     *
+     * @param filename resim dosya adi
+     * @return resim byte dizisi; hata durumunda null
+     */
+    public byte[] getImage(String filename) {
+        try {
+            return webClient.get()
+                    .uri("/api/v1/takip-hisseleri/images/" + filename)
+                    .retrieve()
+                    .bodyToMono(byte[].class)
+                    .block(Duration.ofSeconds(10));
+        } catch (Exception e) {
+            log.error("[TAKIP-HISSE-UI] Resim proxy başarısız: {}", filename, e);
+            return null;
         }
     }
 }
