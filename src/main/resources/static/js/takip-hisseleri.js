@@ -341,17 +341,23 @@
         tdStop.textContent = formatPrice(item.zararDurdur);
         tr.appendChild(tdStop);
 
-        // Açıklama
+        // Açıklama — kısa özet, tıklayınca modal ile tam metin
         var tdAciklama = document.createElement('td');
         if (item.notAciklama) {
-            var aciklamaSpan = document.createElement('span');
-            aciklamaSpan.className = 'text-muted fs-12';
-            aciklamaSpan.textContent = item.notAciklama.length > 80 ? item.notAciklama.substring(0, 80) + '...' : item.notAciklama;
-            if (item.notAciklama.length > 80) {
-                aciklamaSpan.title = item.notAciklama;
-                aciklamaSpan.style.cursor = 'help';
-            }
-            tdAciklama.appendChild(aciklamaSpan);
+            var aciklamaBtn = document.createElement('button');
+            aciklamaBtn.type = 'button';
+            aciklamaBtn.className = 'btn btn-link btn-sm text-muted text-start p-0 fs-12 text-decoration-none';
+            aciklamaBtn.style.cssText = 'max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;';
+            aciklamaBtn.textContent = item.notAciklama.length > 50 ? item.notAciklama.substring(0, 50) + '...' : item.notAciklama;
+            aciklamaBtn.title = 'Tıklayın — tam açıklamayı görün';
+            aciklamaBtn.addEventListener('click', function () {
+                var modal = document.getElementById('aciklamaModal');
+                document.getElementById('aciklamaModalTitle').textContent = (item.hisseKodu || '') + ' Açıklama';
+                document.getElementById('aciklamaModalBody').textContent = item.notAciklama;
+                var bsModal = new bootstrap.Modal(modal);
+                bsModal.show();
+            });
+            tdAciklama.appendChild(aciklamaBtn);
         } else {
             tdAciklama.textContent = '-';
             tdAciklama.className = 'text-muted';
