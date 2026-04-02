@@ -245,11 +245,28 @@
 
         var avatar = document.createElement('div');
         avatar.className = 'flex-shrink-0 avatar-xs me-2';
-        var avatarInner = document.createElement('div');
-        avatarInner.className = 'avatar-title rounded-circle bg-light fw-semibold';
-        avatarInner.style.cssText = 'color:#495057;border:1.5px solid #ced4da;font-size:0.7rem';
-        avatarInner.textContent = item.hisseKodu ? item.hisseKodu.charAt(0) : '?';
-        avatar.appendChild(avatarInner);
+        if (item.logoid) {
+            var avatarImg = document.createElement('img');
+            avatarImg.src = '/img/stock-logos/' + encodeURIComponent(item.logoid);
+            avatarImg.alt = item.hisseKodu || '';
+            avatarImg.className = 'rounded-circle';
+            avatarImg.style.cssText = 'width:32px;height:32px;object-fit:cover;';
+            avatarImg.onerror = function () {
+                this.style.display = 'none';
+                var fallback = document.createElement('div');
+                fallback.className = 'avatar-title rounded-circle bg-light fw-semibold';
+                fallback.style.cssText = 'color:#495057;border:1.5px solid #ced4da;font-size:0.7rem;width:32px;height:32px;display:flex;align-items:center;justify-content:center;';
+                fallback.textContent = (item.hisseKodu || '?').charAt(0);
+                avatar.appendChild(fallback);
+            };
+            avatar.appendChild(avatarImg);
+        } else {
+            var avatarInner = document.createElement('div');
+            avatarInner.className = 'avatar-title rounded-circle bg-light fw-semibold';
+            avatarInner.style.cssText = 'color:#495057;border:1.5px solid #ced4da;font-size:0.7rem';
+            avatarInner.textContent = item.hisseKodu ? item.hisseKodu.charAt(0) : '?';
+            avatar.appendChild(avatarInner);
+        }
         stockDiv.appendChild(avatar);
 
         var stockInfo = document.createElement('div');
@@ -329,8 +346,8 @@
         if (item.notAciklama) {
             var aciklamaSpan = document.createElement('span');
             aciklamaSpan.className = 'text-muted fs-12';
-            aciklamaSpan.textContent = item.notAciklama.length > 40 ? item.notAciklama.substring(0, 40) + '...' : item.notAciklama;
-            if (item.notAciklama.length > 40) {
+            aciklamaSpan.textContent = item.notAciklama.length > 80 ? item.notAciklama.substring(0, 80) + '...' : item.notAciklama;
+            if (item.notAciklama.length > 80) {
                 aciklamaSpan.title = item.notAciklama;
                 aciklamaSpan.style.cursor = 'help';
             }

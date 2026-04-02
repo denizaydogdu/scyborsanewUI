@@ -70,6 +70,9 @@ public class TakipHisseDto {
     /** Resim URL (grafik screenshot). */
     private String resimUrl;
 
+    /** TradingView logoid (hisse logosu icin, orn. "turk-hava-yollari"). */
+    private String logoid;
+
     /** Siralama numarasi. */
     private Integer siraNo;
 

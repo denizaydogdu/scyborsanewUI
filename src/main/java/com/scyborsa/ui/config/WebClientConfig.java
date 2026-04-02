@@ -21,8 +21,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
-    /** Maksimum buffer boyutu (2 MB). Taramalar groupByStock gibi büyük JSON response'lar için gerekli. */
-    private static final int MAX_BUFFER_SIZE = 2 * 1024 * 1024;
+    /** Maksimum buffer boyutu (12 MB). Takip hissesi resimleri 10MB'a kadar olabilir; taramalar da büyük JSON response döner. */
+    private static final int MAX_BUFFER_SIZE = 12 * 1024 * 1024;
 
     /** scyborsaApi backend base URL'i (application.yml: api.base-url). */
     @Value("${api.base-url}")
@@ -40,8 +40,8 @@ public class WebClientConfig {
      * Önceden yapılandırılmış bir {@link WebClient.Builder} bean'i oluşturur.
      * <p>
      * Builder, {@code api.base-url} property'sinden alınan base URL ile
-     * konfigüre edilir. {@code maxInMemorySize} 2 MB olarak ayarlanır
-     * (büyük JSON response'lar için, ör: groupByStock taramalar).
+     * konfigüre edilir. {@code maxInMemorySize} 12 MB olarak ayarlanır
+     * (büyük JSON response'lar ve takip hissesi resimleri için).
      * </p>
      *
      * @return base URL'i ve buffer limiti ayarlanmış {@link WebClient.Builder} örneği
@@ -62,7 +62,7 @@ public class WebClientConfig {
      * vApi (Kripto API) için önceden yapılandırılmış bir {@link WebClient.Builder} bean'i oluşturur.
      * <p>
      * Builder, {@code vapi.base-url} property'sinden alınan base URL ile
-     * konfigüre edilir. {@code maxInMemorySize} 2 MB olarak ayarlanır.
+     * konfigüre edilir. {@code maxInMemorySize} 12 MB olarak ayarlanır.
      * </p>
      *
      * @return base URL'i ve buffer limiti ayarlanmış {@link WebClient.Builder} örneği
