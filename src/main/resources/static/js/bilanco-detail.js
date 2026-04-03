@@ -1245,13 +1245,9 @@
             clearElement(containerEl);
 
             if (!data || (!data.sirketOranlari && !data.sektorMedian)) {
-                var empty = document.createElement('div');
-                empty.className = 'alert alert-warning';
-                var emptyIcon = document.createElement('i');
-                emptyIcon.className = 'ri-information-line me-2';
-                empty.appendChild(emptyIcon);
-                empty.appendChild(document.createTextNode('Sektörel karşılaştırma verisi bulunamadı.'));
-                containerEl.appendChild(empty);
+                // Veri yoksa kartı tamamen gizle
+                var parentCard = containerEl.closest('.card');
+                if (parentCard) parentCard.closest('.row').style.display = 'none';
                 return;
             }
 
