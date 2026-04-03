@@ -210,62 +210,7 @@
         </div>
     </div>
 
-    <!-- Row 3: Tahmin Verileri -->
-    <div class="row" th:if="${tahminler != null and !tahminler.isEmpty()}">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="ri-funds-line me-1 text-info"></i>
-                        <span th:text="${stockCode}">PETKM</span> Tahmin Verileri
-                        <span class="badge bg-info-subtle text-info ms-2" th:text="${tahminler.size()}">0</span>
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped align-middle mb-0">
-                            <thead>
-                            <tr>
-                                <th style="width: 50px;">#</th>
-                                <th>Aracı Kurum</th>
-                                <th style="width: 80px;">Yıl</th>
-                                <th class="text-end" style="width: 140px;">Hedef Fiyat</th>
-                                <th class="text-end" style="width: 140px;">Satışlar</th>
-                                <th class="text-end" style="width: 140px;">FAVÖK</th>
-                                <th class="text-end" style="width: 140px;">Net Kâr</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="t, iterStat : ${tahminler}">
-                                <td th:text="${iterStat.count}">1</td>
-                                <td>
-                                    <span class="fs-13" th:text="${t.araciKurumAdi != null ? t.araciKurumAdi : (t.araciKurumKodu != null ? t.araciKurumKodu : '-')}">Kurum</span>
-                                </td>
-                                <td th:text="${t.yil != null ? t.yil : '-'}">2026</td>
-                                <td class="text-end fw-semibold">
-                                    <span th:if="${t.hedefFiyat != null}" th:text="${#numbers.formatDecimal(t.hedefFiyat, 1, 'COMMA', 2, 'POINT')} + ' &#8378;'">0,00</span>
-                                    <span th:if="${t.hedefFiyat == null}">-</span>
-                                </td>
-                                <td class="text-end">
-                                    <span th:if="${t.satislar != null}" th:text="${#numbers.formatDecimal(t.satislar, 1, 'COMMA', 0, 'POINT')}">0</span>
-                                    <span th:if="${t.satislar == null}">-</span>
-                                </td>
-                                <td class="text-end">
-                                    <span th:if="${t.favok != null}" th:text="${#numbers.formatDecimal(t.favok, 1, 'COMMA', 0, 'POINT')}">0</span>
-                                    <span th:if="${t.favok == null}">-</span>
-                                </td>
-                                <td class="text-end">
-                                    <span th:if="${t.netKar != null}" th:text="${#numbers.formatDecimal(t.netKar, 1, 'COMMA', 0, 'POINT')}">0</span>
-                                    <span th:if="${t.netKar == null}">-</span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Tahmin Verileri kaldırıldı — Analist Tavsiyeleri tablosu zaten aynı veriyi gösteriyor -->
 
 </section>
 </body>
