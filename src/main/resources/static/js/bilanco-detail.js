@@ -1177,7 +1177,7 @@
             var options = {
                 chart: {
                     type: 'line',
-                    height: 350,
+                    height: 250,
                     toolbar: { show: true },
                     zoom: { enabled: true }
                 },
