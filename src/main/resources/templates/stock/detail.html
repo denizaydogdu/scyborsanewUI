@@ -141,9 +141,6 @@
                                     <i th:class="${stockChangePercent >= 0 ? 'ri-arrow-up-line' : 'ri-arrow-down-line'}"></i>
                                     <span id="heroChangePercent" th:text="${'%' + #numbers.formatDecimal(stockChangePercent, 1, 2)}">%2.35</span>
                                 </span>
-                                <span class="text-muted fs-12">
-                                    Hacim: <span th:text="${stockVolume >= 1000000 ? #numbers.formatDecimal(stockVolume / 1000000, 1, 1) + ' Milyon' : #numbers.formatInteger(stockVolume, 1, 'COMMA')}">45,2 Milyon</span>
-                                </span>
                             </div>
                             <div th:if="${assetType != 'CRYPTO'}" class="d-flex align-items-center justify-content-end gap-2 mt-2">
                                 <a id="stockAlertLink" href="/alarmlar" class="d-none text-warning fs-12" style="text-decoration: none;">
@@ -877,8 +874,29 @@
     <div class="row" th:if="${temelSkor != null and assetType != 'CRYPTO'}">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Temel Analiz Skorlar&#305;</h5>
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="card-title mb-0"><i class="ri-bar-chart-grouped-line me-1 text-primary"></i> Temel Analiz Skorları</h5>
+                    <a class="text-muted fs-12" data-bs-toggle="collapse" href="#temelSkorInfo" role="button" aria-expanded="false">
+                        <i class="ri-information-line me-1"></i>Bu skorlar ne anlama gelir?
+                    </a>
+                </div>
+                <div class="collapse" id="temelSkorInfo">
+                    <div class="card-body border-top bg-light pt-3 pb-2">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <h6 class="fs-13 mb-1">Piotroski F-Score (0-9)</h6>
+                                <p class="text-muted mb-0 fs-12">Şirketin finansal sağlığını 9 kriter üzerinden değerlendirir: kârlılık (4 puan), kaldıraç/likidite (3 puan), operasyonel verimlilik (2 puan). <strong>7-9:</strong> Güçlü, <strong>4-6:</strong> Orta, <strong>0-3:</strong> Zayıf.</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="fs-13 mb-1">Altman Z-Score</h6>
+                                <p class="text-muted mb-0 fs-12">İflas riskini ölçer. 5 finansal oran kullanır: işletme sermayesi, dağıtılmamış kârlar, FVÖK, piyasa değeri/borç, satışlar/varlıklar. <strong>&gt;2.99:</strong> Güvenli, <strong>1.81-2.99:</strong> Gri bölge, <strong>&lt;1.81:</strong> İflas riski.</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="fs-13 mb-1">Graham Marjı (%)</h6>
+                                <p class="text-muted mb-0 fs-12">Benjamin Graham'ın değerleme formülü: √(22.5 × HBK × Defter Değeri). Mevcut fiyat ile Graham değeri arasındaki fark. <strong>Pozitif:</strong> Hisse ucuz (güvenlik marjı var), <strong>Negatif:</strong> Hisse pahalı.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -927,43 +945,7 @@
         </div>
     </div>
 
-    <!-- Hedef Fiyat Konsensus (Fintables MCP) -->
-    <div class="row" th:if="${hedefFiyatlar != null and !hedefFiyatlar.isEmpty() and assetType != 'CRYPTO'}">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Hedef Fiyat Konsens&#252;s</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-striped align-middle mb-0">
-                            <thead>
-                            <tr>
-                                <th>Kurum</th>
-                                <th>Tavsiye</th>
-                                <th>Hedef Fiyat</th>
-                                <th>Tarih</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="hf : ${hedefFiyatlar}">
-                                <td th:text="${hf.araciKurumKodu}"></td>
-                                <td>
-                                    <span class="badge"
-                                          th:classappend="${hf.tavsiye != null and hf.tavsiye.equalsIgnoreCase('al') ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'}"
-                                          th:text="${hf.tavsiye != null ? hf.tavsiye.toUpperCase() : '-'}"></span>
-                                </td>
-                                <td class="fw-semibold"
-                                    th:text="${hf.hedefFiyat != null ? #numbers.formatDecimal(hf.hedefFiyat, 1, 2) + ' &#8378;' : '-'}"></td>
-                                <td th:text="${hf.yayinTarihi != null and hf.yayinTarihi.length() >= 10 ? hf.yayinTarihi.substring(0,10) : '-'}"></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Hedef Fiyat Konsensüs kaldırıldı — Analist Tavsiyeleri bölümü aynı veriyi gösteriyor -->
 
     <!-- Indicator Details Modal -->
     <div class="modal fade" id="indicatorDetailsModal" tabindex="-1">
