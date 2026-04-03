@@ -96,6 +96,11 @@
         return val.toLocaleString('tr-TR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
     }
 
+    function formatDate(dateStr) {
+        if (!dateStr || dateStr.length < 10) return '-';
+        return dateStr.substring(8, 10) + '.' + dateStr.substring(5, 7) + '.' + dateStr.substring(0, 4);
+    }
+
     function escapeHtml(text) {
         if (!text) return '-';
         var div = document.createElement('div');
@@ -125,12 +130,40 @@
             tr.appendChild(td0);
 
             var td1 = document.createElement('td');
+            var wrapper = document.createElement('div');
+            wrapper.className = 'd-flex align-items-center';
+            var logos = window.stockLogos || {};
+            var logoid = logos[d.hisseSenediKodu];
+            if (logoid) {
+                var img = document.createElement('img');
+                img.src = '/img/stock-logos/' + encodeURIComponent(logoid);
+                img.style.cssText = 'width:24px;height:24px;object-fit:contain;margin-right:8px;border-radius:50%;';
+                img.onerror = function() {
+                    var fb = document.createElement('span');
+                    fb.className = 'avatar-xs rounded-circle bg-light d-inline-flex align-items-center justify-content-center';
+                    fb.style.cssText = 'width:24px;height:24px;margin-right:8px;font-size:10px;font-weight:600;color:#495057;';
+                    fb.textContent = (d.hisseSenediKodu || '').substring(0, 2);
+                    this.parentNode.replaceChild(fb, this);
+                };
+                wrapper.appendChild(img);
+            } else {
+                var av = document.createElement('span');
+                av.className = 'avatar-xs rounded-circle bg-light d-inline-flex align-items-center justify-content-center';
+                av.style.cssText = 'width:24px;height:24px;margin-right:8px;font-size:10px;font-weight:600;color:#495057;';
+                av.textContent = (d.hisseSenediKodu || '').substring(0, 2);
+                wrapper.appendChild(av);
+            }
             var link = document.createElement('a');
             link.href = '/stock/detail/' + encodeURIComponent(d.hisseSenediKodu || '');
             link.className = 'fw-semibold text-primary';
-            link.textContent = escapeHtml(d.hisseSenediKodu);
-            td1.appendChild(link);
+            link.textContent = d.hisseSenediKodu || '-';
+            wrapper.appendChild(link);
+            td1.appendChild(wrapper);
             tr.appendChild(td1);
+
+            var tdTarih = document.createElement('td');
+            tdTarih.textContent = formatDate(d.tarih);
+            tr.appendChild(tdTarih);
 
             var td2 = document.createElement('td');
             td2.className = 'text-end';

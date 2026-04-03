@@ -13,6 +13,49 @@
 <section layout:fragment="content">
     <div th:replace="~{partials/page-title :: page-title('Halka Arz', 'Piyasa')}"></div>
 
+    <!-- Bilgi Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-success border-opacity-25">
+                <a class="text-success fw-medium" data-bs-toggle="collapse" href="#halkaArzInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Halka Arz Nedir? Nasıl Değerlendirilir?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="halkaArzInfoCollapse">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-building-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Halka Arz Nedir?</h6>
+                                    <p class="text-muted mb-0 fs-12">Bir şirketin hisselerini ilk kez borsada yatırımcılara satışa sunmasıdır (IPO). Talep toplama sürecinde yatırımcılar belirlenen fiyattan hisse talebinde bulunur. Talep toplama sonrası hisseler borsada işlem görmeye başlar.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-calendar-check-line text-primary fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Süreç Nasıl İşler?</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>Talep Toplama:</strong> Belirlenen tarihler arasında aracı kurum üzerinden talep verilir. <strong>Dağıtım:</strong> Fazla talep varsa oransal dağıtım yapılır. <strong>İlk İşlem:</strong> Hisse borsada işlem görmeye başlar. İlk gün fiyat dalgalanması yaygındır.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-lightbulb-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Yatırımcı İpuçları</h6>
+                                    <p class="text-muted mb-0 fs-12">Şirketin faaliyet alanı, finansalları ve halka arz gelirinin kullanım yerini inceleyin. <strong>Katılımcı sayısı</strong> talebin gücünü gösterir. <strong>Fiyat istikrarı</strong> uygulaması olan halka arzlarda ilk günler desteklenir. Aracı kurumun güvenilirliğini de değerlendirin.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- KPI Kartlari -->
     <div class="row">
         <div class="col-xl-4 col-md-6">

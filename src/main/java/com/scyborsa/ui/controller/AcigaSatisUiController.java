@@ -2,6 +2,7 @@ package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.AcigaSatisUiDto;
 import com.scyborsa.ui.service.AcigaSatisUiService;
+import com.scyborsa.ui.service.Bist100Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,9 @@ public class AcigaSatisUiController {
 
     /** Açığa satış verilerini sağlayan servis. */
     private final AcigaSatisUiService acigaSatisUiService;
+
+    /** Hisse logo haritası için servis. */
+    private final Bist100Service bist100Service;
 
     /**
      * Açığa satış istatistikleri listesi sayfasını görüntüler.
@@ -69,6 +73,12 @@ public class AcigaSatisUiController {
         model.addAttribute("toplamHisse", toplamHisse);
         model.addAttribute("enYuksekHisse", enYuksekHisse);
         model.addAttribute("ortalamaOran", String.format("%.2f", ortalamaOran));
+
+        try {
+            model.addAttribute("stockLogos", bist100Service.getStockLogos());
+        } catch (Exception e) {
+            model.addAttribute("stockLogos", java.util.Collections.emptyMap());
+        }
 
         return "aciga-satis/aciga-satis-list";
     }
