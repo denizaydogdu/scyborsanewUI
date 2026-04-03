@@ -290,6 +290,7 @@
 </th:block>
 
 <th:block layout:fragment="pagejs">
+    <script th:src="@{/assets/libs/apexcharts/apexcharts.min.js}"></script>
     <script th:inline="javascript">
         window.STOCK_SYMBOL = /*[[${symbol}]]*/ '';
     </script>
