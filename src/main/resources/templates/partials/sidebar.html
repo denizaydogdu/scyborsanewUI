@@ -71,14 +71,14 @@
 						</li>
 
 						<li class="nav-item"
-							th:classappend="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/') or #strings.startsWith(requestURI, '/arastirmalar') or #strings.startsWith(requestURI, '/faaliyet-raporlari')} ? 'mm-active' : ''">
+							th:classappend="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/')} ? 'mm-active' : ''">
 							<a class="nav-link menu-link" href="#sidebarHaberler" data-bs-toggle="collapse" role="button"
-							   th:aria-expanded="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/') or #strings.startsWith(requestURI, '/arastirmalar') or #strings.startsWith(requestURI, '/faaliyet-raporlari')} ? 'true' : 'false'"
+							   th:aria-expanded="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/')} ? 'true' : 'false'"
 							   aria-controls="sidebarHaberler">
 								<i class="ri-newspaper-line"></i> <span>Haberler</span>
 							</a>
 							<div class="menu-dropdown" id="sidebarHaberler"
-								 th:classappend="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/') or #strings.startsWith(requestURI, '/arastirmalar') or #strings.startsWith(requestURI, '/faaliyet-raporlari')} ? 'collapse show' : 'collapse'">
+								 th:classappend="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/')} ? 'collapse show' : 'collapse'">
 								<ul class="nav nav-sm flex-column">
 									<li class="nav-item">
 										<a href="/kap-news" class="nav-link"
@@ -92,14 +92,7 @@
 										<a href="/world-news" class="nav-link"
 										   th:classappend="${#strings.startsWith(requestURI, '/world-news') or (activeNewsMenu != null and activeNewsMenu == 'WORLD')} ? 'active' : ''">Dünya Haberleri</a>
 									</li>
-									<li class="nav-item">
-										<a href="/arastirmalar" class="nav-link"
-										   th:classappend="${#strings.startsWith(requestURI, '/arastirmalar')} ? 'active' : ''">Araştırmalar</a>
-									</li>
-									<li class="nav-item">
-										<a href="/faaliyet-raporlari" class="nav-link"
-										   th:classappend="${#strings.startsWith(requestURI, '/faaliyet-raporlari')} ? 'active' : ''">Faaliyet Raporları</a>
-									</li>
+									<!-- Araştırmalar ve Faaliyet Raporları kaldırıldı — KAP sayfasına hisse bazlı arama eklenecek (T206) -->
 								</ul>
 							</div>
 						</li>
