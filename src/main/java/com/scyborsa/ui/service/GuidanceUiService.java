@@ -81,4 +81,29 @@ public class GuidanceUiService {
             return Collections.emptyList();
         }
     }
+
+    /**
+     * Belirtilen hisse icin raw guidance (beklentiler) metnini getirir.
+     *
+     * <p>API'deki raw endpoint'i cagirir, ham markdown metnini dondurur.
+     * UI tarafinda JS ile HTML tabloya donusturulur.</p>
+     *
+     * @param stockCode hisse kodu (orn. THYAO)
+     * @return ham beklenti metni; hata durumunda null
+     */
+    public String getRawGuidance(String stockCode) {
+        log.debug("[GUIDANCE-UI] Raw guidance isteniyor: {}", stockCode);
+        try {
+            String result = webClient.get()
+                    .uri(ScyborsaApiEndpoints.GUIDANCE_RAW, stockCode)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .timeout(TIMEOUT)
+                    .block();
+            return result;
+        } catch (Exception e) {
+            log.warn("[GUIDANCE-UI] Raw guidance alinamadi: {} - {}", stockCode, e.getMessage());
+            return null;
+        }
+    }
 }

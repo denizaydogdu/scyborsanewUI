@@ -338,6 +338,9 @@ public final class ScyborsaApiEndpoints {
     /** Hisse bazli sirket beklentileri endpoint'i. {@code {stockCode}} path variable icerir. */
     public static final String GUIDANCE_BY_CODE = "/api/v1/guidance/{stockCode}";
 
+    /** Hisse bazli raw guidance (beklentiler) metni endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String GUIDANCE_RAW = "/api/v1/guidance/{stockCode}/raw";
+
     /** Halka arz listesi endpoint'i. */
     public static final String HALKA_ARZ = "/api/v1/halka-arz";
 

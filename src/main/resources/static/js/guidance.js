@@ -1,7 +1,8 @@
 /**
- * Şirket Beklentileri (Guidance) sayfa JS.
+ * Sirket Beklentileri (Guidance) sayfa JS.
  *
- * Client-side arama, yıl filtre ve sayfalama.
+ * Client-side arama, yil filtre ve sayfalama.
+ * Beklentiler detayi AJAX ile hisse bazli cekilir ve modal'da gosterilir.
  */
 (function() {
     'use strict';
@@ -9,7 +10,6 @@
     var data = window.guidanceData || [];
     var PAGE_SIZE = 20;
     var currentPage = 1;
-    var MAX_TEXT = 100;
 
     var searchInput = document.getElementById('searchInput');
     var yearFilter = document.getElementById('yearFilter');
@@ -31,12 +31,6 @@
             }
             return true;
         });
-    }
-
-    function truncate(text, max) {
-        if (!text) return '-';
-        if (text.length <= max) return text;
-        return text.substring(0, max) + '...';
     }
 
     function createTextCell(text) {
@@ -91,27 +85,18 @@
             tdYear.appendChild(badge);
             tr.appendChild(tdYear);
 
-            // Beklentiler kolonu
-            var tdBeklenti = document.createElement('td');
-            var fullText = item.beklentiler || '-';
-            var shortText = truncate(fullText, MAX_TEXT);
-            var textSpan = document.createElement('span');
-            textSpan.textContent = shortText;
-            tdBeklenti.appendChild(textSpan);
-
-            if (fullText.length > MAX_TEXT) {
-                var expandLink = document.createElement('a');
-                expandLink.href = 'javascript:void(0)';
-                expandLink.className = 'text-primary fw-semibold ms-1';
-                expandLink.textContent = 'Devamı';
-                expandLink.addEventListener('click', (function(code, yil, text) {
-                    return function() {
-                        showBeklenti(code + ' (' + yil + ')', text);
-                    };
-                })(item.hisseSenediKodu || '', item.yil || '', fullText));
-                tdBeklenti.appendChild(expandLink);
-            }
-            tr.appendChild(tdBeklenti);
+            // Islem kolonu — Detay butonu
+            var tdAction = document.createElement('td');
+            var detayBtn = document.createElement('button');
+            detayBtn.className = 'btn btn-sm btn-soft-primary';
+            detayBtn.textContent = 'Detay';
+            detayBtn.addEventListener('click', (function(code, yil) {
+                return function() {
+                    fetchAndShowDetail(code, yil);
+                };
+            })(item.hisseSenediKodu || '', item.yil || ''));
+            tdAction.appendChild(detayBtn);
+            tr.appendChild(tdAction);
 
             tbody.appendChild(tr);
         });
@@ -146,7 +131,7 @@
             return li;
         }
 
-        // Önceki
+        // Onceki
         paginationUl.appendChild(createPageItem(currentPage - 1, '\u00AB', currentPage === 1, false));
 
         for (var p = 1; p <= totalPages; p++) {
@@ -167,11 +152,172 @@
         paginationUl.appendChild(createPageItem(currentPage + 1, '\u00BB', currentPage === totalPages, false));
     }
 
-    function showBeklenti(title, text) {
-        document.getElementById('beklentiModalTitle').textContent = title;
-        document.getElementById('beklentiModalBody').textContent = text;
+    /**
+     * AJAX ile hisse bazli raw guidance metnini getirir ve modal'da gosterir.
+     */
+    function fetchAndShowDetail(stockCode, yil) {
+        var modalTitle = document.getElementById('beklentiModalTitle');
+        var modalBody = document.getElementById('beklentiModalBody');
+
+        modalTitle.textContent = stockCode + ' (' + yil + ') Beklentileri';
+
+        // Yukleniyor goster
+        while (modalBody.firstChild) modalBody.removeChild(modalBody.firstChild);
+        var spinner = document.createElement('div');
+        spinner.className = 'text-center py-4';
+        spinner.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div><span class="ms-2 text-muted">Yükleniyor...</span>';
+        modalBody.appendChild(spinner);
+
         var modal = new bootstrap.Modal(document.getElementById('beklentiModal'));
         modal.show();
+
+        var csrfMeta = document.querySelector('meta[name="_csrf"]');
+        var csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+        var headers = {};
+        if (csrfMeta && csrfHeaderMeta) {
+            headers[csrfHeaderMeta.content] = csrfMeta.content;
+        }
+
+        fetch('/ajax/guidance/' + encodeURIComponent(stockCode), { headers: headers })
+            .then(function(response) {
+                if (response.status === 204) {
+                    return null;
+                }
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                return response.text();
+            })
+            .then(function(rawText) {
+                while (modalBody.firstChild) modalBody.removeChild(modalBody.firstChild);
+
+                if (!rawText) {
+                    var emptyMsg = document.createElement('div');
+                    emptyMsg.className = 'text-center text-muted py-4';
+                    emptyMsg.textContent = 'Bu hisse için beklenti verisi bulunamadı.';
+                    modalBody.appendChild(emptyMsg);
+                    return;
+                }
+
+                // Markdown tablo -> HTML tablo cevir
+                var tableEl = markdownTableToHtml(rawText);
+                if (tableEl) {
+                    var wrapper = document.createElement('div');
+                    wrapper.className = 'table-responsive';
+                    wrapper.appendChild(tableEl);
+                    modalBody.appendChild(wrapper);
+                } else {
+                    // Fallback: duz metin
+                    var pre = document.createElement('pre');
+                    pre.className = 'mb-0';
+                    pre.style.whiteSpace = 'pre-wrap';
+                    pre.textContent = rawText;
+                    modalBody.appendChild(pre);
+                }
+            })
+            .catch(function(err) {
+                while (modalBody.firstChild) modalBody.removeChild(modalBody.firstChild);
+                var errMsg = document.createElement('div');
+                errMsg.className = 'alert alert-warning mb-0';
+                errMsg.textContent = 'Beklenti verisi alınamadı. Lütfen tekrar deneyin.';
+                modalBody.appendChild(errMsg);
+            });
+    }
+
+    /**
+     * Markdown tabloyu HTML <table> elementine donusturur.
+     * Ic ice tablolar ve **bold** markdown destekler.
+     * XSS koruması: textContent kullanir.
+     *
+     * @param {string} text - Raw markdown tablo metni
+     * @returns {HTMLTableElement|null} HTML tablo veya null
+     */
+    function markdownTableToHtml(text) {
+        if (!text) return null;
+
+        var lines = text.split(/\r?\n/).filter(function(l) { return l.trim().length > 0; });
+        if (lines.length < 2) return null;
+
+        // En az bir satir pipe icermeli
+        var hasPipe = false;
+        for (var k = 0; k < lines.length; k++) {
+            if (lines[k].indexOf('|') !== -1) { hasPipe = true; break; }
+        }
+        if (!hasPipe) return null;
+
+        var table = document.createElement('table');
+        table.className = 'table table-sm table-bordered mb-0';
+
+        var isHeader = true;
+        var headerDone = false;
+        var thead = document.createElement('thead');
+        var tbodyEl = document.createElement('tbody');
+
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+
+            // Ayirici satirini atla (| --- | --- |)
+            if (/^\|?\s*[-:]+\s*(\|\s*[-:]+\s*)*\|?\s*$/.test(line)) {
+                if (isHeader) {
+                    isHeader = false;
+                    headerDone = true;
+                }
+                continue;
+            }
+
+            // Pipe ile basla/bitir temizligi
+            if (line.startsWith('|')) line = line.substring(1);
+            if (line.endsWith('|')) line = line.substring(0, line.length - 1);
+
+            var cells = line.split('|');
+            var tr = document.createElement('tr');
+
+            for (var j = 0; j < cells.length; j++) {
+                var cellTag = (isHeader && !headerDone) ? 'th' : 'td';
+                var cell = document.createElement(cellTag);
+                var cellText = cells[j].trim();
+
+                // **bold** markdown -> <strong>
+                if (cellText.indexOf('**') !== -1) {
+                    cell.innerHTML = '';
+                    var parts = cellText.split(/\*\*/);
+                    for (var p = 0; p < parts.length; p++) {
+                        if (p % 2 === 1) {
+                            // Bold kisim
+                            var strong = document.createElement('strong');
+                            strong.textContent = parts[p];
+                            cell.appendChild(strong);
+                        } else {
+                            cell.appendChild(document.createTextNode(parts[p]));
+                        }
+                    }
+                } else {
+                    cell.textContent = cellText;
+                }
+
+                if (cellTag === 'th') {
+                    cell.className = 'bg-light';
+                }
+                tr.appendChild(cell);
+            }
+
+            if (isHeader && !headerDone) {
+                thead.appendChild(tr);
+            } else {
+                tbodyEl.appendChild(tr);
+            }
+        }
+
+        if (thead.childNodes.length > 0) {
+            table.appendChild(thead);
+        }
+        if (tbodyEl.childNodes.length > 0) {
+            table.appendChild(tbodyEl);
+        } else {
+            return null; // Veri satiri yoksa null don
+        }
+
+        return table;
     }
 
     // Event listeners
@@ -185,6 +331,6 @@
         render();
     });
 
-    // İlk render
+    // Ilk render
     render();
 })();
