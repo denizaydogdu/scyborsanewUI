@@ -1146,8 +1146,11 @@
         var chartEl = document.getElementById('trend-chart');
         if (!containerEl || !chartEl) return;
 
+        console.log('[TREND] Trend verisi yükleniyor:', sym);
         fetchData('/ajax/bilanco/' + encodeURIComponent(sym) + '/trend').then(function (data) {
+            console.log('[TREND] Veri geldi:', JSON.stringify(data).substring(0, 200));
             if (!data || !data.labels || data.labels.length === 0) {
+                console.warn('[TREND] Veri boş:', data);
                 clearElement(containerEl);
                 var empty = document.createElement('div');
                 empty.className = 'alert alert-warning';
@@ -1241,10 +1244,13 @@
         var containerEl = document.getElementById('sektor-karsilastirma-container');
         if (!containerEl) return;
 
+        console.log('[SEKTOR] Sektörel karşılaştırma yükleniyor:', sym);
         fetchData('/ajax/bilanco/' + encodeURIComponent(sym) + '/sektor-karsilastirma').then(function (data) {
+            console.log('[SEKTOR] Veri geldi:', JSON.stringify(data).substring(0, 200));
             clearElement(containerEl);
 
             if (!data || (!data.sirketOranlari && !data.sektorMedian && !data.sektor)) {
+                console.warn('[SEKTOR] Veri boş veya null, kart gizleniyor');
                 // Veri yoksa kartı tamamen gizle
                 var parentCard = containerEl.closest('.card');
                 if (parentCard) parentCard.closest('.row').style.display = 'none';
@@ -1331,15 +1337,16 @@
             table.appendChild(tbody);
             wrapper.appendChild(table);
             containerEl.appendChild(wrapper);
-        }).catch(function () {
+        }).catch(function (err) {
+            console.error('[SEKTOR] HATA:', err);
             clearElement(containerEl);
-            var err = document.createElement('div');
-            err.className = 'alert alert-danger';
+            var errDiv = document.createElement('div');
+            errDiv.className = 'alert alert-danger';
             var errIcon = document.createElement('i');
             errIcon.className = 'ri-error-warning-line me-2';
-            err.appendChild(errIcon);
-            err.appendChild(document.createTextNode('Sektörel karşılaştırma verisi yüklenemedi.'));
-            containerEl.appendChild(err);
+            errDiv.appendChild(errIcon);
+            errDiv.appendChild(document.createTextNode('Sektörel karşılaştırma verisi yüklenemedi: ' + (err.message || err)));
+            containerEl.appendChild(errDiv);
         });
     }
 

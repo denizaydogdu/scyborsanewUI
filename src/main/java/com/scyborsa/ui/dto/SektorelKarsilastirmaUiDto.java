@@ -34,6 +34,6 @@ public class SektorelKarsilastirmaUiDto {
     /** Sektör medyanı (oran adı → değer). */
     private Map<String, Double> sektorMedian;
 
-    /** Sektördeki pozisyon (oran adı → sıralama). */
-    private Map<String, Integer> pozisyon;
+    /** Sektördeki pozisyon (oran adı → UCUZ/ORTADA/PAHALI/GÜÇLÜ/ZAYIF). */
+    private Map<String, String> pozisyon;
 }
