@@ -486,6 +486,66 @@
         </div>
     </div>
 
+    <!-- Temel Analiz Skorları (AI'dan önce) -->
+    <div class="row" th:if="${temelSkor != null and assetType != 'CRYPTO'}">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="card-title mb-0"><i class="ri-bar-chart-grouped-line me-1 text-primary"></i> Temel Analiz Skorları</h5>
+                    <a class="text-muted fs-12" data-bs-toggle="collapse" href="#temelSkorInfo" role="button" aria-expanded="true">
+                        <i class="ri-information-line me-1"></i>Bu skorlar ne anlama gelir?
+                    </a>
+                </div>
+                <div class="collapse show" id="temelSkorInfo">
+                    <div class="card-body border-top bg-light pt-3 pb-2">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <h6 class="fs-13 mb-1"><i class="ri-checkbox-circle-line text-success me-1"></i>Piotroski F-Score (0-9)</h6>
+                                <p class="text-muted mb-0 fs-12">Şirketin finansal sağlığını 9 kriter üzerinden değerlendirir: kârlılık (4 puan), kaldıraç/likidite (3 puan), operasyonel verimlilik (2 puan). <strong class="text-success">7-9:</strong> Güçlü, <strong class="text-warning">4-6:</strong> Orta, <strong class="text-danger">0-3:</strong> Zayıf.</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="fs-13 mb-1"><i class="ri-shield-check-line text-info me-1"></i>Altman Z-Score</h6>
+                                <p class="text-muted mb-0 fs-12">İflas riskini ölçer. Sanayi şirketleri için tasarlanmıştır (bankalar için hesaplanamayabilir). <strong class="text-success">&gt;2.99:</strong> Güvenli, <strong class="text-warning">1.81-2.99:</strong> Gri bölge, <strong class="text-danger">&lt;1.81:</strong> İflas riski.</p>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="fs-13 mb-1"><i class="ri-money-dollar-circle-line text-primary me-1"></i>Graham Marjı (%)</h6>
+                                <p class="text-muted mb-0 fs-12">Benjamin Graham'ın değerleme formülü. Mevcut fiyat ile içsel değer arasındaki fark. <strong class="text-success">Pozitif:</strong> Hisse ucuz (güvenlik marjı var), <strong class="text-danger">Negatif:</strong> Hisse pahalı. Bankalar için hesaplanamayabilir.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <h6>Piotroski F-Score</h6>
+                            <span class="badge fs-5"
+                                  th:classappend="${temelSkor.piotroskiFScore == null ? 'bg-secondary' : (temelSkor.piotroskiFScore >= 7 ? 'bg-success' : (temelSkor.piotroskiFScore >= 4 ? 'bg-warning' : 'bg-danger'))}"
+                                  th:text="${temelSkor.piotroskiFScore != null ? temelSkor.piotroskiFScore + '/9' : '-'}">-</span>
+                            <small class="d-block text-muted mt-1"
+                                   th:text="${temelSkor.piotroskiZone != null ? temelSkor.piotroskiZone : ''}"></small>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h6>Altman Z-Score</h6>
+                            <span class="badge fs-5"
+                                  th:classappend="${temelSkor.altmanZScore == null ? 'bg-secondary' : (temelSkor.altmanZScore > 2.99 ? 'bg-success' : (temelSkor.altmanZScore > 1.81 ? 'bg-warning' : 'bg-danger'))}"
+                                  th:text="${temelSkor.altmanZScore != null ? #numbers.formatDecimal(temelSkor.altmanZScore, 1, 2) : '-'}">-</span>
+                            <small class="d-block text-muted mt-1"
+                                   th:text="${temelSkor.altmanZone != null ? temelSkor.altmanZone : 'Banka hisseleri için hesaplanamaz'}"></small>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h6>Graham Marjı</h6>
+                            <span class="badge fs-5"
+                                  th:classappend="${temelSkor.grahamMarji == null ? 'bg-secondary' : (temelSkor.grahamMarji > 0 ? 'bg-success' : 'bg-danger')}"
+                                  th:text="${temelSkor.grahamMarji != null ? #numbers.formatDecimal(temelSkor.grahamMarji, 1, 1) + '%' : '-'}">-</span>
+                            <small class="d-block text-muted mt-1"
+                                   th:if="${temelSkor.grahamMarji == null}" th:text="'Yeterli veri yok'"></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- AI Teknik Değerlendirme -->
     <div class="row" th:if="${assetType != 'CRYPTO'}">
         <div class="col-12">
@@ -870,63 +930,7 @@
         </div>
     </div>
 
-    <!-- Temel Analiz Skorlari (Fintables MCP) -->
-    <div class="row" th:if="${temelSkor != null and assetType != 'CRYPTO'}">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <h5 class="card-title mb-0"><i class="ri-bar-chart-grouped-line me-1 text-primary"></i> Temel Analiz Skorları</h5>
-                    <a class="text-muted fs-12" data-bs-toggle="collapse" href="#temelSkorInfo" role="button" aria-expanded="false">
-                        <i class="ri-information-line me-1"></i>Bu skorlar ne anlama gelir?
-                    </a>
-                </div>
-                <div class="collapse" id="temelSkorInfo">
-                    <div class="card-body border-top bg-light pt-3 pb-2">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <h6 class="fs-13 mb-1">Piotroski F-Score (0-9)</h6>
-                                <p class="text-muted mb-0 fs-12">Şirketin finansal sağlığını 9 kriter üzerinden değerlendirir: kârlılık (4 puan), kaldıraç/likidite (3 puan), operasyonel verimlilik (2 puan). <strong>7-9:</strong> Güçlü, <strong>4-6:</strong> Orta, <strong>0-3:</strong> Zayıf.</p>
-                            </div>
-                            <div class="col-md-4">
-                                <h6 class="fs-13 mb-1">Altman Z-Score</h6>
-                                <p class="text-muted mb-0 fs-12">İflas riskini ölçer. 5 finansal oran kullanır: işletme sermayesi, dağıtılmamış kârlar, FVÖK, piyasa değeri/borç, satışlar/varlıklar. <strong>&gt;2.99:</strong> Güvenli, <strong>1.81-2.99:</strong> Gri bölge, <strong>&lt;1.81:</strong> İflas riski.</p>
-                            </div>
-                            <div class="col-md-4">
-                                <h6 class="fs-13 mb-1">Graham Marjı (%)</h6>
-                                <p class="text-muted mb-0 fs-12">Benjamin Graham'ın değerleme formülü: √(22.5 × HBK × Defter Değeri). Mevcut fiyat ile Graham değeri arasındaki fark. <strong>Pozitif:</strong> Hisse ucuz (güvenlik marjı var), <strong>Negatif:</strong> Hisse pahalı.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 text-center">
-                            <h6>Piotroski F-Score</h6>
-                            <span class="badge fs-5"
-                                  th:classappend="${temelSkor.piotroskiFScore == null ? 'bg-secondary' : (temelSkor.piotroskiFScore >= 7 ? 'bg-success' : (temelSkor.piotroskiFScore >= 4 ? 'bg-warning' : 'bg-danger'))}"
-                                  th:text="${temelSkor.piotroskiFScore != null ? temelSkor.piotroskiFScore + '/9' : '-'}">-</span>
-                            <small class="d-block text-muted mt-1"
-                                   th:text="${temelSkor.piotroskiZone != null ? temelSkor.piotroskiZone : ''}"></small>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <h6>Altman Z-Score</h6>
-                            <span class="badge fs-5"
-                                  th:classappend="${temelSkor.altmanZScore == null ? 'bg-secondary' : (temelSkor.altmanZScore > 2.99 ? 'bg-success' : (temelSkor.altmanZScore > 1.81 ? 'bg-warning' : 'bg-danger'))}"
-                                  th:text="${temelSkor.altmanZScore != null ? #numbers.formatDecimal(temelSkor.altmanZScore, 1, 2) : '-'}">-</span>
-                            <small class="d-block text-muted mt-1"
-                                   th:text="${temelSkor.altmanZone != null ? temelSkor.altmanZone : ''}"></small>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <h6>Graham Marj&#305;</h6>
-                            <span class="badge fs-5"
-                                  th:classappend="${temelSkor.grahamMarji == null ? 'bg-secondary' : (temelSkor.grahamMarji > 0 ? 'bg-success' : 'bg-danger')}"
-                                  th:text="${temelSkor.grahamMarji != null ? #numbers.formatDecimal(temelSkor.grahamMarji, 1, 1) + '%' : '-'}">-</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Temel Analiz Skorları eski yerinden kaldırıldı — AI'dan önce taşındı -->
 
     <!-- Sirket Beklentileri / Guidance (Fintables MCP) -->
     <div class="row" th:if="${guidancelar != null and !guidancelar.isEmpty() and assetType != 'CRYPTO'}">
