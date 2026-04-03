@@ -1,6 +1,7 @@
 package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.HalkaArzUiDto;
+import com.scyborsa.ui.service.Bist100Service;
 import com.scyborsa.ui.service.HalkaArzUiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,9 @@ public class HalkaArzUiController {
 
     /** Halka arz verilerini sağlayan servis. */
     private final HalkaArzUiService halkaArzUiService;
+
+    /** Hisse logo haritası için servis. */
+    private final Bist100Service bist100Service;
 
     /**
      * Halka arz takvimi sayfasını görüntüler.
@@ -61,11 +65,11 @@ public class HalkaArzUiController {
         // KPI: son 30 günde ilk işlem gören IPO sayısı
         LocalDate otuzGunOnce = LocalDate.now().minusDays(30);
         long son30Gun = tumHalkaArzlar.stream()
-                .filter(h -> h.getIlkIslemTarihi() != null && !h.getIlkIslemTarihi().isBlank())
+                .filter(h -> h.getIlkIslemTarihi() != null && h.getIlkIslemTarihi().length() >= 10)
                 .filter(h -> {
                     try {
-                        LocalDate tarih = LocalDate.parse(h.getIlkIslemTarihi(),
-                                DateTimeFormatter.ISO_LOCAL_DATE);
+                        // Tarih "2026-03-11T00:00:00.000Z" formatında — ilk 10 karakter al
+                        LocalDate tarih = LocalDate.parse(h.getIlkIslemTarihi().substring(0, 10));
                         return !tarih.isBefore(otuzGunOnce);
                     } catch (Exception e) {
                         return false;
@@ -73,14 +77,30 @@ public class HalkaArzUiController {
                 })
                 .count();
 
-        // KPI: toplam halka arz
-        int toplam = tumHalkaArzlar.size();
+        // Geçmiş = tüm liste - aktifler
+        java.util.Set<String> aktifKodlar = aktifler.stream()
+                .map(HalkaArzUiDto::getHisseSenediKodu)
+                .collect(java.util.stream.Collectors.toSet());
+        List<HalkaArzUiDto> gecmisler = tumHalkaArzlar.stream()
+                .filter(h -> !aktifKodlar.contains(h.getHisseSenediKodu()))
+                .collect(java.util.stream.Collectors.toList());
+
+        // KPI: toplam = aktif + geçmiş (tab'lardaki sayıların toplamı)
+        int gecmisSayisi = tumHalkaArzlar.size();
+        int toplam = aktifSayisi + gecmisSayisi;
 
         model.addAttribute("tumHalkaArzlar", tumHalkaArzlar);
         model.addAttribute("aktifler", aktifler);
         model.addAttribute("aktifSayisi", aktifSayisi);
         model.addAttribute("son30Gun", son30Gun);
         model.addAttribute("toplam", toplam);
+
+        // Hisse logoları
+        try {
+            model.addAttribute("stockLogos", bist100Service.getStockLogos());
+        } catch (Exception e) {
+            model.addAttribute("stockLogos", java.util.Collections.emptyMap());
+        }
 
         return "halka-arz/halka-arz-list";
     }

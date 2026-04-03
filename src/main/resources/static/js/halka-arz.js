@@ -92,6 +92,12 @@
         return val.toLocaleString('tr-TR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
     }
 
+    function formatDate(dateStr) {
+        if (!dateStr || dateStr.length < 10) return '-';
+        // 2022-12-15T00:00:00.000Z → 15.12.2022
+        return dateStr.substring(8, 10) + '.' + dateStr.substring(5, 7) + '.' + dateStr.substring(0, 4);
+    }
+
     function escapeHtml(text) {
         if (!text) return '-';
         var div = document.createElement('div');
@@ -100,21 +106,28 @@
     }
 
     function getDurumBadge(durum) {
-        if (!durum) return '-';
+        var span = document.createElement('span');
+        if (!durum) {
+            span.className = 'badge bg-secondary';
+            span.textContent = '-';
+            return span;
+        }
         var cls = 'bg-secondary';
         var label = durum;
         var d = durum.toUpperCase();
-        if (d === 'AKTIF' || d === 'ACTIVE') {
+        if (d === 'W') {
             cls = 'bg-success';
-            label = 'Aktif';
-        } else if (d === 'TAMAMLANDI' || d === 'COMPLETED') {
+            label = 'İşlem Görüyor';
+        } else if (d === 'F') {
             cls = 'bg-primary';
             label = 'Tamamlandı';
-        } else if (d === 'IPTAL' || d === 'CANCELLED') {
-            cls = 'bg-danger';
-            label = 'İptal';
+        } else if (d === 'C') {
+            cls = 'bg-info';
+            label = 'Tamamlandı';
+        } else if (d === 'D') {
+            cls = 'bg-warning';
+            label = 'Dağıtım';
         }
-        var span = document.createElement('span');
         span.className = 'badge ' + cls;
         span.textContent = label;
         return span;
@@ -140,11 +153,38 @@
 
             var td1 = document.createElement('td');
             if (d.hisseSenediKodu) {
+                var wrapper = document.createElement('div');
+                wrapper.className = 'd-flex align-items-center';
+                // Logo veya harf avatarı
+                var logos = window.stockLogos || {};
+                var logoid = logos[d.hisseSenediKodu];
+                if (logoid) {
+                    var img = document.createElement('img');
+                    img.src = '/img/stock-logos/' + encodeURIComponent(logoid);
+                    img.style.cssText = 'width:24px;height:24px;object-fit:contain;margin-right:8px;border-radius:50%;';
+                    img.onerror = function() {
+                        // Logo yüklenemezse harf avatarı göster
+                        var fallback = document.createElement('span');
+                        fallback.className = 'avatar-xs rounded-circle bg-light d-inline-flex align-items-center justify-content-center';
+                        fallback.style.cssText = 'width:24px;height:24px;margin-right:8px;font-size:10px;font-weight:600;color:#495057;';
+                        fallback.textContent = d.hisseSenediKodu.substring(0, 2);
+                        this.parentNode.replaceChild(fallback, this);
+                    };
+                    wrapper.appendChild(img);
+                } else {
+                    // Logo yok — harf avatarı
+                    var avatar = document.createElement('span');
+                    avatar.className = 'avatar-xs rounded-circle bg-light d-inline-flex align-items-center justify-content-center';
+                    avatar.style.cssText = 'width:24px;height:24px;margin-right:8px;font-size:10px;font-weight:600;color:#495057;';
+                    avatar.textContent = d.hisseSenediKodu.substring(0, 2);
+                    wrapper.appendChild(avatar);
+                }
                 var link = document.createElement('a');
                 link.href = '/stock/detail/' + encodeURIComponent(d.hisseSenediKodu);
                 link.className = 'fw-semibold text-primary';
-                link.textContent = escapeHtml(d.hisseSenediKodu);
-                td1.appendChild(link);
+                link.textContent = d.hisseSenediKodu;
+                wrapper.appendChild(link);
+                td1.appendChild(wrapper);
             } else {
                 td1.textContent = '-';
             }
@@ -162,7 +202,7 @@
             tr.appendChild(td3);
 
             var td4 = document.createElement('td');
-            td4.textContent = d.ilkIslemTarihi || '-';
+            td4.textContent = formatDate(d.ilkIslemTarihi);
             tr.appendChild(td4);
 
             var td5 = document.createElement('td');
