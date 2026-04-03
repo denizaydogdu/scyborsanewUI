@@ -118,9 +118,19 @@
                         <div class="flex-grow-1">
                             <h5 class="mb-1">
                                 <span th:text="${stockId}">THYAO</span>
-                                <span th:if="${isTedbirli != null and isTedbirli}" class="badge bg-danger ms-2 fs-12">TEDBİRLİ</span>
+                                <span th:if="${isTedbirli != null and isTedbirli}" class="badge bg-danger ms-2 fs-12">⚠️ TEDBİRLİ</span>
                             </h5>
                             <p class="text-muted mb-0" th:text="${stockDescription}">Turk Hava Yollari A.O.</p>
+                            <!-- VBTS Tedbir Detay Bilgisi -->
+                            <div th:if="${vbtsTedbirler != null and !#lists.isEmpty(vbtsTedbirler)}" class="mt-2">
+                                <div th:each="t : ${vbtsTedbirler}" class="d-inline-block me-2 mb-1">
+                                    <span class="badge bg-danger-subtle text-danger fs-11">
+                                        <i class="ri-shield-check-line me-1"></i>
+                                        <span th:text="${t.tedbirTipi != null ? (t.tedbirTipi.equalsIgnoreCase('brut_takas') ? 'Brüt Takas' : (t.tedbirTipi.equalsIgnoreCase('tek_fiyat') ? 'Tek Fiyat' : (t.tedbirTipi.equalsIgnoreCase('kredili_alim_aciga_satis') ? 'Kredili Alım/Açığa Satış Yasağı' : (t.tedbirTipi.equalsIgnoreCase('emir_paketi') ? 'Emir Paketi' : t.tedbirTipi)))) : '-'}"></span>
+                                        <span th:if="${t.tedbirBitisTarihi != null and t.tedbirBitisTarihi.length() >= 10}" class="ms-1" th:text="'(' + ${t.tedbirBitisTarihi.substring(8,10)} + '.' + ${t.tedbirBitisTarihi.substring(5,7)} + '.' + ${t.tedbirBitisTarihi.substring(0,4)} + ' bitiş)'"></span>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                         <div class="flex-shrink-0 text-end">
                             <h4 class="mb-0">

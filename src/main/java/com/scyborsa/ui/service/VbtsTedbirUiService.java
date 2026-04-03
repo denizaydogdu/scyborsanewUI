@@ -61,21 +61,44 @@ public class VbtsTedbirUiService {
     }
 
     /**
+     * Belirtilen hisse için aktif tedbirleri getirir.
+     *
+     * @param stockCode hisse kodu (örn. TATEN)
+     * @return hissenin aktif tedbirleri; hata durumunda boş liste
+     */
+    public List<VbtsTedbirDto> getHisseTedbirleri(String stockCode) {
+        log.debug("[VBTS-UI] Hisse tedbirleri isteniyor: {}", stockCode);
+        try {
+            List<VbtsTedbirDto> result = webClient.get()
+                    .uri(ScyborsaApiEndpoints.VBTS_BY_CODE, stockCode)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<List<VbtsTedbirDto>>() {})
+                    .timeout(TIMEOUT)
+                    .block();
+            return result != null ? result : Collections.emptyList();
+        } catch (Exception e) {
+            log.warn("[VBTS-UI] Hisse tedbirleri alınamadı: {} - {}", stockCode, e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    /**
      * Belirtilen hisse kodunun VBTS tedbirli olup olmadığını kontrol eder.
      *
      * @param stockCode hisse kodu (örn. GARAN)
      * @return tedbirli ise true, değilse veya hata durumunda false
      */
+    @SuppressWarnings("unchecked")
     public boolean isTedbirli(String stockCode) {
         log.debug("[VBTS-UI] Tedbir kontrolü: {}", stockCode);
         try {
-            Boolean result = webClient.get()
+            java.util.Map<String, Object> result = webClient.get()
                     .uri(ScyborsaApiEndpoints.VBTS_CHECK, stockCode)
                     .retrieve()
-                    .bodyToMono(Boolean.class)
+                    .bodyToMono(new ParameterizedTypeReference<java.util.Map<String, Object>>() {})
                     .timeout(TIMEOUT)
                     .block();
-            return Boolean.TRUE.equals(result);
+            return result != null && Boolean.TRUE.equals(result.get("tedbirli"));
         } catch (Exception e) {
             log.warn("[VBTS-UI] Tedbir kontrolü başarısız: {} - {}", stockCode, e.getMessage());
             return false;

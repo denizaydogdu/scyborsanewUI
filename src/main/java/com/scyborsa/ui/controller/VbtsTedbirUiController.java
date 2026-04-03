@@ -1,6 +1,7 @@
 package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.VbtsTedbirDto;
+import com.scyborsa.ui.service.Bist100Service;
 import com.scyborsa.ui.service.VbtsTedbirUiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * VBTS tedbirli hisseler sayfası controller'ı.
@@ -27,6 +29,9 @@ public class VbtsTedbirUiController {
 
     /** VBTS tedbir verilerini sağlayan servis. */
     private final VbtsTedbirUiService vbtsTedbirUiService;
+
+    /** Hisse logo verilerini sağlayan servis. */
+    private final Bist100Service bist100Service;
 
     /**
      * VBTS tedbirli hisseler listesi sayfasını görüntüler.
@@ -58,11 +63,21 @@ public class VbtsTedbirUiController {
                         && !"tek_fiyat".equalsIgnoreCase(t.getTedbirTipi()))
                 .count();
 
+        // Hisse logo haritası (stockCode -> logoid)
+        Map<String, String> stockLogos;
+        try {
+            stockLogos = bist100Service.getStockLogos();
+        } catch (Exception e) {
+            log.warn("[VBTS-TEDBIR-UI] Logo haritası alınamadı: {}", e.getMessage());
+            stockLogos = Collections.emptyMap();
+        }
+
         model.addAttribute("tedbirler", tedbirler);
         model.addAttribute("toplam", tedbirler.size());
         model.addAttribute("brutTakas", brutTakas);
         model.addAttribute("tekFiyat", tekFiyat);
         model.addAttribute("diger", diger);
+        model.addAttribute("stockLogos", stockLogos);
 
         return "vbts-tedbirli/vbts-tedbirli-list";
     }

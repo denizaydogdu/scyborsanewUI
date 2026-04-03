@@ -14,6 +14,7 @@ import com.scyborsa.ui.service.GuidanceUiService;
 import com.scyborsa.ui.service.HedefFiyatUiService;
 import com.scyborsa.ui.service.StockDetailService;
 import com.scyborsa.ui.service.TemelAnalizSkorUiService;
+import com.scyborsa.ui.dto.VbtsTedbirDto;
 import com.scyborsa.ui.service.VbtsTedbirUiService;
 import com.scyborsa.ui.util.TwUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -292,10 +293,15 @@ public class StockController {
         // Fintables MCP zenginlestirme (graceful degradation)
         try {
             if (vbtsTedbirUiService != null) {
-                model.addAttribute("isTedbirli", vbtsTedbirUiService.isTedbirli(stockId));
+                boolean tedbirli = vbtsTedbirUiService.isTedbirli(stockId);
+                model.addAttribute("isTedbirli", tedbirli);
+                if (tedbirli) {
+                    List<VbtsTedbirDto> tedbirler = vbtsTedbirUiService.getHisseTedbirleri(stockId);
+                    model.addAttribute("vbtsTedbirler", tedbirler);
+                }
             }
         } catch (Exception e) {
-            log.debug("VBTS tedbir kontrolu basarisiz: {} - {}", stockId, e.getMessage());
+            log.debug("VBTS tedbir kontrolü başarısız: {} - {}", stockId, e.getMessage());
         }
 
         try {

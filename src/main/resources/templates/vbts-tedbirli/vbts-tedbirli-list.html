@@ -13,6 +13,49 @@
 <section layout:fragment="content">
     <div th:replace="~{partials/page-title :: page-title('VBTS Tedbirli Hisseler', 'Piyasa')}"></div>
 
+    <!-- Bilgi Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-warning border-opacity-25">
+                <a class="text-warning fw-medium" data-bs-toggle="collapse" href="#vbtsInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>VBTS Tedbirli Hisseler Nedir? Ne Anlama Gelir?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="vbtsInfoCollapse">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-shield-check-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">VBTS Nedir?</h6>
+                                    <p class="text-muted mb-0 fs-12">Volatilite Bazlı Tedbir Sistemi (VBTS), Borsa İstanbul tarafından aşırı fiyat dalgalanması gösteren hisselere uygulanan koruyucu tedbirlerdir. Yatırımcıları ani fiyat hareketlerinden korumayı amaçlar.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-error-warning-line text-danger fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Tedbir Tipleri</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>Brüt Takas:</strong> Alım-satım işlemleri netleştirilmez, her işlem ayrı ayrı takas edilir. <strong>Tek Fiyat:</strong> Sürekli müzayede yerine tek fiyat yöntemiyle işlem görür. <strong>Kredili Alım/Açığa Satış Yasağı:</strong> Kredili alım ve açığa satış yapılamaz.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-user-warning-line text-info fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Yatırımcı İçin Anlamı</h6>
+                                    <p class="text-muted mb-0 fs-12">Tedbirli hisselerde işlem maliyeti artar ve likidite düşebilir. Kısa vadeli yatırımcılar için risk yüksektir. Tedbir süresi genellikle 1 ay olup uzatılabilir. Yatırım kararlarınızda tedbir durumunu mutlaka göz önünde bulundurun.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- KPI Kartlari -->
     <div class="row">
         <div class="col-xl-3 col-md-6">
@@ -126,9 +169,21 @@
                             <tr th:each="tedbir, iterStat : ${tedbirler}">
                                 <td th:text="${iterStat.count}">1</td>
                                 <td>
-                                    <a th:href="@{/stock/detail/{id}(id=${tedbir.hisseSenediKodu})}"
-                                       class="fw-semibold text-primary"
-                                       th:text="${tedbir.hisseSenediKodu}">GARAN</a>
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0 avatar-xs me-2" th:with="logoid=${stockLogos[tedbir.hisseSenediKodu]}">
+                                            <img th:if="${logoid != null and !logoid.isEmpty()}"
+                                                 th:src="'/img/stock-logos/' + ${logoid}"
+                                                 th:alt="${tedbir.hisseSenediKodu}"
+                                                 class="avatar-xs rounded-circle"
+                                                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                                            <div th:style="'background:transparent;color:#495057;border:1.5px solid #ced4da;font-size:0.55rem' + (${logoid != null and !logoid.isEmpty()} ? ';display:none' : '')"
+                                                 class="avatar-title rounded-circle fw-semibold"
+                                                 th:text="${tedbir.hisseSenediKodu != null ? (tedbir.hisseSenediKodu.length() > 4 ? tedbir.hisseSenediKodu.substring(0, 4) : tedbir.hisseSenediKodu) : '?'}">GARN</div>
+                                        </div>
+                                        <a th:href="@{/stock/detail/{id}(id=${tedbir.hisseSenediKodu})}"
+                                           class="fw-semibold text-primary"
+                                           th:text="${tedbir.hisseSenediKodu}">GARAN</a>
+                                    </div>
                                 </td>
                                 <td>
                                     <span class="badge"
@@ -144,8 +199,10 @@
                                         <span th:case="*" th:text="${tedbir.tedbirTipi}">Diğer</span>
                                     </span>
                                 </td>
-                                <td th:text="${tedbir.tedbirBaslangicTarihi}">-</td>
-                                <td th:text="${tedbir.tedbirBitisTarihi != null ? tedbir.tedbirBitisTarihi : 'Süresiz'}">-</td>
+                                <td th:text="${tedbir.tedbirBaslangicTarihi != null and tedbir.tedbirBaslangicTarihi.length() >= 10 ?
+                                    tedbir.tedbirBaslangicTarihi.substring(8,10) + '.' + tedbir.tedbirBaslangicTarihi.substring(5,7) + '.' + tedbir.tedbirBaslangicTarihi.substring(0,4) : '-'}">-</td>
+                                <td th:text="${tedbir.tedbirBitisTarihi != null and tedbir.tedbirBitisTarihi.length() >= 10 ?
+                                    tedbir.tedbirBitisTarihi.substring(8,10) + '.' + tedbir.tedbirBitisTarihi.substring(5,7) + '.' + tedbir.tedbirBitisTarihi.substring(0,4) : 'Süresiz'}">-</td>
                             </tr>
                             </tbody>
                         </table>
