@@ -39,6 +39,58 @@
         return td;
     }
 
+    /**
+     * Hisse kodu hucresini logo ile birlikte olusturur.
+     * stockLogos haritasindan logoid bulunursa avatar-xs logo gosterilir,
+     * bulunamazsa harf fallback gosterilir.
+     *
+     * @param {string} code - Hisse kodu
+     * @returns {HTMLTableCellElement} td elementi
+     */
+    function createStockCodeCell(code) {
+        var td = document.createElement('td');
+        var wrapper = document.createElement('div');
+        wrapper.className = 'd-flex align-items-center';
+
+        var avatarDiv = document.createElement('div');
+        avatarDiv.className = 'flex-shrink-0 avatar-xs me-2';
+        var logoid = (window.stockLogos || {})[code];
+        if (logoid) {
+            var logoImg = document.createElement('img');
+            logoImg.src = '/img/stock-logos/' + encodeURIComponent(logoid);
+            logoImg.alt = code || '';
+            logoImg.className = 'avatar-xs rounded-circle';
+            var fallbackSpan = document.createElement('span');
+            fallbackSpan.className = 'avatar-title rounded-circle fw-semibold';
+            fallbackSpan.style.cssText = 'display:none;background:transparent;color:#495057;border:1.5px solid #ced4da;font-size:0.55rem';
+            fallbackSpan.textContent = code ? code.substring(0, Math.min(4, code.length)) : '?';
+            (function(img, fallback) {
+                img.onerror = function() {
+                    img.style.display = 'none';
+                    fallback.style.display = 'flex';
+                };
+            })(logoImg, fallbackSpan);
+            avatarDiv.appendChild(logoImg);
+            avatarDiv.appendChild(fallbackSpan);
+        } else {
+            var avatarInner = document.createElement('div');
+            avatarInner.className = 'avatar-title rounded-circle fw-semibold';
+            avatarInner.style.cssText = 'background:transparent;color:#495057;border:1.5px solid #ced4da;font-size:0.55rem';
+            avatarInner.textContent = code ? code.substring(0, Math.min(4, code.length)) : '?';
+            avatarDiv.appendChild(avatarInner);
+        }
+        wrapper.appendChild(avatarDiv);
+
+        var link = document.createElement('a');
+        link.href = '/stock/detail/' + encodeURIComponent(code || '');
+        link.className = 'fw-semibold text-primary';
+        link.textContent = code || '-';
+        wrapper.appendChild(link);
+
+        td.appendChild(wrapper);
+        return td;
+    }
+
     function render() {
         var filtered = getFiltered();
         var totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -68,14 +120,8 @@
             // # kolonu
             tr.appendChild(createTextCell(start + i + 1));
 
-            // Hisse Kodu kolonu
-            var tdCode = document.createElement('td');
-            var link = document.createElement('a');
-            link.href = '/stock/detail/' + encodeURIComponent(item.hisseSenediKodu || '');
-            link.className = 'fw-semibold text-primary';
-            link.textContent = item.hisseSenediKodu || '-';
-            tdCode.appendChild(link);
-            tr.appendChild(tdCode);
+            // Hisse Kodu kolonu (logo ile)
+            tr.appendChild(createStockCodeCell(item.hisseSenediKodu || ''));
 
             // Yil kolonu
             var tdYear = document.createElement('td');
@@ -159,13 +205,14 @@
         var modalTitle = document.getElementById('beklentiModalTitle');
         var modalBody = document.getElementById('beklentiModalBody');
 
-        modalTitle.textContent = stockCode + ' (' + yil + ') Beklentileri';
+        // Dinamik modal başlığı
+        modalTitle.textContent = stockCode + ' \u2014 ' + yil + ' Y\u0131l\u0131 Beklentileri';
 
         // Yukleniyor goster
         while (modalBody.firstChild) modalBody.removeChild(modalBody.firstChild);
         var spinner = document.createElement('div');
         spinner.className = 'text-center py-4';
-        spinner.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div><span class="ms-2 text-muted">Yükleniyor...</span>';
+        spinner.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div><span class="ms-2 text-muted">Y\u00fckleniyor...</span>';
         modalBody.appendChild(spinner);
 
         var modal = new bootstrap.Modal(document.getElementById('beklentiModal'));
@@ -178,7 +225,7 @@
             headers[csrfHeaderMeta.content] = csrfMeta.content;
         }
 
-        fetch('/ajax/guidance/' + encodeURIComponent(stockCode), { headers: headers })
+        fetch('/ajax/guidance/' + encodeURIComponent(stockCode) + '?yil=' + encodeURIComponent(yil), { headers: headers })
             .then(function(response) {
                 if (response.status === 204) {
                     return null;
@@ -194,18 +241,15 @@
                 if (!rawText) {
                     var emptyMsg = document.createElement('div');
                     emptyMsg.className = 'text-center text-muted py-4';
-                    emptyMsg.textContent = 'Bu hisse için beklenti verisi bulunamadı.';
+                    emptyMsg.textContent = 'Bu hisse i\u00e7in beklenti verisi bulunamad\u0131.';
                     modalBody.appendChild(emptyMsg);
                     return;
                 }
 
                 // Markdown tablo -> HTML tablo cevir
-                var tableEl = markdownTableToHtml(rawText);
-                if (tableEl) {
-                    var wrapper = document.createElement('div');
-                    wrapper.className = 'table-responsive';
-                    wrapper.appendChild(tableEl);
-                    modalBody.appendChild(wrapper);
+                var result = markdownTableToHtml(rawText);
+                if (result) {
+                    modalBody.appendChild(result);
                 } else {
                     // Fallback: duz metin
                     var pre = document.createElement('pre');
@@ -219,105 +263,156 @@
                 while (modalBody.firstChild) modalBody.removeChild(modalBody.firstChild);
                 var errMsg = document.createElement('div');
                 errMsg.className = 'alert alert-warning mb-0';
-                errMsg.textContent = 'Beklenti verisi alınamadı. Lütfen tekrar deneyin.';
+                errMsg.textContent = 'Beklenti verisi al\u0131namad\u0131. L\u00fctfen tekrar deneyin.';
                 modalBody.appendChild(errMsg);
             });
     }
 
     /**
-     * Markdown tabloyu HTML <table> elementine donusturur.
-     * Ic ice tablolar ve **bold** markdown destekler.
-     * XSS koruması: textContent kullanir.
+     * MCP raw text formatindan hisse+yil bazli kartlar olusturur.
+     *
+     * Raw format:
+     * | hisse_senedi_kodu | yil | beklentiler |
+     * | --- | --- | --- |
+     * | AEFES | 2026 | | Beklenti Konusu | 2026 Beklenti | \r\n| --- | --- | \r\n| Konu | Deger | ...
+     *
+     * Her hisse+yil icin ayri kart olusturulur. Ic tablo parse edilir.
+     * XSS koruması: DOM API ile olusturulur.
      *
      * @param {string} text - Raw markdown tablo metni
-     * @returns {HTMLTableElement|null} HTML tablo veya null
+     * @returns {DocumentFragment|null} Kartlar iceren fragment veya null
      */
     function markdownTableToHtml(text) {
         if (!text) return null;
 
-        var lines = text.split(/\r?\n/).filter(function(l) { return l.trim().length > 0; });
-        if (lines.length < 2) return null;
+        var lines = text.split('\n');
+        if (lines.length < 3) return null;
 
-        // En az bir satir pipe icermeli
-        var hasPipe = false;
-        for (var k = 0; k < lines.length; k++) {
-            if (lines[k].indexOf('|') !== -1) { hasPipe = true; break; }
-        }
-        if (!hasPipe) return null;
+        var STOCK_RE = /^[A-Z0-9]{2,10}$/;
+        var SEP_RE = /^[-:\s|]+$/;
 
-        var table = document.createElement('table');
-        table.className = 'table table-sm table-bordered mb-0';
-
-        var isHeader = true;
-        var headerDone = false;
-        var thead = document.createElement('thead');
-        var tbodyEl = document.createElement('tbody');
+        // Satır bazlı parse: hisse kodu olan satır = yeni bölüm, olmayan = iç tablo satırı
+        var sections = []; // [{stockCode, yil, innerLines: []}]
+        var currentSection = null;
+        var skippedOuterHeader = false;
 
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i].trim();
+            if (!line) continue;
 
-            // Ayirici satirini atla (| --- | --- |)
-            if (/^\|?\s*[-:]+\s*(\|\s*[-:]+\s*)*\|?\s*$/.test(line)) {
-                if (isHeader) {
-                    isHeader = false;
-                    headerDone = true;
-                }
+            // Pipe temizle
+            var cleaned = line;
+            if (cleaned.charAt(0) === '|') cleaned = cleaned.substring(1);
+            if (cleaned.charAt(cleaned.length - 1) === '|') cleaned = cleaned.substring(0, cleaned.length - 1);
+
+            var parts = cleaned.split('|').map(function(s) { return s.trim(); });
+
+            // Dış tablo header satırını atla (hisse_senedi_kodu | yil | beklentiler)
+            if (!skippedOuterHeader && parts[0] === 'hisse_senedi_kodu') {
+                skippedOuterHeader = true;
                 continue;
             }
 
-            // Pipe ile basla/bitir temizligi
-            if (line.startsWith('|')) line = line.substring(1);
-            if (line.endsWith('|')) line = line.substring(0, line.length - 1);
+            // Separator satırını atla (--- | --- | ---)
+            if (SEP_RE.test(cleaned.replace(/\|/g, ' '))) {
+                // Ama iç tablo separator'ı currentSection'a eklenmemeli
+                continue;
+            }
 
-            var cells = line.split('|');
-            var tr = document.createElement('tr');
+            // Hisse kodu tespiti: ilk kolon BIST kodu mu?
+            if (parts.length >= 2 && STOCK_RE.test(parts[0])) {
+                // Yeni bölüm başlat
+                currentSection = {
+                    stockCode: parts[0],
+                    yil: parts[1],
+                    innerLines: []
+                };
+                sections.push(currentSection);
 
-            for (var j = 0; j < cells.length; j++) {
-                var cellTag = (isHeader && !headerDone) ? 'th' : 'td';
-                var cell = document.createElement(cellTag);
-                var cellText = cells[j].trim();
+                // 3. kolondan sonrası iç tablonun ilk satırı (header)
+                if (parts.length > 2) {
+                    currentSection.innerLines.push(parts.slice(2));
+                }
+            } else if (currentSection) {
+                // İç tablo data satırı
+                currentSection.innerLines.push(parts);
+            }
+        }
 
-                // **bold** markdown -> <strong>
-                if (cellText.indexOf('**') !== -1) {
-                    cell.innerHTML = '';
-                    var parts = cellText.split(/\*\*/);
-                    for (var p = 0; p < parts.length; p++) {
-                        if (p % 2 === 1) {
-                            // Bold kisim
-                            var strong = document.createElement('strong');
-                            strong.textContent = parts[p];
-                            cell.appendChild(strong);
-                        } else {
-                            cell.appendChild(document.createTextNode(parts[p]));
-                        }
+        if (sections.length === 0) return null;
+
+        var fragment = document.createDocumentFragment();
+
+        for (var s = 0; s < sections.length; s++) {
+            if (s > 0) {
+                fragment.appendChild(document.createElement('hr'));
+            }
+
+            var sec = sections[s];
+
+            // Başlık
+            var heading = document.createElement('h6');
+            heading.className = 'fw-bold text-primary mb-3';
+            heading.textContent = '\uD83D\uDCCB ' + sec.stockCode + ' \u2014 ' + sec.yil + ' Y\u0131l\u0131 Beklentileri';
+            fragment.appendChild(heading);
+
+            if (sec.innerLines.length === 0) {
+                var noData = document.createElement('p');
+                noData.className = 'text-muted';
+                noData.textContent = 'Detay verisi bulunamad\u0131.';
+                fragment.appendChild(noData);
+                continue;
+            }
+
+            // İç tablo oluştur
+            var tableDiv = document.createElement('div');
+            tableDiv.className = 'table-responsive';
+            var table = document.createElement('table');
+            table.className = 'table table-sm table-bordered mb-0';
+            var thead = document.createElement('thead');
+            thead.className = 'table-light';
+            var tbodyInner = document.createElement('tbody');
+            var isFirst = true;
+
+            for (var r = 0; r < sec.innerLines.length; r++) {
+                var cols = sec.innerLines[r];
+                // Boş satır filtrele
+                if (cols.length === 0 || cols.every(function(c) { return !c; })) continue;
+
+                var tr = document.createElement('tr');
+                for (var c = 0; c < cols.length; c++) {
+                    var cellText = (cols[c] || '').replace(/\*\*/g, '').replace(/\\-/g, '-').trim();
+                    if (isFirst) {
+                        var th = document.createElement('th');
+                        th.className = 'fw-semibold';
+                        th.textContent = cellText;
+                        tr.appendChild(th);
+                    } else {
+                        var td = document.createElement('td');
+                        td.textContent = cellText;
+                        if (c === 0) td.className = 'fw-medium';
+                        tr.appendChild(td);
                     }
+                }
+
+                if (isFirst) {
+                    thead.appendChild(tr);
+                    isFirst = false;
                 } else {
-                    cell.textContent = cellText;
+                    tbodyInner.appendChild(tr);
                 }
-
-                if (cellTag === 'th') {
-                    cell.className = 'bg-light';
-                }
-                tr.appendChild(cell);
             }
 
-            if (isHeader && !headerDone) {
-                thead.appendChild(tr);
-            } else {
-                tbodyEl.appendChild(tr);
-            }
+            if (thead.childNodes.length > 0) table.appendChild(thead);
+            if (tbodyInner.childNodes.length > 0) table.appendChild(tbodyInner);
+
+            var wrapper = document.createElement('div');
+            wrapper.className = 'table-responsive mb-3';
+            wrapper.appendChild(table);
+            fragment.appendChild(wrapper);
         }
 
-        if (thead.childNodes.length > 0) {
-            table.appendChild(thead);
-        }
-        if (tbodyEl.childNodes.length > 0) {
-            table.appendChild(tbodyEl);
-        } else {
-            return null; // Veri satiri yoksa null don
-        }
-
-        return table;
+        return fragment;
     }
 
     // Event listeners

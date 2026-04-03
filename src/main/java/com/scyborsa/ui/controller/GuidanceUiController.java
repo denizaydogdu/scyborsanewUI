@@ -1,6 +1,7 @@
 package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.GuidanceUiDto;
+import com.scyborsa.ui.service.Bist100Service;
 import com.scyborsa.ui.service.GuidanceUiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,10 +11,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -37,6 +40,9 @@ public class GuidanceUiController {
 
     /** Guidance verilerini saglayan servis. */
     private final GuidanceUiService guidanceUiService;
+
+    /** Hisse logoid haritasi icin BIST servis bagimliligi. */
+    private final Bist100Service bist100Service;
 
     /**
      * Sirket beklentileri listesi sayfasini goruntuler.
@@ -69,9 +75,19 @@ public class GuidanceUiController {
                 .sorted()
                 .collect(Collectors.toList());
 
+        // Hisse logo haritasi (stockCode -> logoid)
+        Map<String, String> stockLogos;
+        try {
+            stockLogos = bist100Service.getStockLogos();
+        } catch (Exception e) {
+            log.warn("[GUIDANCE-UI] Logo haritasi alinamadi: {}", e.getMessage());
+            stockLogos = Collections.emptyMap();
+        }
+
         model.addAttribute("guidancelar", guidancelar);
         model.addAttribute("toplamSirket", toplamSirket);
         model.addAttribute("yillar", yillar);
+        model.addAttribute("stockLogos", stockLogos);
 
         return "guidance/guidance-list";
     }
@@ -87,7 +103,9 @@ public class GuidanceUiController {
      */
     @GetMapping(value = "/ajax/guidance/{stockCode}", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
-    public ResponseEntity<String> getGuidanceRaw(@PathVariable String stockCode) {
+    public ResponseEntity<String> getGuidanceRaw(
+            @PathVariable String stockCode,
+            @RequestParam(required = false) Integer yil) {
         if (stockCode == null || stockCode.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
@@ -98,7 +116,7 @@ public class GuidanceUiController {
         }
 
         try {
-            String rawText = guidanceUiService.getRawGuidance(safeName);
+            String rawText = guidanceUiService.getRawGuidance(safeName, yil);
             if (rawText == null || rawText.isBlank()) {
                 return ResponseEntity.noContent().build();
             }

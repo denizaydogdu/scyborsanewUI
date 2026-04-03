@@ -13,6 +13,30 @@
 <section layout:fragment="content">
     <div th:replace="~{partials/page-title :: page-title('Şirket Beklentileri', 'Temel Analiz')}"></div>
 
+    <!-- Bilgi Karti -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border border-info border-opacity-25">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <h6 class="text-info mb-2"><i class="ri-question-line me-1"></i>Guidance Nedir?</h6>
+                            <p class="text-muted mb-lg-0 mb-3 fs-13">Şirketlerin yönetim kurulları tarafından açıklanan gelecek dönem beklentileridir. Ciro büyümesi, FAVÖK marjı, yatırım harcaması, kapasite hedefleri gibi finansal ve operasyonel hedefleri içerir.</p>
+                        </div>
+                        <div class="col-lg-4">
+                            <h6 class="text-info mb-2"><i class="ri-bar-chart-line me-1"></i>Nasıl Değerlendirilir?</h6>
+                            <p class="text-muted mb-lg-0 mb-3 fs-13">Beklenti vs Gerçekleşen karşılaştırması yapın. Güvenilir guidance veren şirketlerin gelecek tahminleri daha değerlidir.</p>
+                        </div>
+                        <div class="col-lg-4">
+                            <h6 class="text-info mb-2"><i class="ri-lightbulb-line me-1"></i>Yatırımcı İpuçları</h6>
+                            <p class="text-muted mb-0 fs-13">Guidance verisi analist tahminlerinden farklıdır — şirketin kendi hedefleridir. Önceki guidance başarı oranını değerlendirin.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- KPI Kartlari -->
     <div class="row">
         <div class="col-xl-6 col-md-6">
@@ -129,6 +153,7 @@
 <th:block layout:fragment="pagejs">
     <script th:inline="javascript">
         window.guidanceData = /*[[${guidancelar}]]*/ [];
+        window.stockLogos = /*[[${stockLogos}]]*/ {};
     </script>
     <script th:src="@{/js/guidance.js}"></script>
 </th:block>

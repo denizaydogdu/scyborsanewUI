@@ -91,18 +91,24 @@ public class GuidanceUiService {
      * @param stockCode hisse kodu (orn. THYAO)
      * @return ham beklenti metni; hata durumunda null
      */
-    public String getRawGuidance(String stockCode) {
-        log.debug("[GUIDANCE-UI] Raw guidance isteniyor: {}", stockCode);
+    public String getRawGuidance(String stockCode, Integer yil) {
+        log.debug("[GUIDANCE-UI] Raw guidance isteniyor: {} yil={}", stockCode, yil);
         try {
             String result = webClient.get()
-                    .uri(ScyborsaApiEndpoints.GUIDANCE_RAW, stockCode)
+                    .uri(uriBuilder -> {
+                        uriBuilder.path(ScyborsaApiEndpoints.GUIDANCE_RAW);
+                        if (yil != null) {
+                            uriBuilder.queryParam("yil", yil);
+                        }
+                        return uriBuilder.build(stockCode);
+                    })
                     .retrieve()
                     .bodyToMono(String.class)
                     .timeout(TIMEOUT)
                     .block();
             return result;
         } catch (Exception e) {
-            log.warn("[GUIDANCE-UI] Raw guidance alinamadi: {} - {}", stockCode, e.getMessage());
+            log.warn("[GUIDANCE-UI] Raw guidance alınamadı: {} yil={} - {}", stockCode, yil, e.getMessage());
             return null;
         }
     }
