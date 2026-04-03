@@ -505,11 +505,11 @@
                             </div>
                             <div class="col-md-4">
                                 <h6 class="fs-13 mb-1"><i class="ri-shield-check-line text-info me-1"></i>Altman Z-Score</h6>
-                                <p class="text-muted mb-0 fs-12">İflas riskini ölçer. Sanayi şirketleri için tasarlanmıştır (bankalar için hesaplanamayabilir). <strong class="text-success">&gt;2.99:</strong> Güvenli, <strong class="text-warning">1.81-2.99:</strong> Gri bölge, <strong class="text-danger">&lt;1.81:</strong> İflas riski.</p>
+                                <p class="text-muted mb-0 fs-12">İflas riskini ölçer. Piyasa değeri verisi gerektirir. Şu an Fintables veri kaynağında piyasa değeri mevcut olmadığından çoğu hisse için hesaplanamaz. <strong class="text-success">&gt;2.99:</strong> Güvenli, <strong class="text-warning">1.81-2.99:</strong> Gri bölge, <strong class="text-danger">&lt;1.81:</strong> İflas riski.</p>
                             </div>
                             <div class="col-md-4">
                                 <h6 class="fs-13 mb-1"><i class="ri-money-dollar-circle-line text-primary me-1"></i>Graham Marjı (%)</h6>
-                                <p class="text-muted mb-0 fs-12">Benjamin Graham'ın değerleme formülü. Mevcut fiyat ile içsel değer arasındaki fark. <strong class="text-success">Pozitif:</strong> Hisse ucuz (güvenlik marjı var), <strong class="text-danger">Negatif:</strong> Hisse pahalı. Bankalar için hesaplanamayabilir.</p>
+                                <p class="text-muted mb-0 fs-12">Benjamin Graham'ın değerleme formülü: √(22.5 × HBK × Defter Değeri). Mevcut fiyat ile içsel değer arasındaki fark. <strong class="text-success">Pozitif:</strong> Hisse ucuz (güvenlik marjı var), <strong class="text-danger">Negatif:</strong> Hisse pahalı.</p>
                             </div>
                         </div>
                     </div>
@@ -530,7 +530,7 @@
                                   th:classappend="${temelSkor.altmanZScore == null ? 'bg-secondary' : (temelSkor.altmanZScore > 2.99 ? 'bg-success' : (temelSkor.altmanZScore > 1.81 ? 'bg-warning' : 'bg-danger'))}"
                                   th:text="${temelSkor.altmanZScore != null ? #numbers.formatDecimal(temelSkor.altmanZScore, 1, 2) : '-'}">-</span>
                             <small class="d-block text-muted mt-1"
-                                   th:text="${temelSkor.altmanZone != null ? temelSkor.altmanZone : 'Banka hisseleri için hesaplanamaz'}"></small>
+                                   th:text="${temelSkor.altmanZone != null ? temelSkor.altmanZone : 'Hesaplanamadı (eksik veri)'}"></small>
                         </div>
                         <div class="col-md-4 text-center">
                             <h6>Graham Marjı</h6>
