@@ -1918,67 +1918,6 @@
 		})();
 		</script>
 
-		<!-- Fintables MCP Zenginleştirme: VBTS, Halka Arz, Açığa Satış -->
-		<div class="row">
-			<!-- VBTS Tedbirli Hisseler -->
-			<div class="col-xl-4 col-md-6">
-				<div class="card card-animate">
-					<div class="card-header">
-						<h6 class="card-title mb-0"><i class="ri-alarm-warning-line text-danger me-1"></i> VBTS Tedbirli Hisseler</h6>
-					</div>
-					<div class="card-body">
-						<div th:if="${vbtsTedbirler != null and !vbtsTedbirler.isEmpty()}">
-							<th:block th:each="t, tStat : ${vbtsTedbirler}" th:if="${tStat.index < 10}">
-								<span class="badge bg-danger-subtle text-danger me-1 mb-1">
-									<a th:href="@{'/stock/detail/' + ${t.hisseSenediKodu}}" th:text="${t.hisseSenediKodu}" class="text-danger"></a>
-								</span>
-							</th:block>
-							<small class="text-muted" th:if="${vbtsTedbirler.size() > 10}" th:text="'+' + (${vbtsTedbirler.size()} - 10) + ' daha'"></small>
-						</div>
-						<p th:if="${vbtsTedbirler == null or vbtsTedbirler.isEmpty()}" class="text-muted mb-0">Aktif tedbir yok</p>
-						<a href="/vbts-tedbirli" class="text-primary mt-2 d-block"><small>Tümünü Gör <i class="ri-arrow-right-s-line"></i></small></a>
-					</div>
-				</div>
-			</div>
-
-			<!-- Yaklaşan Halka Arzlar -->
-			<div class="col-xl-4 col-md-6">
-				<div class="card card-animate">
-					<div class="card-header">
-						<h6 class="card-title mb-0"><i class="ri-building-line text-info me-1"></i> Yaklaşan Halka Arzlar</h6>
-					</div>
-					<div class="card-body">
-						<div th:if="${aktifHalkaArzlar != null and !aktifHalkaArzlar.isEmpty()}">
-							<div th:each="h, hStat : ${aktifHalkaArzlar}" th:if="${hStat.index < 3}" class="d-flex justify-content-between mb-2">
-								<span class="fw-semibold" th:text="${h.hisseSenediKodu}"></span>
-								<small class="text-muted" th:text="${h.baslik != null ? h.baslik : ''}"></small>
-							</div>
-						</div>
-						<p th:if="${aktifHalkaArzlar == null or aktifHalkaArzlar.isEmpty()}" class="text-muted mb-0">Aktif halka arz yok</p>
-						<a href="/halka-arz" class="text-primary mt-2 d-block"><small>Tümünü Gör <i class="ri-arrow-right-s-line"></i></small></a>
-					</div>
-				</div>
-			</div>
-
-			<!-- Açığa Satış Top 5 -->
-			<div class="col-xl-4 col-md-6">
-				<div class="card card-animate">
-					<div class="card-header">
-						<h6 class="card-title mb-0"><i class="ri-bar-chart-grouped-line text-warning me-1"></i> Açığa Satış Top 5</h6>
-					</div>
-					<div class="card-body">
-						<div th:if="${acigaSatisTop5 != null and !acigaSatisTop5.isEmpty()}" th:each="a : ${acigaSatisTop5}">
-							<div class="d-flex justify-content-between mb-1">
-								<a th:href="@{'/stock/detail/' + ${a.hisseSenediKodu}}" th:text="${a.hisseSenediKodu}" class="fw-semibold"></a>
-								<small th:text="${a.acigaSatisLotu != null ? #numbers.formatInteger(a.acigaSatisLotu, 1, 'COMMA') + ' lot' : '-'}"></small>
-							</div>
-						</div>
-						<p th:if="${acigaSatisTop5 == null or acigaSatisTop5.isEmpty()}" class="text-muted mb-0">Veri henüz yok</p>
-						<a href="/aciga-satis" class="text-primary mt-2 d-block"><small>Tümünü Gör <i class="ri-arrow-right-s-line"></i></small></a>
-					</div>
-				</div>
-			</div>
-		</div><!-- end Fintables MCP row -->
 
 	</section>
 
