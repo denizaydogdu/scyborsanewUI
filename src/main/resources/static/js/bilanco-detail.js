@@ -48,6 +48,10 @@
 
         // Ilk sekmeyi yukle
         loadOzetRapor();
+
+        // Sayfa altindaki ek kartlari yukle
+        loadTrendChart(symbol);
+        loadSektorKarsilastirma(symbol);
     }
 
     // =====================================================================
@@ -1128,6 +1132,222 @@
     }
 
     // =====================================================================
+    // TREND CHART + SEKTOREL KARSILASTIRMA
+    // =====================================================================
+
+    /**
+     * Gelir / Net Kar trend grafikini yükler.
+     * ApexCharts ile cizgi grafik render eder.
+     *
+     * @param {string} sym - Hisse kodu
+     */
+    function loadTrendChart(sym) {
+        var containerEl = document.getElementById('trend-chart-container');
+        var chartEl = document.getElementById('trend-chart');
+        if (!containerEl || !chartEl) return;
+
+        fetchData('/ajax/bilanco/' + encodeURIComponent(sym) + '/trend').then(function (data) {
+            if (!data || !data.labels || data.labels.length === 0) {
+                clearElement(containerEl);
+                var empty = document.createElement('div');
+                empty.className = 'alert alert-warning';
+                var emptyIcon = document.createElement('i');
+                emptyIcon.className = 'ri-information-line me-2';
+                empty.appendChild(emptyIcon);
+                empty.appendChild(document.createTextNode('Trend verisi bulunamadı.'));
+                containerEl.appendChild(empty);
+                return;
+            }
+
+            // ApexCharts kontrol — clearElement'ten önce
+            if (typeof ApexCharts === 'undefined') {
+                containerEl.textContent = 'Grafik kütüphanesi yüklenemedi.';
+                return;
+            }
+
+            // DOM temizle ve yeni chart div oluştur
+            clearElement(containerEl);
+            var chartDiv = document.createElement('div');
+            chartDiv.id = 'trend-chart';
+            containerEl.appendChild(chartDiv);
+
+            var options = {
+                chart: {
+                    type: 'line',
+                    height: 350,
+                    toolbar: { show: true },
+                    zoom: { enabled: true }
+                },
+                series: [
+                    {
+                        name: 'Hasılat',
+                        data: data.hasilat || []
+                    },
+                    {
+                        name: 'Net Kâr',
+                        data: data.netKar || []
+                    }
+                ],
+                xaxis: {
+                    categories: data.labels || []
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function (val) {
+                            return formatCurrency(val);
+                        }
+                    }
+                },
+                stroke: {
+                    width: [3, 3],
+                    curve: 'smooth'
+                },
+                colors: ['#405189', '#0ab39c'],
+                markers: {
+                    size: 4
+                },
+                tooltip: {
+                    y: {
+                        formatter: function (val) {
+                            return formatCurrency(val) + ' TL';
+                        }
+                    }
+                },
+                legend: {
+                    position: 'top'
+                }
+            };
+
+            var chart = new ApexCharts(chartDiv, options);
+            chart.render();
+        }).catch(function () {
+            clearElement(containerEl);
+            var err = document.createElement('div');
+            err.className = 'alert alert-danger';
+            var errIcon = document.createElement('i');
+            errIcon.className = 'ri-error-warning-line me-2';
+            err.appendChild(errIcon);
+            err.appendChild(document.createTextNode('Trend verisi yüklenemedi.'));
+            containerEl.appendChild(err);
+        });
+    }
+
+    /**
+     * Sektörel karşılaştırma tablosunu yükler.
+     *
+     * @param {string} sym - Hisse kodu
+     */
+    function loadSektorKarsilastirma(sym) {
+        var containerEl = document.getElementById('sektor-karsilastirma-container');
+        if (!containerEl) return;
+
+        fetchData('/ajax/bilanco/' + encodeURIComponent(sym) + '/sektor-karsilastirma').then(function (data) {
+            clearElement(containerEl);
+
+            if (!data || (!data.sirketOranlari && !data.sektorMedian)) {
+                var empty = document.createElement('div');
+                empty.className = 'alert alert-warning';
+                var emptyIcon = document.createElement('i');
+                emptyIcon.className = 'ri-information-line me-2';
+                empty.appendChild(emptyIcon);
+                empty.appendChild(document.createTextNode('Sektörel karşılaştırma verisi bulunamadı.'));
+                containerEl.appendChild(empty);
+                return;
+            }
+
+            // Sektör başlığı
+            if (data.sektor) {
+                var sektorBadge = document.createElement('span');
+                sektorBadge.className = 'badge bg-info mb-3 fs-13';
+                sektorBadge.textContent = 'Sektör: ' + data.sektor;
+                containerEl.appendChild(sektorBadge);
+            }
+
+            var sirket = data.sirketOranlari || {};
+            var median = data.sektorMedian || {};
+            var ortalama = data.sektorOrtalama || {};
+
+            // Oran isimlerini topla
+            var oranKeys = Object.keys(sirket);
+            if (oranKeys.length === 0) oranKeys = Object.keys(median);
+            if (oranKeys.length === 0) {
+                var noData = document.createElement('div');
+                noData.className = 'alert alert-warning';
+                noData.textContent = 'Karşılaştırma verisi bulunamadı.';
+                containerEl.appendChild(noData);
+                return;
+            }
+
+            var wrapper = document.createElement('div');
+            wrapper.className = 'table-responsive';
+            var table = document.createElement('table');
+            table.className = 'table table-bordered table-hover bilanco-table';
+
+            // thead
+            var thead = document.createElement('thead');
+            var headerRow = document.createElement('tr');
+            var headers = ['Oran', sym, 'Sektör Medyanı', 'Sektör Ortalaması'];
+            for (var h = 0; h < headers.length; h++) {
+                var th = document.createElement('th');
+                th.className = h > 0 ? 'text-center' : '';
+                th.textContent = headers[h];
+                headerRow.appendChild(th);
+            }
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // tbody
+            var tbody = document.createElement('tbody');
+            for (var k = 0; k < oranKeys.length; k++) {
+                var key = oranKeys[k];
+                var tr = document.createElement('tr');
+
+                var tdLabel = document.createElement('td');
+                tdLabel.className = 'fw-semibold';
+                tdLabel.textContent = key;
+                tr.appendChild(tdLabel);
+
+                var sirketVal = sirket[key];
+                var medyanVal = median[key];
+                var ortVal = ortalama[key];
+
+                var tdSirket = document.createElement('td');
+                tdSirket.className = 'text-center';
+                tdSirket.textContent = sirketVal != null ? formatNumber(sirketVal) : '-';
+                // Sirket degerini medyanla karsilastir
+                if (sirketVal != null && medyanVal != null) {
+                    tdSirket.classList.add(sirketVal >= medyanVal ? 'text-success' : 'text-danger');
+                }
+                tr.appendChild(tdSirket);
+
+                var tdMedian = document.createElement('td');
+                tdMedian.className = 'text-center';
+                tdMedian.textContent = medyanVal != null ? formatNumber(medyanVal) : '-';
+                tr.appendChild(tdMedian);
+
+                var tdOrt = document.createElement('td');
+                tdOrt.className = 'text-center';
+                tdOrt.textContent = ortVal != null ? formatNumber(ortVal) : '-';
+                tr.appendChild(tdOrt);
+
+                tbody.appendChild(tr);
+            }
+            table.appendChild(tbody);
+            wrapper.appendChild(table);
+            containerEl.appendChild(wrapper);
+        }).catch(function () {
+            clearElement(containerEl);
+            var err = document.createElement('div');
+            err.className = 'alert alert-danger';
+            var errIcon = document.createElement('i');
+            errIcon.className = 'ri-error-warning-line me-2';
+            err.appendChild(errIcon);
+            err.appendChild(document.createTextNode('Sektörel karşılaştırma verisi yüklenemedi.'));
+            containerEl.appendChild(err);
+        });
+    }
+
+    // =====================================================================
     // UTILITIES
     // =====================================================================
 
@@ -1159,7 +1379,7 @@
     /**
      * Aciklayici bilgi karti olusturur (collapse pattern).
      * @param {string} id - Collapse ID
-     * @param {string} title - Kart basligi
+     * @param {string} title - Kart başlığı
      * @param {Array} items - [{icon, iconColor, title, desc}] aciklama ogeleri
      * @param {Array} [tips] - [{badge, badgeColor, desc}] ipucu ogeleri (opsiyonel)
      * @return {HTMLElement} card element

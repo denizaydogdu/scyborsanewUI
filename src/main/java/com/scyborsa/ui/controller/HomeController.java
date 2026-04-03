@@ -1,5 +1,6 @@
 package com.scyborsa.ui.controller;
 
+import com.scyborsa.ui.dto.AcigaSatisUiDto;
 import com.scyborsa.ui.dto.DashboardSentimentDto;
 import com.scyborsa.ui.dto.GlobalMarketDto;
 import com.scyborsa.ui.dto.IndexPerformanceDto;
@@ -22,8 +23,10 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.core.Authentication;
 import java.security.Principal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Ana sayfa ve giris view controller'i.
@@ -170,6 +173,17 @@ public class HomeController {
         model.addAttribute("globalMarkets", dashboardService.getGlobalMarkets());
         // TODO: Money flow gecici devre disi — veri kaynagi dogru degil, ileride tekrar aktif edilecek
         // model.addAttribute("moneyFlow", dashboardService.getMoneyFlow());
+
+        // Fintables MCP zenginlestirme: VBTS tedbirler, halka arzlar, aciga satis top 5
+        model.addAttribute("vbtsTedbirler", dashboardService.getVbtsTedbirler());
+        model.addAttribute("aktifHalkaArzlar", dashboardService.getAktifHalkaArzlar());
+        List<AcigaSatisUiDto> acigaSatisTop5 = dashboardService.getAcigaSatislar().stream()
+                .filter(a -> a.getAcigaSatisLotu() != null)
+                .sorted(Comparator.comparingLong(AcigaSatisUiDto::getAcigaSatisLotu).reversed())
+                .limit(5)
+                .collect(Collectors.toList());
+        model.addAttribute("acigaSatisTop5", acigaSatisTop5);
+
         return "index";
     }
 

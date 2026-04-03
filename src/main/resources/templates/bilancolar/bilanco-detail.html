@@ -183,6 +183,49 @@
         </div>
     </div>
 
+    <!-- Gelir / Net Kâr Trend Grafik Kartı -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-line-chart-line me-1 text-primary"></i> Gelir / Net Kâr Trendi
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="trend-chart-container">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2 text-muted">Trend verisi yükleniyor...</p>
+                        </div>
+                    </div>
+                    <div id="trend-chart" style="min-height: 350px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sektörel Karşılaştırma Kartı -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="ri-scales-3-line me-1 text-warning"></i> Sektörel Karşılaştırma
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="sektor-karsilastirma-container">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2 text-muted">Sektörel karşılaştırma yükleniyor...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </section>
 
 <th:block layout:fragment="pagecss">

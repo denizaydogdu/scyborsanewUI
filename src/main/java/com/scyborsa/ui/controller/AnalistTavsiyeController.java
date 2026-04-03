@@ -121,6 +121,9 @@ public class AnalistTavsiyeController {
             model.addAttribute("tavsiyeler", tavsiyeler);
             model.addAttribute("ozet", ozet);
 
+            // Araci kurum tahmin verileri (hedef fiyat + finansal tahminler)
+            model.addAttribute("tahminler", analistTavsiyeService.getTahminler(code));
+
             return "analist-tavsiyeleri/analist-tavsiyeleri-detail";
         } catch (WebClientResponseException e) {
             log.error("[TAVSIYE-UI] API hatasi ({} {}): {}", e.getStatusCode(), code, e.getMessage());

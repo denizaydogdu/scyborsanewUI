@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Temel Analiz Tarama')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Temel Analiz', 'Taramalar')}"></div>
+
+    <!-- Filtre Paneli -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1">
+                        <i class="ri-filter-3-line me-1"></i> Filtre
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label for="fkMax" class="form-label">F/K Maksimum</label>
+                            <input type="number" class="form-control" id="fkMax" step="0.1" placeholder="Örn: 15">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="pdddMax" class="form-label">PD/DD Maksimum</label>
+                            <input type="number" class="form-control" id="pdddMax" step="0.1" placeholder="Örn: 3">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="roeMin" class="form-label">ROE Minimum (%)</label>
+                            <input type="number" class="form-control" id="roeMin" step="0.1" placeholder="Örn: 10">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex gap-2 align-items-end h-100">
+                                <button type="button" class="btn btn-primary" id="btnScan">
+                                    <i class="ri-search-line me-1"></i> Tara
+                                </button>
+                                <button type="button" class="btn btn-light" id="btnClear">
+                                    <i class="ri-refresh-line me-1"></i> Temizle
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sonuc Alani -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header align-items-center d-flex">
+                    <h4 class="card-title mb-0 flex-grow-1">
+                        <i class="ri-line-chart-line me-1"></i> Sonuçlar
+                        <span class="badge bg-primary ms-2" id="resultCount" style="display:none;">0</span>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Loading -->
+                    <div id="loadingSpinner" style="display:none;">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p class="mt-2 text-muted">Veriler yükleniyor...</p>
+                        </div>
+                    </div>
+
+                    <!-- Hata -->
+                    <div id="errorMessage" class="alert alert-danger" style="display:none;">
+                        <i class="ri-error-warning-line me-2"></i>
+                        Veriler yüklenemedi. Lütfen daha sonra tekrar deneyin.
+                    </div>
+
+                    <!-- Bos durum -->
+                    <div id="emptyState" style="display:none;">
+                        <div class="text-center py-5">
+                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json"
+                                       trigger="loop" colors="primary:#405189,secondary:#0ab39c"
+                                       style="width:75px;height:75px"></lord-icon>
+                            <h5 class="mt-2">Sonuç Bulunamadı</h5>
+                            <p class="text-muted mb-0">Filtre kriterlerini değiştirerek tekrar deneyin.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tablo -->
+                    <div id="resultTableContainer" style="display:none;">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered align-middle" id="resultTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Hisse</th>
+                                        <th class="text-end">F/K</th>
+                                        <th class="text-end">PD/DD</th>
+                                        <th class="text-end">ROE (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <nav id="paginationNav" style="display:none;">
+                            <ul class="pagination pagination-sm justify-content-center" id="paginationList">
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<th:block layout:fragment="pagejs">
+    <script th:src="@{/js/temel-analiz.js}"></script>
+</th:block>
+
+</body>
+</html>

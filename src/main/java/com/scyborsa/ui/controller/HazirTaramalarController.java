@@ -1,8 +1,10 @@
 package com.scyborsa.ui.controller;
 
+import com.scyborsa.ui.dto.FinansalOranUiDto;
 import com.scyborsa.ui.dto.HazirTaramalarResponseDto;
 import com.scyborsa.ui.dto.PresetStrategyDto;
 import com.scyborsa.ui.service.CandlePatternService;
+import com.scyborsa.ui.service.FinansalOranUiService;
 import com.scyborsa.ui.service.HazirTaramalarService;
 import com.scyborsa.ui.service.PatternScreenerService;
 import com.scyborsa.ui.service.RegressionScreenerService;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +46,9 @@ public class HazirTaramalarController {
 
     /** Regresyon kanali tarama verilerini saglayan servis. */
     private final RegressionScreenerService regressionScreenerService;
+
+    /** Finansal oran verilerini saglayan servis. */
+    private final FinansalOranUiService finansalOranUiService;
 
     /**
      * Hazir taramalar sayfasini gosterir.
@@ -154,5 +160,25 @@ public class HazirTaramalarController {
     public Map<String, Object> regressionScan() {
         log.info("[HAZIR-TARAMALAR-UI] Regresyon kanali tarama istendi");
         return regressionScreenerService.scan();
+    }
+
+    /**
+     * Temel analiz finansal oranlari getirir (AJAX endpoint).
+     *
+     * <p>{@code GET /ajax/hazir-taramalar/temel-analiz} istegini karsilar.
+     * Tum hisselerin finansal oranlarini JSON olarak doner.</p>
+     *
+     * @return finansal oran listesi JSON
+     */
+    @GetMapping("/ajax/hazir-taramalar/temel-analiz")
+    @ResponseBody
+    public List<FinansalOranUiDto> temelAnalizScan() {
+        log.info("[HAZIR-TARAMALAR-UI] Temel analiz tarama istendi");
+        try {
+            return finansalOranUiService.getFinansalOranlar();
+        } catch (Exception e) {
+            log.warn("[HAZIR-TARAMALAR-UI] Temel analiz verileri alınamadı: {}", e.getMessage());
+            return Collections.emptyList();
+        }
     }
 }

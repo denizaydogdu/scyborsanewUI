@@ -1,12 +1,16 @@
 package com.scyborsa.ui.service;
 
 import com.scyborsa.ui.constants.ScyborsaApiEndpoints;
+import com.scyborsa.ui.dto.AcigaSatisUiDto;
 import com.scyborsa.ui.dto.DashboardSentimentDto;
 import com.scyborsa.ui.dto.GlobalMarketDto;
+import com.scyborsa.ui.dto.HalkaArzUiDto;
 import com.scyborsa.ui.dto.IndexPerformanceDto;
 import com.scyborsa.ui.dto.MoneyFlowResponse;
 import com.scyborsa.ui.dto.SectorSummaryDto;
+import com.scyborsa.ui.dto.VbtsTedbirDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -38,6 +42,18 @@ public class DashboardService {
 
     /** Sektor verilerini saglayan servis. */
     private final SectorService sectorService;
+
+    /** VBTS tedbirli hisse verilerini saglayan servis. */
+    @Autowired(required = false)
+    private VbtsTedbirUiService vbtsTedbirUiService;
+
+    /** Halka arz verilerini saglayan servis. */
+    @Autowired(required = false)
+    private HalkaArzUiService halkaArzUiService;
+
+    /** Aciga satis verilerini saglayan servis. */
+    @Autowired(required = false)
+    private AcigaSatisUiService acigaSatisUiService;
 
     // --- Volatile cache alanlari ---
     private volatile DashboardSentimentDto cachedSentiment;
@@ -246,6 +262,57 @@ public class DashboardService {
                 sectorsCacheTs = System.currentTimeMillis();
                 return cachedSectors;
             }
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Aktif VBTS tedbirli hisse listesini getirir.
+     *
+     * @return tedbirli hisse listesi; hata veya servis yoksa bos liste
+     */
+    public List<VbtsTedbirDto> getVbtsTedbirler() {
+        try {
+            if (vbtsTedbirUiService != null) {
+                return vbtsTedbirUiService.getAktifTedbirler();
+            }
+            return Collections.emptyList();
+        } catch (Exception e) {
+            log.warn("[DASHBOARD-UI] VBTS tedbirler alinamadi: {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Aktif halka arz listesini getirir.
+     *
+     * @return aktif halka arz listesi; hata veya servis yoksa bos liste
+     */
+    public List<HalkaArzUiDto> getAktifHalkaArzlar() {
+        try {
+            if (halkaArzUiService != null) {
+                return halkaArzUiService.getAktifHalkaArzlar();
+            }
+            return Collections.emptyList();
+        } catch (Exception e) {
+            log.warn("[DASHBOARD-UI] Halka arzlar alinamadi: {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Gunluk aciga satis istatistiklerini getirir.
+     *
+     * @return aciga satis listesi; hata veya servis yoksa bos liste
+     */
+    public List<AcigaSatisUiDto> getAcigaSatislar() {
+        try {
+            if (acigaSatisUiService != null) {
+                return acigaSatisUiService.getGunlukAcigaSatislar();
+            }
+            return Collections.emptyList();
+        } catch (Exception e) {
+            log.warn("[DASHBOARD-UI] Aciga satislar alinamadi: {}", e.getMessage());
             return Collections.emptyList();
         }
     }

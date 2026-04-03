@@ -1,6 +1,10 @@
 package com.scyborsa.ui.controller;
 
+import com.scyborsa.ui.dto.FinansalTabloUiDto;
+import com.scyborsa.ui.dto.SektorelKarsilastirmaUiDto;
 import com.scyborsa.ui.service.BilancoService;
+import com.scyborsa.ui.service.FinansalTabloUiService;
+import com.scyborsa.ui.service.SektorelKarsilastirmaUiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -9,8 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Bilancolar sayfa controller'i.
@@ -28,6 +32,12 @@ public class BilancoController {
 
     /** Bilanco verilerini saglayan servis. */
     private final BilancoService bilancoService;
+
+    /** Finansal tablo verilerini saglayan servis. */
+    private final FinansalTabloUiService finansalTabloUiService;
+
+    /** Sektorel karsilastirma verilerini saglayan servis. */
+    private final SektorelKarsilastirmaUiService sektorelKarsilastirmaUiService;
 
     /**
      * Bilancolar liste sayfasini goruntular.
@@ -183,5 +193,125 @@ public class BilancoController {
         String sanitized = symbol;
         log.info("[BILANCO-UI] Rasyolar AJAX isteniyor [symbol={}]", sanitized);
         return bilancoService.getRasyo(sanitized);
+    }
+
+    /**
+     * Gelir ve net kar trend verisini JSON olarak doner.
+     *
+     * <p>Bilanco detay sayfasindaki trend grafik karti icin
+     * AJAX endpoint'i olarak kullanilir. Son ceyrekler bazinda
+     * hasilat ve net donem kari verilerini dondurur.</p>
+     *
+     * @param symbol hisse kodu (orn. GARAN)
+     * @return trend verisi (labels, hasilat, netKar); gecersiz sembolde bos map
+     */
+    @GetMapping("/ajax/bilanco/{symbol}/trend")
+    @ResponseBody
+    public Map<String, Object> ajaxTrend(@PathVariable String symbol) {
+        symbol = symbol != null ? symbol.toUpperCase() : "";
+        if (!symbol.matches("^[A-Z0-9]{1,20}$")) {
+            return Collections.emptyMap();
+        }
+        String sanitized = symbol;
+        log.info("[BILANCO-UI] Trend AJAX isteniyor [symbol={}]", sanitized);
+
+        try {
+            List<FinansalTabloUiDto> gelirRows = finansalTabloUiService.getHisseGelir(sanitized);
+            if (gelirRows.isEmpty()) {
+                return Collections.emptyMap();
+            }
+
+            // Hasilat ve Net Donem Kari satirlarini filtrele
+            List<FinansalTabloUiDto> hasilatRows = gelirRows.stream()
+                    .filter(r -> r.getKalem() != null && r.getKalem().toLowerCase().contains("hasılat"))
+                    .collect(Collectors.toList());
+            List<FinansalTabloUiDto> netKarRows = gelirRows.stream()
+                    .filter(r -> r.getKalem() != null &&
+                            (r.getKalem().toLowerCase().contains("net dönem kârı") ||
+                             r.getKalem().toLowerCase().contains("net dönem karı")))
+                    .collect(Collectors.toList());
+
+            // Yil+ay bazinda sirala (eski → yeni)
+            Comparator<FinansalTabloUiDto> cmp = Comparator
+                    .comparingInt((FinansalTabloUiDto d) -> d.getYil() != null ? d.getYil() : 0)
+                    .thenComparingInt(d -> d.getAy() != null ? d.getAy() : 0);
+            hasilatRows.sort(cmp);
+            netKarRows.sort(cmp);
+
+            // Son 8 ceyrek
+            int limit = 8;
+            if (hasilatRows.size() > limit) {
+                hasilatRows = hasilatRows.subList(hasilatRows.size() - limit, hasilatRows.size());
+            }
+            if (netKarRows.size() > limit) {
+                netKarRows = netKarRows.subList(netKarRows.size() - limit, netKarRows.size());
+            }
+
+            // Label: "2024/03" formatinda (hasilat satirlarindan)
+            List<String> labels = hasilatRows.stream()
+                    .map(r -> r.getYil() + "/" + String.format("%02d", r.getAy() != null ? r.getAy() : 0))
+                    .collect(Collectors.toList());
+            List<Double> hasilatValues = hasilatRows.stream()
+                    .map(r -> r.getTryDonemsel() != null ? r.getTryDonemsel() : 0.0)
+                    .collect(Collectors.toList());
+
+            // Net kar degerlerini labels ile hizala (farkli boyut olabilir)
+            Map<String, Double> netKarByPeriod = netKarRows.stream()
+                    .collect(Collectors.toMap(
+                            r -> r.getYil() + "/" + String.format("%02d", r.getAy() != null ? r.getAy() : 0),
+                            r -> r.getTryDonemsel() != null ? r.getTryDonemsel().doubleValue() : 0.0,
+                            (a, b) -> a
+                    ));
+            List<Double> netKarValues = labels.stream()
+                    .map(l -> netKarByPeriod.getOrDefault(l, 0.0))
+                    .collect(Collectors.toList());
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("labels", labels);
+            result.put("hasilat", hasilatValues);
+            result.put("netKar", netKarValues);
+            return result;
+        } catch (Exception e) {
+            log.error("[BILANCO-UI] Trend verisi alinamadi [symbol={}]", sanitized, e);
+            return Collections.emptyMap();
+        }
+    }
+
+    /**
+     * Sektorel karsilastirma verisini JSON olarak doner.
+     *
+     * <p>Bilanco detay sayfasindaki sektorel karsilastirma karti icin
+     * AJAX endpoint'i olarak kullanilir.</p>
+     *
+     * @param symbol hisse kodu (orn. GARAN)
+     * @return sektorel karsilastirma verisi; gecersiz sembolde bos map
+     */
+    @GetMapping("/ajax/bilanco/{symbol}/sektor-karsilastirma")
+    @ResponseBody
+    public Map<String, Object> ajaxSektorKarsilastirma(@PathVariable String symbol) {
+        symbol = symbol != null ? symbol.toUpperCase() : "";
+        if (!symbol.matches("^[A-Z0-9]{1,20}$")) {
+            return Collections.emptyMap();
+        }
+        String sanitized = symbol;
+        log.info("[BILANCO-UI] Sektörel karşılaştırma AJAX isteniyor [symbol={}]", sanitized);
+
+        try {
+            SektorelKarsilastirmaUiDto dto = sektorelKarsilastirmaUiService.getKarsilastirma(sanitized);
+            if (dto == null) {
+                return Collections.emptyMap();
+            }
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("sektor", dto.getSektor());
+            result.put("sirketOranlari", dto.getSirketOranlari() != null ? dto.getSirketOranlari() : Collections.emptyMap());
+            result.put("sektorOrtalama", dto.getSektorOrtalama() != null ? dto.getSektorOrtalama() : Collections.emptyMap());
+            result.put("sektorMedian", dto.getSektorMedian() != null ? dto.getSektorMedian() : Collections.emptyMap());
+            result.put("pozisyon", dto.getPozisyon() != null ? dto.getPozisyon() : Collections.emptyMap());
+            return result;
+        } catch (Exception e) {
+            log.error("[BILANCO-UI] Sektörel karşılaştırma alinamadi [symbol={}]", sanitized, e);
+            return Collections.emptyMap();
+        }
     }
 }

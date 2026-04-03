@@ -309,4 +309,96 @@ public final class ScyborsaApiEndpoints {
     /** Takip hissesi aktiflestirme endpoint'i. {@code {id}} path variable icerir. */
     public static final String TAKIP_HISSELERI_AKTIF = "/api/v1/takip-hisseleri/{id}/aktif";
 
+    // ── Fintables MCP Endpoints ─────────────────────────────
+
+    /** Aciga satis verileri endpoint'i. */
+    public static final String ACIGA_SATIS = "/api/v1/aciga-satis";
+
+    /** Hisse bazli aciga satis verisi endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String ACIGA_SATIS_BY_CODE = "/api/v1/aciga-satis/{stockCode}";
+
+    /** VBTS tedbirli hisse listesi endpoint'i. */
+    public static final String VBTS = "/api/v1/vbts";
+
+    /** Hisse bazli VBTS tedbir verisi endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String VBTS_BY_CODE = "/api/v1/vbts/{stockCode}";
+
+    /** Hisse VBTS tedbir kontrolu endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String VBTS_CHECK = "/api/v1/vbts/{stockCode}/check";
+
+    /** Hedef fiyat listesi endpoint'i. */
+    public static final String HEDEF_FIYAT = "/api/v1/hedef-fiyat";
+
+    /** Hisse bazli hedef fiyat endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String HEDEF_FIYAT_BY_CODE = "/api/v1/hedef-fiyat/{stockCode}";
+
+    /** Sirket beklentileri (guidance) listesi endpoint'i. */
+    public static final String GUIDANCE = "/api/v1/guidance";
+
+    /** Hisse bazli sirket beklentileri endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String GUIDANCE_BY_CODE = "/api/v1/guidance/{stockCode}";
+
+    /** Halka arz listesi endpoint'i. */
+    public static final String HALKA_ARZ = "/api/v1/halka-arz";
+
+    /** Aktif halka arz listesi endpoint'i. */
+    public static final String HALKA_ARZ_AKTIF = "/api/v1/halka-arz/aktif";
+
+    /** Hisse bazli halka arz endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String HALKA_ARZ_BY_CODE = "/api/v1/halka-arz/{stockCode}";
+
+    /** Finansal oran listesi endpoint'i. */
+    public static final String FINANSAL_ORAN = "/api/v1/finansal-oran";
+
+    /** Hisse bazli finansal oran endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String FINANSAL_ORAN_BY_CODE = "/api/v1/finansal-oran/{stockCode}";
+
+    /** Fon portfoy listesi endpoint'i. */
+    public static final String FON_PORTFOY = "/api/v1/fon-portfoy";
+
+    /** Hisse bazli fon portfoy endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String FON_PORTFOY_BY_CODE = "/api/v1/fon-portfoy/{stockCode}";
+
+    /** Finansal tablo bilanco endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String FINANSAL_TABLO_BILANCO = "/api/v1/finansal-tablo/{stockCode}/bilanco";
+
+    /** Finansal tablo gelir tablosu endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String FINANSAL_TABLO_GELIR = "/api/v1/finansal-tablo/{stockCode}/gelir";
+
+    /** Finansal tablo nakit akim endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String FINANSAL_TABLO_NAKIT = "/api/v1/finansal-tablo/{stockCode}/nakit-akim";
+
+    /** Temel analiz skor endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String TEMEL_ANALIZ_SKOR = "/api/v1/temel-analiz-skor/{stockCode}";
+
+    /** Sektorel karsilastirma endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String SEKTOREL_KARSILASTIRMA = "/api/v1/sektorel-karsilastirma/{stockCode}";
+
+    /** Tarihsel analiz endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String TARIHSEL_ANALIZ = "/api/v1/tarihsel-analiz/{stockCode}";
+
+    /** EPS surpriz endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String EPS_SURPRIZ = "/api/v1/eps-surpriz/{stockCode}";
+
+    /** Temel sinyal endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String TEMEL_SINYAL = "/api/v1/temel-sinyal/{stockCode}";
+
+    /** KAP MCP sinyal endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String KAP_SINYAL = "/api/v1/kap-sinyal/{stockCode}";
+
+    /** KAP MCP hisse bazli endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String KAP_MCP = "/api/v1/kap-mcp/{stockCode}";
+
+    /** KAP MCP detay endpoint'i. */
+    public static final String KAP_MCP_DETAY = "/api/v1/kap-mcp/detay";
+
+    /** Portfoy zenginlestirme endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String PORTFOY_ZENGINLESTIRME = "/api/v1/portfoy-zenginlestirme/{stockCode}";
+
+    /** Sirket rapor endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String SIRKET_RAPOR = "/api/v1/sirket-rapor/{stockCode}";
+
+    /** ML feature endpoint'i. {@code {stockCode}} path variable icerir. */
+    public static final String ML_FEATURE = "/api/v1/ml-feature/{stockCode}";
+
 }

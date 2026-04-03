@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('Halka Arz Takvimi')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('Halka Arz', 'Piyasa')}"></div>
+
+    <!-- KPI Kartlari -->
+    <div class="row">
+        <div class="col-xl-4 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Aktif Halka Arz</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-3">
+                        <div>
+                            <h4 class="fs-22 fw-semibold mb-0 text-success" th:text="${aktifSayisi}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-shopping-bag-line text-success"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Son 30 Gün</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-3">
+                        <div>
+                            <h4 class="fs-22 fw-semibold mb-0 text-primary" th:text="${son30Gun}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-calendar-line text-primary"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Toplam</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-3">
+                        <div>
+                            <h4 class="fs-22 fw-semibold mb-0" th:text="${toplam}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-database-2-line text-info"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Navigasyonu -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="aktif-tab" data-bs-toggle="tab"
+                                    data-bs-target="#aktifPanel" type="button" role="tab"
+                                    aria-controls="aktifPanel" aria-selected="true">
+                                Aktif Halka Arzlar
+                                <span class="badge bg-success ms-1" th:text="${aktifSayisi}"
+                                      th:if="${aktifSayisi != null and aktifSayisi > 0}">0</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="gecmis-tab" data-bs-toggle="tab"
+                                    data-bs-target="#gecmisPanel" type="button" role="tab"
+                                    aria-controls="gecmisPanel" aria-selected="false">
+                                Geçmiş
+                                <span class="badge bg-secondary ms-1" th:text="${toplam}"
+                                      th:if="${toplam != null and toplam > 0}">0</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <!-- Aktif Tab -->
+                        <div class="tab-pane fade show active" id="aktifPanel" role="tabpanel"
+                             aria-labelledby="aktif-tab">
+
+                            <div class="row" th:if="${aktifler != null and !#lists.isEmpty(aktifler)}">
+                                <div class="col-lg-6 col-xl-4" th:each="arz : ${aktifler}">
+                                    <div class="card border card-animate">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <div class="avatar-sm flex-shrink-0 me-3">
+                                                    <span class="avatar-title bg-light rounded fs-3">
+                                                        <i class="ri-building-line text-primary"></i>
+                                                    </span>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h5 class="card-title mb-1">
+                                                        <a th:if="${arz.hisseSenediKodu != null}"
+                                                           th:href="@{/stock/detail/{id}(id=${arz.hisseSenediKodu})}"
+                                                           class="text-primary fw-semibold"
+                                                           th:text="${arz.hisseSenediKodu}">HISSE</a>
+                                                        <span th:if="${arz.hisseSenediKodu == null}" class="text-muted">-</span>
+                                                    </h5>
+                                                    <p class="text-muted mb-0 text-truncate" style="max-width: 250px;"
+                                                       th:text="${arz.baslik != null ? arz.baslik : '-'}">Baslik</p>
+                                                </div>
+                                            </div>
+                                            <div class="row g-2">
+                                                <div class="col-6">
+                                                    <p class="text-muted mb-1 small">Halka Arz Fiyatı</p>
+                                                    <h6 class="mb-0" th:text="${arz.halkaArzFiyati != null ? #numbers.formatDecimal(arz.halkaArzFiyati, 1, 2) + ' TL' : '-'}">-</h6>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p class="text-muted mb-1 small">Katılımcı Sayısı</p>
+                                                    <h6 class="mb-0" th:text="${arz.katilimciSayisi != null ? #numbers.formatInteger(arz.katilimciSayisi, 1, 'COMMA') : '-'}">-</h6>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p class="text-muted mb-1 small">Talep Başlangıç</p>
+                                                    <h6 class="mb-0" th:text="${arz.talepToplamaBaslangicTarihi != null ? arz.talepToplamaBaslangicTarihi : '-'}">-</h6>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p class="text-muted mb-1 small">Talep Bitiş</p>
+                                                    <h6 class="mb-0" th:text="${arz.talepToplamaBitisTarihi != null ? arz.talepToplamaBitisTarihi : '-'}">-</h6>
+                                                </div>
+                                                <div class="col-6">
+                                                    <p class="text-muted mb-1 small">Aracı Kurum</p>
+                                                    <h6 class="mb-0 text-truncate" style="max-width: 150px;"
+                                                        th:text="${arz.araciKurum != null ? arz.araciKurum : '-'}">-</h6>
+                                                </div>
+                                                <div class="col-6" th:if="${arz.katilimEndeksiUygunMu != null and arz.katilimEndeksiUygunMu}">
+                                                    <p class="text-muted mb-1 small">Katılım</p>
+                                                    <span class="badge bg-success">Uygun</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Aktif bos durum -->
+                            <div class="text-center py-5" th:if="${aktifler == null or #lists.isEmpty(aktifler)}">
+                                <i class="ri-shopping-bag-line fs-1 text-muted"></i>
+                                <h5 class="mt-3 text-muted">Aktif halka arz bulunamadı</h5>
+                                <p class="text-muted">Şu anda aktif halka arz bulunmamaktadır.</p>
+                            </div>
+                        </div>
+
+                        <!-- Gecmis Tab -->
+                        <div class="tab-pane fade" id="gecmisPanel" role="tabpanel"
+                             aria-labelledby="gecmis-tab">
+
+                            <div class="d-flex justify-content-end mb-3">
+                                <input type="text" id="gecmisSearchInput" class="form-control form-control-sm"
+                                       placeholder="Hisse ara..." style="width: 180px;">
+                            </div>
+
+                            <div id="gecmisTableContainer" th:if="${tumHalkaArzlar != null and !#lists.isEmpty(tumHalkaArzlar)}">
+                                <div class="table-responsive">
+                                    <table class="table table-striped align-middle mb-0">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 50px;">#</th>
+                                            <th class="sortable" data-sort="hisse">Hisse Kodu</th>
+                                            <th>Başlık</th>
+                                            <th class="sortable text-end" data-sort="fiyat">Halka Arz Fiyatı</th>
+                                            <th class="sortable" data-sort="tarih">İlk İşlem Tarihi</th>
+                                            <th>Aracı Kurum</th>
+                                            <th class="sortable text-end" data-sort="katilimci">Katılımcı</th>
+                                            <th>Durum</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="gecmisTableBody">
+                                        <!-- JS ile doldurulacak -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Pagination -->
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div id="gecmisPageInfo" class="text-muted small"></div>
+                                    <nav>
+                                        <ul class="pagination pagination-sm mb-0" id="gecmisPagination"></ul>
+                                    </nav>
+                                </div>
+                            </div>
+
+                            <!-- Gecmis bos durum -->
+                            <div class="text-center py-5" th:if="${tumHalkaArzlar == null or #lists.isEmpty(tumHalkaArzlar)}">
+                                <i class="ri-database-2-line fs-1 text-muted"></i>
+                                <h5 class="mt-3 text-muted">Halka arz verisi bulunamadı</h5>
+                                <p class="text-muted">Henüz halka arz kaydı bulunmamaktadır.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<th:block layout:fragment="pagejs">
+    <script th:inline="javascript">
+        window.halkaArzData = /*[[${tumHalkaArzlar}]]*/ [];
+        window.aktifData = /*[[${aktifler}]]*/ [];
+    </script>
+    <script th:src="@{/js/halka-arz.js}"></script>
+</th:block>
+</body>
+
+</html>

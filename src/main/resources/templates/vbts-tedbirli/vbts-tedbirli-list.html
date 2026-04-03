@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <th:block layout:fragment="pagetitle">
+        <div th:replace="~{partials/title-meta :: title-meta('VBTS Tedbirli Hisseler')}"></div>
+    </th:block>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <div th:replace="~{partials/page-title :: page-title('VBTS Tedbirli Hisseler', 'Piyasa')}"></div>
+
+    <!-- KPI Kartlari -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Toplam Tedbir</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-3">
+                        <div>
+                            <h4 class="fs-22 fw-semibold mb-0" th:text="${toplam}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-shield-check-line text-primary"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Brüt Takas</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-3">
+                        <div>
+                            <h4 class="fs-22 fw-semibold mb-0 text-danger" th:text="${brutTakas}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-error-warning-line text-danger"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Tek Fiyat</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-3">
+                        <div>
+                            <h4 class="fs-22 fw-semibold mb-0 text-warning" th:text="${tekFiyat}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-price-tag-3-line text-warning"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-animate">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-uppercase fw-medium text-muted mb-0">Diğer</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-end justify-content-between mt-3">
+                        <div>
+                            <h4 class="fs-22 fw-semibold mb-0 text-info" th:text="${diger}">0</h4>
+                        </div>
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-light rounded fs-3">
+                                <i class="ri-information-line text-info"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tablo -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <h5 class="card-title mb-0 flex-grow-1">VBTS Tedbirli Hisseler</h5>
+                    <span class="badge bg-danger fs-12" th:text="${toplam} + ' Tedbir'"
+                          th:if="${toplam != null and toplam > 0}">0 Tedbir</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive" th:if="${tedbirler != null and !#lists.isEmpty(tedbirler)}">
+                        <table class="table table-striped align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>Hisse Kodu</th>
+                                <th>Tedbir Tipi</th>
+                                <th>Başlangıç Tarihi</th>
+                                <th>Bitiş Tarihi</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="tedbir, iterStat : ${tedbirler}">
+                                <td th:text="${iterStat.count}">1</td>
+                                <td>
+                                    <a th:href="@{/stock/detail/{id}(id=${tedbir.hisseSenediKodu})}"
+                                       class="fw-semibold text-primary"
+                                       th:text="${tedbir.hisseSenediKodu}">GARAN</a>
+                                </td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${tedbir.tedbirTipi == 'brut_takas'} ? 'bg-danger' :
+                                                          (${tedbir.tedbirTipi == 'tek_fiyat'} ? 'bg-warning' : 'bg-info')"
+                                          th:switch="${tedbir.tedbirTipi}">
+                                        <span th:case="'brut_takas'">Brüt Takas</span>
+                                        <span th:case="'tek_fiyat'">Tek Fiyat</span>
+                                        <span th:case="'kredili_alim_aciga_satis'">Kredili Alım/Açığa Satış</span>
+                                        <span th:case="'emir_paketi'">Emir Paketi</span>
+                                        <span th:case="'internet_emir_yasagi'">İnternet Emir Yasağı</span>
+                                        <span th:case="'emir_iptal_yasagi'">Emir İptal Yasağı</span>
+                                        <span th:case="*" th:text="${tedbir.tedbirTipi}">Diğer</span>
+                                    </span>
+                                </td>
+                                <td th:text="${tedbir.tedbirBaslangicTarihi}">-</td>
+                                <td th:text="${tedbir.tedbirBitisTarihi != null ? tedbir.tedbirBitisTarihi : 'Süresiz'}">-</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Bos durum -->
+                    <div class="text-center py-5" th:if="${tedbirler == null or #lists.isEmpty(tedbirler)}">
+                        <i class="ri-shield-check-line fs-1 text-muted"></i>
+                        <h5 class="mt-3 text-muted">Aktif tedbir bulunamadı</h5>
+                        <p class="text-muted">Şu anda VBTS kapsamında tedbirli hisse bulunmamaktadır.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<th:block layout:fragment="pagejs">
+    <!-- Server-side render, JS gerekmez -->
+</th:block>
+</body>
+
+</html>

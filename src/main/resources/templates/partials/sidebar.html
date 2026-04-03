@@ -71,14 +71,14 @@
 						</li>
 
 						<li class="nav-item"
-							th:classappend="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/')} ? 'mm-active' : ''">
+							th:classappend="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/') or #strings.startsWith(requestURI, '/arastirmalar') or #strings.startsWith(requestURI, '/faaliyet-raporlari')} ? 'mm-active' : ''">
 							<a class="nav-link menu-link" href="#sidebarHaberler" data-bs-toggle="collapse" role="button"
-							   th:aria-expanded="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/')} ? 'true' : 'false'"
+							   th:aria-expanded="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/') or #strings.startsWith(requestURI, '/arastirmalar') or #strings.startsWith(requestURI, '/faaliyet-raporlari')} ? 'true' : 'false'"
 							   aria-controls="sidebarHaberler">
 								<i class="ri-newspaper-line"></i> <span>Haberler</span>
 							</a>
 							<div class="menu-dropdown" id="sidebarHaberler"
-								 th:classappend="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/')} ? 'collapse show' : 'collapse'">
+								 th:classappend="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/') or #strings.startsWith(requestURI, '/arastirmalar') or #strings.startsWith(requestURI, '/faaliyet-raporlari')} ? 'collapse show' : 'collapse'">
 								<ul class="nav nav-sm flex-column">
 									<li class="nav-item">
 										<a href="/kap-news" class="nav-link"
@@ -91,6 +91,14 @@
 									<li class="nav-item">
 										<a href="/world-news" class="nav-link"
 										   th:classappend="${#strings.startsWith(requestURI, '/world-news') or (activeNewsMenu != null and activeNewsMenu == 'WORLD')} ? 'active' : ''">Dünya Haberleri</a>
+									</li>
+									<li class="nav-item">
+										<a href="/arastirmalar" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/arastirmalar')} ? 'active' : ''">Araştırmalar</a>
+									</li>
+									<li class="nav-item">
+										<a href="/faaliyet-raporlari" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/faaliyet-raporlari')} ? 'active' : ''">Faaliyet Raporları</a>
 									</li>
 								</ul>
 							</div>
@@ -132,6 +140,20 @@
 						</li>
 
 						<li class="nav-item">
+							<a class="nav-link menu-link" href="/guidance"
+							   th:classappend="${#strings.startsWith(requestURI, '/guidance')} ? 'active' : ''">
+								<i class="ri-file-text-line"></i> <span>Şirket Beklentileri</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="/halka-arz"
+							   th:classappend="${#strings.startsWith(requestURI, '/halka-arz')} ? 'active' : ''">
+								<i class="ri-building-line"></i> <span>Halka Arz</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
 							<a class="nav-link menu-link" href="/takip-hisseleri"
 							   th:classappend="${#strings.startsWith(requestURI, '/takip-hisseleri')} ? 'active' : ''">
 								<i class="ri-focus-2-line"></i> <span>SCY Takip Hisseleri</span>
@@ -149,6 +171,20 @@
 							<a class="nav-link menu-link" href="/takas-analizi"
 							   th:classappend="${#strings.startsWith(requestURI, '/takas-analizi')} ? 'active' : ''">
 								<i class="ri-exchange-funds-line"></i> <span data-key="t-takas-analizi">Takas Analizi</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="/aciga-satis"
+							   th:classappend="${#strings.startsWith(requestURI, '/aciga-satis')} ? 'active' : ''">
+								<i class="ri-arrow-down-circle-line"></i> <span>Açığa Satış</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="/vbts-tedbirli"
+							   th:classappend="${#strings.startsWith(requestURI, '/vbts-tedbirli')} ? 'active' : ''">
+								<i class="ri-shield-check-line"></i> <span>VBTS Tedbirli</span>
 							</a>
 						</li>
 
@@ -178,6 +214,13 @@
 							<a class="nav-link menu-link" href="/hazir-taramalar"
 							   th:classappend="${#strings.startsWith(requestURI, '/hazir-taramalar')} ? 'active' : ''">
 								<i class="ri-search-eye-line"></i> <span>Hazır Taramalar</span>
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link menu-link" href="/temel-analiz"
+							   th:classappend="${#strings.startsWith(requestURI, '/temel-analiz')} ? 'active' : ''">
+								<i class="ri-line-chart-line"></i> <span>Temel Analiz</span>
 							</a>
 						</li>
 

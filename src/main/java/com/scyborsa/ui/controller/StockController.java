@@ -2,6 +2,7 @@ package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.AkdResponseDto;
 import com.scyborsa.ui.dto.AnalistTavsiyeDto;
+import com.scyborsa.ui.dto.GuidanceUiDto;
 import com.scyborsa.ui.dto.OrderbookResponseDto;
 import com.scyborsa.ui.dto.TakasResponseDto;
 import com.scyborsa.ui.dto.SectorStockDto;
@@ -9,9 +10,14 @@ import com.scyborsa.ui.dto.TvScreenerResponseModel;
 import com.scyborsa.ui.enums.PeriodsEnum;
 import com.scyborsa.ui.service.AnalistTavsiyeService;
 import com.scyborsa.ui.service.Bist100Service;
+import com.scyborsa.ui.service.GuidanceUiService;
+import com.scyborsa.ui.service.HedefFiyatUiService;
 import com.scyborsa.ui.service.StockDetailService;
+import com.scyborsa.ui.service.TemelAnalizSkorUiService;
+import com.scyborsa.ui.service.VbtsTedbirUiService;
 import com.scyborsa.ui.util.TwUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -64,6 +70,22 @@ public class StockController {
     private final AnalistTavsiyeService analistTavsiyeService;
     /** scyborsaApi'ye HTTP istekleri gondermek icin kullanilan WebClient. */
     private final WebClient webClient;
+
+    /** VBTS tedbirli hisse kontrolu servisi. */
+    @Autowired(required = false)
+    private VbtsTedbirUiService vbtsTedbirUiService;
+
+    /** Hedef fiyat konsensus servisi. */
+    @Autowired(required = false)
+    private HedefFiyatUiService hedefFiyatUiService;
+
+    /** Sirket beklentileri (guidance) servisi. */
+    @Autowired(required = false)
+    private GuidanceUiService guidanceUiService;
+
+    /** Temel analiz skoru servisi. */
+    @Autowired(required = false)
+    private TemelAnalizSkorUiService temelAnalizSkorUiService;
 
     /** Cache'lenmis market durumu ve zaman damgasi. */
     private volatile boolean cachedMarketOpen = true;
@@ -266,6 +288,40 @@ public class StockController {
         model.addAttribute("teknikTarihFull", teknikTarihFull);
         // Kısa format (dd.MM.yyyy) — grafik kartı için
         model.addAttribute("teknikTarih", now.toLocalDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+
+        // Fintables MCP zenginlestirme (graceful degradation)
+        try {
+            if (vbtsTedbirUiService != null) {
+                model.addAttribute("isTedbirli", vbtsTedbirUiService.isTedbirli(stockId));
+            }
+        } catch (Exception e) {
+            log.debug("VBTS tedbir kontrolu basarisiz: {} - {}", stockId, e.getMessage());
+        }
+
+        try {
+            if (hedefFiyatUiService != null) {
+                model.addAttribute("hedefFiyatlar", hedefFiyatUiService.getHisseHedefFiyatlar(stockId));
+            }
+        } catch (Exception e) {
+            log.debug("Hedef fiyat verisi alinamadi: {} - {}", stockId, e.getMessage());
+        }
+
+        try {
+            if (guidanceUiService != null) {
+                List<GuidanceUiDto> guidancelar = guidanceUiService.getHisseGuidance(stockId);
+                model.addAttribute("guidancelar", guidancelar);
+            }
+        } catch (Exception e) {
+            log.debug("Guidance verisi alinamadi: {} - {}", stockId, e.getMessage());
+        }
+
+        try {
+            if (temelAnalizSkorUiService != null) {
+                model.addAttribute("temelSkor", temelAnalizSkorUiService.getTemelAnalizSkor(stockId));
+            }
+        } catch (Exception e) {
+            log.debug("Temel analiz skor alinamadi: {} - {}", stockId, e.getMessage());
+        }
 
         return "stock/detail";
     }
