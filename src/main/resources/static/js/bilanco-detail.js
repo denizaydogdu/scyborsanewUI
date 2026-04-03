@@ -1244,7 +1244,7 @@
         fetchData('/ajax/bilanco/' + encodeURIComponent(sym) + '/sektor-karsilastirma').then(function (data) {
             clearElement(containerEl);
 
-            if (!data || (!data.sirketOranlari && !data.sektorMedian)) {
+            if (!data || (!data.sirketOranlari && !data.sektorMedian && !data.sektor)) {
                 // Veri yoksa kartı tamamen gizle
                 var parentCard = containerEl.closest('.card');
                 if (parentCard) parentCard.closest('.row').style.display = 'none';
