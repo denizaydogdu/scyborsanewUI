@@ -13,6 +13,49 @@
 <section layout:fragment="content">
     <div th:replace="~{partials/page-title :: page-title-3('Faaliyet Raporları', 'Haberler', '/kap-news')}"></div>
 
+    <!-- Bilgi Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-info border-opacity-25">
+                <a class="text-info fw-medium" data-bs-toggle="collapse" href="#faaliyetInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Faaliyet Raporları Nedir? Nasıl Kullanılır?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="faaliyetInfoCollapse">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-book-open-line text-info fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Faaliyet Raporu Nedir?</h6>
+                                    <p class="text-muted mb-0 fs-12">Şirket yönetiminin yıl veya dönem boyunca operasyonel performansını, stratejisini, yatırımlarını, risklerini ve gelecek beklentilerini yatırımcılara anlattığı kapsamlı bilgilendirme raporudur.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-pie-chart-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Neler İçerir?</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>Bilanço dipnotları:</strong> Borçların yapısı, varlıkların içeriği. <strong>Gelir açıklamaları:</strong> Gelir/gider kalemlerinin nasıl oluştuğu. <strong>Yönetim değerlendirmesi:</strong> Strateji, kapasite, sipariş bilgileri.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-lightbulb-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Yatırımcı İçin Önemi</h6>
+                                    <p class="text-muted mb-0 fs-12">Finansal tablolardaki rakamların arkasındaki detayları gösterir. Şirketin iş modeli, rekabet avantajı ve gelecek planlarını anlamak için en kapsamlı kaynaktır. Yatırım yapmadan önce mutlaka inceleyin.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Arama Kutusu -->
     <div class="row">
         <div class="col-12">

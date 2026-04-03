@@ -13,6 +13,49 @@
 <section layout:fragment="content">
     <div th:replace="~{partials/page-title :: page-title-3('Araştırmalar', 'Haberler', '/kap-news')}"></div>
 
+    <!-- Bilgi Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-primary border-opacity-25">
+                <a class="text-primary fw-medium" data-bs-toggle="collapse" href="#arastirmaInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>KAP Araştırma &amp; Doküman Arama Nedir?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="arastirmaInfoCollapse">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-search-line text-primary fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Ne Aranır?</h6>
+                                    <p class="text-muted mb-0 fs-12">KAP (Kamuyu Aydınlatma Platformu) üzerinden açıklanan tüm şirket bildirimleri, finansal tablolar, özel durum açıklamaları ve düzenleyici kurum kararlarını arayabilirsiniz.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-file-list-3-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Bildirim Tipleri</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>FR:</strong> Finansal Raporlar, <strong>ODA:</strong> Özel Durum Açıklaması, <strong>CA:</strong> Kurumsal Eylem, <strong>DKB:</strong> Düzenleyici Kurum, <strong>FON:</strong> Fon Bildirimi, <strong>DUY:</strong> Duyuru.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-lightbulb-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Nasıl Kullanılır?</h6>
+                                    <p class="text-muted mb-0 fs-12">Hisse kodunu yazın ve aratın. Sonuçlarda başlık, bildirim tipi ve tarih gösterilir. "Detay" butonuyla dokümanın tam içeriğini okuyabilirsiniz.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Arama Kutusu -->
     <div class="row">
         <div class="col-12">
