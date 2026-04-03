@@ -19,11 +19,12 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center gap-2">
-                        <div class="flex-grow-1">
+                        <div class="flex-grow-1 position-relative">
                             <label for="stockCodeInput" class="form-label fw-medium">Hisse Kodu</label>
                             <input type="text" id="stockCodeInput" class="form-control"
                                    placeholder="Hisse kodu girin (örn. GARAN)" maxlength="10"
-                                   style="text-transform: uppercase;">
+                                   style="text-transform: uppercase;" autocomplete="off">
+                            <!-- Autocomplete dropdown JS ile buraya eklenir -->
                         </div>
                         <div class="align-self-end">
                             <button type="button" id="searchBtn" class="btn btn-primary">

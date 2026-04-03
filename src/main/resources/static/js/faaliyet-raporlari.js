@@ -29,6 +29,149 @@
     var csrfToken = document.querySelector('meta[name="_csrf"]');
     var csrfHeader = document.querySelector('meta[name="_csrf_header"]');
 
+    // ── Autocomplete ──────────────────────────────────────
+    var AC_MAX_RESULTS = 8;
+    var acStockCache = null;
+    var acIsFetching = false;
+    var acDropdown = null;
+
+    /**
+     * Hisse listesini API'den ceker ve cache'ler.
+     * @param {Function} callback - Veri hazir oldugunda cagirilacak fonksiyon
+     */
+    function ensureStockCache(callback) {
+        if (acStockCache) {
+            callback(acStockCache);
+            return;
+        }
+        if (acIsFetching) {
+            setTimeout(function () { ensureStockCache(callback); }, 100);
+            return;
+        }
+        acIsFetching = true;
+        fetch('/ajax/stocks/search')
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                acStockCache = data || [];
+                acIsFetching = false;
+                callback(acStockCache);
+            })
+            .catch(function () {
+                acIsFetching = false;
+                acStockCache = [];
+                callback(acStockCache);
+            });
+    }
+
+    /**
+     * Hisse listesini sorguya gore filtreler.
+     * @param {Array} stocks - Hisse listesi
+     * @param {string} query - Arama metni (kucuk harfe cevirilmis)
+     * @returns {Array} Filtrelenmis hisse listesi (max AC_MAX_RESULTS)
+     */
+    function filterAutocomplete(stocks, query) {
+        var tickerMatches = [];
+        var descMatches = [];
+        for (var i = 0; i < stocks.length; i++) {
+            var s = stocks[i];
+            var ticker = (s.ticker || '').toLowerCase();
+            var desc = (s.description || '').toLowerCase();
+            if (ticker.indexOf(query) === 0) {
+                tickerMatches.push(s);
+            } else if (desc.indexOf(query) !== -1) {
+                descMatches.push(s);
+            }
+            if (tickerMatches.length + descMatches.length >= AC_MAX_RESULTS * 2) break;
+        }
+        return tickerMatches.concat(descMatches).slice(0, AC_MAX_RESULTS);
+    }
+
+    /**
+     * Autocomplete dropdown'u olusturur veya mevcut olani dondurur.
+     * @returns {HTMLElement} Dropdown container
+     */
+    function getOrCreateDropdown() {
+        if (acDropdown) return acDropdown;
+        acDropdown = document.createElement('div');
+        acDropdown.className = 'dropdown-menu show p-0';
+        acDropdown.style.cssText = 'max-height:300px;overflow-y:auto;width:100%;position:absolute;top:100%;left:0;z-index:1050;display:none;';
+        stockCodeInput.parentNode.appendChild(acDropdown);
+        return acDropdown;
+    }
+
+    /**
+     * Autocomplete dropdown'u kapatir.
+     */
+    function closeAutocomplete() {
+        var dd = getOrCreateDropdown();
+        dd.style.display = 'none';
+        while (dd.firstChild) dd.removeChild(dd.firstChild);
+    }
+
+    /**
+     * Autocomplete sonuclarini gosterir.
+     * @param {Array} results - Filtrelenmis hisse listesi
+     */
+    function showAutocompleteResults(results) {
+        var dd = getOrCreateDropdown();
+        while (dd.firstChild) dd.removeChild(dd.firstChild);
+
+        if (results.length === 0) {
+            dd.style.display = 'none';
+            return;
+        }
+
+        for (var i = 0; i < results.length; i++) {
+            (function (stock) {
+                var a = document.createElement('a');
+                a.className = 'dropdown-item d-flex align-items-center px-3 py-2';
+                a.href = '#';
+
+                var tickerSpan = document.createElement('span');
+                tickerSpan.className = 'fw-semibold me-2';
+                tickerSpan.textContent = stock.ticker || '';
+
+                var descSpan = document.createElement('span');
+                descSpan.className = 'text-muted fs-12 text-truncate';
+                descSpan.textContent = stock.description || '';
+
+                a.appendChild(tickerSpan);
+                a.appendChild(descSpan);
+
+                a.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    stockCodeInput.value = stock.ticker || '';
+                    closeAutocomplete();
+                    doSearch();
+                });
+
+                dd.appendChild(a);
+            })(results[i]);
+        }
+
+        dd.style.display = 'block';
+    }
+
+    // Autocomplete input event
+    stockCodeInput.addEventListener('input', function () {
+        var query = (stockCodeInput.value || '').trim().toLowerCase();
+        if (query.length < 1) {
+            closeAutocomplete();
+            return;
+        }
+        ensureStockCache(function (stocks) {
+            var results = filterAutocomplete(stocks, query);
+            showAutocompleteResults(results);
+        });
+    });
+
+    // Dis tiklama ile kapat
+    document.addEventListener('click', function (e) {
+        if (!stockCodeInput.contains(e.target) && acDropdown && !acDropdown.contains(e.target)) {
+            closeAutocomplete();
+        }
+    });
+
     function hideAll() {
         loadingArea.classList.add('d-none');
         errorArea.classList.add('d-none');
@@ -230,7 +373,11 @@
     stockCodeInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
+            closeAutocomplete();
             doSearch();
+        }
+        if (e.key === 'Escape') {
+            closeAutocomplete();
         }
     });
 })();
