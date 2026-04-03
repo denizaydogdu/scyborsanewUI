@@ -223,12 +223,16 @@ public class BilancoController {
 
             // Hasilat ve Net Donem Kari satirlarini filtrele
             List<FinansalTabloUiDto> hasilatRows = gelirRows.stream()
-                    .filter(r -> r.getKalem() != null && r.getKalem().toLowerCase().contains("hasılat"))
+                    .filter(r -> r.getKalem() != null && (
+                            r.getKalem().toLowerCase().contains("hasılat") ||
+                            r.getKalem().equalsIgnoreCase("Satış Gelirleri")))
                     .collect(Collectors.toList());
             List<FinansalTabloUiDto> netKarRows = gelirRows.stream()
-                    .filter(r -> r.getKalem() != null &&
-                            (r.getKalem().toLowerCase().contains("net dönem kârı") ||
-                             r.getKalem().toLowerCase().contains("net dönem karı")))
+                    .filter(r -> r.getKalem() != null && (
+                            r.getKalem().toLowerCase().contains("net dönem kârı") ||
+                            r.getKalem().toLowerCase().contains("net dönem karı") ||
+                            r.getKalem().equalsIgnoreCase("Dönem Karı (Zararı)") ||
+                            r.getKalem().equalsIgnoreCase("Sürdürülen Faaliyetler Dönem Karı/Zararı")))
                     .collect(Collectors.toList());
 
             // Yil+ay bazinda sirala (eski → yeni)
