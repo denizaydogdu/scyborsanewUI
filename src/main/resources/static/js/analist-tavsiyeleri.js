@@ -22,6 +22,7 @@
     var currentType = 'ALL';
     var currentSearch = '';
     var currentBrokerage = 'ALL';
+    var currentRating = 'ALL';
     var currentPage = 1;
     var sortCol = null;
     var sortAscending = true;
@@ -30,6 +31,8 @@
     // ── DOM Referanslari ──────────────────────────────────
     var searchInput = document.getElementById('searchInput');
     var brokerageFilter = document.getElementById('brokerageFilter');
+    var ratingFilter = document.getElementById('ratingFilter');
+    var katilimToggle = document.getElementById('katilimToggle');
     var tableBody = document.getElementById('tableBody');
     var emptyState = document.getElementById('emptyState');
     var tableContainer = document.getElementById('tableContainer');
@@ -45,8 +48,26 @@
     // ── Baslangic ─────────────────────────────────────────
     function init() {
         allData = window.tavsiyelerData || [];
+        populateRatingFilter();
         bindEvents();
         applyFilters();
+    }
+
+    /**
+     * Rating selectbox'ını unique ratingType değerleri ile doldurur.
+     */
+    function populateRatingFilter() {
+        if (!ratingFilter) return;
+        var uniqueRatings = {};
+        allData.forEach(function (t) {
+            if (t.ratingType) uniqueRatings[t.ratingType.toUpperCase()] = true;
+        });
+        Object.keys(uniqueRatings).sort().forEach(function (r) {
+            var opt = document.createElement('option');
+            opt.value = r;
+            opt.textContent = formatRatingText(r);
+            ratingFilter.appendChild(opt);
+        });
     }
 
     // ── Event Binding ─────────────────────────────────────
@@ -62,6 +83,11 @@
                 tab.classList.add('active');
                 tab.setAttribute('aria-selected', 'true');
                 currentType = tab.getAttribute('data-tavsiye-type');
+                // Tab değiştiğinde rating selectbox'ı resetle
+                if (ratingFilter) {
+                    ratingFilter.value = 'ALL';
+                    currentRating = 'ALL';
+                }
                 currentPage = 1;
                 applyFilters();
             });
@@ -83,6 +109,35 @@
         if (brokerageFilter) {
             brokerageFilter.addEventListener('change', function () {
                 currentBrokerage = brokerageFilter.value;
+                currentPage = 1;
+                applyFilters();
+            });
+        }
+
+        // Rating (tavsiye tipi) filtre
+        if (ratingFilter) {
+            ratingFilter.addEventListener('change', function () {
+                currentRating = ratingFilter.value;
+                // Selectbox değiştiğinde tab'ı "Tümü"ye resetle
+                var tabs = document.querySelectorAll('#typeTabs .nav-link');
+                tabs.forEach(function (t) {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-selected', 'false');
+                });
+                var allTab = document.querySelector('#typeTabs .nav-link[data-tavsiye-type="ALL"]');
+                if (allTab) {
+                    allTab.classList.add('active');
+                    allTab.setAttribute('aria-selected', 'true');
+                }
+                currentType = 'ALL';
+                currentPage = 1;
+                applyFilters();
+            });
+        }
+
+        // Katılım endeksi toggle
+        if (katilimToggle) {
+            katilimToggle.addEventListener('change', function () {
                 currentPage = 1;
                 applyFilters();
             });
@@ -146,11 +201,23 @@
             });
         }
 
+        // Tavsiye tipi selectbox filtre
+        if (currentRating !== 'ALL') {
+            result = result.filter(function (t) {
+                return t.ratingType && t.ratingType.toUpperCase() === currentRating;
+            });
+        }
+
         // Araci kurum filtre
         if (currentBrokerage !== 'ALL') {
             result = result.filter(function (t) {
                 return t.brokerage && t.brokerage.shortTitle === currentBrokerage;
             });
+        }
+
+        // Katılım endeksi filtre
+        if (katilimToggle && katilimToggle.checked) {
+            result = result.filter(function (t) { return t.katilim === true; });
         }
 
         filteredData = result;
@@ -173,6 +240,9 @@
             } else if (sortCol === 'ratingType') {
                 valA = (a.ratingType || '').toLocaleLowerCase('tr');
                 valB = (b.ratingType || '').toLocaleLowerCase('tr');
+            } else if (sortCol === 'currentPrice') {
+                valA = a.currentPrice != null ? a.currentPrice : null;
+                valB = b.currentPrice != null ? b.currentPrice : null;
             } else if (sortCol === 'targetPrice') {
                 valA = a.targetPrice != null ? a.targetPrice : null;
                 valB = b.targetPrice != null ? b.targetPrice : null;
@@ -305,9 +375,16 @@
         var badge = document.createElement('span');
         var ratingUpper = item.ratingType ? item.ratingType.toUpperCase() : '';
         badge.className = 'badge ' + getRatingBadgeClass(ratingUpper);
-        badge.textContent = ratingUpper || '-';
+        badge.textContent = formatRatingText(ratingUpper);
+        badge.style.cssText = 'font-size: 0.75rem;';
         tdRating.appendChild(badge);
         tr.appendChild(tdRating);
+
+        // Şu Anki Fiyat
+        var tdCurrentPrice = document.createElement('td');
+        tdCurrentPrice.className = 'fw-semibold';
+        tdCurrentPrice.textContent = item.currentPrice != null ? formatPrice(item.currentPrice) : '-';
+        tr.appendChild(tdCurrentPrice);
 
         // Hedef Fiyat
         var tdPrice = document.createElement('td');
@@ -367,6 +444,17 @@
     }
 
     // ── Yardimci Fonksiyonlar ─────────────────────────────
+
+    /**
+     * Rating type metnini kullanıcı dostu formata dönüştürür.
+     * ENDEKS_USTU → ENDEKS ÜSTÜ, ENDEKSE_PARALEL → ENDEKSE PARALEL vb.
+     */
+    function formatRatingText(ratingType) {
+        if (!ratingType) return '-';
+        var text = ratingType.replace(/_/g, ' ');
+        text = text.replace('USTU', 'ÜSTÜ');
+        return text;
+    }
 
     function getRatingBadgeClass(ratingType) {
         if (!ratingType) return 'bg-secondary-subtle text-secondary';

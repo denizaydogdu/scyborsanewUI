@@ -19,10 +19,10 @@
     var BINANCE_SYMBOL = _cfg.binanceSymbol || '';
     var WS_URL = API_BASE + '/ws';
 
-    console.log('[CHART] ===== Modül yüklendi =====');
-    console.log('[CHART] Config → SYMBOL=' + SYMBOL + ', API_BASE=' + API_BASE + ', WS_URL=' + WS_URL);
-    console.log('[CHART] window.STOCK_CHART_SYMBOL=' + window.STOCK_CHART_SYMBOL);
-    console.log('[CHART] window.STOCK_CHART_API_BASE=' + window.STOCK_CHART_API_BASE);
+    console.debug('[CHART] ===== Modül yüklendi =====');
+    console.debug('[CHART] Config → SYMBOL=' + SYMBOL + ', API_BASE=' + API_BASE + ', WS_URL=' + WS_URL);
+    console.debug('[CHART] window.STOCK_CHART_SYMBOL=' + window.STOCK_CHART_SYMBOL);
+    console.debug('[CHART] window.STOCK_CHART_API_BASE=' + window.STOCK_CHART_API_BASE);
 
     // ─── State ──────────────────────────────────────────
     var currentPeriod = 'D';
@@ -57,7 +57,7 @@
 
     // ─── Fiyat Overlay Oluşturma ────────────────────────
     function createPriceOverlay() {
-        console.log('[CHART] ▶ createPriceOverlay() çağrıldı');
+        console.debug('[CHART] ▶ createPriceOverlay() çağrıldı');
         var container = document.getElementById('chartContainer');
         if (!container) {
             console.error('[CHART] createPriceOverlay: #chartContainer bulunamadı');
@@ -82,7 +82,7 @@
         overlay.appendChild(priceSpan);
         overlay.appendChild(changeSpan);
         container.appendChild(overlay);
-        console.log('[CHART] ✓ Price overlay oluşturuldu (DOM API)');
+        console.debug('[CHART] ✓ Price overlay oluşturuldu (DOM API)');
 
         // Hero header'dan başlangıç değerlerini oku
         var heroPrice = document.getElementById('heroPrice');
@@ -96,7 +96,7 @@
             var isPositive = !percentText.startsWith('%-');
             changeSpan.style.background = isPositive ? 'rgba(10,179,156,0.12)' : 'rgba(240,101,72,0.12)';
             changeSpan.style.color = isPositive ? '#0ab39c' : '#f06548';
-            console.log('[CHART] Overlay başlangıç: ' + priceText + ' ' + percentText);
+            console.debug('[CHART] Overlay başlangıç: ' + priceText + ' ' + percentText);
         } else {
             console.warn('[CHART] Hero header bulunamadı: heroPrice=' + !!heroPrice + ', heroPercent=' + !!heroPercent);
         }
@@ -106,7 +106,7 @@
         var priceEl = document.getElementById('chartLivePrice');
         var changeEl = document.getElementById('chartLiveChange');
         if (!priceEl) {
-            console.log('[CHART] updateOverlayPrice: #chartLivePrice bulunamadı');
+            console.debug('[CHART] updateOverlayPrice: #chartLivePrice bulunamadı');
             return;
         }
 
@@ -127,7 +127,7 @@
             changeEl.style.color = isPositive ? '#0ab39c' : '#f06548';
         }
 
-        console.log('[CHART] Overlay güncellendi: ' + price + ' TL, %' + (changePercent != null ? changePercent.toFixed(2) : 'N/A'));
+        console.debug('[CHART] Overlay güncellendi: ' + price + ' TL, %' + (changePercent != null ? changePercent.toFixed(2) : 'N/A'));
     }
 
     function flashOverlay(tickUp) {
@@ -146,13 +146,13 @@
 
     // ─── Grafik Oluşturma ───────────────────────────────
     function createChart(containerId) {
-        console.log('[CHART] ▶ createChart() çağrıldı: containerId=' + containerId);
+        console.debug('[CHART] ▶ createChart() çağrıldı: containerId=' + containerId);
         var container = document.getElementById(containerId);
         if (!container) {
             console.error('[CHART] createChart() → container bulunamadı: #' + containerId);
             return;
         }
-        console.log('[CHART] createChart() → container boyut: ' + container.clientWidth + 'x' + container.clientHeight);
+        console.debug('[CHART] createChart() → container boyut: ' + container.clientWidth + 'x' + container.clientHeight);
         var colors = themeColors;
 
         chart = LightweightCharts.createChart(container, {
@@ -178,7 +178,7 @@
                 secondsVisible: false
             }
         });
-        console.log('[CHART] createChart() → LightweightCharts.createChart OK');
+        console.debug('[CHART] createChart() → LightweightCharts.createChart OK');
 
         candleSeries = chart.addCandlestickSeries({
             upColor: colors.green,
@@ -188,7 +188,7 @@
             wickDownColor: colors.red,
             wickUpColor: colors.green
         });
-        console.log('[CHART] createChart() → candleSeries oluşturuldu');
+        console.debug('[CHART] createChart() → candleSeries oluşturuldu');
 
         volumeSeries = chart.addHistogramSeries({
             color: colors.green,
@@ -198,19 +198,19 @@
         volumeSeries.priceScale().applyOptions({
             scaleMargins: { top: 0.8, bottom: 0 }
         });
-        console.log('[CHART] createChart() → volumeSeries oluşturuldu');
+        console.debug('[CHART] createChart() → volumeSeries oluşturuldu');
 
         // I1: Referans sakla — cleanup'ta disconnect edilecek
         resizeObserver = new ResizeObserver(function(entries) {
             if (entries.length > 0) {
                 var cr = entries[0].contentRect;
                 chart.applyOptions({ width: cr.width });
-                console.log('[CHART] ResizeObserver → width=' + cr.width);
+                console.debug('[CHART] ResizeObserver → width=' + cr.width);
             }
         });
         resizeObserver.observe(container);
 
-        console.log('[CHART] ✓ createChart() tamamlandı');
+        console.debug('[CHART] ✓ createChart() tamamlandı');
     }
 
     // ─── Veri Dönüşümü ─────────────────────────────────
@@ -220,7 +220,7 @@
     }
 
     function mapBarsToSeries(bars) {
-        console.log('[CHART] mapBarsToSeries() → ' + bars.length + ' bar dönüştürülüyor');
+        console.debug('[CHART] mapBarsToSeries() → ' + bars.length + ' bar dönüştürülüyor');
         var candles = [];
         var volumes = [];
         bars.forEach(function(bar, idx) {
@@ -241,13 +241,13 @@
             });
             // İlk ve son bar'ı logla (raw timestamp + ISO date)
             if (idx === 0) {
-                console.log('[CHART] mapBars → ilk bar: rawTs=' + bar.timestamp + ', time=' + timeSec + ', date=' + new Date(timeSec * 1000).toISOString() + ', O=' + bar.open + ', H=' + bar.high + ', L=' + bar.low + ', C=' + bar.close + ', V=' + bar.volume);
+                console.debug('[CHART] mapBars → ilk bar: rawTs=' + bar.timestamp + ', time=' + timeSec + ', date=' + new Date(timeSec * 1000).toISOString() + ', O=' + bar.open + ', H=' + bar.high + ', L=' + bar.low + ', C=' + bar.close + ', V=' + bar.volume);
             }
             if (idx === bars.length - 1) {
-                console.log('[CHART] mapBars → son bar: rawTs=' + bar.timestamp + ', time=' + timeSec + ', date=' + new Date(timeSec * 1000).toISOString() + ', O=' + bar.open + ', H=' + bar.high + ', L=' + bar.low + ', C=' + bar.close + ', V=' + bar.volume);
+                console.debug('[CHART] mapBars → son bar: rawTs=' + bar.timestamp + ', time=' + timeSec + ', date=' + new Date(timeSec * 1000).toISOString() + ', O=' + bar.open + ', H=' + bar.high + ', L=' + bar.low + ', C=' + bar.close + ', V=' + bar.volume);
             }
         });
-        console.log('[CHART] mapBarsToSeries() → ' + candles.length + ' candle + ' + volumes.length + ' volume hazır');
+        console.debug('[CHART] mapBarsToSeries() → ' + candles.length + ' candle + ' + volumes.length + ' volume hazır');
         return { candles: candles, volumes: volumes };
     }
 
@@ -274,14 +274,14 @@
                     + '?period=' + encodeURIComponent(period) + '&bars=300';
         }
 
-        console.log('[CHART] ▶ REST loadBars() başladı: requestId=' + requestId + ', period=' + period);
-        console.log('[CHART] REST URL: ' + url);
+        console.debug('[CHART] ▶ REST loadBars() başladı: requestId=' + requestId + ', period=' + period);
+        console.debug('[CHART] REST URL: ' + url);
 
         fetch(url)
             .then(function(r) {
-                console.log('[CHART] REST response: status=' + r.status + ', ok=' + r.ok + ', requestId=' + requestId);
+                console.debug('[CHART] REST response: status=' + r.status + ', ok=' + r.ok + ', requestId=' + requestId);
                 if (r.status === 204) {
-                    console.log('[CHART] REST 204 No Content');
+                    console.debug('[CHART] REST 204 No Content');
                     return null;
                 }
                 if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -301,7 +301,7 @@
                 }
                 // Crypto: bare JSON array, Stock: {bars: [...]}
                 var bars = Array.isArray(data) ? data : (data.bars || []);
-                console.log('[CHART] REST data alındı: bars=' + bars.length + ', assetType=' + ASSET_TYPE);
+                console.debug('[CHART] REST data alındı: bars=' + bars.length + ', assetType=' + ASSET_TYPE);
                 if (!bars || bars.length === 0) {
                     candleSeries.setData([]);
                     volumeSeries.setData([]);
@@ -323,7 +323,7 @@
                     flashOverlay(lastKnownChp == null || lastKnownChp >= 0);  // initial: chp bazlı
                 }
 
-                console.log('[CHART] ✓ REST yüklendi: ' + mapped.candles.length + ' mum, period=' + period);
+                console.debug('[CHART] ✓ REST yüklendi: ' + mapped.candles.length + ' mum, period=' + period);
             })
             .catch(function(err) {
                 if (requestId !== loadRequestId) {
@@ -340,64 +340,64 @@
         var el = document.getElementById('chartLoading');
         if (el) {
             el.style.display = 'none';
-            console.log('[CHART] hideLoading() → spinner gizlendi');
+            console.debug('[CHART] hideLoading() → spinner gizlendi');
         } else {
-            console.log('[CHART] hideLoading() → #chartLoading bulunamadı');
+            console.debug('[CHART] hideLoading() → #chartLoading bulunamadı');
         }
     }
 
     // ─── STOMP WebSocket Bağlantısı ─────────────────────
     function connectStomp() {
-        if (!WS_ENABLED) { console.log('[CHART] WS devre dışı → REST fallback'); restFallbackFired = true; loadBars(currentPeriod); return; }
-        console.log('[CHART] ▶ connectStomp() başladı');
-        console.log('[CHART] STOMP WS_URL: ' + WS_URL);
-        console.log('[CHART] STOMP state → stompConnected=' + stompConnected + ', stompClient=' + (stompClient ? 'var' : 'null'));
+        if (!WS_ENABLED) { console.debug('[CHART] WS devre dışı → REST fallback'); restFallbackFired = true; loadBars(currentPeriod); return; }
+        console.debug('[CHART] ▶ connectStomp() başladı');
+        console.debug('[CHART] STOMP WS_URL: ' + WS_URL);
+        console.debug('[CHART] STOMP state → stompConnected=' + stompConnected + ', stompClient=' + (stompClient ? 'var' : 'null'));
         try {
             stompClient = new StompJs.Client({
                 webSocketFactory: function() {
-                    console.log('[CHART] STOMP webSocketFactory → new SockJS(' + WS_URL + ')');
+                    console.debug('[CHART] STOMP webSocketFactory → new SockJS(' + WS_URL + ')');
                     return new SockJS(WS_URL);
                 },
                 reconnectDelay: 5000,
                 debug: function(msg) {
                     if (msg.indexOf('CONNECTED') !== -1 || msg.indexOf('ERROR') !== -1 ||
                         msg.indexOf('DISCONNECT') !== -1 || msg.indexOf('MESSAGE') !== -1) {
-                        console.log('[CHART] STOMP debug: ' + msg.substring(0, 200));
+                        console.debug('[CHART] STOMP debug: ' + msg.substring(0, 200));
                     }
                 }
             });
-            console.log('[CHART] StompJs.Client oluşturuldu');
+            console.debug('[CHART] StompJs.Client oluşturuldu');
 
             stompClient.onConnect = function(frame) {
-                console.log('[CHART] ═══ STOMP onConnect ═══');
-                console.log('[CHART] STOMP frame:', frame);
+                console.debug('[CHART] ═══ STOMP onConnect ═══');
+                console.debug('[CHART] STOMP frame:', frame);
                 stompConnected = true;
-                console.log('[CHART] stompConnected = true, restFallbackFired=' + restFallbackFired);
+                console.debug('[CHART] stompConnected = true, restFallbackFired=' + restFallbackFired);
 
                 // C1: REST fallback zaten veri yüklediyse, STOMP sadece live update için abone ol
                 // Initial data tekrar istenmez — race condition önlenir
                 if (restFallbackFired) {
-                    console.log('[CHART] REST fallback zaten yükledi → sadece price subscription');
+                    console.debug('[CHART] REST fallback zaten yükledi → sadece price subscription');
                     subscribeToPriceUpdates();
                     // Bar topic'e de abone ol ama initial tekrar isteme
                     var topic = '/topic/bars/' + SYMBOL + '/' + currentPeriod;
                     subscribeToBarUpdates(topic);
-                    console.log('[CHART] ═══ STOMP onConnect (REST-after) tamamlandı ═══');
+                    console.debug('[CHART] ═══ STOMP onConnect (REST-after) tamamlandı ═══');
                     return;
                 }
 
                 currentBarSubscription = null;
                 currentBarTopic = null;
                 priceSubscription = null;
-                console.log('[CHART] Subscription state temizlendi');
+                console.debug('[CHART] Subscription state temizlendi');
 
-                console.log('[CHART] sendSubscribeMessage(' + currentPeriod + ') çağrılıyor...');
+                console.debug('[CHART] sendSubscribeMessage(' + currentPeriod + ') çağrılıyor...');
                 sendSubscribeMessage(currentPeriod);
 
-                console.log('[CHART] subscribeToPriceUpdates() çağrılıyor...');
+                console.debug('[CHART] subscribeToPriceUpdates() çağrılıyor...');
                 subscribeToPriceUpdates();
 
-                console.log('[CHART] ═══ STOMP onConnect tamamlandı ═══');
+                console.debug('[CHART] ═══ STOMP onConnect tamamlandı ═══');
             };
 
             stompClient.onDisconnect = function(frame) {
@@ -423,9 +423,9 @@
                 stompConnected = false;
             };
 
-            console.log('[CHART] stompClient.activate() çağrılıyor...');
+            console.debug('[CHART] stompClient.activate() çağrılıyor...');
             stompClient.activate();
-            console.log('[CHART] stompClient.activate() çağrıldı (async bağlantı başladı)');
+            console.debug('[CHART] stompClient.activate() çağrıldı (async bağlantı başladı)');
         } catch (e) {
             console.error('[CHART] ✗ connectStomp() exception:', e);
             console.error('[CHART] Exception stack:', e.stack || 'yok');
@@ -434,8 +434,8 @@
 
     // ─── Abonelik Yönetimi ──────────────────────────────
     function sendSubscribeMessage(period) {
-        console.log('[CHART] ▶ sendSubscribeMessage(' + period + ') çağrıldı');
-        console.log('[CHART] STOMP durumu → client=' + (stompClient ? 'var' : 'null') + ', connected=' + (stompClient ? stompClient.connected : 'N/A'));
+        console.debug('[CHART] ▶ sendSubscribeMessage(' + period + ') çağrıldı');
+        console.debug('[CHART] STOMP durumu → client=' + (stompClient ? 'var' : 'null') + ', connected=' + (stompClient ? stompClient.connected : 'N/A'));
 
         if (!stompClient || !stompClient.connected) {
             console.warn('[CHART] sendSubscribeMessage: STOMP bağlı değil, çıkılıyor');
@@ -443,49 +443,49 @@
         }
 
         var payload = { symbol: SYMBOL, period: period, bars: 300 };
-        console.log('[CHART] STOMP publish → destination=/app/chart/subscribe, body=' + JSON.stringify(payload));
+        console.debug('[CHART] STOMP publish → destination=/app/chart/subscribe, body=' + JSON.stringify(payload));
 
         stompClient.publish({
             destination: '/app/chart/subscribe',
             body: JSON.stringify(payload)
         });
-        console.log('[CHART] STOMP publish OK');
+        console.debug('[CHART] STOMP publish OK');
 
         var topic = '/topic/bars/' + SYMBOL + '/' + period;
-        console.log('[CHART] subscribeToBarUpdates(' + topic + ') çağrılıyor...');
+        console.debug('[CHART] subscribeToBarUpdates(' + topic + ') çağrılıyor...');
         subscribeToBarUpdates(topic);
     }
 
     function subscribeToBarUpdates(topic) {
-        console.log('[CHART] ▶ subscribeToBarUpdates(' + topic + ')');
-        console.log('[CHART] Mevcut subscription → topic=' + currentBarTopic + ', sub=' + (currentBarSubscription ? 'var' : 'null'));
+        console.debug('[CHART] ▶ subscribeToBarUpdates(' + topic + ')');
+        console.debug('[CHART] Mevcut subscription → topic=' + currentBarTopic + ', sub=' + (currentBarSubscription ? 'var' : 'null'));
 
         if (currentBarTopic === topic && currentBarSubscription) {
-            console.log('[CHART] Aynı topic, skip');
+            console.debug('[CHART] Aynı topic, skip');
             return;
         }
 
         if (currentBarSubscription) {
-            console.log('[CHART] Eski subscription unsubscribe ediliyor: ' + currentBarTopic);
+            console.debug('[CHART] Eski subscription unsubscribe ediliyor: ' + currentBarTopic);
             currentBarSubscription.unsubscribe();
             currentBarSubscription = null;
             currentBarTopic = null;
         }
 
-        console.log('[CHART] stompClient.subscribe(' + topic + ') başlatılıyor...');
+        console.debug('[CHART] stompClient.subscribe(' + topic + ') başlatılıyor...');
         currentBarSubscription = stompClient.subscribe(topic, function(message) {
-            console.log('[CHART] ═══ STOMP BAR MESAJ GELDİ ═══');
-            console.log('[CHART] Topic: ' + topic);
-            console.log('[CHART] Raw body length: ' + message.body.length + ' bytes');
-            console.log('[CHART] Headers:', JSON.stringify(message.headers));
+            console.debug('[CHART] ═══ STOMP BAR MESAJ GELDİ ═══');
+            console.debug('[CHART] Topic: ' + topic);
+            console.debug('[CHART] Raw body length: ' + message.body.length + ' bytes');
+            console.debug('[CHART] Headers:', JSON.stringify(message.headers));
             try {
                 var data = JSON.parse(message.body);
-                console.log('[CHART] Parsed → type=' + data.type + ', symbol=' + data.symbol + ', bars=' + (data.bars ? data.bars.length : 'null'));
+                console.debug('[CHART] Parsed → type=' + data.type + ', symbol=' + data.symbol + ', bars=' + (data.bars ? data.bars.length : 'null'));
 
                 // Seans kapanış mesajı — badge göster, veri güncelleme yapma
                 if (data.type === 'session_closed') {
                     showMarketClosedBadge();
-                    console.log('[CHART] session_closed mesajı alındı');
+                    console.debug('[CHART] session_closed mesajı alındı');
                     return;
                 }
 
@@ -495,12 +495,12 @@
                 }
 
                 if (data.type === 'initial') {
-                    console.log('[CHART] STOMP initial load: ' + data.bars.length + ' bar');
+                    console.debug('[CHART] STOMP initial load: ' + data.bars.length + ' bar');
                     var mapped = mapBarsToSeries(data.bars);
                     candleSeries.setData(mapped.candles);
-                    console.log('[CHART] candleSeries.setData() OK: ' + mapped.candles.length + ' mum');
+                    console.debug('[CHART] candleSeries.setData() OK: ' + mapped.candles.length + ' mum');
                     volumeSeries.setData(mapped.volumes);
-                    console.log('[CHART] volumeSeries.setData() OK: ' + mapped.volumes.length + ' volume');
+                    console.debug('[CHART] volumeSeries.setData() OK: ' + mapped.volumes.length + ' volume');
                     chart.timeScale().fitContent();
                     hideLoading();
 
@@ -511,12 +511,12 @@
                         flashOverlay(lastKnownChp == null || lastKnownChp >= 0);  // initial: chp bazlı
                     }
 
-                    console.log('[CHART] ✓ STOMP initial tamamlandı: ' + mapped.candles.length + ' mum');
+                    console.debug('[CHART] ✓ STOMP initial tamamlandı: ' + mapped.candles.length + ' mum');
                 } else {
-                    console.log('[CHART] STOMP update: ' + data.bars.length + ' bar');
+                    console.debug('[CHART] STOMP update: ' + data.bars.length + ' bar');
                     data.bars.forEach(function(bar, idx) {
                         var timeSec = bar.timestamp;
-                        console.log('[CHART] STOMP update bar[' + idx + ']: rawTs=' + bar.timestamp + ', time=' + timeSec + ', date=' + new Date(timeSec * 1000).toISOString() + ', O=' + bar.open + ', H=' + bar.high + ', L=' + bar.low + ', C=' + bar.close + ', V=' + bar.volume);
+                        console.debug('[CHART] STOMP update bar[' + idx + ']: rawTs=' + bar.timestamp + ', time=' + timeSec + ', date=' + new Date(timeSec * 1000).toISOString() + ', O=' + bar.open + ', H=' + bar.high + ', L=' + bar.low + ', C=' + bar.close + ', V=' + bar.volume);
                         candleSeries.update({
                             time: timeSec,
                             open: bar.open,
@@ -538,7 +538,7 @@
                         flashOverlay(barTickUp);
                         prevTickPrice = bar.close;
                     });
-                    console.log('[CHART] ✓ STOMP update tamamlandı');
+                    console.debug('[CHART] ✓ STOMP update tamamlandı');
                 }
             } catch (e) {
                 console.error('[CHART] ✗ Bar parse hatası:', e);
@@ -547,32 +547,32 @@
         });
 
         currentBarTopic = topic;
-        console.log('[CHART] ✓ Bar subscription aktif: ' + topic);
+        console.debug('[CHART] ✓ Bar subscription aktif: ' + topic);
     }
 
     function subscribeToPriceUpdates() {
-        console.log('[CHART] ▶ subscribeToPriceUpdates() çağrıldı');
+        console.debug('[CHART] ▶ subscribeToPriceUpdates() çağrıldı');
         if (priceSubscription) {
-            console.log('[CHART] Eski price subscription unsubscribe ediliyor');
+            console.debug('[CHART] Eski price subscription unsubscribe ediliyor');
             priceSubscription.unsubscribe();
         }
         var priceTopic = '/topic/price/' + SYMBOL;
-        console.log('[CHART] stompClient.subscribe(' + priceTopic + ') başlatılıyor...');
+        console.debug('[CHART] stompClient.subscribe(' + priceTopic + ') başlatılıyor...');
 
         priceSubscription = stompClient.subscribe(priceTopic, function(message) {
-            console.log('[CHART] ═══ PRICE MESAJ GELDİ ═══');
-            console.log('[CHART] Raw price body: ' + message.body);
+            console.debug('[CHART] ═══ PRICE MESAJ GELDİ ═══');
+            console.debug('[CHART] Raw price body: ' + message.body);
             try {
                 var data = JSON.parse(message.body);
 
                 // Seans kapanış mesajı — price topic'te de gelebilir
                 if (data.type === 'session_closed') {
                     showMarketClosedBadge();
-                    console.log('[CHART] session_closed mesajı alındı (price topic)');
+                    console.debug('[CHART] session_closed mesajı alındı (price topic)');
                     return;
                 }
 
-                console.log('[CHART] Price parsed → lp=' + data.lp + ', chp=' + data.chp + ', ch=' + data.ch + ', volume=' + data.volume + ', open=' + data.open);
+                console.debug('[CHART] Price parsed → lp=' + data.lp + ', chp=' + data.chp + ', ch=' + data.ch + ', volume=' + data.volume + ', open=' + data.open);
 
                 updatePriceDisplay(data);
 
@@ -586,14 +586,14 @@
                     var tickUp = prevTickPrice == null || lp >= prevTickPrice;
                     flashOverlay(tickUp);
                     prevTickPrice = lp;
-                    console.log('[CHART] Price → lp=' + lp + ', %' + chp + ', tick=' + (tickUp ? '↑YEŞİL' : '↓KIRMIZI') + ', gün=' + (chp >= 0 ? '+YEŞİL' : '-KIRMIZI'));
+                    console.debug('[CHART] Price → lp=' + lp + ', %' + chp + ', tick=' + (tickUp ? '↑YEŞİL' : '↓KIRMIZI') + ', gün=' + (chp >= 0 ? '+YEŞİL' : '-KIRMIZI'));
                 }
             } catch (e) {
                 console.error('[CHART] ✗ Price parse hatası:', e);
                 console.error('[CHART] Price raw: ' + message.body.substring(0, 300));
             }
         });
-        console.log('[CHART] ✓ Price subscription aktif: ' + priceTopic);
+        console.debug('[CHART] ✓ Price subscription aktif: ' + priceTopic);
     }
 
     // ─── Hero Header Canlı Fiyat Güncellemesi ───────────
@@ -620,7 +620,7 @@
         var percentEl = document.getElementById('heroChangePercent');
         var volumeEl = document.querySelector('.flex-shrink-0.text-end .text-muted span:last-child');
 
-        console.log('[CHART] ▶ updatePriceDisplay(): lp=' + data.lp + ', chp=' + data.chp + ', vol=' + data.volume);
+        console.debug('[CHART] ▶ updatePriceDisplay(): lp=' + data.lp + ', chp=' + data.chp + ', vol=' + data.volume);
 
         if (!priceEl) {
             console.warn('[CHART] updatePriceDisplay: #heroPrice bulunamadı');
@@ -637,7 +637,7 @@
         // Fiyat flash — tick bazlı (geçici), sonra chp bazlı kalıcı
         var heroTickUp = prevTickPrice == null || lp >= prevTickPrice;
         flashHeroPrice(heroTickUp);
-        console.log('[CHART] Hero flash: ' + (prevTickPrice || '?') + '→' + lp + ' tick=' + (heroTickUp ? '↑' : '↓') + ', gün=%' + chp);
+        console.debug('[CHART] Hero flash: ' + (prevTickPrice || '?') + '→' + lp + ' tick=' + (heroTickUp ? '↑' : '↓') + ', gün=%' + chp);
 
         priceEl.textContent = lp.toLocaleString('tr-TR', {
             minimumFractionDigits: 2,
@@ -676,12 +676,12 @@
             }
         }
 
-        console.log('[CHART] ✓ Hero güncellendi: ' + lp + ' TL, %' + chp + ', vol=' + data.volume);
+        console.debug('[CHART] ✓ Hero güncellendi: ' + lp + ' TL, %' + chp + ', vol=' + data.volume);
     }
 
     // ─── Periyot Seçici ─────────────────────────────────
     function initPeriodSelector() {
-        console.log('[CHART] ▶ initPeriodSelector() çağrıldı');
+        console.debug('[CHART] ▶ initPeriodSelector() çağrıldı');
         var selector = document.getElementById('chartPeriodSelector');
         if (!selector) {
             console.warn('[CHART] initPeriodSelector: #chartPeriodSelector bulunamadı');
@@ -689,9 +689,9 @@
         }
 
         var buttons = selector.querySelectorAll('[data-period]');
-        console.log('[CHART] Periyot butonları: ' + buttons.length + ' adet');
+        console.debug('[CHART] Periyot butonları: ' + buttons.length + ' adet');
         buttons.forEach(function(btn) {
-            console.log('[CHART]   buton: period=' + btn.getAttribute('data-period') + ', text=' + btn.textContent.trim());
+            console.debug('[CHART]   buton: period=' + btn.getAttribute('data-period') + ', text=' + btn.textContent.trim());
         });
 
         selector.addEventListener('click', function(e) {
@@ -699,14 +699,14 @@
             if (!btn) return;
 
             var period = btn.getAttribute('data-period');
-            console.log('[CHART] Periyot butonuna tıklandı: ' + period + ' (current=' + currentPeriod + ')');
+            console.debug('[CHART] Periyot butonuna tıklandı: ' + period + ' (current=' + currentPeriod + ')');
 
             if (period === currentPeriod) {
-                console.log('[CHART] Aynı periyot, skip');
+                console.debug('[CHART] Aynı periyot, skip');
                 return;
             }
 
-            console.log('[CHART] Periyot değişiyor: ' + currentPeriod + ' → ' + period);
+            console.debug('[CHART] Periyot değişiyor: ' + currentPeriod + ' → ' + period);
 
             selector.querySelectorAll('.btn').forEach(function(b) {
                 b.classList.remove('btn-primary', 'active');
@@ -716,22 +716,22 @@
             btn.classList.add('btn-primary', 'active');
 
             currentPeriod = period;
-            console.log('[CHART] currentPeriod güncellendi: ' + currentPeriod);
+            console.debug('[CHART] currentPeriod güncellendi: ' + currentPeriod);
 
             // Yeni periyot yüklenirken loading göster
             var loadingEl = document.getElementById('chartLoading');
             if (loadingEl) loadingEl.style.display = 'flex';
 
             if (stompClient && stompClient.connected) {
-                console.log('[CHART] STOMP bağlı → sendSubscribeMessage(' + period + ')');
+                console.debug('[CHART] STOMP bağlı → sendSubscribeMessage(' + period + ')');
                 sendSubscribeMessage(period);
             } else {
-                console.log('[CHART] STOMP bağlı DEĞİL → REST fallback loadBars(' + period + ')');
+                console.debug('[CHART] STOMP bağlı DEĞİL → REST fallback loadBars(' + period + ')');
                 loadBars(period);
             }
         });
 
-        console.log('[CHART] ✓ Periyot seçici hazır');
+        console.debug('[CHART] ✓ Periyot seçici hazır');
     }
 
     // ─── Seans Kapalı Badge ─────────────────────────────
@@ -745,8 +745,8 @@
 
     // ─── Temizlik ───────────────────────────────────────
     function cleanup() {
-        console.log('[CHART] ▶ cleanup() çağrıldı');
-        console.log('[CHART] stompClient=' + (stompClient ? 'var' : 'null') + ', stompConnected=' + stompConnected);
+        console.debug('[CHART] ▶ cleanup() çağrıldı');
+        console.debug('[CHART] stompClient=' + (stompClient ? 'var' : 'null') + ', stompConnected=' + stompConnected);
         // I2: Flash timer'ları temizle
         if (overlayFlashTimer) clearTimeout(overlayFlashTimer);
         if (heroFlashTimer) clearTimeout(heroFlashTimer);
@@ -754,7 +754,7 @@
         if (stompClient) {
             try {
                 stompClient.deactivate();
-                console.log('[CHART] stompClient.deactivate() OK');
+                console.debug('[CHART] stompClient.deactivate() OK');
             } catch (e) {
                 console.error('[CHART] cleanup deactivate hatası:', e);
             }
@@ -762,27 +762,27 @@
         // I1: ResizeObserver bağlantısını kes — memory leak önlenir
         if (resizeObserver) {
             resizeObserver.disconnect();
-            console.log('[CHART] resizeObserver.disconnect() OK');
+            console.debug('[CHART] resizeObserver.disconnect() OK');
         }
         // I3: LightweightCharts canvas/DOM kaynaklarını serbest bırak
         if (chart) {
             chart.remove();
-            console.log('[CHART] chart.remove() OK');
+            console.debug('[CHART] chart.remove() OK');
         }
-        console.log('[CHART] ✓ cleanup tamamlandı');
+        console.debug('[CHART] ✓ cleanup tamamlandı');
     }
 
     // ─── Bootstrap ──────────────────────────────────────
     function init() {
-        console.log('[CHART] ═══════════════════════════════════════');
-        console.log('[CHART] ▶ INIT BAŞLADI');
-        console.log('[CHART] Symbol=' + SYMBOL + ', Period=' + currentPeriod + ', API=' + API_BASE);
-        console.log('[CHART] Zaman: ' + new Date().toISOString());
-        console.log('[CHART] ═══════════════════════════════════════');
+        console.debug('[CHART] ═══════════════════════════════════════');
+        console.debug('[CHART] ▶ INIT BAŞLADI');
+        console.debug('[CHART] Symbol=' + SYMBOL + ', Period=' + currentPeriod + ', API=' + API_BASE);
+        console.debug('[CHART] Zaman: ' + new Date().toISOString());
+        console.debug('[CHART] ═══════════════════════════════════════');
 
-        console.log('[CHART] Kütüphane: LightweightCharts=' + (typeof LightweightCharts !== 'undefined' ? 'VAR' : 'YOK'));
-        console.log('[CHART] Kütüphane: StompJs=' + (typeof StompJs !== 'undefined' ? 'VAR' : 'YOK'));
-        console.log('[CHART] Kütüphane: SockJS=' + (typeof SockJS !== 'undefined' ? 'VAR' : 'YOK'));
+        console.debug('[CHART] Kütüphane: LightweightCharts=' + (typeof LightweightCharts !== 'undefined' ? 'VAR' : 'YOK'));
+        console.debug('[CHART] Kütüphane: StompJs=' + (typeof StompJs !== 'undefined' ? 'VAR' : 'YOK'));
+        console.debug('[CHART] Kütüphane: SockJS=' + (typeof SockJS !== 'undefined' ? 'VAR' : 'YOK'));
 
         if (typeof LightweightCharts === 'undefined') {
             console.error('[CHART] ✗ LightweightCharts yüklenemedi');
@@ -790,43 +790,43 @@
             return;
         }
 
-        console.log('[CHART] createChart() çağrılıyor...');
+        console.debug('[CHART] createChart() çağrılıyor...');
         createChart('chartContainer');
         if (!chart || !candleSeries || !volumeSeries) {
             console.error('[CHART] ✗ Grafik oluşturulamadı: chart=' + !!chart + ', candle=' + !!candleSeries + ', volume=' + !!volumeSeries);
             hideLoading();
             return;
         }
-        console.log('[CHART] ✓ Grafik hazır');
+        console.debug('[CHART] ✓ Grafik hazır');
 
-        console.log('[CHART] createPriceOverlay() çağrılıyor...');
+        console.debug('[CHART] createPriceOverlay() çağrılıyor...');
         createPriceOverlay();
 
-        console.log('[CHART] initPeriodSelector() çağrılıyor...');
+        console.debug('[CHART] initPeriodSelector() çağrılıyor...');
         initPeriodSelector();
 
         // Market durumu kontrol — sayfa yüklenirken kapalıysa badge göster
         var marketOpen = window.MARKET_OPEN !== false;
         if (!marketOpen) {
             showMarketClosedBadge();
-            console.log('[CHART] Seans kapalı — cache/REST modunda');
+            console.debug('[CHART] Seans kapalı — cache/REST modunda');
         }
 
         // STOMP-first: sadece STOMP ile veri al, race condition önlenir
         if (typeof StompJs !== 'undefined' && typeof SockJS !== 'undefined') {
-            console.log('[CHART] STOMP-first mod → connectStomp()');
+            console.debug('[CHART] STOMP-first mod → connectStomp()');
             connectStomp();
 
             // C2: Timeout + stompConnected koordinasyonu — ikisi birden tetiklenmez
-            console.log('[CHART] 5sn STOMP timeout başlatıldı');
+            console.debug('[CHART] 5sn STOMP timeout başlatıldı');
             setTimeout(function() {
-                console.log('[CHART] 5sn timeout tetiklendi → stompConnected=' + stompConnected + ', restFallbackFired=' + restFallbackFired);
+                console.debug('[CHART] 5sn timeout tetiklendi → stompConnected=' + stompConnected + ', restFallbackFired=' + restFallbackFired);
                 if (!stompConnected && !restFallbackFired) {
                     console.warn('[CHART] ⚠ STOMP 5sn timeout → REST fallback');
                     restFallbackFired = true;
                     loadBars(currentPeriod);
                 } else {
-                    console.log('[CHART] 5sn timeout: ' + (stompConnected ? 'STOMP bağlı' : 'REST zaten tetiklendi') + ', skip');
+                    console.debug('[CHART] 5sn timeout: ' + (stompConnected ? 'STOMP bağlı' : 'REST zaten tetiklendi') + ', skip');
                 }
             }, 5000);
         } else {
@@ -834,18 +834,18 @@
             loadBars(currentPeriod);
         }
 
-        console.log('[CHART] ═══════════════════════════════════════');
-        console.log('[CHART] ✓ INIT TAMAMLANDI');
-        console.log('[CHART] ═══════════════════════════════════════');
+        console.debug('[CHART] ═══════════════════════════════════════');
+        console.debug('[CHART] ✓ INIT TAMAMLANDI');
+        console.debug('[CHART] ═══════════════════════════════════════');
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('[CHART] DOMContentLoaded event tetiklendi');
+        console.debug('[CHART] DOMContentLoaded event tetiklendi');
         init();
     });
 
     window.addEventListener('beforeunload', function() {
-        console.log('[CHART] beforeunload event tetiklendi');
+        console.debug('[CHART] beforeunload event tetiklendi');
         cleanup();
     });
 })();

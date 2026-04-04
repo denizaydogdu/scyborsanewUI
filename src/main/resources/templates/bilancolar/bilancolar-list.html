@@ -301,6 +301,7 @@
 <th:block layout:fragment="pagejs">
     <script th:inline="javascript">
         window.RAPOR_DATA = /*[[${raporlar}]]*/ [];
+        window.LOGO_MAP = /*[[${logoMap}]]*/ {};
     </script>
     <script th:src="@{/js/bilancolar.js}"></script>
 </th:block>

@@ -128,7 +128,7 @@ public class SectorService {
                 .retrieve()
                 .bodyToFlux(SectorStockDto.class)
                 .collectList()
-                .block();
+                .block(Duration.ofSeconds(15));
         return result != null ? result : List.of();
     }
 

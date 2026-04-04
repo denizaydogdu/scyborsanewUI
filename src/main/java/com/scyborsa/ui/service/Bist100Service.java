@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -156,7 +157,7 @@ public class Bist100Service {
                     .uri(ScyborsaApiEndpoints.STOCK_LOGOS)
                     .retrieve()
                     .bodyToMono(new ParameterizedTypeReference<Map<String, String>>() {})
-                    .block();
+                    .block(Duration.ofSeconds(15));
             return result != null ? result : Collections.emptyMap();
         } catch (Exception e) {
             log.error("[STOCK-LOGOS-UI] Hisse logoid haritasi alinamadi", e);
@@ -179,7 +180,7 @@ public class Bist100Service {
                     .uri(ScyborsaApiEndpoints.STOCK_LOGO_IMG, logoid)
                     .retrieve()
                     .bodyToMono(byte[].class)
-                    .block();
+                    .block(Duration.ofSeconds(15));
         } catch (Exception e) {
             log.warn("[STOCK-LOGO-UI] Logo alinamadi: {} - {}", logoid, e.getMessage());
             return null;
@@ -201,7 +202,7 @@ public class Bist100Service {
                     .uri(ScyborsaApiEndpoints.BROKERAGE_LOGO_IMG, filename)
                     .retrieve()
                     .bodyToMono(byte[].class)
-                    .block();
+                    .block(Duration.ofSeconds(15));
         } catch (Exception e) {
             log.warn("[BROKERAGE-LOGO-UI] Logo alinamadi: {} - {}", filename, e.getMessage());
             return null;
@@ -225,7 +226,7 @@ public class Bist100Service {
                 .retrieve()
                 .bodyToFlux(SectorStockDto.class)
                 .collectList()
-                .block();
+                .block(Duration.ofSeconds(15));
         return result != null ? result : List.of();
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -72,7 +73,7 @@ public class FonlarService {
                     .retrieve()
                     .bodyToFlux(FundDto.class)
                     .collectList()
-                    .block();
+                    .block(Duration.ofSeconds(15));
             return result != null ? result : List.of();
         } catch (Exception e) {
             log.error("[FONLAR-UI] Fon arama basarisiz: {}", e.getMessage());
@@ -106,7 +107,7 @@ public class FonlarService {
                     .retrieve()
                     .bodyToFlux(FundDto.class)
                     .collectList()
-                    .block();
+                    .block(Duration.ofSeconds(15));
             return result != null ? result : List.of();
         } catch (Exception e) {
             log.error("[{}] Fon verileri alinamadi: {}", logTag, e.getMessage());
@@ -128,7 +129,7 @@ public class FonlarService {
                     .uri(ScyborsaApiEndpoints.FUNDS_STATS)
                     .retrieve()
                     .bodyToMono(FundStatsDto.class)
-                    .block();
+                    .block(Duration.ofSeconds(15));
             return result != null ? result : emptyStats();
         } catch (Exception e) {
             log.error("[FONLAR-UI] Fon istatistikleri alinamadi", e);
@@ -150,7 +151,7 @@ public class FonlarService {
                     .uri(ScyborsaApiEndpoints.FUNDS_BY_CODE, sanitized)
                     .retrieve()
                     .bodyToMono(FundDto.class)
-                    .block();
+                    .block(Duration.ofSeconds(15));
         } catch (WebClientResponseException.NotFound e) {
             log.warn("[FONLAR-UI] Fon bulunamadi [code={}]", sanitized);
             return null;
@@ -177,7 +178,7 @@ public class FonlarService {
                     .uri(ScyborsaApiEndpoints.FUNDS_DETAIL, sanitized)
                     .retrieve()
                     .bodyToMono(FundDetailDto.class)
-                    .block();
+                    .block(Duration.ofSeconds(15));
         } catch (WebClientResponseException.NotFound e) {
             log.warn("[FONLAR-UI] Fon bulunamadi [code={}]", sanitized);
             return null;
@@ -204,7 +205,7 @@ public class FonlarService {
                     .retrieve()
                     .bodyToFlux(FundTimeSeriesDto.class)
                     .collectList()
-                    .block();
+                    .block(Duration.ofSeconds(15));
             return result != null ? result : List.of();
         } catch (Exception e) {
             log.error("[FONLAR-UI] Fon nakit akisi alinamadi [code={}]: {}", sanitized, e.getMessage());
@@ -229,7 +230,7 @@ public class FonlarService {
                     .retrieve()
                     .bodyToFlux(FundTimeSeriesDto.class)
                     .collectList()
-                    .block();
+                    .block(Duration.ofSeconds(15));
             return result != null ? result : List.of();
         } catch (Exception e) {
             log.error("[FONLAR-UI] Fon yatirimci gecmisi alinamadi [code={}]: {}", sanitized, e.getMessage());
@@ -253,7 +254,7 @@ public class FonlarService {
                     .uri(ScyborsaApiEndpoints.FUNDS_PDF, sanitized)
                     .retrieve()
                     .bodyToMono(byte[].class)
-                    .block();
+                    .block(Duration.ofSeconds(15));
         } catch (Exception e) {
             log.error("[FONLAR-UI] Fon PDF alinamadi [code={}]: {}", sanitized, e.getMessage());
             return null;
@@ -276,7 +277,7 @@ public class FonlarService {
                     .uri(ScyborsaApiEndpoints.FUNDS_CSV, sanitized)
                     .retrieve()
                     .bodyToMono(byte[].class)
-                    .block();
+                    .block(Duration.ofSeconds(15));
         } catch (Exception e) {
             log.error("[FONLAR-UI] Fon CSV alinamadi [code={}]: {}", sanitized, e.getMessage());
             return null;

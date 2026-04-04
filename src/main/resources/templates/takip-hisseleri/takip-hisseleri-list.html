@@ -33,7 +33,7 @@
                     <div class="d-flex align-items-end justify-content-between mt-4">
                         <div>
                             <h4 id="kpi-total" class="fs-22 fw-semibold ff-secondary mb-4"
-                                th:text="${#lists.size(takipHisseleri)}">0</h4>
+                                th:text="${takipHisseleri != null ? #lists.size(takipHisseleri) : 0}">0</h4>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-light rounded fs-3">
@@ -131,7 +131,7 @@
                 <div class="card-body">
                     <!-- Tablo -->
                     <div class="table-responsive" id="tableContainer"
-                         th:style="${#lists.isEmpty(takipHisseleri)} ? 'display:none' : ''">
+                         th:style="${takipHisseleri == null or #lists.isEmpty(takipHisseleri)} ? 'display:none' : ''">
                         <table class="table table-striped align-middle mb-0" id="takipTable">
                             <thead>
                             <tr>
@@ -158,7 +158,7 @@
 
                     <!-- Empty State -->
                     <div id="emptyState" class="text-center py-5"
-                         th:style="${#lists.isEmpty(takipHisseleri)} ? '' : 'display:none;'">
+                         th:style="${takipHisseleri == null or #lists.isEmpty(takipHisseleri)} ? '' : 'display:none;'">
                         <i class="ri-focus-2-line fs-1 text-muted"></i>
                         <h5 class="mt-3 text-muted">Aramanıza uygun takip hissesi bulunamadı</h5>
                     </div>

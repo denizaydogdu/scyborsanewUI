@@ -247,7 +247,7 @@
      * @param {string} code hisse kodu
      */
     function removeStockRow(code) {
-        var row = document.querySelector('#watchlistTableBody tr[data-stock-code="' + code + '"]');
+        var row = document.querySelector('#watchlistTableBody tr[data-stock-code="' + CSS.escape(code) + '"]');
         if (row) row.remove();
 
         // Tablo boş kaldıysa empty state göster
@@ -287,16 +287,18 @@
         var errorEl = document.getElementById('createWlError');
         var successEl = document.getElementById('createWlSuccess');
         var saveBtn = document.getElementById('saveNewWatchlistBtn');
-        errorEl.classList.add('d-none');
-        successEl.classList.add('d-none');
+        if (errorEl) errorEl.classList.add('d-none');
+        if (successEl) successEl.classList.add('d-none');
 
         if (!name || name.trim().length === 0) {
-            errorEl.textContent = 'Liste adı boş olamaz.';
-            errorEl.classList.remove('d-none');
+            if (errorEl) {
+                errorEl.textContent = 'Liste adı boş olamaz.';
+                errorEl.classList.remove('d-none');
+            }
             return;
         }
 
-        saveBtn.disabled = true;
+        if (saveBtn) saveBtn.disabled = true;
 
         fetch('/ajax/watchlists', {
             method: 'POST',
@@ -308,8 +310,10 @@
             return r.json();
         })
         .then(function(wl) {
-            successEl.textContent = 'Liste oluşturuldu.';
-            successEl.classList.remove('d-none');
+            if (successEl) {
+                successEl.textContent = 'Liste oluşturuldu.';
+                successEl.classList.remove('d-none');
+            }
 
             // Dropdown'a ekle ve seç
             var select = document.getElementById('watchlistSelect');
@@ -325,19 +329,23 @@
             }
 
             enableActionButtons();
-            saveBtn.disabled = false;
+            if (saveBtn) saveBtn.disabled = false;
             setTimeout(function() {
                 var modal = bootstrap.Modal.getInstance(document.getElementById('createWatchlistModal'));
                 if (modal) modal.hide();
-                document.getElementById('newWlName').value = '';
-                document.getElementById('newWlDesc').value = '';
-                successEl.classList.add('d-none');
+                var nameInput = document.getElementById('newWlName');
+                if (nameInput) nameInput.value = '';
+                var descInput = document.getElementById('newWlDesc');
+                if (descInput) descInput.value = '';
+                if (successEl) successEl.classList.add('d-none');
             }, 600);
         })
         .catch(function(err) {
-            errorEl.textContent = err.message || 'Liste oluşturulamadı.';
-            errorEl.classList.remove('d-none');
-            saveBtn.disabled = false;
+            if (errorEl) {
+                errorEl.textContent = err.message || 'Liste oluşturulamadı.';
+                errorEl.classList.remove('d-none');
+            }
+            if (saveBtn) saveBtn.disabled = false;
         });
     }
 
@@ -351,16 +359,18 @@
         var errorEl = document.getElementById('editWlError');
         var successEl = document.getElementById('editWlSuccess');
         var saveBtn = document.getElementById('saveEditWlBtn');
-        errorEl.classList.add('d-none');
-        successEl.classList.add('d-none');
+        if (errorEl) errorEl.classList.add('d-none');
+        if (successEl) successEl.classList.add('d-none');
 
         if (!name || name.trim().length === 0) {
-            errorEl.textContent = 'Liste adı boş olamaz.';
-            errorEl.classList.remove('d-none');
+            if (errorEl) {
+                errorEl.textContent = 'Liste adı boş olamaz.';
+                errorEl.classList.remove('d-none');
+            }
             return;
         }
 
-        saveBtn.disabled = true;
+        if (saveBtn) saveBtn.disabled = true;
 
         fetch('/ajax/watchlists/' + id, {
             method: 'PUT',
@@ -372,8 +382,10 @@
             return r.json();
         })
         .then(function(wl) {
-            successEl.textContent = 'Liste güncellendi.';
-            successEl.classList.remove('d-none');
+            if (successEl) {
+                successEl.textContent = 'Liste güncellendi.';
+                successEl.classList.remove('d-none');
+            }
 
             // Dropdown option textini güncelle
             var select = document.getElementById('watchlistSelect');
@@ -388,17 +400,19 @@
                 }
             }
 
-            saveBtn.disabled = false;
+            if (saveBtn) saveBtn.disabled = false;
             setTimeout(function() {
                 var modal = bootstrap.Modal.getInstance(document.getElementById('editWatchlistModal'));
                 if (modal) modal.hide();
-                successEl.classList.add('d-none');
+                if (successEl) successEl.classList.add('d-none');
             }, 600);
         })
         .catch(function(err) {
-            errorEl.textContent = err.message || 'Liste güncellenemedi.';
-            errorEl.classList.remove('d-none');
-            saveBtn.disabled = false;
+            if (errorEl) {
+                errorEl.textContent = err.message || 'Liste güncellenemedi.';
+                errorEl.classList.remove('d-none');
+            }
+            if (saveBtn) saveBtn.disabled = false;
         });
     }
 
@@ -410,8 +424,8 @@
         if (!id) return;
         var errorEl = document.getElementById('deleteWlError');
         var confirmBtn = document.getElementById('confirmDeleteWlBtn');
-        errorEl.classList.add('d-none');
-        confirmBtn.disabled = true;
+        if (errorEl) errorEl.classList.add('d-none');
+        if (confirmBtn) confirmBtn.disabled = true;
 
         fetch('/ajax/watchlists/' + id, {
             method: 'DELETE',
@@ -441,14 +455,16 @@
                 }
             }
 
-            confirmBtn.disabled = false;
+            if (confirmBtn) confirmBtn.disabled = false;
             var modal = bootstrap.Modal.getInstance(document.getElementById('deleteWatchlistModal'));
             if (modal) modal.hide();
         })
         .catch(function(err) {
-            errorEl.textContent = err.message || 'Liste silinemedi.';
-            errorEl.classList.remove('d-none');
-            confirmBtn.disabled = false;
+            if (errorEl) {
+                errorEl.textContent = err.message || 'Liste silinemedi.';
+                errorEl.classList.remove('d-none');
+            }
+            if (confirmBtn) confirmBtn.disabled = false;
         });
     }
 
@@ -463,8 +479,8 @@
     function addStockToWatchlist(wlId, stockCode, stockName) {
         var errorEl = document.getElementById('addStockError');
         var successEl = document.getElementById('addStockSuccess');
-        errorEl.classList.add('d-none');
-        successEl.classList.add('d-none');
+        if (errorEl) errorEl.classList.add('d-none');
+        if (successEl) successEl.classList.add('d-none');
 
         fetch('/ajax/watchlists/' + wlId + '/stocks', {
             method: 'POST',
@@ -476,9 +492,11 @@
             return r.json();
         })
         .then(function(stock) {
-            successEl.textContent = stockCode + ' başarıyla eklendi.';
-            successEl.classList.remove('d-none');
-            setTimeout(function() { successEl.classList.add('d-none'); }, 2000);
+            if (successEl) {
+                successEl.textContent = stockCode + ' başarıyla eklendi.';
+                successEl.classList.remove('d-none');
+                setTimeout(function() { successEl.classList.add('d-none'); }, 2000);
+            }
 
             // Empty state'i kaldır
             var emptyRow = document.getElementById('emptyRow');
@@ -487,16 +505,18 @@
             // Yeni satırı ekle (duplicate guard)
             var tbody = document.getElementById('watchlistTableBody');
             if (tbody) {
-                var existingRow = tbody.querySelector('tr[data-stock-code="' + (stock.stockCode || '') + '"]');
+                var existingRow = tbody.querySelector('tr[data-stock-code="' + CSS.escape(stock.stockCode || '') + '"]');
                 if (!existingRow) {
                     tbody.appendChild(createStockRow(stock));
                 }
             }
         })
         .catch(function(err) {
-            errorEl.textContent = err.message || 'Hisse eklenemedi.';
-            errorEl.classList.remove('d-none');
-            setTimeout(function() { errorEl.classList.add('d-none'); }, 3000);
+            if (errorEl) {
+                errorEl.textContent = err.message || 'Hisse eklenemedi.';
+                errorEl.classList.remove('d-none');
+                setTimeout(function() { errorEl.classList.add('d-none'); }, 3000);
+            }
         });
     }
 
@@ -744,7 +764,7 @@
      * @param {Object} data fiyat güncelleme verisi (stockCode, lastPrice, changePercent, volume)
      */
     function updateRowPrices(data) {
-        var row = document.querySelector('#watchlistTableBody tr[data-stock-code="' + data.stockCode + '"]');
+        var row = document.querySelector('#watchlistTableBody tr[data-stock-code="' + CSS.escape(data.stockCode) + '"]');
         if (!row) return;
 
         // Fiyat hücresini güncelle

@@ -11,12 +11,12 @@
 
 <body>
 <section layout:fragment="content">
-    <div th:replace="~{partials/page-title :: page-title('Kripto Para', 'Yatirim')}"></div>
+    <div th:replace="~{partials/page-title :: page-title('Kripto Para', 'Yatırım')}"></div>
 
-    <!-- Canli guncelleme notu -->
+    <!-- Canlı güncelleme notu -->
     <div class="alert alert-info alert-dismissible fade show py-2 mb-3" role="alert">
         <i class="ri-refresh-line me-1"></i>
-        <span class="fw-medium">Veriler 30 saniyede bir otomatik olarak guncellenir.</span>
+        <span class="fw-medium">Veriler 30 saniyede bir otomatik olarak güncellenir.</span>
         <span id="kripto-last-update" class="text-muted ms-2 fs-12"></span>
         <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -117,13 +117,13 @@
             </div>
         </div>
 
-        <!-- 24s Degisim -->
+        <!-- 24s Değişim -->
         <div class="col-xl col-md-6">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted mb-0">24s Degisim</p>
+                            <p class="text-uppercase fw-medium text-muted mb-0">24s Değişim</p>
                         </div>
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-4">
@@ -134,6 +134,81 @@
                             <span class="avatar-title bg-white border rounded fs-3">
                                 <i class="ri-arrow-up-down-line text-success"></i>
                             </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bilgi Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-warning border-opacity-25">
+                <a class="text-warning fw-medium" data-bs-toggle="collapse" href="#kriptoInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Kripto Para Piyasası Nedir? Bu Listede Ne Var?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="kriptoInfoCollapse">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-bit-coin-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Bu Liste Nedir?</h6>
+                                    <p class="text-muted mb-0 fs-12">Piyasa değerine göre sıralanmış en büyük kripto paraların canlı fiyat, hacim ve değişim verilerini gösterir. CoinGecko API'sinden 30 saniyede bir güncellenir. 7 günlük sparkline grafik ile kısa vadeli trendi takip edebilirsiniz.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-funds-line text-primary fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Piyasa Değeri (Market Cap)</h6>
+                                    <p class="text-muted mb-0 fs-12">Toplam arz × güncel fiyat = piyasa değeri. <strong>Büyük piyasa değeri</strong> genelde daha düşük volatilite anlamına gelir. BTC ve ETH gibi büyük coinler daha stabil, küçük coinler daha risklidir.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-emotion-line text-info fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Fear &amp; Greed Endeksi</h6>
+                                    <p class="text-muted mb-0 fs-12">Piyasa duyarlılığını 0-100 arası ölçer. <strong>0-25:</strong> Aşırı Korku (alım fırsatı olabilir). <strong>25-50:</strong> Korku. <strong>50-75:</strong> Açgözlülük. <strong>75-100:</strong> Aşırı Açgözlülük (düzeltme riski).</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-pie-chart-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">BTC Dominance</h6>
+                                    <p class="text-muted mb-0 fs-12">Bitcoin'in toplam kripto piyasa değerindeki payını gösterir. <strong>Yüksek dominance:</strong> Yatırımcılar güvenli liman olarak BTC'yi tercih ediyor. <strong>Düşük dominance:</strong> Altcoin sezonu (altcoin'ler BTC'den daha fazla kazandırıyor).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top pt-2">
+                        <h6 class="mb-2 fs-13">Kripto Verilerini Nasıl Okumalı?</h6>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-success-subtle bg-opacity-10">
+                                    <span class="badge bg-success-subtle text-success mb-1"><i class="ri-bar-chart-2-line me-1"></i>Hacim Analizi</span>
+                                    <p class="text-muted mb-0 fs-11">Yüksek hacim ile birlikte gelen fiyat artışı güçlü talebi gösterir. Düşük hacimde yükselen fiyatlar sürdürülebilir olmayabilir. 24 saatlik hacim/piyasa değeri oranı %10'un üzerindeyse aktif işlem görüyor demektir.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-warning-subtle bg-opacity-10">
+                                    <span class="badge bg-warning-subtle text-warning mb-1"><i class="ri-error-warning-line me-1"></i>Volatilite Uyarısı</span>
+                                    <p class="text-muted mb-0 fs-11">Kripto piyasası 7/24 açıktır ve geleneksel piyasalara göre çok daha volatildir. 1 saatlik değişim %5'i aşıyorsa dikkatli olun. Yatırabileceğinizden fazlasını riske atmayın.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-info-subtle bg-opacity-10">
+                                    <span class="badge bg-info-subtle text-info mb-1"><i class="ri-line-chart-line me-1"></i>7 Günlük Grafik</span>
+                                    <p class="text-muted mb-0 fs-11">Sağdaki mini grafik (sparkline) son 7 günün fiyat hareketini gösterir. Yukarı trend yeşil, aşağı trend kırmızıdır. Detaylı analiz için coin'e tıklayarak detay sayfasına gidin.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -175,7 +250,7 @@
                                 <th data-col="priceChangePercentage1hInCurrency" style="cursor:pointer;">1s % <i class="sort-icon ri-arrow-up-down-line text-muted ms-1 fs-13"></i></th>
                                 <th data-col="priceChangePercentage24hInCurrency" style="cursor:pointer;">24s % <i class="sort-icon ri-arrow-up-down-line text-muted ms-1 fs-13"></i></th>
                                 <th data-col="priceChangePercentage7dInCurrency" style="cursor:pointer;">7g % <i class="sort-icon ri-arrow-up-down-line text-muted ms-1 fs-13"></i></th>
-                                <th data-col="marketCap" style="cursor:pointer;">Piyasa Degeri <i class="sort-icon ri-arrow-up-down-line text-muted ms-1 fs-13"></i></th>
+                                <th data-col="marketCap" style="cursor:pointer;">Piyasa Değeri <i class="sort-icon ri-arrow-up-down-line text-muted ms-1 fs-13"></i></th>
                                 <th data-col="totalVolume" style="cursor:pointer;">Hacim <i class="sort-icon ri-arrow-up-down-line text-muted ms-1 fs-13"></i></th>
                                 <th style="width: 140px;">7g Grafik</th>
                             </tr>
@@ -188,7 +263,7 @@
                     <!-- Empty State -->
                     <div id="kripto-empty-state" class="text-center py-5" style="display:none;">
                         <i class="ri-bit-coin-line fs-1 text-muted"></i>
-                        <h5 class="mt-3 text-muted">Aramaniza uygun coin bulunamadi</h5>
+                        <h5 class="mt-3 text-muted">Aramanıza uygun coin bulunamadı</h5>
                     </div>
 
                     <!-- Sayfalama -->

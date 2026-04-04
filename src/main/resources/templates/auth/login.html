@@ -59,8 +59,8 @@
                         <div class="card mt-4">
                             <div class="card-body p-4">
                                 <div class="text-center mt-2">
-                                    <h5 class="text-primary">Hos Geldiniz!</h5>
-                                    <p class="text-muted">Scyborsa'ya erisim icin giris yapin.</p>
+                                    <h5 class="text-primary">Hoş Geldiniz!</h5>
+                                    <p class="text-muted">Scyborsa'ya erişim için giriş yapın.</p>
                                 </div>
 
                                 <!-- scyborsa-login-page -->
@@ -124,10 +124,10 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="form-label" for="password-input">Sifre</label>
+                                            <label class="form-label" for="password-input">Şifre</label>
                                             <div class="position-relative auth-pass-inputgroup mb-3">
                                                 <input type="password" class="form-control pe-5 password-input"
-                                                       placeholder="Sifrenizi girin" id="password-input" name="password" required
+                                                       placeholder="Şifrenizi girin" id="password-input" name="password" required
                                                        oninvalid="this.setCustomValidity('Lütfen şifrenizi girin')"
                                                        oninput="this.setCustomValidity('')">
                                                 <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon"
@@ -191,6 +191,11 @@
         var loginBtn = document.getElementById('loginBtn');
         if (loginForm && loginBtn) {
             loginForm.addEventListener('submit', function() {
+                // Kopyala-yapıştır kaynaklı baş/son boşlukları temizle
+                var emailInput = document.getElementById('email');
+                var passInput = document.getElementById('password-input');
+                if (emailInput) { emailInput.value = emailInput.value.trim(); }
+                if (passInput) { passInput.value = passInput.value.trim(); }
                 loginBtn.disabled = true;
                 loginBtn.textContent = '';
                 var spinner = document.createElement('span');

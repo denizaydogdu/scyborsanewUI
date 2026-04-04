@@ -34,7 +34,7 @@
                     <div class="d-flex align-items-center">
                         <i class="ri-calendar-check-line text-success fs-3 me-3"></i>
                         <div class="flex-grow-1">
-                            <p class="text-uppercase fw-semibold fs-13 text-muted mb-1">Bugun</p>
+                            <p class="text-uppercase fw-semibold fs-13 text-muted mb-1">Bugün</p>
                             <h4 class="mb-0" id="kpi-today">0</h4>
                         </div>
                     </div>
@@ -47,7 +47,7 @@
                     <div class="d-flex align-items-center">
                         <i class="ri-history-line text-secondary fs-3 me-3"></i>
                         <div class="flex-grow-1">
-                            <p class="text-uppercase fw-semibold fs-13 text-muted mb-1">Gecmis</p>
+                            <p class="text-uppercase fw-semibold fs-13 text-muted mb-1">Geçmiş</p>
                             <h4 class="mb-0" id="kpi-past">0</h4>
                         </div>
                     </div>
@@ -70,13 +70,13 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active fs-14 fw-semibold" id="tab-today" data-bs-toggle="tab" href="#panel-today" role="tab" aria-selected="true">
-                                <i class="ri-calendar-check-line me-1"></i>Bugun
+                                <i class="ri-calendar-check-line me-1"></i>Bugün
                                 <span class="badge bg-success ms-1" id="badge-today">0</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link fs-14 fw-semibold" id="tab-past" data-bs-toggle="tab" href="#panel-past" role="tab" aria-selected="false">
-                                <i class="ri-history-line me-1"></i>Gecmis
+                                <i class="ri-history-line me-1"></i>Geçmiş
                                 <span class="badge bg-secondary ms-1" id="badge-past">0</span>
                             </a>
                         </li>
@@ -90,10 +90,10 @@
                                 <table class="table table-striped align-middle mb-0">
                                     <thead>
                                     <tr>
-                                        <th style="width: 180px;">Zaman</th>
+                                        <th style="width: 200px;">Hisse</th>
+                                        <th>Başlık</th>
                                         <th style="width: 100px;">Kaynak</th>
-                                        <th>Baslik</th>
-                                        <th style="width: 150px;">Hisse</th>
+                                        <th style="width: 180px;">Zaman</th>
                                         <th style="width: 80px;">Detay</th>
                                     </tr>
                                     </thead>
@@ -106,16 +106,16 @@
                             </div>
                         </div>
 
-                        <!-- Bugun -->
+                        <!-- Bugün -->
                         <div class="tab-pane active show" id="panel-today" role="tabpanel">
                             <div class="table-responsive">
                                 <table class="table table-striped align-middle mb-0">
                                     <thead>
                                     <tr>
-                                        <th style="width: 180px;">Zaman</th>
+                                        <th style="width: 200px;">Hisse</th>
+                                        <th>Başlık</th>
                                         <th style="width: 100px;">Kaynak</th>
-                                        <th>Baslik</th>
-                                        <th style="width: 150px;">Hisse</th>
+                                        <th style="width: 180px;">Zaman</th>
                                         <th style="width: 80px;">Detay</th>
                                     </tr>
                                     </thead>
@@ -124,20 +124,20 @@
                             </div>
                             <div class="text-center py-5 d-none" id="empty-today">
                                 <i class="ri-calendar-check-line fs-1 text-muted"></i>
-                                <h5 class="mt-3 text-muted">Bugun haber yok</h5>
+                                <h5 class="mt-3 text-muted">Bugün piyasa haberi yok</h5>
                             </div>
                         </div>
 
-                        <!-- Gecmis -->
+                        <!-- Geçmiş -->
                         <div class="tab-pane" id="panel-past" role="tabpanel">
                             <div class="table-responsive">
                                 <table class="table table-striped align-middle mb-0">
                                     <thead>
                                     <tr>
-                                        <th style="width: 180px;">Zaman</th>
+                                        <th style="width: 200px;">Hisse</th>
+                                        <th>Başlık</th>
                                         <th style="width: 100px;">Kaynak</th>
-                                        <th>Baslik</th>
-                                        <th style="width: 150px;">Hisse</th>
+                                        <th style="width: 180px;">Zaman</th>
                                         <th style="width: 80px;">Detay</th>
                                     </tr>
                                     </thead>
@@ -146,7 +146,7 @@
                             </div>
                             <div class="text-center py-5 d-none" id="empty-past">
                                 <i class="ri-history-line fs-1 text-muted"></i>
-                                <h5 class="mt-3 text-muted">Gecmis haber yok</h5>
+                                <h5 class="mt-3 text-muted">Geçmiş piyasa haberi yok</h5>
                             </div>
                         </div>
                     </div>
@@ -158,6 +158,8 @@
     <!-- SSR veri — Thymeleaf ile JSON olarak gomer, JS bolumu parse eder -->
     <script th:inline="javascript">
         var NEWS_ITEMS = /*[[${(marketNewsResponse != null && marketNewsResponse.items != null) ? marketNewsResponse.items : {}}]]*/ [];
+        var LOGO_MAP = /*[[${logoMap}]]*/ {};
+        var KATILIM_SET = /*[[${katilimCodes}]]*/ [];
     </script>
 </section>
 
@@ -165,6 +167,13 @@
     <script>
     (function() {
         var items = window.NEWS_ITEMS || [];
+        var logoMap = window.LOGO_MAP || {};
+        var katilimSet = {};
+        if (Array.isArray(window.KATILIM_SET)) {
+            window.KATILIM_SET.forEach(function(c) { katilimSet[c] = true; });
+        } else if (window.KATILIM_SET && typeof window.KATILIM_SET === 'object') {
+            Object.keys(window.KATILIM_SET).forEach(function(c) { katilimSet[c] = true; });
+        }
 
         // Turkiye saat dilimine gore bugunun tarihini al
         var now = new Date();
@@ -201,7 +210,7 @@
         fillTable('tbody-today', today, 'empty-today');
         fillTable('tbody-past', past, 'empty-past');
 
-        // Bugun bos ise gelecege veya gecmise gec
+        // Bugün bos ise gelecege veya gecmise gec
         if (today.length === 0) {
             if (future.length > 0) {
                 activateTab('tab-future', 'panel-future', 'panel-today');
@@ -248,19 +257,37 @@
                 tbody.closest('.table-responsive').classList.add('d-none');
                 return;
             }
-            // DOM approach — no innerHTML with untrusted content
             data.forEach(function(item) {
                 var tr = document.createElement('tr');
 
-                // Zaman
-                var tdTime = document.createElement('td');
-                var spanTime = document.createElement('span');
-                spanTime.className = 'text-muted fs-12';
-                spanTime.textContent = item.formattedPublished || '';
-                tdTime.appendChild(spanTime);
-                tr.appendChild(tdTime);
+                // 1. Hisse (logo + kod + katılım badge)
+                var tdSymbols = document.createElement('td');
+                var codes = [];
+                if (item.relatedSymbols && item.relatedSymbols.length > 0) {
+                    item.relatedSymbols.slice(0, 3).forEach(function(sym) {
+                        var code = sym.symbol || '';
+                        if (code.indexOf(':') > -1) code = code.substring(code.indexOf(':') + 1);
+                        if (code) codes.push(code);
+                    });
+                }
+                if (codes.length === 0) {
+                    codes = extractCodesFromTitle(item.title);
+                }
+                if (codes.length > 0) {
+                    codes.slice(0, 3).forEach(function(code) {
+                        tdSymbols.appendChild(renderStockChip(code));
+                    });
+                } else {
+                    tdSymbols.appendChild(renderHaberChip());
+                }
+                tr.appendChild(tdSymbols);
 
-                // Kaynak
+                // 2. Başlık
+                var tdTitle = document.createElement('td');
+                tdTitle.textContent = item.title || '';
+                tr.appendChild(tdTitle);
+
+                // 3. Kaynak
                 var tdSource = document.createElement('td');
                 if (item.source) {
                     var spanSource = document.createElement('span');
@@ -276,26 +303,15 @@
                 }
                 tr.appendChild(tdSource);
 
-                // Baslik
-                var tdTitle = document.createElement('td');
-                tdTitle.textContent = item.title || '';
-                tr.appendChild(tdTitle);
+                // 4. Zaman
+                var tdTime = document.createElement('td');
+                var spanTime = document.createElement('span');
+                spanTime.className = 'text-muted fs-12';
+                spanTime.textContent = item.formattedPublished || '';
+                tdTime.appendChild(spanTime);
+                tr.appendChild(tdTime);
 
-                // Hisse
-                var tdSymbols = document.createElement('td');
-                if (item.relatedSymbols) {
-                    item.relatedSymbols.slice(0, 3).forEach(function(sym) {
-                        var code = sym.symbol || '';
-                        if (code.indexOf(':') > -1) code = code.substring(code.indexOf(':') + 1);
-                        var badge = document.createElement('span');
-                        badge.className = 'badge bg-primary-subtle text-primary me-1';
-                        badge.textContent = code;
-                        tdSymbols.appendChild(badge);
-                    });
-                }
-                tr.appendChild(tdSymbols);
-
-                // Detay
+                // 5. Detay
                 var tdDetail = document.createElement('td');
                 if (item.storyPath) {
                     var a = document.createElement('a');
@@ -326,6 +342,81 @@
                 tab.setAttribute('aria-selected', 'true');
                 showPanel.classList.add('active', 'show');
             }
+        }
+
+        function extractCodesFromTitle(title) {
+            if (!title) return [];
+            var codes = [];
+            // Pattern 1: "KAP: XXXXX" prefix
+            var kapMatch = title.match(/^KAP:\s*([A-Z0-9]{2,10})/);
+            if (kapMatch) codes.push(kapMatch[1]);
+            // Pattern 2: "[XXX YYY ZZZ]" köşeli parantez
+            var bracketMatch = title.match(/\[([A-Z0-9\s]+)\]/);
+            if (bracketMatch) {
+                bracketMatch[1].trim().split(/\s+/).forEach(function(c) {
+                    if (c.length >= 2 && c.length <= 10 && codes.indexOf(c) === -1) codes.push(c);
+                });
+            }
+            // Pattern 3: İlk kelime BÜYÜK HARF hisse kodu ise (örn. "AFYON Temettü Dağıtımı")
+            if (codes.length === 0) {
+                var firstWord = title.match(/^([A-Z0-9]{2,10})\s/);
+                if (firstWord) codes.push(firstWord[1]);
+            }
+            return codes;
+        }
+
+        function renderStockChip(code) {
+            var wrapper = document.createElement('div');
+            wrapper.className = 'd-inline-flex align-items-center me-2 mb-1';
+            var avatarContainer = document.createElement('div');
+            avatarContainer.className = 'flex-shrink-0 avatar-xs me-1';
+            var logoid = logoMap[code];
+            if (logoid) {
+                var img = document.createElement('img');
+                img.src = '/img/stock-logos/' + logoid;
+                img.alt = code;
+                img.className = 'avatar-xs rounded-circle';
+                img.onerror = function() { this.style.display = 'none'; this.nextElementSibling.style.display = 'flex'; };
+                avatarContainer.appendChild(img);
+            }
+            var fallback = document.createElement('div');
+            fallback.className = 'avatar-title rounded-circle fw-semibold bg-light';
+            fallback.style.cssText = 'color:#495057;border:1.5px solid #ced4da;font-size:0.5rem' + (logoid ? ';display:none' : '');
+            fallback.textContent = code.length > 3 ? code.substring(0, 3) : code;
+            avatarContainer.appendChild(fallback);
+            wrapper.appendChild(avatarContainer);
+            var link = document.createElement('a');
+            link.href = '/stock/detail/' + encodeURIComponent(code);
+            link.className = 'fw-semibold text-primary fs-13';
+            link.textContent = code;
+            wrapper.appendChild(link);
+            if (katilimSet[code]) {
+                var badge = document.createElement('span');
+                badge.className = 'badge bg-success bg-opacity-25 text-success ms-1';
+                badge.style.cssText = 'font-size:0.6rem;padding:1px 3px';
+                badge.title = 'Katılım Endeksi';
+                badge.textContent = 'K';
+                wrapper.appendChild(badge);
+            }
+            return wrapper;
+        }
+
+        function renderHaberChip() {
+            var wrapper = document.createElement('div');
+            wrapper.className = 'd-inline-flex align-items-center';
+            var avatarContainer = document.createElement('div');
+            avatarContainer.className = 'flex-shrink-0 avatar-xs me-1';
+            var fallback = document.createElement('div');
+            fallback.className = 'avatar-title rounded-circle fw-semibold';
+            fallback.style.cssText = 'background:#e8f0fe;color:#405189;border:1.5px solid #c5d4f0;font-size:0.55rem';
+            fallback.textContent = 'HB';
+            avatarContainer.appendChild(fallback);
+            wrapper.appendChild(avatarContainer);
+            var label = document.createElement('span');
+            label.className = 'text-muted fs-13';
+            label.textContent = 'Haber';
+            wrapper.appendChild(label);
+            return wrapper;
         }
 
         function setText(id, val) {

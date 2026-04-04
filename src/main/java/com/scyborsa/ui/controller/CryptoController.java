@@ -148,7 +148,7 @@ public class CryptoController {
         model.addAttribute("hasAkdData", false);
         model.addAttribute("hasTakasData", false);
         model.addAttribute("hasOrderbookData", false);
-        model.addAttribute("analistTavsiyeleri", null);
+        model.addAttribute("analistTavsiyeleri", Collections.emptyList());
         model.addAttribute("marketOpen", true); // crypto 24/7
 
         // Tarih

@@ -37,6 +37,7 @@
 					<ul class="navbar-nav" id="navbar-nav">
 						<li class="menu-title"><span data-key="t-menu">Menu</span></li>
 
+						<!-- Anasayfa -->
 						<li class="nav-item">
 							<a class="nav-link menu-link" href="/dashboard"
 							   th:classappend="${requestURI == '/dashboard'} ? 'active' : ''">
@@ -44,32 +45,46 @@
 							</a>
 						</li>
 
+						<!-- Hisse Senetleri (Tüm Hisseler, BIST100/50/30, Sektörler, Bilançolar) -->
 						<li class="nav-item"
-							th:classappend="${#strings.startsWith(requestURI, '/tum-hisseler') or #strings.startsWith(requestURI, '/bist100') or #strings.startsWith(requestURI, '/bist50') or #strings.startsWith(requestURI, '/bist30') or #strings.startsWith(requestURI, '/stock/detail')} ? 'mm-active' : ''">
+							th:classappend="${#strings.startsWith(requestURI, '/tum-hisseler') or #strings.startsWith(requestURI, '/bist100') or #strings.startsWith(requestURI, '/bist50') or #strings.startsWith(requestURI, '/bist30') or #strings.startsWith(requestURI, '/stock/detail') or #strings.startsWith(requestURI, '/sektorler') or #strings.startsWith(requestURI, '/sector/') or #strings.startsWith(requestURI, '/bilancolar')} ? 'mm-active' : ''">
 							<a class="nav-link menu-link" href="#sidebarStocks" data-bs-toggle="collapse" role="button"
-							   th:aria-expanded="${#strings.startsWith(requestURI, '/tum-hisseler') or #strings.startsWith(requestURI, '/bist100') or #strings.startsWith(requestURI, '/bist50') or #strings.startsWith(requestURI, '/bist30') or #strings.startsWith(requestURI, '/stock/detail')} ? 'true' : 'false'"
+							   th:aria-expanded="${#strings.startsWith(requestURI, '/tum-hisseler') or #strings.startsWith(requestURI, '/bist100') or #strings.startsWith(requestURI, '/bist50') or #strings.startsWith(requestURI, '/bist30') or #strings.startsWith(requestURI, '/stock/detail') or #strings.startsWith(requestURI, '/sektorler') or #strings.startsWith(requestURI, '/sector/') or #strings.startsWith(requestURI, '/bilancolar')} ? 'true' : 'false'"
 							   aria-controls="sidebarStocks">
 								<i class="ri-stock-line"></i> <span>Hisse Senetleri</span>
 							</a>
 							<div class="menu-dropdown" id="sidebarStocks"
-								 th:classappend="${#strings.startsWith(requestURI, '/tum-hisseler') or #strings.startsWith(requestURI, '/bist100') or #strings.startsWith(requestURI, '/bist50') or #strings.startsWith(requestURI, '/bist30') or #strings.startsWith(requestURI, '/stock/detail')} ? 'collapse show' : 'collapse'">
+								 th:classappend="${#strings.startsWith(requestURI, '/tum-hisseler') or #strings.startsWith(requestURI, '/bist100') or #strings.startsWith(requestURI, '/bist50') or #strings.startsWith(requestURI, '/bist30') or #strings.startsWith(requestURI, '/stock/detail') or #strings.startsWith(requestURI, '/sektorler') or #strings.startsWith(requestURI, '/sector/') or #strings.startsWith(requestURI, '/bilancolar')} ? 'collapse show' : 'collapse'">
 								<ul class="nav nav-sm flex-column">
 									<li class="nav-item">
-										<a href="/tum-hisseler" class="nav-link">Tüm Hisseler</a>
+										<a href="/tum-hisseler" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/tum-hisseler')} ? 'active' : ''">Tüm Hisseler</a>
 									</li>
 									<li class="nav-item">
-										<a href="/bist100" class="nav-link">BIST 100</a>
+										<a href="/bist100" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/bist100')} ? 'active' : ''">BIST 100</a>
 									</li>
 									<li class="nav-item">
-										<a href="/bist50" class="nav-link">BIST 50</a>
+										<a href="/bist50" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/bist50')} ? 'active' : ''">BIST 50</a>
 									</li>
 									<li class="nav-item">
-										<a href="/bist30" class="nav-link">BIST 30</a>
+										<a href="/bist30" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/bist30')} ? 'active' : ''">BIST 30</a>
+									</li>
+									<li class="nav-item">
+										<a href="/sektorler" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/sektorler') or #strings.startsWith(requestURI, '/sector/')} ? 'active' : ''">Sektörler</a>
+									</li>
+									<li class="nav-item">
+										<a href="/bilancolar" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/bilancolar')} ? 'active' : ''">Bilançolar</a>
 									</li>
 								</ul>
 							</div>
 						</li>
 
+						<!-- Haberler (KAP, Piyasa, Dünya) -->
 						<li class="nav-item"
 							th:classappend="${#strings.startsWith(requestURI, '/kap-news') or #strings.startsWith(requestURI, '/market-news') or #strings.startsWith(requestURI, '/world-news') or #strings.startsWith(requestURI, '/haber/')} ? 'mm-active' : ''">
 							<a class="nav-link menu-link" href="#sidebarHaberler" data-bs-toggle="collapse" role="button"
@@ -92,92 +107,106 @@
 										<a href="/world-news" class="nav-link"
 										   th:classappend="${#strings.startsWith(requestURI, '/world-news') or (activeNewsMenu != null and activeNewsMenu == 'WORLD')} ? 'active' : ''">Dünya Haberleri</a>
 									</li>
-									<!-- Araştırmalar ve Faaliyet Raporları kaldırıldı — KAP sayfasına hisse bazlı arama eklenecek (T206) -->
 								</ul>
 							</div>
 						</li>
 
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="/sektorler"
-							   th:classappend="${#strings.startsWith(requestURI, '/sektorler') or #strings.startsWith(requestURI, '/sector/')} ? 'active' : ''">
-								<i class="ri-pie-chart-line"></i> <span>Sektörler</span>
+						<!-- Yatırım Araçları (Fonlar, Kripto, Analist Tavsiyeleri, Şirket Beklentileri, Halka Arz) -->
+						<li class="nav-item"
+							th:classappend="${#strings.startsWith(requestURI, '/fonlar') or #strings.startsWith(requestURI, '/kripto') or #strings.startsWith(requestURI, '/analist-tavsiyeleri') or #strings.startsWith(requestURI, '/guidance') or #strings.startsWith(requestURI, '/halka-arz')} ? 'mm-active' : ''">
+							<a class="nav-link menu-link" href="#sidebarYatirim" data-bs-toggle="collapse" role="button"
+							   th:aria-expanded="${#strings.startsWith(requestURI, '/fonlar') or #strings.startsWith(requestURI, '/kripto') or #strings.startsWith(requestURI, '/analist-tavsiyeleri') or #strings.startsWith(requestURI, '/guidance') or #strings.startsWith(requestURI, '/halka-arz')} ? 'true' : 'false'"
+							   aria-controls="sidebarYatirim">
+								<i class="ri-funds-line"></i> <span>Yatırım Araçları</span>
 							</a>
+							<div class="menu-dropdown" id="sidebarYatirim"
+								 th:classappend="${#strings.startsWith(requestURI, '/fonlar') or #strings.startsWith(requestURI, '/kripto') or #strings.startsWith(requestURI, '/analist-tavsiyeleri') or #strings.startsWith(requestURI, '/guidance') or #strings.startsWith(requestURI, '/halka-arz')} ? 'collapse show' : 'collapse'">
+								<ul class="nav nav-sm flex-column">
+									<li class="nav-item">
+										<a href="/fonlar" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/fonlar')} ? 'active' : ''">Fonlar</a>
+									</li>
+									<li class="nav-item">
+										<a href="/kripto" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/kripto')} ? 'active' : ''">Kripto</a>
+									</li>
+									<li class="nav-item">
+										<a href="/analist-tavsiyeleri" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/analist-tavsiyeleri')} ? 'active' : ''">Analist Tavsiyeleri</a>
+									</li>
+									<li class="nav-item">
+										<a href="/guidance" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/guidance')} ? 'active' : ''">Şirket Beklentileri</a>
+									</li>
+									<li class="nav-item">
+										<a href="/halka-arz" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/halka-arz')} ? 'active' : ''">Halka Arz</a>
+									</li>
+								</ul>
+							</div>
 						</li>
 
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="/fonlar"
-							   th:classappend="${#strings.startsWith(requestURI, '/fonlar')} ? 'active' : ''">
-								<i class="ri-funds-line"></i> <span>Fonlar</span>
+						<!-- Piyasa Verileri (Aracı Kurumlar, Takas Analizi, Açığa Satış, VBTS Tedbirli) -->
+						<li class="nav-item"
+							th:classappend="${#strings.startsWith(requestURI, '/araci-kurumlar') or #strings.startsWith(requestURI, '/takas-analizi') or #strings.startsWith(requestURI, '/aciga-satis') or #strings.startsWith(requestURI, '/vbts-tedbirli')} ? 'mm-active' : ''">
+							<a class="nav-link menu-link" href="#sidebarPiyasa" data-bs-toggle="collapse" role="button"
+							   th:aria-expanded="${#strings.startsWith(requestURI, '/araci-kurumlar') or #strings.startsWith(requestURI, '/takas-analizi') or #strings.startsWith(requestURI, '/aciga-satis') or #strings.startsWith(requestURI, '/vbts-tedbirli')} ? 'true' : 'false'"
+							   aria-controls="sidebarPiyasa">
+								<i class="ri-bar-chart-2-line"></i> <span>Piyasa Verileri</span>
 							</a>
+							<div class="menu-dropdown" id="sidebarPiyasa"
+								 th:classappend="${#strings.startsWith(requestURI, '/araci-kurumlar') or #strings.startsWith(requestURI, '/takas-analizi') or #strings.startsWith(requestURI, '/aciga-satis') or #strings.startsWith(requestURI, '/vbts-tedbirli')} ? 'collapse show' : 'collapse'">
+								<ul class="nav nav-sm flex-column">
+									<li class="nav-item">
+										<a href="/araci-kurumlar" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/araci-kurumlar')} ? 'active' : ''">Aracı Kurumlar</a>
+									</li>
+									<li class="nav-item">
+										<a href="/takas-analizi" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/takas-analizi')} ? 'active' : ''">Takas Analizi</a>
+									</li>
+									<li class="nav-item">
+										<a href="/aciga-satis" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/aciga-satis')} ? 'active' : ''">Açığa Satış</a>
+									</li>
+									<li class="nav-item">
+										<a href="/vbts-tedbirli" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/vbts-tedbirli')} ? 'active' : ''">VBTS Tedbirli</a>
+									</li>
+								</ul>
+							</div>
 						</li>
 
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="/kripto"
-							   th:classappend="${#strings.startsWith(requestURI, '/kripto')} ? 'active' : ''">
-								<i class="ri-bit-coin-line"></i> <span>Kripto</span>
+						<!-- Taramalar (SCY Taramalar, Hazır Taramalar) -->
+						<li class="nav-item"
+							th:classappend="${#strings.startsWith(requestURI, '/taramalar') or #strings.startsWith(requestURI, '/hazir-taramalar')} ? 'mm-active' : ''">
+							<a class="nav-link menu-link" href="#sidebarTaramalar" data-bs-toggle="collapse" role="button"
+							   th:aria-expanded="${#strings.startsWith(requestURI, '/taramalar') or #strings.startsWith(requestURI, '/hazir-taramalar')} ? 'true' : 'false'"
+							   aria-controls="sidebarTaramalar">
+								<i class="ri-search-eye-line"></i> <span>Taramalar</span>
 							</a>
+							<div class="menu-dropdown" id="sidebarTaramalar"
+								 th:classappend="${#strings.startsWith(requestURI, '/taramalar') or #strings.startsWith(requestURI, '/hazir-taramalar')} ? 'collapse show' : 'collapse'">
+								<ul class="nav nav-sm flex-column">
+									<li class="nav-item">
+										<a href="/taramalar" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/taramalar')} ? 'active' : ''">SCY Taramalar</a>
+									</li>
+									<li class="nav-item">
+										<a href="/hazir-taramalar" class="nav-link"
+										   th:classappend="${#strings.startsWith(requestURI, '/hazir-taramalar')} ? 'active' : ''">Hazır Taramalar</a>
+									</li>
+								</ul>
+							</div>
 						</li>
 
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="/bilancolar"
-							   th:classappend="${#strings.startsWith(requestURI, '/bilancolar')} ? 'active' : ''">
-								<i class="ri-file-list-3-line"></i> <span>Bilançolar</span>
-							</a>
-						</li>
-
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="/analist-tavsiyeleri"
-							   th:classappend="${#strings.startsWith(requestURI, '/analist-tavsiyeleri')} ? 'active' : ''">
-								<i class="ri-line-chart-line"></i> <span>Analist Tavsiyeleri</span>
-							</a>
-						</li>
-
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="/guidance"
-							   th:classappend="${#strings.startsWith(requestURI, '/guidance')} ? 'active' : ''">
-								<i class="ri-file-text-line"></i> <span>Şirket Beklentileri</span>
-							</a>
-						</li>
-
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="/halka-arz"
-							   th:classappend="${#strings.startsWith(requestURI, '/halka-arz')} ? 'active' : ''">
-								<i class="ri-building-line"></i> <span>Halka Arz</span>
-							</a>
-						</li>
+						<!-- Kişisel -->
+						<li class="menu-title"><span>Kişisel</span></li>
 
 						<li class="nav-item">
 							<a class="nav-link menu-link" href="/takip-hisseleri"
 							   th:classappend="${#strings.startsWith(requestURI, '/takip-hisseleri')} ? 'active' : ''">
 								<i class="ri-focus-2-line"></i> <span>SCY Takip Hisseleri</span>
-							</a>
-						</li>
-
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="/araci-kurumlar"
-							   th:classappend="${#strings.startsWith(requestURI, '/araci-kurumlar')} ? 'active' : ''">
-								<i class="ri-building-line"></i> <span data-key="t-araci-kurumlar">Aracı Kurumlar</span>
-							</a>
-						</li>
-
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="/takas-analizi"
-							   th:classappend="${#strings.startsWith(requestURI, '/takas-analizi')} ? 'active' : ''">
-								<i class="ri-exchange-funds-line"></i> <span data-key="t-takas-analizi">Takas Analizi</span>
-							</a>
-						</li>
-
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="/aciga-satis"
-							   th:classappend="${#strings.startsWith(requestURI, '/aciga-satis')} ? 'active' : ''">
-								<i class="ri-arrow-down-circle-line"></i> <span>Açığa Satış</span>
-							</a>
-						</li>
-
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="/vbts-tedbirli"
-							   th:classappend="${#strings.startsWith(requestURI, '/vbts-tedbirli')} ? 'active' : ''">
-								<i class="ri-shield-check-line"></i> <span>VBTS Tedbirli</span>
 							</a>
 						</li>
 
@@ -196,71 +225,49 @@
 							</a>
 						</li>
 
-						<li class="nav-item">
-							<a class="nav-link menu-link" href="/taramalar"
-							   th:classappend="${#strings.startsWith(requestURI, '/taramalar')} ? 'active' : ''">
-								<i class="ri-scan-line"></i> <span>SCY Taramalar</span>
-							</a>
-						</li>
+						<!-- Çok Yakında Gelecekler -->
+						<li class="menu-title"><span>Çok Yakında Gelecekler</span></li>
 
 						<li class="nav-item">
-							<a class="nav-link menu-link" href="/hazir-taramalar"
-							   th:classappend="${#strings.startsWith(requestURI, '/hazir-taramalar')} ? 'active' : ''">
-								<i class="ri-search-eye-line"></i> <span>Hazır Taramalar</span>
+							<a class="nav-link menu-link" href="#sidebarYakinda" data-bs-toggle="collapse" role="button"
+							   aria-expanded="false" aria-controls="sidebarYakinda" style="opacity: 0.7;">
+								<i class="ri-time-line"></i> <span>Yakında Gelecek Özellikler</span>
+								<span class="badge bg-info-subtle text-info ms-auto">9</span>
 							</a>
+							<div class="collapse" id="sidebarYakinda">
+								<ul class="nav nav-sm flex-column">
+									<li class="nav-item">
+										<a href="#" class="nav-link disabled" aria-disabled="true" tabindex="-1">Portföy</a>
+									</li>
+									<li class="nav-item">
+										<a href="#" class="nav-link disabled" aria-disabled="true" tabindex="-1">Al / Sat</a>
+									</li>
+									<li class="nav-item">
+										<a href="#" class="nav-link disabled" aria-disabled="true" tabindex="-1">ABD Borsası</a>
+									</li>
+									<li class="nav-item">
+										<a href="#" class="nav-link disabled" aria-disabled="true" tabindex="-1">Döviz Kurları</a>
+									</li>
+									<li class="nav-item">
+										<a href="#" class="nav-link disabled" aria-disabled="true" tabindex="-1">KGS Skorları</a>
+									</li>
+									<li class="nav-item">
+										<a href="#" class="nav-link disabled" aria-disabled="true" tabindex="-1">Kişiselleştirilmiş Yapay Zeka</a>
+									</li>
+									<li class="nav-item">
+										<a href="#" class="nav-link disabled" aria-disabled="true" tabindex="-1">Akışım</a>
+									</li>
+									<li class="nav-item">
+										<a href="#" class="nav-link disabled" aria-disabled="true" tabindex="-1">Grid Bot Sistemleri</a>
+									</li>
+									<li class="nav-item">
+										<a href="#" class="nav-link disabled" aria-disabled="true" tabindex="-1">Eğitim</a>
+									</li>
+								</ul>
+							</div>
 						</li>
 
-						<!-- Temel Analiz kaldırıldı — Hazır Taramalar 5. bölüm aynı işlevi karşılıyor -->
-
-						<li class="menu-title"><span><span class="badge bg-info-subtle text-info fs-10">Çok Yakında</span></span></li>
-						<!-- Piyasa & Yatirim Araclari -->
-						<li class="nav-item">
-							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
-								<i class="ri-wallet-3-line"></i> <span>Portföy</span>
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
-								<i class="ri-swap-line"></i> <span>Al / Sat</span>
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
-								<i class="ri-global-line"></i> <span>ABD Borsası</span>
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
-								<i class="ri-exchange-dollar-line"></i> <span>Döviz Kurları</span>
-							</a>
-						</li>
-						<!-- Analiz & Ileri Ozellikler -->
-						<li class="nav-item">
-							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
-								<i class="ri-shield-star-line"></i> <span>KGS Skorları</span>
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
-								<i class="ri-robot-line"></i> <span>Kişiselleştirilmiş Yapay Zeka</span>
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
-								<i class="ri-flow-chart"></i> <span>Akışım</span>
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
-								<i class="ri-grid-line"></i> <span>Grid Bot Sistemleri</span>
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link menu-link disabled" href="#" aria-disabled="true" tabindex="-1">
-								<i class="ri-graduation-cap-line"></i> <span>Eğitim</span>
-							</a>
-						</li>
-
+						<!-- Yönetim (ADMIN only) -->
 						<li class="menu-title" sec:authorize="hasRole('ROLE_ADMIN')"><span>Yönetim</span></li>
 						<li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')"
 							th:classappend="${#strings.startsWith(requestURI, '/backoffice')} ? 'mm-active' : ''">

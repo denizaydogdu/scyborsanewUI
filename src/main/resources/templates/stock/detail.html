@@ -99,6 +99,38 @@
         </div>
     </div>
 
+    <!-- Kripto Metrik Bilgi Kartı -->
+    <div class="row mb-1" th:if="${assetType == 'CRYPTO'}">
+        <div class="col-12">
+            <div class="card card-body border-info border-opacity-25 py-2">
+                <a class="text-info fw-medium" data-bs-toggle="collapse" href="#kriptoMetrikInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Bu Metrikler Ne Anlama Gelir?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="kriptoMetrikInfoCollapse">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <h6 class="fs-13 mb-1"><i class="ri-pie-chart-line text-primary me-1"></i>Piyasa Değeri</h6>
+                            <p class="text-muted mb-0 fs-12">Toplam arz &times; fiyat. B&uuml;y&uuml;k market cap = daha d&uuml;ş&uuml;k volatilite. BTC $1T+ ile en b&uuml;y&uuml;k. Top 10 coin'ler genelde &ldquo;blue chip&rdquo; sayılır.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="fs-13 mb-1"><i class="ri-bar-chart-2-line text-success me-1"></i>24s Hacim</h6>
+                            <p class="text-muted mb-0 fs-12">Son 24 saatte işlem g&ouml;ren toplam dolar değeri. Y&uuml;ksek hacim = y&uuml;ksek likidite, kolay alım/satım. Hacim/Market Cap oranı %5+ ise aktif işlem g&ouml;r&uuml;yor.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="fs-13 mb-1"><i class="ri-coin-line text-warning me-1"></i>Dolaşımdaki Arz</h6>
+                            <p class="text-muted mb-0 fs-12">Piyasada aktif olan coin sayısı. Toplam arz ile karşılaştırın &mdash; eğer dolaşımdaki arz toplam arzın k&uuml;&ccedil;&uuml;k bir kısmıysa, gelecekte arz artışı fiyatı baskılayabilir.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="fs-13 mb-1"><i class="ri-exchange-line text-danger me-1"></i>Fiyat Değişimi</h6>
+                            <p class="text-muted mb-0 fs-12">Yeşil = son 24 saatte y&uuml;kselmiş, kırmızı = d&uuml;şm&uuml;ş. %5+ değişim y&uuml;ksek volatilite g&ouml;sterir.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Hisse Bilgi Header (Stock) -->
     <div class="row" th:if="${assetType != 'CRYPTO'}">
         <div class="col-12">
@@ -119,6 +151,9 @@
                             <h5 class="mb-1">
                                 <span th:text="${stockId}">THYAO</span>
                                 <span th:if="${isTedbirli != null and isTedbirli}" class="badge bg-danger ms-2 fs-12">⚠️ TEDBİRLİ</span>
+                                <span th:if="${isKatilim != null and isKatilim}" class="badge bg-success bg-opacity-25 text-success ms-2 fs-12" title="Katılım Endeksi Üyesi">
+                                    <i class="ri-check-line me-1"></i>Katılım Hissesi
+                                </span>
                             </h5>
                             <p class="text-muted mb-0" th:text="${stockDescription}">Turk Hava Yollari A.O.</p>
                             <!-- VBTS Tedbir Detay Bilgisi -->
@@ -134,12 +169,12 @@
                         </div>
                         <div class="flex-shrink-0 text-end">
                             <h4 class="mb-0">
-                                <span id="heroPrice" th:text="${#numbers.formatDecimal(stockPrice, 1, 2)} + ' TL'">150,20 TL</span>
+                                <span id="heroPrice" th:text="${stockPrice != null ? #numbers.formatDecimal(stockPrice, 1, 2) + ' TL' : '-'}">150,20 TL</span>
                             </h4>
                             <div class="d-flex align-items-center justify-content-end gap-2 mt-1">
-                                <span id="heroChangeBadge" th:class="${stockChangePercent >= 0 ? 'badge bg-success-subtle text-success' : 'badge bg-danger-subtle text-danger'}">
-                                    <i th:class="${stockChangePercent >= 0 ? 'ri-arrow-up-line' : 'ri-arrow-down-line'}"></i>
-                                    <span id="heroChangePercent" th:text="${'%' + #numbers.formatDecimal(stockChangePercent, 1, 2)}">%2.35</span>
+                                <span id="heroChangeBadge" th:class="${stockChangePercent != null and stockChangePercent >= 0 ? 'badge bg-success-subtle text-success' : 'badge bg-danger-subtle text-danger'}">
+                                    <i th:class="${stockChangePercent != null and stockChangePercent >= 0 ? 'ri-arrow-up-line' : 'ri-arrow-down-line'}"></i>
+                                    <span id="heroChangePercent" th:text="${stockChangePercent != null ? '%' + #numbers.formatDecimal(stockChangePercent, 1, 2) : '-'}">%2.35</span>
                                 </span>
                             </div>
                             <div th:if="${assetType != 'CRYPTO'}" class="d-flex align-items-center justify-content-end gap-2 mt-2">
@@ -176,7 +211,7 @@
                     <div class="mb-3">
                         <label class="form-label">Mevcut Fiyat</label>
                         <input type="text" class="form-control" id="alertCurrentPrice"
-                               th:value="${#numbers.formatDecimal(stockPrice, 1, 2) + ' TL'}" disabled>
+                               th:value="${stockPrice != null ? #numbers.formatDecimal(stockPrice, 1, 2) + ' TL' : '-'}" disabled>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Yön</label>
@@ -213,7 +248,143 @@
         </div>
     </div>
 
-    <!-- Analiz + Trend Yonu -->
+    <!-- Kripto Analiz & Trend Bilgi Kartı -->
+    <div class="row" th:if="${assetType == 'CRYPTO' and hasAnalysisData}">
+        <div class="col-12">
+            <div class="card card-body border-success border-opacity-25 py-2">
+                <a class="text-success fw-medium" data-bs-toggle="collapse" href="#analizTrendInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Analiz Tablosu ve Trend Yönü Nasıl Okunur?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="analizTrendInfoCollapse">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-dashboard-3-line text-primary fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Analiz Skoru</h6>
+                                    <p class="text-muted mb-0 fs-12">Her zaman diliminde 11 teknik gösterge analiz edilir. <strong>Yeşil daire:</strong> Çoğunluk AL diyor. <strong>Kırmızı daire:</strong> Çoğunluk SAT diyor. <strong>Sarı:</strong> Kararsız piyasa. Dairenin içindeki sayı AL veya SAT diyen gösterge adedini gösterir.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-time-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Zaman Dilimleri</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>15 Dk / 1 Saat:</strong> Scalping ve gün içi işlemler. <strong>4 Saat / 1 Gün:</strong> Swing trading (birkaç gün). <strong>1 Hafta:</strong> Pozisyon trading (haftalık). Kripto 7/24 açık olduğundan kısa vadeli dalgalanmalar normaldir.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-speed-mini-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Trend Yönü İbresi</h6>
+                                    <p class="text-muted mb-0 fs-12">İbre <strong>yeşil bölgeye</strong> yakınsa piyasa yükseliş trendinde, <strong>kırmızıya</strong> yakınsa düşüş trendinde. <strong>Güçlü Al/Sat:</strong> 8+ gösterge aynı yönde. <strong>Nötr:</strong> Kararsız, yeni pozisyon açmak riskli.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-focus-3-line text-danger fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Kısa / Orta / Uzun Vade</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>Kısa vade:</strong> Son birkaç saatlik trend (15dk+1s). <strong>Orta vade:</strong> Son birkaç günlük trend (4s+1g). <strong>Uzun vade:</strong> Haftalık genel trend. İdeal: 3 vade de aynı yönü gösteriyorsa güçlü sinyal.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top pt-2">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="border rounded p-2 bg-success-subtle bg-opacity-10">
+                                    <span class="badge bg-success-subtle text-success mb-1"><i class="ri-check-double-line me-1"></i>Güvenilir Sinyal</span>
+                                    <p class="text-muted mb-0 fs-11">Birden fazla zaman diliminde aynı yön (örn. 4s + 1g + 1h hepsi "Al") güvenilir sinyal verir. Tek bir zaman dilimindeki sinyale göre işlem yapmak risklidir.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="border rounded p-2 bg-danger-subtle bg-opacity-10">
+                                    <span class="badge bg-danger-subtle text-danger mb-1"><i class="ri-alarm-warning-line me-1"></i>Kripto Volatilite Uyarısı</span>
+                                    <p class="text-muted mb-0 fs-11">Kripto piyasasında ani haberler (SEC kararı, hack, düzenleme) teknik sinyalleri geçersiz kılabilir. Teknik analiz tek başına yeterli değildir — temel analiz ve haber takibi ile destekleyin.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hisse Analiz & Trend Bilgi Kartı -->
+    <div class="row" th:if="${assetType != 'CRYPTO' and hasAnalysisData}">
+        <div class="col-12">
+            <div class="card card-body border-primary border-opacity-25 py-2">
+                <a class="text-primary fw-medium" data-bs-toggle="collapse" href="#hisseAnalizInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Analiz Tablosu ve Trend Yönü Nasıl Okunur?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="hisseAnalizInfoCollapse">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-dashboard-3-line text-primary fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Analiz Skoru</h6>
+                                    <p class="text-muted mb-0 fs-12">Her zaman diliminde 11 teknik gösterge analiz edilir. <strong>Yeşil daire:</strong> Çoğunluk AL diyor. <strong>Kırmızı daire:</strong> Çoğunluk SAT diyor. <strong>Sarı:</strong> Kararsız piyasa. Sayıya tıklayarak detaylı indikatör dökümünü görebilirsiniz.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-time-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Zaman Dilimleri</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>15 Dk / 1 Saat:</strong> Gün içi scalping. <strong>4 Saat / 1 Gün:</strong> Swing trading (birkaç gün). <strong>1 Hafta:</strong> Pozisyon trading. BIST seans saatleri 10:00-18:00 — seans dışı veriler önceki güne aittir.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-speed-mini-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Trend Yönü İbresi</h6>
+                                    <p class="text-muted mb-0 fs-12">İbre <strong>yeşil bölgeye</strong> yakınsa yükseliş trendi, <strong>kırmızıya</strong> yakınsa düşüş trendi. <strong>Güçlü Al/Sat:</strong> 8+ gösterge aynı yönde. <strong>Nötr:</strong> Piyasa kararsız.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-focus-3-line text-danger fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Kısa / Orta / Uzun Vade</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>Kısa vade</strong> (15dk+1s) günlük dalgalanma. <strong>Orta vade</strong> (4s+1g) birkaç günlük trend. <strong>Uzun vade</strong> (haftalık) ana trend. 3 vade aynı yönü gösteriyorsa güçlü sinyal.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top pt-2">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="border rounded p-2 bg-success-subtle bg-opacity-10">
+                                    <span class="badge bg-success-subtle text-success mb-1"><i class="ri-check-double-line me-1"></i>Güvenilir Sinyal</span>
+                                    <p class="text-muted mb-0 fs-11">Birden fazla zaman diliminde aynı yön (örn. 4s + 1g + 1h hepsi "Al") güvenilir sinyal verir. Tek bir zaman dilimindeki sinyale göre işlem yapmak risklidir.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="border rounded p-2 bg-warning-subtle bg-opacity-10">
+                                    <span class="badge bg-warning-subtle text-warning mb-1"><i class="ri-alarm-warning-line me-1"></i>BIST Uyarısı</span>
+                                    <p class="text-muted mb-0 fs-11">Seans dışında ve hafta sonları veriler güncellenmez. KAP haberleri teknik sinyalleri geçersiz kılabilir. Teknik analiz tek başına yeterli değildir — temel analiz ve haber takibi ile destekleyin.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analiz + Trend Yönü -->
     <div class="row mb-4" th:if="${hasAnalysisData}">
         <div class="col-12">
             <div class="d-flex">
@@ -222,7 +393,7 @@
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
                             <h4 class="card-title mb-0">Analiz
-                                <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarihFull}"></small>
+                                <small th:if="${teknikTarihFull != null}" class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarihFull}"></small>
                             </h4>
                             <i class="ri-information-line ms-2 text-muted fs-16" data-bs-toggle="tooltip" data-bs-placement="top" title="Teknik indikatörlerin özet skoru. Sayılara tıklayarak detaylı indikatör dökümünü görebilirsiniz."></i>
                         </div>
@@ -258,12 +429,12 @@
                     </div>
                 </div>
 
-                <!-- Trend Yonu Gauge -->
+                <!-- Trend Yönü Gauge -->
                 <div id="stockChart" style="width: 60%;">
                     <div class="card">
                         <div class="card-header d-flex align-items-center">
-                            <h4 class="card-title mb-0">Trend Yonu
-                                <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarihFull}"></small>
+                            <h4 class="card-title mb-0">Trend Yönü
+                                <small th:if="${teknikTarihFull != null}" class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarihFull}"></small>
                             </h4>
                             <i class="ri-information-line ms-2 text-muted fs-16" data-bs-toggle="tooltip" data-bs-placement="top" title="Teknik indikatörlere göre kısa, orta ve uzun vadeli trend yönü. İbre yeşil bölgeye yakınsa alım, kırmızıya yakınsa satım sinyali verir."></i>
                         </div>
@@ -295,7 +466,7 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h4 class="card-title mb-0">Grafik
-                        <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
+                        <small th:if="${teknikTarih != null}" class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
                         <span id="chartMarketStatus" class="badge fs-11 ms-2" th:if="${assetType != 'CRYPTO'}"
                               th:classappend="${marketOpen} ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'"
                               th:text="${marketOpen} ? 'Seans A&#231;&#305;k' : 'Seans Kapal&#305;'">Seans Açık</span>
@@ -328,13 +499,135 @@
         </div>
     </div>
 
-    <!-- Teknik Gostergeler Tablosu -->
+    <!-- Kripto Teknik Göstergeler Bilgi Kartı -->
+    <div class="row mb-1" th:if="${assetType == 'CRYPTO' and NO_TIME != null and NO_TIME.data != null and !NO_TIME.data.isEmpty()}">
+        <div class="col-12">
+            <div class="card card-body border-warning border-opacity-25 py-2">
+                <a class="text-warning fw-medium" data-bs-toggle="collapse" href="#teknikInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Teknik Göstergeler Ne Anlama Gelir?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="teknikInfoCollapse">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <h6 class="fs-13 mb-1"><i class="ri-line-chart-line text-primary me-1"></i>RSI (G&ouml;receli G&uuml;&ccedil; Endeksi)</h6>
+                            <p class="text-muted mb-0 fs-12">0-100 arası. 70 &uuml;zeri aşırı alım (d&uuml;ş&uuml;ş beklentisi), 30 altı aşırı satım (y&uuml;kseliş fırsatı). Kripto'da volatilite y&uuml;ksek olduğu i&ccedil;in 80/20 seviyeleri de kullanılır.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="fs-13 mb-1"><i class="ri-pulse-line text-success me-1"></i>MACD</h6>
+                            <p class="text-muted mb-0 fs-12">Trend y&ouml;n&uuml; ve momentum g&ouml;stergesi. MACD &ccedil;izgisi sinyal &ccedil;izgisini yukarı keserse AL sinyali, aşağı keserse SAT sinyali. Histogram b&uuml;y&uuml;kl&uuml;ğ&uuml; momentumun g&uuml;c&uuml;n&uuml; g&ouml;sterir.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="fs-13 mb-1"><i class="ri-exchange-funds-line text-info me-1"></i>EMA/SMA (Hareketli Ortalamalar)</h6>
+                            <p class="text-muted mb-0 fs-12">EMA20 kısa vadeli, SMA50 orta vadeli, SMA200 uzun vadeli trendi g&ouml;sterir. Fiyat ortalamanın &uuml;zerindeyse y&uuml;kseliş trendi, altındaysa d&uuml;ş&uuml;ş trendi. &ldquo;Altın &Ccedil;apraz&rdquo; (SMA50 &gt; SMA200) g&uuml;&ccedil;l&uuml; boğa sinyalidir.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="fs-13 mb-1"><i class="ri-compass-3-line text-warning me-1"></i>ADX (Ortalama Y&ouml;nl&uuml; Endeks)</h6>
+                            <p class="text-muted mb-0 fs-12">Trendin g&uuml;c&uuml;n&uuml; &ouml;l&ccedil;er (y&ouml;n&uuml;n&uuml; değil). 25 &uuml;zeri g&uuml;&ccedil;l&uuml; trend, 20 altı zayıf/yatay piyasa. Kripto'da 40+ &ccedil;ok g&uuml;&ccedil;l&uuml; trend demektir.</p>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start">
+                                <i class="ri-focus-2-line text-primary fs-18 me-2 mt-1"></i>
+                                <div>
+                                    <h6 class="fs-13 mb-1">Sinyal Yorumlama</h6>
+                                    <p class="text-muted mb-0 fs-12">11 g&ouml;stergenin &ccedil;oğunluğu AL diyorsa &ldquo;G&uuml;&ccedil;l&uuml; Al&rdquo;, &ccedil;oğunluğu SAT diyorsa &ldquo;G&uuml;&ccedil;l&uuml; Sat&rdquo;. N&ouml;tr sinyaller kararsız piyasayı g&ouml;sterir.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start">
+                                <i class="ri-time-line text-success fs-18 me-2 mt-1"></i>
+                                <div>
+                                    <h6 class="fs-13 mb-1">Zaman Dilimi Se&ccedil;imi</h6>
+                                    <p class="text-muted mb-0 fs-12">Kısa vade (15dk-1s) scalping/day trading, orta vade (4s-1g) swing trading, uzun vade (1h) pozisyon trading i&ccedil;in uygundur.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start">
+                                <i class="ri-error-warning-line text-danger fs-18 me-2 mt-1"></i>
+                                <div>
+                                    <h6 class="fs-13 mb-1">Kripto &Ouml;zel Uyarı</h6>
+                                    <p class="text-muted mb-0 fs-12">Kripto piyasası 7/24 a&ccedil;ıktır, haberlere &ccedil;ok duyarlıdır. Tek bir g&ouml;stergeye g&uuml;venmeyin, birden fazla zaman diliminde teyit alın.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hisse Teknik Göstergeler Bilgi Kartı -->
+    <div class="row mb-1" th:if="${assetType != 'CRYPTO' and NO_TIME != null and NO_TIME.data != null}">
+        <div class="col-12">
+            <div class="card card-body border-primary border-opacity-25 py-2">
+                <a class="text-primary fw-medium" data-bs-toggle="collapse" href="#hisseTeknikInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Teknik Göstergeler Nasıl Yorumlanır?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="hisseTeknikInfoCollapse">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <h6 class="fs-13 mb-1"><i class="ri-line-chart-line text-primary me-1"></i>RSI (Göreceli Güç Endeksi)</h6>
+                            <p class="text-muted mb-0 fs-12">0-100 arası. >70 aşırı alım (düşüş beklentisi), <30 aşırı satım (yükseliş fırsatı). BIST hisselerinde 60/40 seviyeleri de önemli sinyaller verir.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="fs-13 mb-1"><i class="ri-pulse-line text-success me-1"></i>MACD</h6>
+                            <p class="text-muted mb-0 fs-12">Trend yönü ve momentum göstergesi. MACD > Signal = AL, MACD < Signal = SAT. Sıfır çizgisi üstü = boğa piyasası, altı = ayı piyasası.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="fs-13 mb-1"><i class="ri-exchange-funds-line text-info me-1"></i>EMA/SMA (Hareketli Ortalamalar)</h6>
+                            <p class="text-muted mb-0 fs-12">EMA20 kısa vadeli, SMA50 orta vadeli, SMA200 uzun vadeli trend. Fiyat > ortalama = yükseliş. "Altın Çapraz" (SMA50 > SMA200) güçlü boğa sinyali, "Ölüm Çaprazı" tersi.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="fs-13 mb-1"><i class="ri-compass-3-line text-warning me-1"></i>ADX + Ichimoku</h6>
+                            <p class="text-muted mb-0 fs-12">ADX>25 güçlü trend. Ichimoku: Fiyat bulutun üstünde = yükseliş, altında = düşüş. CLine > BLine = kısa vadeli momentum yukarı.</p>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start">
+                                <i class="ri-focus-2-line text-primary fs-18 me-2 mt-1"></i>
+                                <div>
+                                    <h6 class="fs-13 mb-1">Renk Kodları</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>Yeşil</strong> = AL sinyali, <strong>Kırmızı</strong> = SAT sinyali, <strong>Gri</strong> = Nötr. Renk ne kadar koyu ise sinyal o kadar güçlüdür.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start">
+                                <i class="ri-bar-chart-grouped-line text-warning fs-18 me-2 mt-1"></i>
+                                <div>
+                                    <h6 class="fs-13 mb-1">BIST Özel</h6>
+                                    <p class="text-muted mb-0 fs-12">BIST'te tavan/taban sınırları var (%10), bu teknik göstergeleri etkiler. Fiyat tavana/tabana yakınsa göstergelerin güvenilirliği azalır.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start">
+                                <i class="ri-error-warning-line text-danger fs-18 me-2 mt-1"></i>
+                                <div>
+                                    <h6 class="fs-13 mb-1">Birlikte Kullanım</h6>
+                                    <p class="text-muted mb-0 fs-12">Tek bir gösterge yeterli değil. En az 3-4 göstergenin aynı yönü teyit etmesini bekleyin. RSI + MACD + EMA uyumu güçlü sinyal verir.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teknik Göstergeler Tablosu -->
     <div class="row" th:if="${NO_TIME != null and NO_TIME.data != null and !NO_TIME.data.isEmpty()}">
         <div class="col-xl-12">
             <div class="card">
                 <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0">Teknik Gostergeler
-                        <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
+                    <h4 class="card-title mb-0">Teknik Göstergeler
+                        <small th:if="${teknikTarih != null}" class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
                     </h4>
                     <i class="ri-information-line ms-2 text-muted fs-16" data-bs-toggle="tooltip" data-bs-placement="top" title="Her periyot için hesaplanan teknik indikatör değerleri. Al/Sat/Nötr sinyalleri gösterilir."></i>
                 </div>
@@ -365,8 +658,8 @@
                                 <td th:if="${data.d[12] != null}"
                                     th:with="rsiRaw=${data.d[12]}, rsiFormatted=${#numbers.formatDecimal(data.d[12], 2, 2)}"
                                     th:class="${rsiRaw > 70 ? 'text-danger' : (rsiRaw < 30 ? 'text-success' : 'text-warning')}">
-                                    <span th:if="${rsiRaw > 70}" class="text-danger">Asiri Alim</span>
-                                    <span th:if="${rsiRaw < 30}" class="text-success">Asiri Satim</span>
+                                    <span th:if="${rsiRaw > 70}" class="text-danger">Aşırı Alım</span>
+                                    <span th:if="${rsiRaw < 30}" class="text-success">Aşırı Satım</span>
                                     <span th:if="${rsiRaw >= 30 and rsiRaw <= 70}" class="text-warning">Notr</span>
                                     <br/>
                                     <span th:text="'RSI: ' + ${rsiFormatted}"></span>
@@ -553,7 +846,7 @@
                 <div class="card-header d-flex align-items-center">
                     <h4 class="card-title mb-0">
                         <i class="ri-robot-line me-1 text-primary"></i>AI Teknik Değerlendirme
-                        <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
+                        <small th:if="${teknikTarih != null}" class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarih}"></small>
                     </h4>
                     <span class="badge bg-info-subtle text-info ms-2">Beta</span>
                 </div>
@@ -585,13 +878,13 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="card-title mb-0 flex-grow-1">Analist Tavsiyeleri
-                        <small class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarihFull}"></small>
+                        <small th:if="${teknikTarihFull != null}" class="text-muted fw-normal fs-6" th:text="' - ' + ${teknikTarihFull}"></small>
                         <i class="ri-information-line ms-1 text-muted fs-14" data-bs-toggle="tooltip" data-bs-placement="top" title="Aracı kurum analistlerinin bu hisse için verdiği al/tut/sat tavsiyeleri ve hedef fiyatları."></i>
                     </h5>
                     <div class="flex-shrink-0">
-                        <span class="badge bg-primary-subtle text-primary me-1" th:text="${toplamTavsiye + ' Tavsiye'}">12 Tavsiye</span>
-                        <span class="badge bg-success-subtle text-success me-1" th:text="${alSayisi + ' Al'}">8 Al</span>
-                        <span class="badge bg-info-subtle text-info" th:text="'Ort. Hedef: ' + ${#numbers.formatDecimal(ortalamaHedefFiyat, 1, 2)} + ' TL'">Ort. Hedef: 180,50 TL</span>
+                        <span class="badge bg-primary-subtle text-primary me-1" th:text="${(toplamTavsiye != null ? toplamTavsiye : 0) + ' Tavsiye'}">12 Tavsiye</span>
+                        <span class="badge bg-success-subtle text-success me-1" th:text="${(alSayisi != null ? alSayisi : 0) + ' Al'}">8 Al</span>
+                        <span class="badge bg-info-subtle text-info" th:text="${ortalamaHedefFiyat != null ? 'Ort. Hedef: ' + #numbers.formatDecimal(ortalamaHedefFiyat, 1, 2) + ' TL' : 'Ort. Hedef: -'}">Ort. Hedef: 180,50 TL</span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -650,6 +943,46 @@
         </div>
     </div>
 
+    <!-- AKD Bilgi Kartı -->
+    <div class="row" th:if="${hasAkdData}">
+        <div class="col-12">
+            <div class="card card-body border-info border-opacity-25 py-2">
+                <a class="text-info fw-medium" data-bs-toggle="collapse" href="#akdInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>AKD (Açığa Satış ve Kredili İşlem Dağılımı) Nedir?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="akdInfoCollapse">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <h6 class="text-info"><i class="ri-bar-chart-box-line me-1"></i>AKD Nedir?</h6>
+                            <p class="text-muted small mb-0">Aracı kurum dağılımı — hangi kurumun müşterileri bu hissede ne kadar alım/satım yapmış gösterir. Kurumsal yatırımcıların hareketlerini takip etmek için kritik veri. Günlük seans sonrası güncellenir.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-success"><i class="ri-arrow-up-circle-line me-1"></i>Alıcılar (Yeşil)</h6>
+                            <p class="text-muted small mb-0">Hissede net alıcı olan aracı kurumlar. Adet = alınan lot sayısı. % = toplam içindeki pay. Maliyet = ortalama alış fiyatı. Büyük kurumların (İş Yatırım, Yapı Kredi vb.) ağırlıklı alımları güçlü talep sinyalidir.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-danger"><i class="ri-arrow-down-circle-line me-1"></i>Satıcılar (Kırmızı)</h6>
+                            <p class="text-muted small mb-0">Hissede net satıcı olan kurumlar. Büyük kurumların yoğun satışı arz baskısı yaratır. "DİĞER" satırı küçük kurumların toplamıdır.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-primary"><i class="ri-scales-3-line me-1"></i>Toplam</h6>
+                            <p class="text-muted small mb-0">Net pozisyon = alıcı adet - satıcı adet. Pozitif net = talep fazlası (yükseliş beklentisi), negatif net = arz fazlası (düşüş baskısı). Aynı kurumun hem alıcı hem satıcı olması spread pozisyonu gösterir.</p>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <p class="text-muted small mb-0"><i class="ri-lightbulb-line text-warning me-1"></i><strong>Kurumsal Takip:</strong> Yabancı kurumların (JP Morgan, Goldman vb.) hareketleri özellikle takip edilir. Bu kurumlar genelde araştırma bazlı hareket eder.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="text-muted small mb-0"><i class="ri-error-warning-line text-danger me-1"></i><strong>Dikkat:</strong> AKD verisi T+1 gecikmeli (bir gün önceki seans). Ani fiyat hareketlerinde AKD henüz güncellenmemiş olabilir.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- AKD Tablosu -->
     <div class="row mb-4" th:if="${hasAkdData}">
         <div class="col-12">
@@ -665,7 +998,7 @@
                     <div class="row">
                         <!-- Alicilar -->
                         <div class="col-md-4">
-                            <h5 style="color: #00C851;">Alicilar</h5>
+                            <h5 style="color: #00C851;">Alıcılar</h5>
                             <table class="table table-bordered">
                                 <thead>
                                 <tr>
@@ -677,7 +1010,7 @@
                                 </thead>
                                 <tbody>
                                 <tr th:if="${akdAlicilar == null or akdAlicilar.isEmpty()}">
-                                    <td colspan="4" class="text-center text-muted">Veri bulunamadi</td>
+                                    <td colspan="4" class="text-center text-muted">Veri bulunamadı</td>
                                 </tr>
                                 <tr th:each="broker : ${akdAlicilar}">
                                     <td th:classappend="${broker.code == 'DIGER' ? 'text-warning' : ''}">
@@ -698,7 +1031,7 @@
                         </div>
                         <!-- Saticilar -->
                         <div class="col-md-4">
-                            <h5 style="color: #ff0000;">Saticilar</h5>
+                            <h5 style="color: #ff0000;">Satıcılar</h5>
                             <table class="table table-bordered">
                                 <thead>
                                 <tr>
@@ -710,7 +1043,7 @@
                                 </thead>
                                 <tbody>
                                 <tr th:if="${akdSaticilar == null or akdSaticilar.isEmpty()}">
-                                    <td colspan="4" class="text-center text-muted">Veri bulunamadi</td>
+                                    <td colspan="4" class="text-center text-muted">Veri bulunamadı</td>
                                 </tr>
                                 <tr th:each="broker : ${akdSaticilar}">
                                     <td th:classappend="${broker.code == 'DIGER' ? 'text-warning' : ''}">
@@ -743,7 +1076,7 @@
                                 </thead>
                                 <tbody>
                                 <tr th:if="${akdToplam == null or akdToplam.isEmpty()}">
-                                    <td colspan="4" class="text-center text-muted">Veri bulunamadi</td>
+                                    <td colspan="4" class="text-center text-muted">Veri bulunamadı</td>
                                 </tr>
                                 <tr th:each="broker : ${akdToplam}">
                                     <td th:classappend="${broker.code == 'DIGER' ? 'text-warning' : ''}">
@@ -761,6 +1094,46 @@
                                 </tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Takas Bilgi Kartı -->
+    <div class="row" th:if="${hasTakasData}">
+        <div class="col-12">
+            <div class="card card-body border-warning border-opacity-25 py-2">
+                <a class="text-warning fw-medium" data-bs-toggle="collapse" href="#takasInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Takas (Saklama Dağılımı) Nedir? Nasıl Yorumlanır?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="takasInfoCollapse">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <h6 class="text-warning"><i class="ri-safe-2-line me-1"></i>Takas Nedir?</h6>
+                            <p class="text-muted small mb-0">Takasbank saklama dağılımı — hissenin hangi aracı kurumlarda, ne kadar miktarda saklandığını gösterir. Yatırımcı profili hakkında fikir verir. Yerli bireysel, yerli kurumsal ve yabancı yatırımcı dağılımı görülür.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-info"><i class="ri-global-line me-1"></i>Yerli/Yabancı Oranı</h6>
+                            <p class="text-muted small mb-0">Yabancı yatırımcı oranı önemli bir göstergedir. Yabancı oranı artıyorsa = uluslararası ilgi artıyor (pozitif sinyal). Yabancı çıkışı = risk algısı artışı. BIST genelinde yabancı payı %30-40 civarında seyreder.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-primary"><i class="ri-building-line me-1"></i>Kurum Bazlı Dağılım</h6>
+                            <p class="text-muted small mb-0">Büyük bankaların (İş Bankası, Garanti, Yapı Kredi) yüksek saklama oranı = geniş yatırımcı tabanı. Tek bir kurumda yoğunlaşma = az sayıda büyük yatırımcı (volatilite riski).</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-success"><i class="ri-line-chart-line me-1"></i>Haftalık Değişim</h6>
+                            <p class="text-muted small mb-0">Kurum bazında haftalık saklama değişimi takip edilir. Bir kurumda ani artış = büyük alıcı girişi. Ani düşüş = büyük satış. Bu değişimler fiyat hareketinin öncü göstergesi olabilir.</p>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <p class="text-muted small mb-0"><i class="ri-lightbulb-line text-warning me-1"></i><strong>Yatırım Stratejisi:</strong> Yabancı oranı artan + kurumsal alım güçlü hisseler genelde orta-uzun vadede iyi performans gösterir.</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="text-muted small mb-0"><i class="ri-error-warning-line text-danger me-1"></i><strong>Gecikme:</strong> Takas verisi seans sonrası (19:00 civarı) güncellenir. Gün içi anlık değişimleri yansıtmaz.</p>
                         </div>
                     </div>
                 </div>
@@ -813,6 +1186,46 @@
                                 </tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emir Defteri Bilgi Kartı -->
+    <div class="row" th:if="${hasOrderbookData}">
+        <div class="col-12">
+            <div class="card card-body border-success border-opacity-25 py-2">
+                <a class="text-success fw-medium" data-bs-toggle="collapse" href="#orderbookInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Emir Defteri Nedir? Nasıl Okunur?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="orderbookInfoCollapse">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <h6 class="text-success"><i class="ri-book-open-line me-1"></i>Emir Defteri Nedir?</h6>
+                            <p class="text-muted small mb-0">Hisse için bekleyen alış ve satış emirlerinin fiyat-miktar dağılımını gösterir. Sol taraf (yeşil) = alış emirleri, sağ taraf (kırmızı) = satış emirleri. Arz ve talebin anlık görüntüsüdür.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-success"><i class="ri-arrow-up-circle-line me-1"></i>Alış Emirleri (Bid)</h6>
+                            <p class="text-muted small mb-0">Alıcıların beklediği fiyat seviyeleri. En yüksek alış fiyatı = en iyi teklif. Yoğun alış emirleri destek seviyesi oluşturur. Büyük lotlu emirler (blok emir) güçlü alıcı varlığını gösterir.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-danger"><i class="ri-arrow-down-circle-line me-1"></i>Satış Emirleri (Ask)</h6>
+                            <p class="text-muted small mb-0">Satıcıların beklediği fiyat seviyeleri. En düşük satış fiyatı = en iyi satış. Yoğun satış emirleri direnç seviyesi oluşturur. Spread (en iyi alış - en iyi satış arası) dar ise likidite yüksek.</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="text-primary"><i class="ri-bar-chart-horizontal-line me-1"></i>Hacim Çubukları</h6>
+                            <p class="text-muted small mb-0">Yeşil/kırmızı çubuklar alış/satış derinliğini görselleştirir. Alış tarafı satıştan büyükse talep baskısı var (fiyat yükselme eğilimi), tersi ise arz baskısı (düşme eğilimi).</p>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-6">
+                            <p class="text-muted small mb-0"><i class="ri-lightbulb-line text-warning me-1"></i><strong>Derinlik Analizi:</strong> Toplam alış > toplam satış ise "bid-heavy" (pozitif). Ama dikkat: büyük emirler aniden iptal edilebilir (spoofing).</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="text-muted small mb-0"><i class="ri-error-warning-line text-danger me-1"></i><strong>Seans Dışı:</strong> Seans dışında emir defteri donuk kalır. Veriler son seans kapanış anındaki emirleri yansıtır.</p>
                         </div>
                     </div>
                 </div>
@@ -1018,7 +1431,7 @@
             "SuperTrend": "ATR bazli trend gostergesi. Fiyat ustte ise yukselis, altta ise dusus.",
             "EWO": "Elliott Wave Oscillator. Trend gucunu ve dalga yapısını olcer.",
             "Squeeze Mom.": "Bollinger + Keltner sıkısma. Dusuk volatilite sonrası patlama sinyali.",
-            "WaveTrend": "Asiri alim/satim osilatoru. Capraz kesismeler sinyal uretir.",
+            "WaveTrend": "Aşırı alım/satım osilatörü. Çapraz kesişmeler sinyal üretir.",
             "SALMA": "Adaptive hareketli ortalama. Volatiliteye gore hiz ayarlar.",
             "CVD": "Kumulatif hacim deltası. Alici/satici baski dengesini gosterir.",
             "Twin Range": "Cift aralik filtre. Kisa ve uzun ATR ile trend dogrular.",

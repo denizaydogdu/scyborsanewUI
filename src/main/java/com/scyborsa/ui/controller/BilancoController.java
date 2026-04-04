@@ -3,7 +3,9 @@ package com.scyborsa.ui.controller;
 import com.scyborsa.ui.dto.FinansalTabloUiDto;
 import com.scyborsa.ui.dto.SektorelKarsilastirmaUiDto;
 import com.scyborsa.ui.service.BilancoService;
+import com.scyborsa.ui.service.Bist100Service;
 import com.scyborsa.ui.service.FinansalTabloUiService;
+import com.scyborsa.ui.service.KatilimEndeksiService;
 import com.scyborsa.ui.service.SektorelKarsilastirmaUiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +41,12 @@ public class BilancoController {
     /** Sektorel karsilastirma verilerini saglayan servis. */
     private final SektorelKarsilastirmaUiService sektorelKarsilastirmaUiService;
 
+    /** Katılım endeksi kontrol servisi. */
+    private final KatilimEndeksiService katilimEndeksiService;
+
+    /** Hisse logo haritası servisi. */
+    private final Bist100Service bist100Service;
+
     /**
      * Bilancolar liste sayfasini goruntular.
      *
@@ -55,6 +63,7 @@ public class BilancoController {
         Map<String, Object> result = bilancoService.getSonRaporlar();
         model.addAttribute("raporlar", result.getOrDefault("data", Collections.emptyList()));
         model.addAttribute("totalCount", result.getOrDefault("totalCount", 0));
+        model.addAttribute("logoMap", bist100Service.getStockLogos());
 
         log.info("[BILANCO-UI] Bilancolar liste sayfasi yuklendi [totalCount={}]",
                 result.getOrDefault("totalCount", 0));
@@ -84,6 +93,7 @@ public class BilancoController {
         log.info("[BILANCO-UI] Bilanco detay sayfasi isteniyor [symbol={}]", sanitized);
 
         model.addAttribute("symbol", sanitized);
+        model.addAttribute("isKatilim", katilimEndeksiService.isKatilim(sanitized));
 
         return "bilancolar/bilanco-detail";
     }

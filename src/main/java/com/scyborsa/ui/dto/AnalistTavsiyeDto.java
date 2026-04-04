@@ -45,6 +45,9 @@ public class AnalistTavsiyeDto {
     @JsonProperty("katilim")
     private boolean katilim;
 
+    /** Su anki fiyat (TL). API zenginlestirmesi ile doldurulur. */
+    private Double currentPrice;
+
     /**
      * Araci kurum bilgisi.
      */

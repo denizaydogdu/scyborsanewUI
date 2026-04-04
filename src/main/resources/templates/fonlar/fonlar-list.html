@@ -11,7 +11,7 @@
 
 <body>
 <section layout:fragment="content">
-    <div th:replace="~{partials/page-title :: page-title('Fonlar', 'Yatirim')}"></div>
+    <div th:replace="~{partials/page-title :: page-title('Fonlar', 'Yatırım')}"></div>
 
     <!-- Row 1: 3 KPI Cards -->
     <div class="row">
@@ -45,7 +45,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted mb-0">Ort. Getiri (Filtrelenmis)</p>
+                            <p class="text-uppercase fw-medium text-muted mb-0">Ort. Getiri (Filtrelenmiş)</p>
                         </div>
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-4">
@@ -62,13 +62,13 @@
             </div>
         </div>
 
-        <!-- En Iyi Performans -->
+        <!-- En İyi Performans -->
         <div class="col-xl-4 col-md-6">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
-                            <p class="text-uppercase fw-medium text-muted mb-0">En Iyi Performans</p>
+                            <p class="text-uppercase fw-medium text-muted mb-0">En İyi Performans</p>
                         </div>
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-4">
@@ -86,6 +86,81 @@
         </div>
     </div>
 
+    <!-- Bilgi Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-info border-opacity-25">
+                <a class="text-info fw-medium" data-bs-toggle="collapse" href="#fonInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Yatırım Fonları Nedir? Nasıl Seçilir?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="fonInfoCollapse">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-funds-line text-primary fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Yatırım Fonu Nedir?</h6>
+                                    <p class="text-muted mb-0 fs-12">Yatırım fonları, bireysel yatırımcıların paralarını bir havuzda toplayarak profesyonel portföy yöneticileri tarafından yönetilen finansal araçlardır. Hisse, tahvil, altın gibi varlıklara yatırım yaparlar.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-bar-chart-2-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">NAV (Net Aktif Değer)</h6>
+                                    <p class="text-muted mb-0 fs-12">Fonun birim pay değerini gösterir. Her gün sonunda hesaplanır. NAV artışı fonun kazandırdığı getiriyi yansıtır. Fonlar arası karşılaştırmada <strong>getiri oranı</strong> daha anlamlıdır.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-shield-check-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Risk Seviyesi (1-7)</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>1-2:</strong> Düşük risk (para piyasası, kısa vadeli tahvil). <strong>3-4:</strong> Orta risk (karma, dengeli). <strong>5-7:</strong> Yüksek risk (hisse ağırlıklı, sektörel). Yatırım vadenize göre seçin.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-leaf-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Katılım Fonları</h6>
+                                    <p class="text-muted mb-0 fs-12">Faizsiz finans prensiplerine uygun yönetilen fonlardır. <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.65rem">K</span> işaretli fonlar katılım fonudur. Sukuk, kira sertifikası, altın ve hisse senedi gibi araçlara yatırım yaparlar.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top pt-2">
+                        <h6 class="mb-2 fs-13">Fon Seçerken Nelere Dikkat Etmeli?</h6>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-success-subtle bg-opacity-10">
+                                    <span class="badge bg-success-subtle text-success mb-1"><i class="ri-thumb-up-line me-1"></i>Getiri Karşılaştırması</span>
+                                    <p class="text-muted mb-0 fs-11">Sadece kısa vadeli getiriye değil, 1 yıl ve 3 yıllık getirilere bakın. Dönem seçiciden farklı periyotları karşılaştırın. Enflasyonun üzerinde reel getiri sağlayan fonları tercih edin.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-warning-subtle bg-opacity-10">
+                                    <span class="badge bg-warning-subtle text-warning mb-1"><i class="ri-error-warning-line me-1"></i>Portföy Büyüklüğü</span>
+                                    <p class="text-muted mb-0 fs-11">Büyük portföylü fonlar genelde daha istikrarlıdır. Yatırımcı sayısı da fonun güvenilirliğinin göstergesidir. Çok küçük fonlarda likidite riski olabilir.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-info-subtle bg-opacity-10">
+                                    <span class="badge bg-info-subtle text-info mb-1"><i class="ri-calendar-check-line me-1"></i>Yatırım Vadesi</span>
+                                    <p class="text-muted mb-0 fs-11"><strong>Kısa vade (0-6 ay):</strong> Para piyasası fonları. <strong>Orta vade (6-24 ay):</strong> Tahvil/bono fonları. <strong>Uzun vade (2+ yıl):</strong> Hisse senedi ve karma fonlar daha yüksek getiri potansiyeli sunar.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Ana Kart: Fon Tablosu -->
     <div class="row">
         <div class="col-12">
@@ -95,8 +170,8 @@
                         <!-- Sol: Tab'lar -->
                         <div class="col-auto">
                             <ul class="nav nav-tabs-custom card-header-tabs border-bottom-0" id="fundTypeTabs" role="tablist">
-                                <li class="nav-item"><a class="nav-link active" data-fund-type="ALL" href="javascript:void(0);" role="tab" aria-selected="true">Tumu</a></li>
-                                <li class="nav-item"><a class="nav-link" data-fund-type="YAT" href="javascript:void(0);" role="tab" aria-selected="false">Yatirim</a></li>
+                                <li class="nav-item"><a class="nav-link active" data-fund-type="ALL" href="javascript:void(0);" role="tab" aria-selected="true">Tümü</a></li>
+                                <li class="nav-item"><a class="nav-link" data-fund-type="YAT" href="javascript:void(0);" role="tab" aria-selected="false">Yatırım</a></li>
                                 <li class="nav-item"><a class="nav-link" data-fund-type="EMK" href="javascript:void(0);" role="tab" aria-selected="false">Emeklilik</a></li>
                                 <li class="nav-item"><a class="nav-link" data-fund-type="BYF" href="javascript:void(0);" role="tab" aria-selected="false">BYF</a></li>
                             </ul>
@@ -105,8 +180,8 @@
                         <div class="col">
                             <div class="search-box">
                                 <input type="text" class="form-control search" id="searchInput"
-                                       placeholder="Fon kodu veya adi ile ara..." maxlength="100"
-                                       aria-label="Fon kodu veya adi ile ara">
+                                       placeholder="Fon kodu veya adı ile ara..." maxlength="100"
+                                       aria-label="Fon kodu veya adı ile ara">
                                 <i class="ri-search-line search-icon"></i>
                             </div>
                         </div>
@@ -114,15 +189,15 @@
                         <div class="col-auto d-flex align-items-center gap-2">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="participationToggle">
-                                <label class="form-check-label" for="participationToggle">Katilim</label>
+                                <label class="form-check-label" for="participationToggle">Katılım</label>
                             </div>
                             <span id="filteredCountBadge" class="badge bg-primary fs-12">0 Fon</span>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    <!-- Donem Secici -->
-                    <div class="d-flex gap-1 mb-3" id="periodSelector" role="group" aria-label="Donem secimi">
+                    <!-- Dönem Seçici -->
+                    <div class="d-flex gap-1 mb-3" id="periodSelector" role="group" aria-label="Dönem seçimi">
                         <button class="btn btn-soft-primary btn-sm active" data-period="returnYTD" aria-pressed="true">YBG</button>
                         <button class="btn btn-soft-primary btn-sm" data-period="return1M" aria-pressed="false">1A</button>
                         <button class="btn btn-soft-primary btn-sm" data-period="return3M" aria-pressed="false">3A</button>
@@ -139,12 +214,12 @@
                             <tr>
                                 <th style="width: 50px;">#</th>
                                 <th class="sortable" data-col="tefasCode" data-type="text" style="cursor:pointer;">Kod <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
-                                <th class="sortable" data-col="fundName" data-type="text" style="cursor:pointer;">Fon Adi <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="fundName" data-type="text" style="cursor:pointer;">Fon Adı <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
                                 <th class="sortable" data-col="latestPrice" data-type="num" style="width: 120px; cursor:pointer;">NAV <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
-                                <th class="sortable" data-col="return1D" data-type="num" style="width: 110px; cursor:pointer;">Degisim % <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="return1D" data-type="num" style="width: 110px; cursor:pointer;">Değişim % <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
                                 <th class="sortable" data-col="currentPeriod" data-type="num" style="width: 110px; cursor:pointer;">Getiri <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
-                                <th class="sortable" data-col="portfolioSize" data-type="num" style="width: 120px; cursor:pointer;">Portfoy <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
-                                <th class="sortable" data-col="investorCount" data-type="num" style="width: 110px; cursor:pointer;">Yatirimci <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="portfolioSize" data-type="num" style="width: 120px; cursor:pointer;">Portföy <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
+                                <th class="sortable" data-col="investorCount" data-type="num" style="width: 110px; cursor:pointer;">Yatırımcı <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
                                 <th class="sortable" data-col="riskLevel" data-type="num" style="width: 80px; cursor:pointer;">Risk <i class="ri-arrow-up-down-line text-muted fs-13"></i></th>
                             </tr>
                             </thead>
@@ -156,7 +231,7 @@
                     <!-- Empty State -->
                     <div id="emptyState" class="text-center py-5" style="display:none;">
                         <i class="ri-funds-line fs-1 text-muted"></i>
-                        <h5 class="mt-3 text-muted">Aramaniza uygun fon bulunamadi</h5>
+                        <h5 class="mt-3 text-muted">Aramanıza uygun fon bulunamadı</h5>
                     </div>
 
                     <!-- Sayfalama -->

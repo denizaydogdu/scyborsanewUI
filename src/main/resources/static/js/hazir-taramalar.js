@@ -53,10 +53,12 @@
                 var code = strategySelect.value;
                 var descriptions = window.strategyDescriptions || {};
                 if (code && descriptions[code]) {
-                    strategyDescription.textContent = descriptions[code];
-                    strategyDescription.style.display = '';
+                    if (strategyDescription) {
+                        strategyDescription.textContent = descriptions[code];
+                        strategyDescription.style.display = '';
+                    }
                 } else {
-                    strategyDescription.style.display = 'none';
+                    if (strategyDescription) strategyDescription.style.display = 'none';
                 }
             });
 
@@ -109,7 +111,7 @@
 
         // UI durum: yukleniyor
         hideAll();
-        loadingSpinner.style.display = '';
+        if (loadingSpinner) loadingSpinner.style.display = '';
 
         // 30 saniye timeout icin AbortController
         var controller = new AbortController();
@@ -124,14 +126,14 @@
                 return response.json();
             })
             .then(function (data) {
-                loadingSpinner.style.display = 'none';
+                if (loadingSpinner) loadingSpinner.style.display = 'none';
                 renderResults(data);
             })
             .catch(function (err) {
                 clearTimeout(timeoutId);
-                loadingSpinner.style.display = 'none';
+                if (loadingSpinner) loadingSpinner.style.display = 'none';
                 showError('Tarama sirasinda bir hata olustu: ' + err.message);
-                initialState.style.display = '';
+                if (initialState) initialState.style.display = '';
             });
     }
 
@@ -140,24 +142,26 @@
         allStocks = (data && data.stocks) ? data.stocks : [];
 
         // Baslik guncelle
-        if (data && data.strategyDisplayName) {
-            resultsTitle.textContent = data.strategyDisplayName + ' Sonuclari';
-        } else {
-            resultsTitle.textContent = 'Tarama Sonuclari';
+        if (resultsTitle) {
+            if (data && data.strategyDisplayName) {
+                resultsTitle.textContent = data.strategyDisplayName + ' Sonuclari';
+            } else {
+                resultsTitle.textContent = 'Tarama Sonuclari';
+            }
         }
 
         // Sonuc sayisi badge
-        resultCountBadge.textContent = allStocks.length + ' kritere uygun hisse tespit edildi';
+        if (resultCountBadge) resultCountBadge.textContent = allStocks.length + ' kritere uygun hisse tespit edildi';
 
         // Sonuc varsa tabloyu goster
         if (allStocks.length > 0) {
-            resultsSection.style.display = '';
-            resultsTableContainer.style.display = '';
-            emptyState.style.display = 'none';
+            if (resultsSection) resultsSection.style.display = '';
+            if (resultsTableContainer) resultsTableContainer.style.display = '';
+            if (emptyState) emptyState.style.display = 'none';
         } else {
-            resultsSection.style.display = '';
-            resultsTableContainer.style.display = 'none';
-            emptyState.style.display = '';
+            if (resultsSection) resultsSection.style.display = '';
+            if (resultsTableContainer) resultsTableContainer.style.display = 'none';
+            if (emptyState) emptyState.style.display = '';
         }
 
         currentPage = 1;
@@ -479,16 +483,16 @@
 
     // ── UI Yardimci ───────────────────────────────────────
     function hideAll() {
-        loadingSpinner.style.display = 'none';
-        errorMessage.style.display = 'none';
-        resultsSection.style.display = 'none';
-        initialState.style.display = 'none';
+        if (loadingSpinner) loadingSpinner.style.display = 'none';
+        if (errorMessage) errorMessage.style.display = 'none';
+        if (resultsSection) resultsSection.style.display = 'none';
+        if (initialState) initialState.style.display = 'none';
     }
 
     function showError(msg) {
         hideAll();
-        errorText.textContent = msg;
-        errorMessage.style.display = '';
+        if (errorText) errorText.textContent = msg;
+        if (errorMessage) errorMessage.style.display = '';
     }
 
     // ── Baslat ────────────────────────────────────────────

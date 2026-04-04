@@ -12,6 +12,7 @@ import com.scyborsa.ui.service.AnalistTavsiyeService;
 import com.scyborsa.ui.service.Bist100Service;
 import com.scyborsa.ui.service.GuidanceUiService;
 import com.scyborsa.ui.service.HedefFiyatUiService;
+import com.scyborsa.ui.service.KatilimEndeksiService;
 import com.scyborsa.ui.service.StockDetailService;
 import com.scyborsa.ui.service.TemelAnalizSkorUiService;
 import com.scyborsa.ui.dto.VbtsTedbirDto;
@@ -87,6 +88,10 @@ public class StockController {
     /** Temel analiz skoru servisi. */
     @Autowired(required = false)
     private TemelAnalizSkorUiService temelAnalizSkorUiService;
+
+    /** Katılım endeksi kontrol servisi. */
+    @Autowired(required = false)
+    private KatilimEndeksiService katilimEndeksiService;
 
     /** Cache'lenmis market durumu ve zaman damgasi. */
     private volatile boolean cachedMarketOpen = true;
@@ -302,6 +307,11 @@ public class StockController {
             }
         } catch (Exception e) {
             log.debug("VBTS tedbir kontrolü başarısız: {} - {}", stockId, e.getMessage());
+        }
+
+        // Katılım endeksi kontrolü
+        if (katilimEndeksiService != null) {
+            model.addAttribute("isKatilim", katilimEndeksiService.isKatilim(stockId));
         }
 
         try {

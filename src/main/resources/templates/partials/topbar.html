@@ -123,7 +123,7 @@
 								<span class="d-flex align-items-center">
 									<span class="rounded-circle header-profile-user d-flex align-items-center justify-content-center"
 										  style="width:32px;height:32px;background:linear-gradient(135deg,#405189,#0ab39c);color:#fff;font-size:13px;font-weight:600;"
-										  th:text="${session.userAdSoyad != null ? session.userAdSoyad.substring(0,1).toUpperCase() : 'U'}"></span>
+										  th:text="${session.userAdSoyad != null and session.userAdSoyad.length() > 0 ? session.userAdSoyad.substring(0,1).toUpperCase() : 'U'}"></span>
 									<span class="text-start ms-xl-2">
 										<span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text" th:text="${session.userAdSoyad ?: 'Kullanıcı'}">Kullanıcı</span>
 										<span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text" th:text="${session.userRole == 'ADMIN' ? 'Yönetici' : 'Kullanıcı'}">Yonetici</span>

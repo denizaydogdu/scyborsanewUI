@@ -739,7 +739,7 @@
             };
 
             stompClient.onStompError = function() {
-                stompClient = null; // Retry izni ver
+                // StompJs reconnect'ini kendi yönetir — stompClient referansına dokunma
             };
 
             stompClient.activate();

@@ -34,7 +34,7 @@
                     <div class="d-flex align-items-center">
                         <i class="ri-calendar-check-line text-info fs-3 me-3"></i>
                         <div class="flex-grow-1">
-                            <p class="text-uppercase fw-semibold fs-13 text-muted mb-1">Bugun</p>
+                            <p class="text-uppercase fw-semibold fs-13 text-muted mb-1">Bugün</p>
                             <h4 class="mb-0" id="kpi-today">0</h4>
                         </div>
                     </div>
@@ -47,7 +47,7 @@
                     <div class="d-flex align-items-center">
                         <i class="ri-history-line text-secondary fs-3 me-3"></i>
                         <div class="flex-grow-1">
-                            <p class="text-uppercase fw-semibold fs-13 text-muted mb-1">Gecmis</p>
+                            <p class="text-uppercase fw-semibold fs-13 text-muted mb-1">Geçmiş</p>
                             <h4 class="mb-0" id="kpi-past">0</h4>
                         </div>
                     </div>
@@ -70,13 +70,13 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active fs-14 fw-semibold" id="tab-today" data-bs-toggle="tab" href="#panel-today" role="tab" aria-selected="true">
-                                <i class="ri-calendar-check-line me-1"></i>Bugun
+                                <i class="ri-calendar-check-line me-1"></i>Bugün
                                 <span class="badge bg-info ms-1" id="badge-today">0</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link fs-14 fw-semibold" id="tab-past" data-bs-toggle="tab" href="#panel-past" role="tab" aria-selected="false">
-                                <i class="ri-history-line me-1"></i>Gecmis
+                                <i class="ri-history-line me-1"></i>Geçmiş
                                 <span class="badge bg-secondary ms-1" id="badge-past">0</span>
                             </a>
                         </li>
@@ -90,9 +90,10 @@
                                 <table class="table table-striped align-middle mb-0">
                                     <thead>
                                     <tr>
-                                        <th style="width: 180px;">Zaman</th>
+                                        <th style="width: 80px;">Hisse</th>
+                                        <th>Başlık</th>
                                         <th style="width: 100px;">Kaynak</th>
-                                        <th>Baslik</th>
+                                        <th style="width: 180px;">Zaman</th>
                                         <th style="width: 80px;">Detay</th>
                                     </tr>
                                     </thead>
@@ -105,15 +106,16 @@
                             </div>
                         </div>
 
-                        <!-- Bugun -->
+                        <!-- Bugün -->
                         <div class="tab-pane active show" id="panel-today" role="tabpanel">
                             <div class="table-responsive">
                                 <table class="table table-striped align-middle mb-0">
                                     <thead>
                                     <tr>
-                                        <th style="width: 180px;">Zaman</th>
+                                        <th style="width: 80px;">Hisse</th>
+                                        <th>Başlık</th>
                                         <th style="width: 100px;">Kaynak</th>
-                                        <th>Baslik</th>
+                                        <th style="width: 180px;">Zaman</th>
                                         <th style="width: 80px;">Detay</th>
                                     </tr>
                                     </thead>
@@ -122,19 +124,20 @@
                             </div>
                             <div class="text-center py-5 d-none" id="empty-today">
                                 <i class="ri-calendar-check-line fs-1 text-muted"></i>
-                                <h5 class="mt-3 text-muted">Bugun haber yok</h5>
+                                <h5 class="mt-3 text-muted">Bugün dünya haberi yok</h5>
                             </div>
                         </div>
 
-                        <!-- Gecmis -->
+                        <!-- Geçmiş -->
                         <div class="tab-pane" id="panel-past" role="tabpanel">
                             <div class="table-responsive">
                                 <table class="table table-striped align-middle mb-0">
                                     <thead>
                                     <tr>
-                                        <th style="width: 180px;">Zaman</th>
+                                        <th style="width: 80px;">Hisse</th>
+                                        <th>Başlık</th>
                                         <th style="width: 100px;">Kaynak</th>
-                                        <th>Baslik</th>
+                                        <th style="width: 180px;">Zaman</th>
                                         <th style="width: 80px;">Detay</th>
                                     </tr>
                                     </thead>
@@ -143,7 +146,7 @@
                             </div>
                             <div class="text-center py-5 d-none" id="empty-past">
                                 <i class="ri-history-line fs-1 text-muted"></i>
-                                <h5 class="mt-3 text-muted">Gecmis haber yok</h5>
+                                <h5 class="mt-3 text-muted">Geçmiş dünya haberi yok</h5>
                             </div>
                         </div>
                     </div>
@@ -243,13 +246,24 @@
             data.forEach(function(item) {
                 var tr = document.createElement('tr');
 
-                var tdTime = document.createElement('td');
-                var spanTime = document.createElement('span');
-                spanTime.className = 'text-muted fs-12';
-                spanTime.textContent = item.formattedPublished || '';
-                tdTime.appendChild(spanTime);
-                tr.appendChild(tdTime);
+                // 1. Hisse (HB fallback — dünya haberleri genelde hisse ilişkili değil)
+                var tdSymbol = document.createElement('td');
+                var codes = extractCodesFromTitle(item.title);
+                if (codes.length > 0) {
+                    codes.slice(0, 2).forEach(function(code) {
+                        tdSymbol.appendChild(renderStockChip(code));
+                    });
+                } else {
+                    tdSymbol.appendChild(renderHaberChip());
+                }
+                tr.appendChild(tdSymbol);
 
+                // 2. Başlık
+                var tdTitle = document.createElement('td');
+                tdTitle.textContent = item.title || '';
+                tr.appendChild(tdTitle);
+
+                // 3. Kaynak
                 var tdSource = document.createElement('td');
                 if (item.source) {
                     var spanSource = document.createElement('span');
@@ -263,10 +277,15 @@
                 }
                 tr.appendChild(tdSource);
 
-                var tdTitle = document.createElement('td');
-                tdTitle.textContent = item.title || '';
-                tr.appendChild(tdTitle);
+                // 4. Zaman
+                var tdTime = document.createElement('td');
+                var spanTime = document.createElement('span');
+                spanTime.className = 'text-muted fs-12';
+                spanTime.textContent = item.formattedPublished || '';
+                tdTime.appendChild(spanTime);
+                tr.appendChild(tdTime);
 
+                // 5. Detay
                 var tdDetail = document.createElement('td');
                 if (item.storyPath) {
                     var a = document.createElement('a');
@@ -297,6 +316,60 @@
                 tab.setAttribute('aria-selected', 'true');
                 showPanel.classList.add('active', 'show');
             }
+        }
+
+        function extractCodesFromTitle(title) {
+            if (!title) return [];
+            var codes = [];
+            var kapMatch = title.match(/^KAP:\s*([A-Z0-9]{2,10})/);
+            if (kapMatch) codes.push(kapMatch[1]);
+            var bracketMatch = title.match(/\[([A-Z0-9\s]+)\]/);
+            if (bracketMatch) {
+                bracketMatch[1].trim().split(/\s+/).forEach(function(c) {
+                    if (c.length >= 2 && c.length <= 10 && codes.indexOf(c) === -1) codes.push(c);
+                });
+            }
+            if (codes.length === 0) {
+                var firstWord = title.match(/^([A-Z0-9]{2,10})\s/);
+                if (firstWord) codes.push(firstWord[1]);
+            }
+            return codes;
+        }
+
+        function renderStockChip(code) {
+            var wrapper = document.createElement('div');
+            wrapper.className = 'd-inline-flex align-items-center me-1 mb-1';
+            var avatarContainer = document.createElement('div');
+            avatarContainer.className = 'flex-shrink-0 avatar-xs me-1';
+            var fallback = document.createElement('div');
+            fallback.className = 'avatar-title rounded-circle fw-semibold bg-light';
+            fallback.style.cssText = 'color:#495057;border:1.5px solid #ced4da;font-size:0.5rem';
+            fallback.textContent = code.length > 3 ? code.substring(0, 3) : code;
+            avatarContainer.appendChild(fallback);
+            wrapper.appendChild(avatarContainer);
+            var label = document.createElement('span');
+            label.className = 'fw-semibold text-primary fs-13';
+            label.textContent = code;
+            wrapper.appendChild(label);
+            return wrapper;
+        }
+
+        function renderHaberChip() {
+            var wrapper = document.createElement('div');
+            wrapper.className = 'd-inline-flex align-items-center';
+            var avatarContainer = document.createElement('div');
+            avatarContainer.className = 'flex-shrink-0 avatar-xs me-1';
+            var fallback = document.createElement('div');
+            fallback.className = 'avatar-title rounded-circle fw-semibold';
+            fallback.style.cssText = 'background:#e8f0fe;color:#405189;border:1.5px solid #c5d4f0;font-size:0.55rem';
+            fallback.textContent = 'HB';
+            avatarContainer.appendChild(fallback);
+            wrapper.appendChild(avatarContainer);
+            var label = document.createElement('span');
+            label.className = 'text-muted fs-13';
+            label.textContent = 'Haber';
+            wrapper.appendChild(label);
+            return wrapper;
         }
 
         function setText(id, val) {

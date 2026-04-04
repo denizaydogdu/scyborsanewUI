@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -82,7 +83,7 @@ public class KapNewsService {
                     .uri(ScyborsaApiEndpoints.HABER_DETAY, newsId)
                     .retrieve()
                     .bodyToMono(HaberDetayDto.class)
-                    .block();
+                    .block(Duration.ofSeconds(10));
         } catch (Exception e) {
             log.warn("[HABER-DETAY-UI] Haber detay alinamadi [newsId={}]: {}", newsId, e.getMessage());
             return null;
@@ -105,7 +106,7 @@ public class KapNewsService {
                     .uri(endpoint)
                     .retrieve()
                     .bodyToMono(KapNewsResponseDto.class)
-                    .block();
+                    .block(Duration.ofSeconds(10));
             if (result == null || result.getItems() == null) {
                 return emptyResponse();
             }

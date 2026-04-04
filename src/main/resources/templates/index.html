@@ -103,13 +103,13 @@
 												Kısa Vadeli
 												<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Kısa Vade (0-3 ay)</b><br>Günlük teknik göstergelere dayalı piyasa yönelimi. Hızlı alım-satım stratejileri için uygundur."></i>
 											</p>
-											<h4 class=" mb-0">%<span class="counter-value" th:attr="data-target=${sentiment.kisaVadeli}" th:text="${#numbers.formatDecimal(sentiment.kisaVadeli, 1, 1)}">0</span></h4>
+											<h4 class=" mb-0">%<span class="counter-value" th:attr="data-target=${sentiment != null and sentiment.kisaVadeli != null ? sentiment.kisaVadeli : 0}" th:text="${sentiment != null and sentiment.kisaVadeli != null ? #numbers.formatDecimal(sentiment.kisaVadeli, 1, 1) : '-'}">0</span></h4>
 										</div>
 									</div>
 									<div class="progress progress-sm mt-2">
 										<div class="progress-bar" role="progressbar"
-											 th:style="'width:' + ${sentiment.kisaVadeli} + '%; background-color:' + (${sentiment.kisaVadeli >= 70} ? '#0ab39c' : (${sentiment.kisaVadeli >= 50} ? '#f7b84b' : '#f06548'))"
-											 th:attr="aria-valuenow=${sentiment.kisaVadeli}"
+											 th:style="'width:' + ${sentiment != null and sentiment.kisaVadeli != null ? sentiment.kisaVadeli : 0} + '%; background-color:' + (${sentiment != null and sentiment.kisaVadeli != null and sentiment.kisaVadeli >= 70} ? '#0ab39c' : (${sentiment != null and sentiment.kisaVadeli != null and sentiment.kisaVadeli >= 50} ? '#f7b84b' : '#f06548'))"
+											 th:attr="aria-valuenow=${sentiment != null and sentiment.kisaVadeli != null ? sentiment.kisaVadeli : 0}"
 											 aria-valuemin="0" aria-valuemax="100"></div>
 									</div>
 								</div><!-- end card body -->
@@ -129,13 +129,13 @@
 												Orta Vadeli
 												<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Orta Vade (3-12 ay)</b><br>Haftalık ve aylık trendlere dayalı piyasa yönelimi. Swing trading ve pozisyon stratejileri için uygundur."></i>
 											</p>
-											<h4 class=" mb-0">%<span class="counter-value" th:attr="data-target=${sentiment.ortaVadeli}" th:text="${#numbers.formatDecimal(sentiment.ortaVadeli, 1, 1)}">0</span></h4>
+											<h4 class=" mb-0">%<span class="counter-value" th:attr="data-target=${sentiment != null and sentiment.ortaVadeli != null ? sentiment.ortaVadeli : 0}" th:text="${sentiment != null and sentiment.ortaVadeli != null ? #numbers.formatDecimal(sentiment.ortaVadeli, 1, 1) : '-'}">0</span></h4>
 										</div>
 									</div>
 									<div class="progress progress-sm mt-2">
 										<div class="progress-bar" role="progressbar"
-											 th:style="'width:' + ${sentiment.ortaVadeli} + '%; background-color:' + (${sentiment.ortaVadeli >= 70} ? '#0ab39c' : (${sentiment.ortaVadeli >= 50} ? '#f7b84b' : '#f06548'))"
-											 th:attr="aria-valuenow=${sentiment.ortaVadeli}"
+											 th:style="'width:' + ${sentiment != null and sentiment.ortaVadeli != null ? sentiment.ortaVadeli : 0} + '%; background-color:' + (${sentiment != null and sentiment.ortaVadeli != null and sentiment.ortaVadeli >= 70} ? '#0ab39c' : (${sentiment != null and sentiment.ortaVadeli != null and sentiment.ortaVadeli >= 50} ? '#f7b84b' : '#f06548'))"
+											 th:attr="aria-valuenow=${sentiment != null and sentiment.ortaVadeli != null ? sentiment.ortaVadeli : 0}"
 											 aria-valuemin="0" aria-valuemax="100"></div>
 									</div>
 								</div><!-- end card body -->
@@ -154,13 +154,13 @@
 											<p class="text-uppercase fw-semibold fs-13 text-muted mb-1">Uzun Vadeli
 												<i class="ri-information-line ms-1 text-info fs-16" style="cursor:pointer;opacity:0.6;" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Uzun Vade (1 yıl+)</b><br>Aylık ve yıllık trendlere dayalı piyasa yönelimi. Değer yatırımı ve uzun vadeli birikim stratejileri için uygundur."></i>
 											</p>
-											<h4 class=" mb-0">%<span class="counter-value" th:attr="data-target=${sentiment.uzunVadeli}" th:text="${#numbers.formatDecimal(sentiment.uzunVadeli, 1, 1)}">0</span></h4>
+											<h4 class=" mb-0">%<span class="counter-value" th:attr="data-target=${sentiment != null and sentiment.uzunVadeli != null ? sentiment.uzunVadeli : 0}" th:text="${sentiment != null and sentiment.uzunVadeli != null ? #numbers.formatDecimal(sentiment.uzunVadeli, 1, 1) : '-'}">0</span></h4>
 										</div>
 									</div>
 									<div class="progress progress-sm mt-2">
 										<div class="progress-bar" role="progressbar"
-											 th:style="'width:' + ${sentiment.uzunVadeli} + '%; background-color:' + (${sentiment.uzunVadeli >= 70} ? '#0ab39c' : (${sentiment.uzunVadeli >= 50} ? '#f7b84b' : '#f06548'))"
-											 th:attr="aria-valuenow=${sentiment.uzunVadeli}"
+											 th:style="'width:' + ${sentiment != null and sentiment.uzunVadeli != null ? sentiment.uzunVadeli : 0} + '%; background-color:' + (${sentiment != null and sentiment.uzunVadeli != null and sentiment.uzunVadeli >= 70} ? '#0ab39c' : (${sentiment != null and sentiment.uzunVadeli != null and sentiment.uzunVadeli >= 50} ? '#f7b84b' : '#f06548'))"
+											 th:attr="aria-valuenow=${sentiment != null and sentiment.uzunVadeli != null ? sentiment.uzunVadeli : 0}"
 											 aria-valuemin="0" aria-valuemax="100"></div>
 									</div>
 								</div><!-- end card body -->
@@ -1574,7 +1574,7 @@
 											<a th:href="@{/sector/{slug}(slug=${sector.slug})}" class="text-body">
 												<h6 class="mb-1 text-truncate" th:text="${sector.displayName}">--</h6>
 											</a>
-											<p class="text-muted mb-0 fs-13" th:text="${sector.stockCount + ' hisse'}">--</p>
+											<p class="text-muted mb-0 fs-13" th:text="${(sector.stockCount != null ? sector.stockCount : 0) + ' hisse'}">--</p>
 										</div>
 										<div class="flex-shrink-0 text-end ms-2">
 											<span class="badge fs-12"
@@ -1630,7 +1630,7 @@
 											<a th:href="@{/sector/{slug}(slug=${sector.slug})}" class="text-body">
 												<h6 class="mb-1 text-truncate" th:text="${sector.displayName}">--</h6>
 											</a>
-											<p class="text-muted mb-0 fs-13" th:text="${sector.stockCount + ' hisse'}">--</p>
+											<p class="text-muted mb-0 fs-13" th:text="${(sector.stockCount != null ? sector.stockCount : 0) + ' hisse'}">--</p>
 										</div>
 										<div class="flex-shrink-0 text-end ms-2">
 											<span class="badge bg-danger-subtle text-danger fs-12"

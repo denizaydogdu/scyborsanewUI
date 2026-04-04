@@ -388,21 +388,55 @@
                 window.location = '/bilancolar/' + encodeURIComponent(this.getAttribute('data-symbol'));
             });
 
-            // Hisse Kodu
+            // Hisse Kodu (logo + link + katılım badge)
             var tdSymbol = document.createElement('td');
+            var symbolWrapper = document.createElement('div');
+            symbolWrapper.className = 'd-flex align-items-center';
+
+            // Logo (LOGO_MAP'ten logoid al)
+            var logoContainer = document.createElement('div');
+            logoContainer.className = 'flex-shrink-0 avatar-xs me-2';
+            var logoid = (window.LOGO_MAP && window.LOGO_MAP[sym]) || null;
+            if (logoid) {
+                var logoImg = document.createElement('img');
+                logoImg.src = '/img/stock-logos/' + logoid;
+                logoImg.alt = sym;
+                logoImg.className = 'avatar-xs rounded-circle';
+                logoImg.onerror = function() {
+                    this.style.display = 'none';
+                    this.nextElementSibling.style.display = 'flex';
+                };
+                var logoFallback = document.createElement('div');
+                logoFallback.className = 'avatar-title rounded-circle fw-semibold';
+                logoFallback.style.cssText = 'background:#f3f6f9;color:#495057;border:1.5px solid #ced4da;font-size:0.55rem;display:none';
+                logoFallback.textContent = sym.length > 4 ? sym.substring(0, 4) : sym;
+                logoContainer.appendChild(logoImg);
+                logoContainer.appendChild(logoFallback);
+            } else {
+                var logoFallbackOnly = document.createElement('div');
+                logoFallbackOnly.className = 'avatar-title rounded-circle fw-semibold';
+                logoFallbackOnly.style.cssText = 'background:#f3f6f9;color:#495057;border:1.5px solid #ced4da;font-size:0.55rem';
+                logoFallbackOnly.textContent = sym.length > 4 ? sym.substring(0, 4) : sym;
+                logoContainer.appendChild(logoFallbackOnly);
+            }
+            symbolWrapper.appendChild(logoContainer);
+
+            // Link
             var linkEl = document.createElement('a');
             linkEl.href = '/bilancolar/' + encodeURIComponent(sym);
             linkEl.className = 'fw-semibold text-primary';
             linkEl.textContent = sym;
-            tdSymbol.appendChild(linkEl);
+            symbolWrapper.appendChild(linkEl);
+
             if (r.katilim) {
                 var kBadge = document.createElement('span');
                 kBadge.className = 'badge bg-success bg-opacity-25 text-success ms-1';
                 kBadge.style.cssText = 'font-size:0.65rem;padding:1px 4px;';
                 kBadge.title = 'Katılım Endeksi';
                 kBadge.textContent = 'K';
-                tdSymbol.appendChild(kBadge);
+                symbolWrapper.appendChild(kBadge);
             }
+            tdSymbol.appendChild(symbolWrapper);
             tr.appendChild(tdSymbol);
 
             // Donem (yil/ay birlesiik)

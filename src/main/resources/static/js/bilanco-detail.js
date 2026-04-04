@@ -1146,9 +1146,7 @@
         var chartEl = document.getElementById('trend-chart');
         if (!containerEl || !chartEl) return;
 
-        console.log('[TREND] Trend verisi yükleniyor:', sym);
         fetchData('/ajax/bilanco/' + encodeURIComponent(sym) + '/trend').then(function (data) {
-            console.log('[TREND] Veri geldi:', JSON.stringify(data).substring(0, 200));
             if (!data || !data.labels || data.labels.length === 0) {
                 console.warn('[TREND] Veri boş:', data);
                 clearElement(containerEl);
@@ -1244,9 +1242,7 @@
         var containerEl = document.getElementById('sektor-karsilastirma-container');
         if (!containerEl) return;
 
-        console.log('[SEKTOR] Sektörel karşılaştırma yükleniyor:', sym);
         fetchData('/ajax/bilanco/' + encodeURIComponent(sym) + '/sektor-karsilastirma').then(function (data) {
-            console.log('[SEKTOR] Veri geldi:', JSON.stringify(data).substring(0, 200));
             clearElement(containerEl);
 
             if (!data || (!data.sirketOranlari && !data.sektorMedian && !data.sektor)) {

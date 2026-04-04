@@ -2,7 +2,9 @@ package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.HaberDetayDto;
 import com.scyborsa.ui.dto.KapNewsResponseDto;
+import com.scyborsa.ui.service.Bist100Service;
 import com.scyborsa.ui.service.KapNewsService;
+import com.scyborsa.ui.service.KatilimEndeksiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -26,6 +28,12 @@ public class KapNewsController {
     /** KAP ve piyasa haberleri saglayan servis. */
     private final KapNewsService kapNewsService;
 
+    /** Hisse logo haritası servisi. */
+    private final Bist100Service bist100Service;
+
+    /** Katılım endeksi kontrol servisi. */
+    private final KatilimEndeksiService katilimEndeksiService;
+
     /**
      * KAP haberleri sayfasini gosterir.
      *
@@ -45,6 +53,8 @@ public class KapNewsController {
         log.info("[KAP-NEWS-UI] Sayfa erisimi");
         KapNewsResponseDto kapNewsResponse = kapNewsService.getKapNews();
         model.addAttribute("kapNewsResponse", kapNewsResponse);
+        model.addAttribute("logoMap", bist100Service.getStockLogos());
+        model.addAttribute("katilimCodes", katilimEndeksiService.getKatilimCodes());
         return "kapNews/kap-news";
     }
 
@@ -67,6 +77,8 @@ public class KapNewsController {
         log.info("[MARKET-NEWS-UI] Sayfa erisimi");
         KapNewsResponseDto marketNewsResponse = kapNewsService.getMarketNews();
         model.addAttribute("marketNewsResponse", marketNewsResponse);
+        model.addAttribute("logoMap", bist100Service.getStockLogos());
+        model.addAttribute("katilimCodes", katilimEndeksiService.getKatilimCodes());
         return "kapNews/market-news";
     }
 

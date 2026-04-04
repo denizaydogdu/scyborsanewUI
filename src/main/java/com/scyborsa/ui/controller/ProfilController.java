@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.security.Principal;
 
 /**
@@ -72,7 +74,8 @@ public class ProfilController {
                                @RequestParam(required = false) String telegramUsername,
                                @RequestParam(required = false) String phoneNumber,
                                Principal principal,
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes redirectAttributes,
+                               HttpServletRequest request) {
         String email = principal.getName();
         log.info("[PROFIL-UI] Profil guncelleme istegi: email={}", email);
 
@@ -82,12 +85,19 @@ public class ProfilController {
             if (user == null || user.getId() == null) {
                 log.error("[PROFIL-UI] Kullanici bulunamadi, guncelleme yapilamiyor: email={}", email);
                 redirectAttributes.addFlashAttribute("errorMsg",
-                        "Kullanici bilgileri alinamadi. Lutfen tekrar deneyiniz.");
+                        "Kullanıcı bilgileri alınamadı. Lütfen tekrar deneyiniz.");
                 return "redirect:/profil";
             }
 
             profilService.updateProfil(user.getId(), adSoyad, password, telegramUsername, phoneNumber);
-            redirectAttributes.addFlashAttribute("successMsg", "Profil bilgileriniz basariyla guncellendi.");
+
+            // Session'daki kullanıcı adını güncelle (topbar'da güncel görünsün)
+            HttpSession session = request.getSession(false);
+            if (session != null && adSoyad != null && !adSoyad.isBlank()) {
+                session.setAttribute("userAdSoyad", adSoyad);
+            }
+
+            redirectAttributes.addFlashAttribute("successMsg", "Profil bilgileriniz başarıyla güncellendi.");
         } catch (Exception e) {
             log.error("[PROFIL-UI] Profil guncelleme hatasi: email={}", email, e);
             String errorDetail = e.getMessage();
@@ -97,7 +107,7 @@ public class ProfilController {
                 redirectAttributes.addFlashAttribute("errorMsg", errorDetail);
             } else {
                 redirectAttributes.addFlashAttribute("errorMsg",
-                        "Profil guncelleme isleminde bir hata olustu. Lutfen tekrar deneyiniz.");
+                        "Profil güncelleme işleminde bir hata oluştu. Lütfen tekrar deneyiniz.");
             }
         }
         return "redirect:/profil";

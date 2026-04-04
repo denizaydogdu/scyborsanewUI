@@ -20,6 +20,9 @@
                     <h4 class="mb-sm-0">
                         <span class="badge bg-primary me-2" th:text="${symbol}">GARAN</span>
                         Finansal Detay
+                        <span th:if="${isKatilim != null and isKatilim}" class="badge bg-success bg-opacity-25 text-success ms-2 fs-12" title="Katılım Endeksi Üyesi">
+                            <i class="ri-check-line me-1"></i>Katılım Hissesi
+                        </span>
                     </h4>
                 </div>
                 <div class="page-title-right">

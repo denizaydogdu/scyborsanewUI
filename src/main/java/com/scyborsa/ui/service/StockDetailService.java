@@ -58,7 +58,7 @@ public class StockDetailService {
                     .uri(ScyborsaApiEndpoints.PINE_SCREENER_DATA, stockId)
                     .retrieve()
                     .bodyToMono(new ParameterizedTypeReference<List<TvScreenerResponseModel>>() {})
-                    .block();
+                    .block(Duration.ofSeconds(15));
         } catch (Exception e) {
             log.error("Pine Screener API cagrisi basarisiz: stockId={}", stockId, e);
             return List.of();
@@ -77,7 +77,7 @@ public class StockDetailService {
                     .uri(ScyborsaApiEndpoints.STOCK_AKD, stockCode)
                     .retrieve()
                     .bodyToMono(AkdResponseDto.class)
-                    .block();
+                    .block(Duration.ofSeconds(15));
         } catch (Exception e) {
             log.error("AKD verisi alınamadı: {} - {}", stockCode, e.getMessage());
             AkdResponseDto empty = new AkdResponseDto();
@@ -100,7 +100,7 @@ public class StockDetailService {
                     .uri(ScyborsaApiEndpoints.STOCK_TAKAS, stockCode)
                     .retrieve()
                     .bodyToMono(TakasResponseDto.class)
-                    .block();
+                    .block(Duration.ofSeconds(15));
         } catch (Exception e) {
             log.error("Takas verisi alinamadi: {} - {}", stockCode, e.getMessage());
             TakasResponseDto empty = new TakasResponseDto();
@@ -121,7 +121,7 @@ public class StockDetailService {
                     .uri(ScyborsaApiEndpoints.STOCK_ORDERBOOK, stockCode)
                     .retrieve()
                     .bodyToMono(OrderbookResponseDto.class)
-                    .block();
+                    .block(Duration.ofSeconds(15));
         } catch (Exception e) {
             log.error("Orderbook verisi alınamadı: {} - {}", stockCode, e.getMessage());
             OrderbookResponseDto empty = new OrderbookResponseDto();
