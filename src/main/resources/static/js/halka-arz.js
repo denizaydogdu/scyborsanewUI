@@ -7,7 +7,7 @@
 
     var PAGE_SIZE = 20;
     var currentPage = 1;
-    var sortField = 'tarih';
+    var sortField = 'talepBitis';
     var sortAsc = false;
     var searchTerm = '';
 
@@ -68,13 +68,17 @@
                     va = a.ilkIslemTarihi || '';
                     vb = b.ilkIslemTarihi || '';
                     return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+                case 'talepBitis':
+                    va = a.talepToplamaBitisTarihi || '';
+                    vb = b.talepToplamaBitisTarihi || '';
+                    return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
                 case 'katilimci':
                     va = a.katilimciSayisi || 0;
                     vb = b.katilimciSayisi || 0;
                     break;
                 default:
-                    va = a.ilkIslemTarihi || '';
-                    vb = b.ilkIslemTarihi || '';
+                    va = a.talepToplamaBitisTarihi || a.ilkIslemTarihi || '';
+                    vb = b.talepToplamaBitisTarihi || b.ilkIslemTarihi || '';
                     return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
             }
             return sortAsc ? va - vb : vb - va;
@@ -105,7 +109,7 @@
         return div.textContent;
     }
 
-    function getDurumBadge(durum) {
+    function getDurumBadge(durum, item) {
         var span = document.createElement('span');
         if (!durum) {
             span.className = 'badge bg-secondary';
@@ -116,8 +120,14 @@
         var label = durum;
         var d = durum.toUpperCase();
         if (d === 'W') {
-            cls = 'bg-success';
-            label = 'İşlem Görüyor';
+            // ilkIslemTarihi yoksa henüz işlem görmüyor
+            if (item && !item.ilkIslemTarihi) {
+                cls = 'bg-warning';
+                label = 'Talep Tamamlandı';
+            } else {
+                cls = 'bg-success';
+                label = 'İşlem Görüyor';
+            }
         } else if (d === 'F') {
             cls = 'bg-primary';
             label = 'Tamamlandı';
@@ -217,7 +227,7 @@
             tr.appendChild(td6);
 
             var td7 = document.createElement('td');
-            td7.appendChild(getDurumBadge(d.durumKodu));
+            td7.appendChild(getDurumBadge(d.durumKodu, d));
             tr.appendChild(td7);
 
             tableBody.appendChild(tr);

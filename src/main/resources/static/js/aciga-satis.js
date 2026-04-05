@@ -12,12 +12,32 @@
 
     var data = window.acigaSatisData || [];
 
+    // Katılım endeksi set
+    var katilimSet = {};
+    var kCodes = window.katilimCodes || [];
+    if (Array.isArray(kCodes)) {
+        kCodes.forEach(function(c) { katilimSet[c] = true; });
+    } else if (typeof kCodes === 'object') {
+        Object.keys(kCodes).forEach(function(c) { katilimSet[c] = true; });
+    }
+    function isKatilim(code) { return code && katilimSet[code] === true; }
+
     var searchInput = document.getElementById('searchInput');
     var tableBody = document.getElementById('acigaSatisTableBody');
     var pagination = document.getElementById('pagination');
     var pageInfo = document.getElementById('pageInfo');
+    var katilimFilter = document.getElementById('katilimFilter');
+    var hisseCountBadge = document.getElementById('hisseCountBadge');
 
     if (!tableBody) return;
+
+    // Katılım filtresi
+    if (katilimFilter) {
+        katilimFilter.addEventListener('change', function() {
+            currentPage = 1;
+            render();
+        });
+    }
 
     // Arama
     if (searchInput) {
@@ -45,6 +65,12 @@
 
     function getFilteredData() {
         var filtered = data;
+        // Katılım filtresi
+        if (katilimFilter && katilimFilter.checked) {
+            filtered = filtered.filter(function (d) {
+                return isKatilim(d.hisseSenediKodu);
+            });
+        }
         if (searchTerm) {
             filtered = filtered.filter(function (d) {
                 return d.hisseSenediKodu && d.hisseSenediKodu.toUpperCase().indexOf(searchTerm) !== -1;
@@ -158,6 +184,15 @@
             link.className = 'fw-semibold text-primary';
             link.textContent = d.hisseSenediKodu || '-';
             wrapper.appendChild(link);
+            // Katılım K badge
+            if (isKatilim(d.hisseSenediKodu)) {
+                var kBadge = document.createElement('span');
+                kBadge.className = 'badge bg-success bg-opacity-25 text-success ms-1 katilim-badge';
+                kBadge.style.cssText = 'font-size:0.65rem;padding:1px 4px;';
+                kBadge.title = 'Katılım Endeksi';
+                kBadge.textContent = 'K';
+                wrapper.appendChild(kBadge);
+            }
             td1.appendChild(wrapper);
             tr.appendChild(td1);
 
@@ -197,6 +232,7 @@
         if (pageInfo) {
             pageInfo.textContent = filtered.length + ' sonuçtan ' + (start + 1) + '-' + Math.min(start + PAGE_SIZE, filtered.length) + ' arası gösteriliyor';
         }
+        if (hisseCountBadge) hisseCountBadge.textContent = filtered.length + ' Hisse';
 
         // Pagination
         if (pagination) {

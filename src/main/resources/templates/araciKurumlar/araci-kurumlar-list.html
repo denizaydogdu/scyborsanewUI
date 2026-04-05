@@ -91,6 +91,81 @@
         </div>
     </div>
 
+    <!-- Bilgi Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-primary border-opacity-25">
+                <a class="text-primary fw-medium" data-bs-toggle="collapse" href="#araciKurumInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Aracı Kurum Dağılımı Nedir? Nasıl Okunur?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="araciKurumInfoCollapse">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-building-line text-primary fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Bu Sayfa Nedir?</h6>
+                                    <p class="text-muted mb-0 fs-12">BIST'te işlem yapan tüm aracı kurumların <strong>toplam alış ve satış hacimlerini</strong> gösterir. Her kurum müşterileri adına işlem yapar — büyük hacimli kurumlar piyasanın yönünü belirler. Veriler seans sonrası (19:00 civarı) güncellenir.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-arrow-up-circle-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Alış Hacmi (Yeşil)</h6>
+                                    <p class="text-muted mb-0 fs-12">Kurumun müşterilerinin toplam <strong>alım miktarını</strong> gösterir. Alış % = bu kurumun tüm piyasa alışları içindeki payı. Yüksek alış hacimli kurumlar güçlü talep tarafını temsil eder.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-arrow-down-circle-line text-danger fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Satış Hacmi (Kırmızı)</h6>
+                                    <p class="text-muted mb-0 fs-12">Kurumun müşterilerinin toplam <strong>satış miktarını</strong> gösterir. Satış % = bu kurumun tüm piyasa satışları içindeki payı. Yüksek satış hacimli kurumlar arz baskısı yaratır.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-scales-3-line text-info fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Net Pozisyon</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>Net = Alış - Satış.</strong> Yeşil (pozitif) = kurum net alıcı, müşterileri daha çok alım yapıyor. Kırmızı (negatif) = kurum net satıcı. Net pozisyon, kurumun müşterilerinin genel eğilimini gösterir.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top pt-2">
+                        <h6 class="mb-2 fs-13">Bu Tabloyu Nasıl Değerlendirmeli?</h6>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-success-subtle bg-opacity-10">
+                                    <span class="badge bg-success-subtle text-success mb-1"><i class="ri-search-eye-line me-1"></i>Kurumsal Takip</span>
+                                    <p class="text-muted mb-0 fs-11">Yabancı kurumların (Goldman Sachs, JP Morgan, Morgan Stanley vb.) net alıcı olması <strong>uluslararası ilgiyi</strong> gösterir. Yerli büyük kurumlar (İş Yatırım, Yapı Kredi, Garanti) piyasa hacminin önemli kısmını oluşturur.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-warning-subtle bg-opacity-10">
+                                    <span class="badge bg-warning-subtle text-warning mb-1"><i class="ri-bar-chart-2-line me-1"></i>Alıcı/Satıcı Dengesi</span>
+                                    <p class="text-muted mb-0 fs-11">KPI'daki <strong>Alıcı/Satıcı</strong> oranı piyasa dengesini gösterir. Alıcı sayısı > Satıcı ise genel talep güçlü. Bir kurumun detay sayfasına tıklayarak hangi hisselerde işlem yaptığını görebilirsiniz.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-info-subtle bg-opacity-10">
+                                    <span class="badge bg-info-subtle text-info mb-1"><i class="ri-calendar-check-line me-1"></i>Veri Gecikmesi</span>
+                                    <p class="text-muted mb-0 fs-11">AKD verileri <strong>T+1 gecikmeli</strong> — bir önceki işlem gününe aittir. Hafta sonları ve tatillerde son işlem gününün verisi gösterilir. Gün içi anlık pozisyon değişikliklerini yansıtmaz.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Ana Kart: Araci Kurum Dagilimi Tablosu -->
     <div class="row">
         <div class="col-lg-12">

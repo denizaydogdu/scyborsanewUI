@@ -20,6 +20,58 @@
         </div>
     </div>
 
+    <!-- Teknik Tarama Bilgi Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-primary border-opacity-25">
+                <a class="text-primary fw-medium" data-bs-toggle="collapse" href="#teknikTaramaInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Teknik Tarama Nedir? Nasıl Kullanılır?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="teknikTaramaInfoCollapse">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-equalizer-line text-primary fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Teknik Tarama Nedir?</h6>
+                                    <p class="text-muted mb-0 fs-12">Hisseleri teknik göstergelere göre filtreler. Aşağıdan bir strateji seçin, "Tara" butonuna tıklayın -- kriterlere uyan hisseler listelenir. 15 aktif strateji, 4 kategori.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-stack-line text-info fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Kategoriler</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>MOMENTUM:</strong> RSI, Stochastic, CCI. <strong>TREND:</strong> MACD, EMA, ADX, Ichimoku. <strong>HACİM:</strong> Hacim patlaması, para girişi. <strong>VOLATİLİTE:</strong> Bollinger daralması.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-bar-chart-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Sonuçları Nasıl Okumalı?</h6>
+                                    <p class="text-muted mb-0 fs-12">Değişim % = günlük fiyat değişimi. Göreceli Hacim = bugünkü hacim / 10 gün ort. hacim. 2x+ = normalin 2 katı işlem.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-funds-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Ortalama Hacim 10G/60G/90G</h6>
+                                    <p class="text-muted mb-0 fs-12">Son 10, 60 ve 90 günlük ortalama hacim. Yüksek hacimli hisseler daha likit, kolay alınıp satılır.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Strateji Seçim Kartı -->
     <div class="row">
         <div class="col-lg-12">
@@ -92,7 +144,13 @@
             <div class="card">
                 <div class="card-header align-items-center d-flex">
                     <h4 class="card-title mb-0 flex-grow-1" id="resultsTitle">Tarama Sonuçları</h4>
-                    <div class="flex-shrink-0">
+                    <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="teknikKatilimFilter">
+                            <label class="form-check-label" for="teknikKatilimFilter">
+                                <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.7rem">K</span> Katılım
+                            </label>
+                        </div>
                         <span id="resultCountBadge" class="badge bg-primary-subtle text-primary">0 Hisse</span>
                     </div>
                 </div>
@@ -314,7 +372,7 @@
                 </a>
                 <div class="collapse show mt-3" id="patternInfoCollapse">
                     <div class="row g-3 mb-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="d-flex">
                                 <div class="flex-shrink-0"><i class="ri-shape-line text-info fs-20 me-2"></i></div>
                                 <div>
@@ -323,7 +381,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="d-flex">
                                 <div class="flex-shrink-0"><i class="ri-bar-chart-line text-success fs-20 me-2"></i></div>
                                 <div>
@@ -332,12 +390,21 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="d-flex">
                                 <div class="flex-shrink-0"><i class="ri-search-eye-line text-warning fs-20 me-2"></i></div>
                                 <div>
                                     <h6 class="mb-1">Mum Sayısı ve Periyot</h6>
                                     <p class="text-muted mb-0 fs-12"><strong>Mum Sayısı:</strong> Tarayıcının geriye kaç mum bakacağı (10=kısa, 15=orta, 20=uzun vadeli). <strong>Periyot:</strong> Her mumun kapsadığı süre (günlük veya haftalık).</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-compass-3-line text-danger fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Yön ve Güvenilirlik</h6>
+                                    <p class="text-muted mb-0 fs-12">Her formasyonun bir yönü vardır: <span class="text-success">Yükseliş</span>, <span class="text-danger">Düşüş</span> veya <span class="text-warning">Belirsiz</span>. Güvenilirlik yüzdesi kırılma ihtimalini gösterir.</p>
                                 </div>
                             </div>
                         </div>
@@ -360,7 +427,7 @@
                             <div class="col-md-4">
                                 <div class="border rounded p-2 bg-warning-subtle bg-opacity-10">
                                     <span class="badge bg-warning-subtle text-warning mb-1"><i class="ri-arrow-left-right-line me-1"></i>Belirsiz</span>
-                                    <p class="text-muted mb-0 fs-11">Yatay Kanal, Simetrik Üçgen (%55-70), Dikdörtgen (%68-85) — kırılma yönü belirsiz, hacim takibi gerekir</p>
+                                    <p class="text-muted mb-0 fs-11">Yatay Kanal, Simetrik Üçgen (%55-70), Dikdörtgen (%68-85) -- kırılma yönü belirsiz, hacim takibi gerekir</p>
                                 </div>
                             </div>
                         </div>
@@ -400,7 +467,13 @@
             <div class="card">
                 <div class="card-header align-items-center d-flex">
                     <h4 class="card-title mb-0 flex-grow-1">Formasyon Sonuçları</h4>
-                    <div class="flex-shrink-0">
+                    <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="patternKatilimFilter">
+                            <label class="form-check-label" for="patternKatilimFilter">
+                                <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.7rem">K</span> Katılım
+                            </label>
+                        </div>
                         <span id="patternCountBadge" class="badge bg-primary-subtle text-primary">0 Formasyon</span>
                     </div>
                 </div>
@@ -806,7 +879,13 @@
             <div class="card">
                 <div class="card-header align-items-center d-flex">
                     <h4 class="card-title mb-0 flex-grow-1">Mum Formasyonu Sonuçları</h4>
-                    <div class="flex-shrink-0">
+                    <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="csKatilimFilter">
+                            <label class="form-check-label" for="csKatilimFilter">
+                                <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.7rem">K</span> Katılım
+                            </label>
+                        </div>
                         <span id="csCountBadge" class="badge bg-primary-subtle text-primary">0 Hisse</span>
                     </div>
                 </div>
@@ -1067,30 +1146,39 @@
                 </a>
                 <div class="collapse show mt-3" id="rcInfoCollapse">
                     <div class="row g-3 mb-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="d-flex">
                                 <div class="flex-shrink-0"><i class="ri-line-chart-line text-info fs-20 me-2"></i></div>
                                 <div>
                                     <h6 class="mb-1">Regresyon Kanalı Nedir?</h6>
-                                    <p class="text-muted mb-0 fs-12">Fiyat hareketlerinin istatistiksel eğilim çizgisi etrafındaki dağılımını gösteren bir teknik analiz aracıdır. Doğrusal regresyon ile hesaplanan merkez çizgi ve standart sapma bantlarından oluşur.</p>
+                                    <p class="text-muted mb-0 fs-12">Fiyat hareketlerinin istatistiksel trend çizgisini ve sapma kanallarını gösterir. R² (uyum) değeri trendin ne kadar düzgün olduğunu ölçer.</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="d-flex">
                                 <div class="flex-shrink-0"><i class="ri-focus-2-line text-success fs-20 me-2"></i></div>
                                 <div>
-                                    <h6 class="mb-1">R² (Determinasyon Katsayısı)</h6>
-                                    <p class="text-muted mb-0 fs-12">Fiyatın regresyon çizgisine ne kadar uyduğunu gösterir (0-1). <strong>R² &gt; 0.7:</strong> Güçlü trend, kanal güvenilir. <strong>R² &lt; 0.3:</strong> Zayıf trend, kanal güvenilmez.</p>
+                                    <h6 class="mb-1">R² Değeri</h6>
+                                    <p class="text-muted mb-0 fs-12">0-1 arası. 0.8+ = çok güçlü trend, fiyat kanalda düzenli hareket ediyor. 0.5 altı = zayıf trend.</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="d-flex">
                                 <div class="flex-shrink-0"><i class="ri-dashboard-3-line text-warning fs-20 me-2"></i></div>
                                 <div>
-                                    <h6 class="mb-1">Kanal Pozisyonu (%)</h6>
-                                    <p class="text-muted mb-0 fs-12">Fiyatın kanal içindeki konumunu yüzde olarak gösterir. <strong>0%:</strong> Alt bant, <strong>50%:</strong> Merkez çizgi, <strong>100%:</strong> Üst bant. Negatif veya 100+ ise kanal dışında.</p>
+                                    <h6 class="mb-1">Kanal Pozisyonu</h6>
+                                    <p class="text-muted mb-0 fs-12">Alt bant yakını = ucuz bölge (potansiyel alım). Üst bant yakını = pahalı bölge (potansiyel satış). Orta çizgi = denge.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-arrow-up-down-line text-danger fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Eğim</h6>
+                                    <p class="text-muted mb-0 fs-12">Pozitif eğim = yükseliş trendi. Negatif eğim = düşüş trendi. Eğimin büyüklüğü trendin hızını gösterir.</p>
                                 </div>
                             </div>
                         </div>
@@ -1172,7 +1260,13 @@
             <div class="card">
                 <div class="card-header align-items-center d-flex">
                     <h4 class="card-title mb-0 flex-grow-1">Regresyon Kanalı Sonuçları</h4>
-                    <div class="flex-shrink-0">
+                    <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="rcKatilimFilter">
+                            <label class="form-check-label" for="rcKatilimFilter">
+                                <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.7rem">K</span> Katılım
+                            </label>
+                        </div>
                         <span id="rcCountBadge" class="badge bg-primary-subtle text-primary">0 Hisse</span>
                     </div>
                 </div>

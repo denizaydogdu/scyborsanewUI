@@ -28,7 +28,7 @@
                         <div>
                             <h4 class="fs-22 fw-semibold ff-secondary mb-1"
                                 th:text="${toplamKart}">0</h4>
-                            <p class="text-muted fs-12 mb-0">Ayni hisse + saat birlestirilerek hesaplanir</p>
+                            <p class="text-muted fs-12 mb-0">Aynı hisse + saat birleştirilerek hesaplanır</p>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white rounded fs-3 border">
@@ -46,14 +46,14 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1 overflow-hidden">
-                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Tabloda Gosterilen</p>
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Tabloda Gösterilen</p>
                         </div>
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-2">
                         <div>
                             <h4 class="fs-22 fw-semibold ff-secondary mb-1"
                                 th:text="${groupByStock ? #lists.size(stockGroups) + ' Hisse' : #lists.size(taramalar) + ' Kart'}">0</h4>
-                            <p class="text-muted fs-12 mb-0">Filtreler uygulandiktan sonraki sayi</p>
+                            <p class="text-muted fs-12 mb-0">Filtreler uygulandıktan sonraki sayı</p>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white rounded fs-3 border">
@@ -78,7 +78,7 @@
                         <div>
                             <h4 class="fs-22 fw-semibold ff-secondary mb-1"
                                 th:text="${ozet != null ? ozet.benzersizHisseSayisi : #lists.size(stockGroups)}">0</h4>
-                            <p class="text-muted fs-12 mb-0">En az 1 sinyal alan farkli hisse sayisi</p>
+                            <p class="text-muted fs-12 mb-0">En az 1 sinyal alan farklı hisse sayısı</p>
                         </div>
                         <div class="avatar-sm flex-shrink-0">
                             <span class="avatar-title bg-white rounded fs-3 border">
@@ -91,61 +91,320 @@
         </div>
     </div>
 
+    <!-- Bilgi Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-primary border-opacity-25">
+                <a class="text-primary fw-medium" data-bs-toggle="collapse" href="#taramalarInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>SCY Taramalar Nedir? Bu Sayfa Nasıl Kullanılır?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="taramalarInfoCollapse">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-scan-line text-primary fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Bu Sayfa Nedir?</h6>
+                                    <p class="text-muted mb-0 fs-12">SCY'nin teknik tarama motorunun ürettiği <strong>AL/SAT sinyallerini</strong> listeler. Her seans boyunca belirli saatlerde tüm BIST hisseleri taranır ve kriterlere uyan hisseler burada gösterilir. Sinyaller tarih ve saat bazlıdır.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-filter-3-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Nasıl Filtrelenir?</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>Tarih aralığı:</strong> Hangi günlerin sinyallerini görmek istiyorsunuz? <strong>Tarama:</strong> Belirli bir stratejiye odaklanın (EMA, MACD, RSI vb.). <strong>Hisse:</strong> Belirli bir hissenin sinyallerini arayın. <strong>Benzersiz Hisseler:</strong> Aynı hisseyi tek satırda gruplar.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-bar-chart-2-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Sinyal % Ne Demek?</h6>
+                                    <p class="text-muted mb-0 fs-12">Sinyalin üretildiği andaki <strong>fiyat değişim yüzdesi.</strong> <span class="text-success">Yeşil (+)</span> = yükseliş sinyali, <span class="text-danger">Kırmızı (-)</span> = düşüş sinyali. Yüzde ne kadar büyükse sinyal o kadar güçlüdür.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-group-line text-info fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Benzersiz Hisseler Modu</h6>
+                                    <p class="text-muted mb-0 fs-12">Checkbox'ı işaretlediğinizde aynı hisse tek satırda gösterilir, <strong>kaç farklı sinyal</strong> aldığı badge ile belirtilir. Tıklayarak detay sinyalleri görebilirsiniz. Çok sinyal alan hisseler daha güçlü trendde olabilir.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top pt-2">
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-success-subtle bg-opacity-10">
+                                    <span class="badge bg-success-subtle text-success mb-1"><i class="ri-lightbulb-line me-1"></i>Güçlü Sinyal Tespiti</span>
+                                    <p class="text-muted mb-0 fs-11">Aynı hisseye aynı gün <strong>birden fazla farklı tarama</strong> sinyal veriyorsa bu güçlü bir teyit sinyalidir. Benzersiz Hisseler modunda "Sinyal" sayısı yüksek olanları inceleyin.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-warning-subtle bg-opacity-10">
+                                    <span class="badge bg-warning-subtle text-warning mb-1"><i class="ri-time-line me-1"></i>Zamanlama</span>
+                                    <p class="text-muted mb-0 fs-11">Sinyaller belirli seans saatlerinde üretilir. <strong>Saat kolonu</strong> sinyalin ne zaman oluştuğunu gösterir. Erken saatlerdeki sinyaller gün boyunca geçerliliğini koruyabilir, geç saatlerdekiler ertesi gün için değerlendirilir.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-danger-subtle bg-opacity-10">
+                                    <span class="badge bg-danger-subtle text-danger mb-1"><i class="ri-error-warning-line me-1"></i>Uyarı</span>
+                                    <p class="text-muted mb-0 fs-11">Teknik sinyaller kesin alım/satım tavsiyesi değildir. Temel analiz, haber takibi ve risk yönetimi ile birlikte değerlendirin. Geçmiş performans gelecek sonuçları garanti etmez.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarama Stratejileri Sözlüğü -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-warning border-opacity-25">
+                <a class="text-warning fw-medium" data-bs-toggle="collapse" href="#taramaSozlukCollapse" role="button" aria-expanded="true">
+                    <i class="ri-book-open-line me-1"></i>Tarama Stratejileri Sözlüğü — Her Tarama Ne Yapıyor?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="taramaSozlukCollapse">
+                    <p class="text-muted fs-12 mb-3">Sistemde <strong>7 kategori altında 66 farklı tarama stratejisi</strong> çalışır. Her biri BIST hisselerini farklı teknik kriterlere göre tarar. Seans boyunca 5 dakikada bir tüm taramalar otomatik çalışır ve sinyal üreten hisseler aşağıda listelenir.</p>
+
+                    <!-- Tüm Taramalar Detaylı Tablo -->
+                    <div class="table-responsive mb-3 tarama-sozluk-scroll">
+                        <table class="table table-sm table-striped align-middle mb-0 fs-11">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th style="width:200px">Tarama Adı</th>
+                                    <th style="width:120px">Kategori</th>
+                                    <th>Ne Yapıyor? (Basit Açıklama)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- HAREKETLI ORTALAMA (28) -->
+                                <tr><td class="fw-medium">ALL IN MA</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Fiyat TÜM hareketli ortalamaların (kısa, orta, uzun vade) üzerinde mi? Eğer hepsi üstündeyse, hisse çok güçlü yükseliş trendinde demektir.</td></tr>
+                                <tr><td class="fw-medium">BASIT 20</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Fiyat 20 günlük ortalamanın üzerine çıktığı an. En basit "yükseliş başlıyor" sinyali. Momentum ve teknik rating da pozitif olmalı.</td></tr>
+                                <tr><td class="fw-medium">BIST VEGAS</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>"Vegas Kanalı" stratejisi — uzun vadeli ortalamalar (EMA144, EMA200) doğru sırada ve fiyat kısa vadeli ortalamayı yukarı kırıyor.</td></tr>
+                                <tr><td class="fw-medium">CEYREK TARAMA</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Fiyat 7 farklı ortalamanın üzerinde + RSI pozitif + trend takip göstergesi onaylı. Çeyreklik (3 aylık) trend takibi için.</td></tr>
+                                <tr><td class="fw-medium">EMA 5-10</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>5 günlük ortalama, 10 günlük ortalamayı yukarı kesiyor + birden fazla zaman diliminde EMA8 hizalı. Kısa vadeli "al" sinyali.</td></tr>
+                                <tr><td class="fw-medium">EMA DIP</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Fiyat hem EMA5 hem EMA10'u aynı anda yukarı kırıyor + hacim ortalamanın üstünde. Dip noktadan yukarı dönüş yakalama.</td></tr>
+                                <tr><td class="fw-medium">HAREKETLI ORT. STRATEJİ</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Birden fazla zaman diliminde (1 saat, 4 saat, günlük) EMA8 doğru sırada + MACD pozitif + Stochastic yukarı + hacim artışı %10+.</td></tr>
+                                <tr><td class="fw-medium">HAREKETLI ORT. TARAMASI</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Yukarıdakinin genişletilmiş hali — MACD sıfır üstü + Stochastic K>D ek koşulları ile daha güvenilir filtre.</td></tr>
+                                <tr><td class="fw-medium">KARMA ORT. DENEME</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Hull MA9 + SMA10 + EMA10 üzerinde + hacim 1M TL+ + Momentum pozitif + para akışı pozitif. Karma ortalama denemesi.</td></tr>
+                                <tr><td class="fw-medium">KARMA ORTALAMA</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>SMA10 + EMA9 + Hull MA9 üzerinde + RSI 50+ + hacim 1M TL+ + para akışı pozitif. Üç farklı ortalama türü birlikte.</td></tr>
+                                <tr><td class="fw-medium">KARMA V2</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Aylık + haftalık + günlük grafiklerde EMA8 üzerinde + Pivot üzerinde + RSI 60+ + Hull MA pozitif. Çoklu zaman dilimi.</td></tr>
+                                <tr><td class="fw-medium">KARMA</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Karma V2'nin biraz farklı versiyonu — aynı çoklu zaman dilimi kontrolü, değişim %1-6 arasında.</td></tr>
+                                <tr><td class="fw-medium">KNOWLEDGE</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>"Bilgi" taraması — fiyat EMA200/50/20 üzerinde + Stochastic + PSAR + ADX + MACD + MoneyFlow + RSI + Ichimoku + para akışı HEPSİ pozitif. Çok katmanlı onay.</td></tr>
+                                <tr><td class="fw-medium">MTF TARAMA</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Çoklu Zaman Dilimi — 1 saatlik, 4 saatlik ve günlük grafiklerde EMA8 üzerinde + hacim %30+ artmış. Multi-timeframe momentum.</td></tr>
+                                <tr><td class="fw-medium">ORTALAMA BAZ</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>EMA20>EMA50 ve SMA20>SMA50 + Stochastic + StochRSI + Momentum + MACD hepsi pozitif. Ortalama bazlı trend onay.</td></tr>
+                                <tr><td class="fw-medium">ORTALAMA BAZLI</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>4 zaman diliminde (haftalık, 4s, 1s, günlük) fiyat EMA üzerinde + para akışı pozitif + MACD + Ichimoku + RSI 60+.</td></tr>
+                                <tr><td class="fw-medium">ORTALAMA KARMASI V2</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Ortalama Bazlı ile aynı — 4 zaman dilimi EMA + MACD + Ichimoku + para akışı.</td></tr>
+                                <tr><td class="fw-medium">ORTALAMA KARMASI</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>3 zaman diliminde (1s, 4s, günlük) EMA/SMA üzerinde + RSI 51+ + Pivot üzerinde + para akışı nötr-pozitif.</td></tr>
+                                <tr><td class="fw-medium">POWER TREND</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>"Güçlü Trend" — EMA34, SMA50, Bollinger üst bandı, Ichimoku, PSAR, Hull MA hepsinin üzerinde + 8 gösterge pozitif. En güçlü trend taraması.</td></tr>
+                                <tr><td class="fw-medium">SEYDATA TARAMA</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>EMA dizilimi (5>8>13>21) + RSI 45-80 + MACD pozitif + Stochastic pozitif. Düzenli EMA sıralaması arayan tarama.</td></tr>
+                                <tr><td class="fw-medium">SPECIAL ONE</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Fiyat EMA10'u yukarı kırıyor + 15 dakikalık Pivot üzerinde + RSI 51+ + Momentum + para akışı pozitif. Kısa vadeli özel sinyal.</td></tr>
+                                <tr><td class="fw-medium">SUPERTREND</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Fiyat SMA200/50, EMA144/89, Ichimoku hepsinin üzerinde + RSI 45-75 + CCI 100+ + ADX 20+. "Süper trend" filtresi.</td></tr>
+                                <tr><td class="fw-medium">TARA 14-34 KESİŞİMİ</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>EMA14 çizgisi EMA34 çizgisini TAM O AN yukarı kesiyor. Klasik "altın kesişim" — yeni yükseliş trendi başlangıcı.</td></tr>
+                                <tr><td class="fw-medium">TARA 3T1S</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>"3 Timeframe 1 Strateji" — haftalık, 4 saatlik, 1 saatlik ve günlük grafiklerde aynı strateji uygulanır. Tüm zaman dilimlerinde onay.</td></tr>
+                                <tr><td class="fw-medium">TARA 5-8-13</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Fibonacci sıralı ortalamalar (SMA 5, 8, 13) haftalık ve günlükte doğru dizilimde + fiyat SMA13'ü yukarı kırıyor.</td></tr>
+                                <tr><td class="fw-medium">TENKAN-KIJUN</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Ichimoku bulut sinyali — Tenkan (kısa) > Kijun (orta) + bulut yeşil + hacim ortalamanın üstünde. Japon teknik analizinin temel al sinyali.</td></tr>
+                                <tr><td class="fw-medium">TREND VE OLUMLU GÖSTERGE</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>Birden fazla EMA üzerinde + ADX yönlü + PSAR altında + MACD + Stochastic + MoneyFlow + Hull MA + Ichimoku HEPSİ pozitif.</td></tr>
+                                <tr><td class="fw-medium">VİRA</td><td><span class="badge bg-primary-subtle text-primary">Ortalama</span></td><td>SMA sıralaması (10>50>200) + Aroon Up 100 (sürekli yeni zirveler) + Hull MA + Ichimoku tam sinyal. Uzun vadeli güçlü trend.</td></tr>
+                                <!-- OSİLATÖR (14) -->
+                                <tr><td class="fw-medium">CHAISTOK</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>Chaikin Para Akışı — 1 saatlik, 4 saatlik ve günlük grafiklerde para akışı aynı anda pozitif + Stochastic yukarı. Akıllı para takibi.</td></tr>
+                                <tr><td class="fw-medium">GÖSTERGE YUKARI ANKA</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>RSI, ADX, EMA, MACD, PSAR, MoneyFlow, para akışı, Hull MA, StochRSI, Ichimoku — TÜM göstergeler aynı anda "yukarı" diyor.</td></tr>
+                                <tr><td class="fw-medium">ICHİMOKU ANKA</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>Ichimoku tam alış sinyali (Tenkan>Kijun + fiyat>Kijun + bulut yeşil) + StochRSI + PSAR + MACD + Momentum pozitif.</td></tr>
+                                <tr><td class="fw-medium">PSAR-EMA ANKA</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>EMA10 çizgisi EMA20'yi yukarı kesiyor + para akışı nötr bölgede (henüz aşırı alım değil). Erken giriş sinyali.</td></tr>
+                                <tr><td class="fw-medium">RSI+EMA KARIŞ.</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>Fiyat EMA21 ve EMA34'ü aynı anda yukarı kırıyor + RSI 50'yi geçiyor + Stochastic pozitif. Üçlü kesişim sinyali.</td></tr>
+                                <tr><td class="fw-medium">SREMA (7'Lİ ONAY)</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>Stochastic + StochRSI + MACD + ADX + MoneyFlow + RSI + para akışı — 7 göstergenin HEPSİ aynı anda "al" diyor. En güvenilir.</td></tr>
+                                <tr><td class="fw-medium">STOKARSI ÇIKIŞ</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>StochRSI göstergesi 20 seviyesini (aşırı satım) yukarı kırıyor + hacim ortalamanın üstünde. Dipten çıkış yakalama.</td></tr>
+                                <tr><td class="fw-medium">STOKASTİK</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>Stochastic K çizgisi D çizgisini yukarı kesiyor + MACD pozitif + MACD sinyal kesişimi. Çift teyitli kısa vadeli al.</td></tr>
+                                <tr><td class="fw-medium">STOKASTİK 2</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>Stochastic K>50 + K D'yi yukarı kesiyor + MACD + para akışı + MoneyFlow + Momentum + hacim artışı %10+. Güçlü versiyon.</td></tr>
+                                <tr><td class="fw-medium">STOKASTİK YENİ</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>Stochastic K D'yi yukarı kesiyor + MACD pozitif + Momentum pozitif. Basit ve hızlı versiyon.</td></tr>
+                                <tr><td class="fw-medium">TENKAN-KIJUN ANKA</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>Ichimoku Tenkan çizgisi Kijun çizgisini TAM O AN yukarı kesiyor. Anlık kesişim sinyali — çok kısa vadeli.</td></tr>
+                                <tr><td class="fw-medium">TREND YUK.+GÖSTERGE YUK.</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>Gösterge Yukarı Anka ile aynı — tüm göstergeler aynı anda pozitif.</td></tr>
+                                <tr><td class="fw-medium">WILLIAMS %R (-20)</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>Williams göstergesi -20 seviyesini (aşırı alım) yukarı kırıyor. Momentum devam sinyali — güçlü hisseler güçlü kalmaya devam edebilir.</td></tr>
+                                <tr><td class="fw-medium">WILLIAMS %R (-80)</td><td><span class="badge bg-success-subtle text-success">Osilatör</span></td><td>Williams göstergesi -80 seviyesini (aşırı satım) yukarı kırıyor. Dip dönüş sinyali — çok satılmış hissede toparlanma başlıyor.</td></tr>
+                                <!-- KARMA VE ÖZEL (13) -->
+                                <tr><td class="fw-medium">ATILGAN</td><td><span class="badge bg-warning-subtle text-warning">Karma</span></td><td>Para akışı nötr + RSI 50+ + hacim ağırlıklı ortalama altında + göreceli hacim 1.2x+. Sessiz biriken hisseler.</td></tr>
+                                <tr><td class="fw-medium">BOLLİNGER BANDI</td><td><span class="badge bg-warning-subtle text-warning">Karma</span></td><td>Fiyat üst Bollinger bandını TAM O AN yukarı kırıyor. Sıkışma sonrası patlama — güçlü yukarı hareket beklentisi.</td></tr>
+                                <tr><td class="fw-medium">DENİZ YATIRIM</td><td><span class="badge bg-warning-subtle text-warning">Karma</span></td><td>RSI 30-70 + MACD pozitif + Stochastic pozitif + kısa vadeli para akışı pozitif AMA günlük para akışı negatif. Diverjans arayan strateji.</td></tr>
+                                <tr><td class="fw-medium">DOĞUM SANCISI</td><td><span class="badge bg-warning-subtle text-warning">Karma</span></td><td>Fiyat SMA20'yi yukarı kırıyor + MACD + Stochastic + RSI 40+ + Momentum pozitif. Yeni trend başlangıcı — "doğum anı".</td></tr>
+                                <tr><td class="fw-medium">FRİDA</td><td><span class="badge bg-warning-subtle text-warning">Karma</span></td><td>11 koşul birden: fiyat>açılış + hacim yüksek + SMA20 üzerinde + para akışı + RSI + MACD + Momentum + PSAR + StochRSI + EMA55 + EMA200 hepsi pozitif.</td></tr>
+                                <tr><td class="fw-medium">LONGCU</td><td><span class="badge bg-warning-subtle text-warning">Karma</span></td><td>"Uzun pozisyon" taraması — RSI + ADX yönlü + Momentum + MACD + PSAR + MoneyFlow + Ichimoku + para akışı hepsi aynı anda pozitif.</td></tr>
+                                <tr><td class="fw-medium">MİDAS TARAMA</td><td><span class="badge bg-warning-subtle text-warning">Karma</span></td><td>"Altın Sinyal" — fiyat TÜM EMA'ların üzerinde (9/21/50/200) + MACD + RSI 70 altı + Stochastic + StochRSI + para akışı + Momentum pozitif.</td></tr>
+                                <tr><td class="fw-medium">ÖYLE DE GÜZEL</td><td><span class="badge bg-warning-subtle text-warning">Karma</span></td><td>RSI 50+ + Stochastic 80+ + StochRSI 80+ (aşırı alım bölgesinde ama güçlü) + EMA55/SMA50/SMA200 üzerinde. Momentum zirve hisseleri.</td></tr>
+                                <tr><td class="fw-medium">ÖZGÜR TARAMA</td><td><span class="badge bg-warning-subtle text-warning">Karma</span></td><td>1 saatlik grafikte EMA21 üzerinde + RSI 50+ + 15dk Pivot üzerinde + 5 osilatör pozitif + EMA5 kesişimi. Çoklu gösterge.</td></tr>
+                                <tr><td class="fw-medium">RSI TARAMASI</td><td><span class="badge bg-warning-subtle text-warning">Karma</span></td><td>5 günlük RSI, 14 günlük RSI'yı yukarı kesiyor + hacim değişimi %5+. Kısa vadeli RSI momentum tetikleme.</td></tr>
+                                <tr><td class="fw-medium">ŞAHMERAN</td><td><span class="badge bg-warning-subtle text-warning">Karma</span></td><td>EN SEÇİCİ TARAMA — MACD + ADX + VWAP + VWMA + Hull MA + Ichimoku + para akışı + TradingView teknik/ortalama/osilatör rating'lerin HEPSİ "Güçlü Al".</td></tr>
+                                <tr><td class="fw-medium">TARA 41 BURDA</td><td><span class="badge bg-warning-subtle text-warning">Karma</span></td><td>İşlem hacmi 10M TL+ + RSI 50+ + kısa RSI 70+ + para akışı + Hull MA + StochRSI + Ichimoku pozitif. Yüksek hacimli güçlü hisseler.</td></tr>
+                                <tr><td class="fw-medium">TEKNİK TARAMA</td><td><span class="badge bg-warning-subtle text-warning">Karma</span></td><td>Ortalama hacim 1M+ + işlem hacmi 10M+ + CCI 100+ + 15dk Pivot + EMA5>13 + 1s EMA21 + PSAR + CCI(1s) 100+ + hacim artışı %10+.</td></tr>
+                                <!-- HACİM (4) -->
+                                <tr><td class="fw-medium">HACİM BOMBASI</td><td><span class="badge bg-danger-subtle text-danger">Hacim</span></td><td>Hacim normalin %30'dan fazla artmış + TradingView teknik rating "Güçlü Al" + Momentum pozitif. Ani ilgi patlaması.</td></tr>
+                                <tr><td class="fw-medium">HACİM BOMBASI V2</td><td><span class="badge bg-danger-subtle text-danger">Hacim</span></td><td>Daha agresif — hacim normalin %100 artmış (2 katı!) + teknik rating "Al" veya "Güçlü Al". Çok güçlü hacim patlaması.</td></tr>
+                                <tr><td class="fw-medium">HACİM DENEME</td><td><span class="badge bg-danger-subtle text-danger">Hacim</span></td><td>Hacim 1M+ + göreceli hacim yüksek + CCI 100+ + ADX yönlü + para akışı + MACD + Stochastic + EMA21 üzerinde + teknik "Güçlü Al".</td></tr>
+                                <tr><td class="fw-medium">HACİMSEL</td><td><span class="badge bg-danger-subtle text-danger">Hacim</span></td><td>Hacim 1M+ + göreceli hacim yüksek + RSI 50+ + CCI 100+ + ADX yönlü + MACD + Stochastic + EMA34/SMA50 üzerinde. 8 koşul birden.</td></tr>
+                                <!-- MACD (2) -->
+                                <tr><td class="fw-medium">MACD SIFIR ÜSTÜ AL</td><td><span class="badge bg-info-subtle text-info">MACD</span></td><td>MACD zaten sıfırın üzerinde (yükseliş trendinde) VE sinyal çizgisini yukarı kesiyor + RSI 50+ + para akışı pozitif. Güvenli trend devamı.</td></tr>
+                                <tr><td class="fw-medium">MACD SIFIR ALTI AL</td><td><span class="badge bg-info-subtle text-info">MACD</span></td><td>MACD sıfırın altında (düşüşte) AMA sinyal çizgisini yukarı kesiyor + RSI 50+ + para akışı pozitif. Erken dönüş — riskli ama erken giriş.</td></tr>
+                                <!-- UZMAN (5) -->
+                                <tr><td class="fw-medium">ERİK TARAMA</td><td><span class="badge bg-primary-subtle text-primary">Uzman</span></td><td>MACD + RSI 60+ + Ultimate Osc. + para akışı + MoneyFlow + EMA21 üzerinde + Stochastic kesişimi. Çoklu momentum taraması.</td></tr>
+                                <tr><td class="fw-medium">ERİK-SEYDA</td><td><span class="badge bg-primary-subtle text-primary">Uzman</span></td><td>4 saatlik grafikte Ichimoku + MACD + SMA20>50 + 5 osilatör + günlük RSI 60+. Birkaç günlük swing trade için.</td></tr>
+                                <tr><td class="fw-medium">VİOP</td><td><span class="badge bg-primary-subtle text-primary">Uzman</span></td><td>1 saatlik zaman diliminde Stochastic + para akışı + MACD + Aroon + Momentum + RSI + CCI + ADX tümü pozitif. Vadeli işlem stratejisi.</td></tr>
+                                <tr><td class="fw-medium">XC90</td><td><span class="badge bg-primary-subtle text-primary">Uzman</span></td><td>Fiyat>EMA10 + Momentum + Stochastic + değişim hızı (ROC) + harika osilatör (AO) + ultimate osilatör + SMA20>50 + para akışı pozitif.</td></tr>
+                                <tr><td class="fw-medium">XC40</td><td><span class="badge bg-primary-subtle text-primary">Uzman</span></td><td>1 saatlik grafikte RSI 60+ + Momentum + ADX 20+ + harika osilatör + para akışı + Hull MA pozitif. Kısa vadeli momentum.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="border-top pt-2">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <i class="ri-timer-line text-muted fs-16 me-2 mt-1"></i>
+                                    <p class="text-muted mb-0 fs-11"><strong>Çalışma Zamanı:</strong> Seans boyunca (09:56 - 18:12) her 5 dakikada bir 66 tarama otomatik çalışır. Her tarama TradingView teknik verileriyle tüm BIST hisselerini tarar. Sonuçlar anında bu sayfaya yansır.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                    <i class="ri-focus-3-line text-muted fs-16 me-2 mt-1"></i>
+                                    <p class="text-muted mb-0 fs-11"><strong>En İyi Kullanım:</strong> Aynı hisseye <strong>farklı kategorilerden</strong> sinyal geliyorsa (örn. hem MACD kesişimi hem hacim patlaması hem ortalama üstü) bu çok güçlü bir teyit sinyalidir. Benzersiz Hisseler modunda sinyal sayısı yüksek olanları inceleyin.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Row 2: Filter Section -->
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="row g-3 align-items-end">
-                        <div class="col-md-2">
-                            <label for="startDate" class="form-label">Başlangıç Tarihi</label>
-                            <input type="date" class="form-control" id="startDate"
+                    <!-- Satır 1: Tarih + Saat + Tarama + Kategori + Hisse -->
+                    <div class="row g-2 align-items-end">
+                        <div class="col-auto">
+                            <label for="startDate" class="form-label fs-12 mb-1">Başlangıç Tarihi</label>
+                            <input type="date" class="form-control form-control-sm" id="startDate"
                                    th:value="${startDate}" th:max="${today}"/>
                         </div>
-                        <div class="col-md-2">
-                            <label for="endDate" class="form-label">Bitiş Tarihi</label>
-                            <input type="date" class="form-control" id="endDate"
+                        <div class="col-auto">
+                            <label for="endDate" class="form-label fs-12 mb-1">Bitiş Tarihi</label>
+                            <input type="date" class="form-control form-control-sm" id="endDate"
                                    th:value="${endDate}" th:max="${today}"/>
                         </div>
-                        <div class="col-md-2">
-                            <label for="screenerFilter" class="form-label">Tarama</label>
-                            <select class="form-select" id="screenerFilter">
+                        <div class="col-auto">
+                            <label for="startTime" class="form-label fs-12 mb-1">Saat Başlangıç</label>
+                            <select class="form-select form-select-sm" id="startTime" style="min-width:90px">
                                 <option value="">Tümü</option>
+                                <option value="09:55">09:55</option>
+                                <option value="10:00">10:00</option>
+                                <option value="10:30">10:30</option>
+                                <option value="11:00">11:00</option>
+                                <option value="11:30">11:30</option>
+                                <option value="12:00">12:00</option>
+                                <option value="12:30">12:30</option>
+                                <option value="13:00">13:00</option>
+                                <option value="13:30">13:30</option>
+                                <option value="14:00">14:00</option>
+                                <option value="14:30">14:30</option>
+                                <option value="15:00">15:00</option>
+                                <option value="15:30">15:30</option>
+                                <option value="16:00">16:00</option>
+                                <option value="16:30">16:30</option>
+                                <option value="17:00">17:00</option>
+                                <option value="17:30">17:30</option>
+                                <option value="18:00">18:00</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <label for="endTime" class="form-label fs-12 mb-1">Saat Bitiş</label>
+                            <select class="form-select form-select-sm" id="endTime" style="min-width:90px">
+                                <option value="">Tümü</option>
+                                <option value="10:00">10:00</option>
+                                <option value="10:30">10:30</option>
+                                <option value="11:00">11:00</option>
+                                <option value="11:30">11:30</option>
+                                <option value="12:00">12:00</option>
+                                <option value="12:30">12:30</option>
+                                <option value="13:00">13:00</option>
+                                <option value="13:30">13:30</option>
+                                <option value="14:00">14:00</option>
+                                <option value="14:30">14:30</option>
+                                <option value="15:00">15:00</option>
+                                <option value="15:30">15:30</option>
+                                <option value="16:00">16:00</option>
+                                <option value="16:30">16:30</option>
+                                <option value="17:00">17:00</option>
+                                <option value="17:30">17:30</option>
+                                <option value="18:00">18:00</option>
+                                <option value="18:15">18:15</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <label for="screenerFilter" class="form-label fs-12 mb-1">Tarama</label>
+                            <select class="form-select form-select-sm" id="screenerFilter" style="min-width:140px">
+                                <option value="">Tüm Taramalar</option>
                                 <option th:each="name : ${screenerNames}"
                                         th:value="${name}" th:text="${name}"
                                         th:selected="${name == selectedScreener}">Tarama</option>
                             </select>
                         </div>
-                        <div class="col-md-2">
-                            <label for="stockFilter" class="form-label">Hisse</label>
+                        <div class="col-auto">
+                            <label for="categoryFilter" class="form-label fs-12 mb-1">Kategori</label>
+                            <select class="form-select form-select-sm" id="categoryFilter" style="min-width:170px">
+                                <option value="">Tüm Kategoriler</option>
+                                <option value="ortalama">Hareketli Ortalama (28)</option>
+                                <option value="osilator">Osilatör (14)</option>
+                                <option value="karma">Karma ve Özel (13)</option>
+                                <option value="hacim">Hacim (4)</option>
+                                <option value="macd">MACD (2)</option>
+                                <option value="uzman">Uzman (5)</option>
+                                <option value="anka">Anka Analiz (5)</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <label for="stockFilter" class="form-label fs-12 mb-1">Hisse</label>
                             <div class="position-relative">
-                                <input type="text" class="form-control" id="stockFilter"
-                                       placeholder="GARAN, THYAO..." autocomplete="off"
+                                <input type="text" class="form-control form-control-sm" id="stockFilter"
+                                       placeholder="GARAN, THYAO..." autocomplete="off" style="min-width:130px"
                                        th:value="${selectedStock}"/>
                                 <div class="dropdown-menu p-0" id="stock-filter-dropdown"
                                      style="max-height:300px;overflow-y:auto;min-width:280px;"></div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="d-flex gap-2 flex-wrap align-items-center">
-                                <button type="button" class="btn btn-primary" onclick="applyFilter()">
-                                    <i class="ri-search-line me-1"></i> Filtrele
-                                </button>
-                                <button type="button" class="btn btn-soft-info" onclick="setToday()">
-                                    <i class="ri-calendar-line me-1"></i> Bugün
-                                </button>
-                                <button type="button" class="btn btn-soft-warning" onclick="location.reload()">
-                                    <i class="ri-refresh-line me-1"></i> Yenile
-                                </button>
-                                <button type="button" class="btn btn-soft-danger" onclick="window.location.href='/taramalar'">
-                                    <i class="ri-delete-bin-line me-1"></i> Temizle
-                                </button>
-                                <div class="form-check ms-2">
-                                    <input class="form-check-input" type="checkbox" id="groupByStock"
-                                           th:checked="${groupByStock}" onchange="applyFilter()">
-                                    <label class="form-check-label" for="groupByStock">Benzersiz Hisseler</label>
-                                </div>
-                            </div>
+                    </div>
+                    <!-- Satır 2: Butonlar + Checkbox'lar -->
+                    <div class="d-flex gap-2 flex-wrap align-items-center mt-2">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="applyFilter()">
+                            <i class="ri-search-line me-1"></i> Filtrele
+                        </button>
+                        <button type="button" class="btn btn-soft-info btn-sm" onclick="setToday()">
+                            <i class="ri-calendar-line me-1"></i> Bugün
+                        </button>
+                        <button type="button" class="btn btn-soft-warning btn-sm" onclick="location.reload()">
+                            <i class="ri-refresh-line me-1"></i> Yenile
+                        </button>
+                        <button type="button" class="btn btn-soft-danger btn-sm" onclick="window.location.href='/taramalar'">
+                            <i class="ri-delete-bin-line me-1"></i> Temizle
+                        </button>
+                        <div class="form-check ms-2">
+                            <input class="form-check-input" type="checkbox" id="groupByStock"
+                                   th:checked="${groupByStock}" onchange="applyFilter()">
+                            <label class="form-check-label" for="groupByStock">Benzersiz Hisseler</label>
+                        </div>
+                        <div class="form-check form-switch ms-2">
+                            <input class="form-check-input" type="checkbox" id="katilimFilter">
+                            <label class="form-check-label" for="katilimFilter">
+                                <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.7rem">K</span> Katılım
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -191,9 +450,25 @@
                                 <tr th:each="t, stat : ${taramalar}">
                                     <td th:text="${stat.index + 1}">1</td>
                                     <td>
-                                        <a th:href="@{/stock/detail/{code}(code=${t.stockName})}"
-                                           class="fw-medium text-body"
-                                           th:text="${t.stockName}">GARAN</a>
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 avatar-xs me-2" th:with="logoid=${stockLogos[t.stockName]}">
+                                                <img th:if="${logoid != null and !logoid.isEmpty()}"
+                                                     th:src="'/img/stock-logos/' + ${logoid}"
+                                                     th:alt="${t.stockName}"
+                                                     class="avatar-xs rounded-circle"
+                                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                                                <div th:style="(${logoid != null and !logoid.isEmpty()} ? 'display:none;' : '') + 'background:#f3f6f9;color:#495057;border:1.5px solid #ced4da;font-size:0.55rem'"
+                                                     class="avatar-title rounded-circle fw-semibold"
+                                                     th:text="${t.stockName != null ? (t.stockName.length() > 4 ? t.stockName.substring(0, 4) : t.stockName) : '?'}"></div>
+                                            </div>
+                                            <a th:href="@{/stock/detail/{code}(code=${t.stockName})}"
+                                               class="fw-medium text-body"
+                                               th:text="${t.stockName}">GARAN</a>
+                                            <span th:if="${katilimCodes != null and katilimCodes.contains(t.stockName)}"
+                                                  class="badge bg-success bg-opacity-25 text-success ms-1"
+                                                  style="font-size:0.65rem;padding:1px 4px;"
+                                                  title="Katılım Endeksi">K</span>
+                                        </div>
                                     </td>
                                     <td class="text-end" th:text="${t.formattedPrice}">0.00</td>
                                     <td class="text-end fw-medium"
@@ -264,10 +539,26 @@
                                             <span class="fw-semibold text-muted" th:text="${stat.index + 1}">1</span>
                                         </div>
                                         <div class="col-3">
-                                            <a th:href="@{/stock/detail/{code}(code=${g.stockName})}"
-                                               class="fw-semibold text-primary"
-                                               th:text="${g.stockName}"
-                                               onclick="event.stopPropagation();">GARAN</a>
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0 avatar-xs me-2" th:with="logoid=${stockLogos[g.stockName]}">
+                                                    <img th:if="${logoid != null and !logoid.isEmpty()}"
+                                                         th:src="'/img/stock-logos/' + ${logoid}"
+                                                         th:alt="${g.stockName}"
+                                                         class="avatar-xs rounded-circle"
+                                                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                                                    <div th:style="(${logoid != null and !logoid.isEmpty()} ? 'display:none;' : '') + 'background:#f3f6f9;color:#495057;border:1.5px solid #ced4da;font-size:0.55rem'"
+                                                         class="avatar-title rounded-circle fw-semibold"
+                                                         th:text="${g.stockName != null ? (g.stockName.length() > 4 ? g.stockName.substring(0, 4) : g.stockName) : '?'}"></div>
+                                                </div>
+                                                <a th:href="@{/stock/detail/{code}(code=${g.stockName})}"
+                                                   class="fw-semibold text-primary"
+                                                   th:text="${g.stockName}"
+                                                   onclick="event.stopPropagation();">GARAN</a>
+                                                <span th:if="${katilimCodes != null and katilimCodes.contains(g.stockName)}"
+                                                      class="badge bg-success bg-opacity-25 text-success ms-1"
+                                                      style="font-size:0.65rem;padding:1px 4px;"
+                                                      title="Katılım Endeksi">K</span>
+                                            </div>
                                         </div>
                                         <div class="col-2 text-center">
                                             <span class="badge bg-info-subtle text-info"
@@ -327,6 +618,29 @@
 </section>
 
 <th:block layout:fragment="pagejs">
+<style>
+.tarama-sozluk-scroll {
+    max-height: 400px;
+    overflow-y: scroll !important;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+.tarama-sozluk-scroll::-webkit-scrollbar {
+    width: 12px;
+}
+.tarama-sozluk-scroll::-webkit-scrollbar-track {
+    background: #e9ecef;
+    border-radius: 4px;
+}
+.tarama-sozluk-scroll::-webkit-scrollbar-thumb {
+    background: #405189;
+    border-radius: 4px;
+    border: 2px solid #e9ecef;
+}
+.tarama-sozluk-scroll::-webkit-scrollbar-thumb:hover {
+    background: #2d3a6b;
+}
+</style>
 <script th:inline="javascript">
 /*<![CDATA[*/
 function applyFilter() {
@@ -335,10 +649,16 @@ function applyFilter() {
     var screener = document.getElementById('screenerFilter').value;
     var stock = document.getElementById('stockFilter').value;
     var groupByStock = document.getElementById('groupByStock').checked;
+    var startTime = document.getElementById('startTime').value;
+    var endTime = document.getElementById('endTime').value;
+    var category = document.getElementById('categoryFilter').value;
     var url = '/taramalar?startDate=' + encodeURIComponent(startDate) + '&endDate=' + encodeURIComponent(endDate);
     if (screener) url += '&screener=' + encodeURIComponent(screener);
     if (stock) url += '&stock=' + encodeURIComponent(stock);
     if (groupByStock) url += '&groupByStock=true';
+    if (startTime) url += '&startTime=' + encodeURIComponent(startTime);
+    if (endTime) url += '&endTime=' + encodeURIComponent(endTime);
+    if (category) url += '&category=' + encodeURIComponent(category);
     window.location.href = url;
 }
 
@@ -370,6 +690,159 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function(el) {
         new bootstrap.Tooltip(el);
     });
+
+    // Tarama kategori mapping
+    var CATEGORY_MAP = {
+        'ortalama': ['ALL_IN_MA','BASIT_20','BIST_VEGAS','CEYREK_TARAMA','EMA_5_10','EMA_DIP','HAREKETLI_ORT_STRATEJII','HAREKETLI_ORTALAMA_TARAMASI','KARMA_ORT_DENEME','KARMA_ORTALAMA','KARMA_V2','KARMA','KNOWLEDGE','MTF_TARAMA','ORTALAMA_BAZ','ORTALAMA_BAZLI','ORTALAMA_KARMASI_V2','ORTALAMA_KARMASI','POWER_TREND','SEYDATA_TARAMA','SPECIAL_ONE','SUPERTREND','TARA_14_34_KESISIMI','TARA_3T1S','TARA_5_8_13_TARAMASI','TENKANSEN_KIJUNSEN','TREND_VE_OLUMLU_GOSTERGE','VIRA'],
+        'osilator': ['CHAISTOK','gosterge-up-anka-analiz','RSI_EMA_MIX','SREMA','STOKARSI_2','STOKASTIK_2','STOKASTIK_NEW','STOKASTIK','WILIAMS_ARE_20','WILLIAMS_ARE_80','RSI_TARAMASI','DENIZ_YATIRIM','DOGUM_SANCISI','OYLE_DE_GUZEL'],
+        'karma': ['ATILGAN','FRIDA','LONGCU','SAHMERAN','TARA_41BURDA','TARA_TEKNIK_TARAMA','BOLLINGER_BANDI','MIDAS_TARAMA','OZGUR_TARAMA'],
+        'hacim': ['HACIM_BOMBASI','HACIM_BOMBASI_V2','HACIM_DENEME','HACIMSEL'],
+        'macd': ['MACD_0_USTU_AL_VERENLER','MACD_0_ALTI_AL_VERENLER'],
+        'uzman': ['ERIK_TARAMA','ERIK_SEYDA','XC90','XC40','VIOP'],
+        'anka': ['ichimoku-anka-analiz','psar-ema-anka-analiz','tenkansen-kijunsen-anka-analiz','trend-up-gosterge-up-anka-analiz','gosterge-up-anka-analiz']
+    };
+    function getCategoryForScreener(name) {
+        if (!name) return '';
+        for (var cat in CATEGORY_MAP) {
+            if (CATEGORY_MAP[cat].indexOf(name) !== -1) return cat;
+        }
+        return '';
+    }
+
+    // Kategori filtresi
+    var categoryFilter = document.getElementById('categoryFilter');
+    if (categoryFilter) {
+        // URL'den kategori parametresini oku
+        var catParam = new URLSearchParams(window.location.search).get('category') || '';
+        if (catParam) categoryFilter.value = catParam;
+
+        categoryFilter.addEventListener('change', function() {
+            var cat = categoryFilter.value;
+            // Normal tablo filtreleme
+            var visibleCount = 0;
+            document.querySelectorAll('#taramalarTable tbody tr').forEach(function(row) {
+                if (!cat) { row.style.display = ''; visibleCount++; return; }
+                var taramaBadge = row.querySelector('.badge.bg-primary-subtle, .badge[style*="linear-gradient"]');
+                var taramaName = taramaBadge ? taramaBadge.textContent.trim() : '';
+                var rowCat = getCategoryForScreener(taramaName);
+                if (rowCat === cat) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            // Gruplu accordion — her accordion item içindeki sinyalleri kontrol et, eşleşmeyenleri gizle
+            document.querySelectorAll('#stockGroupAccordion .accordion-item').forEach(function(item) {
+                if (!cat) {
+                    item.style.display = '';
+                    // İç tablo satırlarını da göster
+                    item.querySelectorAll('.accordion-body table tbody tr').forEach(function(r) { r.style.display = ''; });
+                    return;
+                }
+                var innerRows = item.querySelectorAll('.accordion-body table tbody tr');
+                var matchCount = 0;
+                innerRows.forEach(function(r) {
+                    var badge = r.querySelector('.badge.bg-primary-subtle');
+                    var name = badge ? badge.textContent.trim() : '';
+                    if (getCategoryForScreener(name) === cat) {
+                        r.style.display = '';
+                        matchCount++;
+                    } else {
+                        r.style.display = 'none';
+                    }
+                });
+                item.style.display = matchCount > 0 ? '' : 'none';
+                // Sinyal sayısı badge güncelle
+                var sinyalBadge = item.querySelector('.badge.bg-info-subtle');
+                if (sinyalBadge && matchCount > 0) {
+                    sinyalBadge.textContent = matchCount + ' Sinyal';
+                }
+            });
+        });
+
+        // Sayfa yüklendiğinde kategori filtresi aktifse uygula
+        if (catParam) categoryFilter.dispatchEvent(new Event('change'));
+    }
+
+    // Saat filtresi — URL parametrelerinden oku ve client-side filtrele
+    (function() {
+        var params = new URLSearchParams(window.location.search);
+        var startTime = params.get('startTime') || '';
+        var endTime = params.get('endTime') || '';
+        var startTimeEl = document.getElementById('startTime');
+        var endTimeEl = document.getElementById('endTime');
+
+        // Select'leri URL'den gelen değerlerle set et
+        if (startTimeEl && startTime) startTimeEl.value = startTime;
+        if (endTimeEl && endTime) endTimeEl.value = endTime;
+
+        // Saat bazlı filtreleme (normal tablo)
+        if (startTime || endTime) {
+            document.querySelectorAll('#taramalarTable tbody tr').forEach(function(row) {
+                var saatCell = row.querySelector('td.text-muted'); // Saat kolonu
+                if (!saatCell) return;
+                var saat = saatCell.textContent.trim();
+                var show = true;
+                if (startTime && saat < startTime) show = false;
+                if (endTime && saat > endTime) show = false;
+                row.style.display = show ? '' : 'none';
+            });
+
+            // Gruplu accordion — sinyallerin saatini kontrol et
+            document.querySelectorAll('#stockGroupAccordion .accordion-item').forEach(function(item) {
+                var saatCells = item.querySelectorAll('table tbody tr td:first-child');
+                var hasVisible = false;
+                saatCells.forEach(function(cell) {
+                    var saat = cell.textContent.trim();
+                    var show = true;
+                    if (startTime && saat < startTime) show = false;
+                    if (endTime && saat > endTime) show = false;
+                    cell.parentElement.style.display = show ? '' : 'none';
+                    if (show) hasVisible = true;
+                });
+                item.style.display = hasVisible ? '' : 'none';
+            });
+        }
+
+        // Select change → filtre uygula
+        if (startTimeEl) startTimeEl.addEventListener('change', function() { applyFilter(); });
+        if (endTimeEl) endTimeEl.addEventListener('change', function() { applyFilter(); });
+    })();
+
+    // Katılım filtresi (client-side)
+    var katilimFilter = document.getElementById('katilimFilter');
+    if (katilimFilter) {
+        var katilimSet = /*[[${katilimCodes}]]*/ [];
+        var kSet = {};
+        if (Array.isArray(katilimSet)) {
+            katilimSet.forEach(function(c) { kSet[c] = true; });
+        } else if (typeof katilimSet === 'object') {
+            Object.keys(katilimSet).forEach(function(c) { kSet[c] = true; });
+        }
+        katilimFilter.addEventListener('change', function() {
+            // Normal tablo
+            document.querySelectorAll('#taramalarTable tbody tr').forEach(function(row) {
+                var hisseLink = row.querySelector('a.fw-medium');
+                var code = hisseLink ? hisseLink.textContent.trim() : '';
+                if (katilimFilter.checked && !kSet[code]) {
+                    row.style.display = 'none';
+                } else {
+                    row.style.display = '';
+                }
+            });
+            // Gruplu accordion
+            document.querySelectorAll('#stockGroupAccordion .accordion-item').forEach(function(item) {
+                var link = item.querySelector('a.fw-semibold.text-primary');
+                var code = link ? link.textContent.trim() : '';
+                if (katilimFilter.checked && !kSet[code]) {
+                    item.style.display = 'none';
+                } else {
+                    item.style.display = '';
+                }
+            });
+        });
+    }
 
     ['startDate', 'endDate'].forEach(function(id) {
         var el = document.getElementById(id);

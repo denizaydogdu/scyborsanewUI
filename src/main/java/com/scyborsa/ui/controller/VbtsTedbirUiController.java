@@ -2,6 +2,7 @@ package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.VbtsTedbirDto;
 import com.scyborsa.ui.service.Bist100Service;
+import com.scyborsa.ui.service.KatilimEndeksiService;
 import com.scyborsa.ui.service.VbtsTedbirUiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,9 @@ public class VbtsTedbirUiController {
 
     /** Hisse logo verilerini sağlayan servis. */
     private final Bist100Service bist100Service;
+
+    /** Katılım endeksi kontrol servisi. */
+    private final KatilimEndeksiService katilimEndeksiService;
 
     /**
      * VBTS tedbirli hisseler listesi sayfasını görüntüler.
@@ -78,6 +82,7 @@ public class VbtsTedbirUiController {
         model.addAttribute("tekFiyat", tekFiyat);
         model.addAttribute("diger", diger);
         model.addAttribute("stockLogos", stockLogos);
+        model.addAttribute("katilimCodes", katilimEndeksiService.getKatilimCodes());
 
         return "vbts-tedbirli/vbts-tedbirli-list";
     }

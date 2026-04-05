@@ -4,6 +4,7 @@ import com.scyborsa.ui.dto.AraciKurumAkdListDto;
 import com.scyborsa.ui.dto.AraciKurumDetailDto;
 import com.scyborsa.ui.dto.BrokerageTakasListDto;
 import com.scyborsa.ui.service.AraciKurumListService;
+import com.scyborsa.ui.service.KatilimEndeksiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -31,6 +32,9 @@ public class AraciKurumlarController {
 
     /** Araci kurum AKD listesi ve detay verilerini saglayan servis. */
     private final AraciKurumListService araciKurumListService;
+
+    /** Katılım endeksi kontrol servisi. */
+    private final KatilimEndeksiService katilimEndeksiService;
 
     /**
      * Aracı kurumlar piyasa geneli AKD dağılım sayfasını gösterir.
@@ -177,6 +181,7 @@ public class AraciKurumlarController {
             model.addAttribute("kurumLogoUrl", "");
         }
 
+        model.addAttribute("katilimCodes", katilimEndeksiService.getKatilimCodes());
         return "araciKurumlar/araci-kurumlar-detail";
     }
 }

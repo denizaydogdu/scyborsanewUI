@@ -538,13 +538,17 @@
      * Filtreleri uygular ve filteredStocks'u gunceller.
      * Kategori, min sayi, coklu formasyon, guvenilirlik ve tip filtreleri destekler.
      */
+    var csKatilimFilter = null;
+
     function applyFilters() {
         var categoryVal = csCategorySelect ? csCategorySelect.value : 'all';
         var minCountVal = csMinCountSelect ? parseInt(csMinCountSelect.value, 10) : 1;
         var reliabilityVal = csReliabilitySelect ? csReliabilitySelect.value : 'all';
         var typeVal = csTypeSelect ? csTypeSelect.value : 'all';
+        var katilimOnly = csKatilimFilter && csKatilimFilter.checked;
 
         filteredStocks = allStocks.filter(function(stock) {
+            if (katilimOnly && !stock.katilim) return false;
             var patterns = stock.patterns || [];
 
             // Min count filter
@@ -1522,8 +1526,16 @@
 
     document.addEventListener('DOMContentLoaded', function() {
 
-        // DOM referanslarini al (elementler artik DOM'da mevcut)
+        // DOM referanslarını al (elementler artık DOM'da mevcut)
         initDomReferences();
+
+        // Katılım filtre checkbox
+        csKatilimFilter = document.getElementById('csKatilimFilter');
+        if (csKatilimFilter) {
+            csKatilimFilter.addEventListener('change', function() {
+                if (allStocks.length > 0) { applyFilters(); renderResults(); }
+            });
+        }
 
         // Scan button
         if (btnCsScan) {

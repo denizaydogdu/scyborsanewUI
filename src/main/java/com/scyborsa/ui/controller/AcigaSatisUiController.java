@@ -3,6 +3,7 @@ package com.scyborsa.ui.controller;
 import com.scyborsa.ui.dto.AcigaSatisUiDto;
 import com.scyborsa.ui.service.AcigaSatisUiService;
 import com.scyborsa.ui.service.Bist100Service;
+import com.scyborsa.ui.service.KatilimEndeksiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,9 @@ public class AcigaSatisUiController {
 
     /** Hisse logo haritası için servis. */
     private final Bist100Service bist100Service;
+
+    /** Katılım endeksi kontrol servisi. */
+    private final KatilimEndeksiService katilimEndeksiService;
 
     /**
      * Açığa satış istatistikleri listesi sayfasını görüntüler.
@@ -69,10 +73,19 @@ public class AcigaSatisUiController {
                 .average()
                 .orElse(0.0);
 
+        // Veri tarihi (ilk elemanın tarihinden al)
+        String veriTarihi = veriler.stream()
+                .filter(v -> v.getTarih() != null && v.getTarih().length() >= 10)
+                .findFirst()
+                .map(v -> v.getTarih().substring(8, 10) + "." + v.getTarih().substring(5, 7) + "." + v.getTarih().substring(0, 4))
+                .orElse("-");
+
         model.addAttribute("veriler", veriler);
         model.addAttribute("toplamHisse", toplamHisse);
         model.addAttribute("enYuksekHisse", enYuksekHisse);
         model.addAttribute("ortalamaOran", String.format("%.2f", ortalamaOran));
+        model.addAttribute("veriTarihi", veriTarihi);
+        model.addAttribute("katilimCodes", katilimEndeksiService.getKatilimCodes());
 
         try {
             model.addAttribute("stockLogos", bist100Service.getStockLogos());

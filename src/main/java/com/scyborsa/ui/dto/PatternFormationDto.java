@@ -1,5 +1,6 @@
 package com.scyborsa.ui.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -37,4 +38,8 @@ public class PatternFormationDto {
 
     /** Hisse logosu TradingView logoid'si (orn. "thyao"). */
     private String logoid;
+
+    /** Katılım Endeksi üyesi mi. */
+    @JsonProperty("katilim")
+    private boolean katilim;
 }

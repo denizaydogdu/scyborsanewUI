@@ -1,6 +1,8 @@
 package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.TaramalarResponseDto;
+import com.scyborsa.ui.service.Bist100Service;
+import com.scyborsa.ui.service.KatilimEndeksiService;
 import com.scyborsa.ui.service.TaramalarService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,10 @@ public class TaramalarController {
 
     /** Tarama verilerini sağlayan servis. */
     private final TaramalarService taramalarService;
+    /** Hisse logo haritası servisi. */
+    private final Bist100Service bist100Service;
+    /** Katılım endeksi kontrol servisi. */
+    private final KatilimEndeksiService katilimEndeksiService;
 
     /**
      * Taramalar sayfasını gösterir.
@@ -93,6 +99,14 @@ public class TaramalarController {
         model.addAttribute("today", today);
         model.addAttribute("groupByStock", groupByStock);
         model.addAttribute("stockGroups", response.getStockGroups() != null ? response.getStockGroups() : List.of());
+
+        // Logo + Katılım
+        try {
+            model.addAttribute("stockLogos", bist100Service.getStockLogos());
+        } catch (Exception e) {
+            model.addAttribute("stockLogos", java.util.Collections.emptyMap());
+        }
+        model.addAttribute("katilimCodes", katilimEndeksiService.getKatilimCodes());
 
         return "taramalar/taramalar-list";
     }

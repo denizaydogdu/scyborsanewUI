@@ -190,13 +190,17 @@
             });
     }
 
+    var patternKatilimFilter = null;
+
     function applyFilters() {
         var type = patternTypeSelect.value;
         var windowVal = patternWindowSelect.value;
         var period = patternPeriodSelect.value;
         var direction = patternDirectionSelect ? patternDirectionSelect.value : 'all';
+        var katilimOnly = patternKatilimFilter && patternKatilimFilter.checked;
 
         filteredPatterns = allPatterns.filter(function(p) {
+            if (katilimOnly && !p.katilim) return false;
             if (type !== 'all' && p.patternName !== type) return false;
             if (windowVal !== 'all' && p.window != null && p.window !== parseInt(windowVal, 10)) return false;
             if (period !== 'all' && p.period !== period) return false;
@@ -593,6 +597,17 @@
 
     // Event listeners
     btnPatternScan.addEventListener('click', fetchPatterns);
+
+    // Katılım filtre checkbox
+    patternKatilimFilter = document.getElementById('patternKatilimFilter');
+    if (patternKatilimFilter) {
+        patternKatilimFilter.addEventListener('change', function() {
+            if (allPatterns.length > 0) {
+                applyFilters();
+                renderResults();
+            }
+        });
+    }
 
     // Dropdown change -> re-filter (no re-fetch)
     [patternTypeSelect, patternWindowSelect, patternPeriodSelect, patternDirectionSelect].forEach(function(select) {

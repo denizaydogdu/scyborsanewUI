@@ -64,13 +64,13 @@
 
     <!-- 3 KPI Cards -->
     <div class="row">
-        <!-- Toplam Alis Hacmi -->
+        <!-- Toplam Alış Hacmi -->
         <div class="col-xl-4 col-md-4">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1 overflow-hidden">
-                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Toplam Alis Hacmi</p>
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Toplam Alış Hacmi</p>
                         </div>
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-4">
@@ -89,13 +89,13 @@
             </div>
         </div>
 
-        <!-- Toplam Satis Hacmi -->
+        <!-- Toplam Satış Hacmi -->
         <div class="col-xl-4 col-md-4">
             <div class="card card-animate">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1 overflow-hidden">
-                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Toplam Satis Hacmi</p>
+                            <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Toplam Satış Hacmi</p>
                         </div>
                     </div>
                     <div class="d-flex align-items-end justify-content-between mt-4">
@@ -143,14 +143,95 @@
         </div>
     </div>
 
-    <!-- Hisse Bazli AKD Tablosu -->
+    <!-- Bilgi Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-primary border-opacity-25">
+                <a class="text-primary fw-medium" data-bs-toggle="collapse" href="#kurumDetayInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Bu Sayfa Ne Gösteriyor? Veriler Nasıl Okunur?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="kurumDetayInfoCollapse">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-building-line text-primary fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Kurum Detay Sayfası</h6>
+                                    <p class="text-muted mb-0 fs-12">Bu aracı kurumun <strong>hangi hisselerde, ne kadar alım ve satım yaptığını</strong> gösterir. Kurumun müşteri tabanının yatırım tercihlerini anlamak için kullanılır. En çok işlem gören hisseler en üstte sıralanır.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-bar-chart-2-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Alış / Satış Hacmi</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>Alış Hacmi:</strong> Bu kurumun müşterilerinin o hissede toplam alım tutarı (TL). <strong>Satış Hacmi:</strong> Toplam satış tutarı. <strong>Alış % / Satış %:</strong> Kurumun o hissedeki alım/satımının, kurumun tüm işlemleri içindeki payı.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-funds-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Net Hacim ve Net %</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>Net Hacim = Alış - Satış.</strong> Yeşil = kurumun müşterileri o hissede net alıcı (toplama yapıyor). Kırmızı = net satıcı (pozisyon azaltıyor). <strong>Net %:</strong> Net tutarın toplam işlem hacmine oranı — değer büyükse tek yönlü hareket var.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-money-dollar-circle-line text-info fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Ortalama Maliyet</h6>
+                                    <p class="text-muted mb-0 fs-12">Kurumun müşterilerinin o hissedeki <strong>ortalama işlem fiyatını</strong> gösterir. Güncel fiyat ile karşılaştırarak kurumun kârda mı zararda mı olduğunu tahmin edebilirsiniz. Maliyetin altında fiyat = kurumun müşterileri zararda.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top pt-2">
+                        <h6 class="mb-2 fs-13">Pratik Kullanım İpuçları</h6>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-success-subtle bg-opacity-10">
+                                    <span class="badge bg-success-subtle text-success mb-1"><i class="ri-lightbulb-line me-1"></i>Yoğunlaşma Analizi</span>
+                                    <p class="text-muted mb-0 fs-11">Kurumun en çok işlem yaptığı ilk 5-10 hisseye odaklanın. Eğer bir hissede alış % çok yüksekse (örn. %10+), kurum o hisseye özel ilgi gösteriyor demektir. Bu hisseleri watchlist'inize ekleyebilirsiniz.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-warning-subtle bg-opacity-10">
+                                    <span class="badge bg-warning-subtle text-warning mb-1"><i class="ri-scales-3-line me-1"></i>Net Pozisyon Yorumu</span>
+                                    <p class="text-muted mb-0 fs-11">Bir hissede <strong>büyük pozitif Net Hacim</strong> = kurumun müşterileri güçlü şekilde topluyor. <strong>Büyük negatif Net</strong> = güçlü satış baskısı. Net %'si %20'yi aşan hisseler tek yönlü hareket sinyali verir.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-info-subtle bg-opacity-10">
+                                    <span class="badge bg-info-subtle text-info mb-1"><i class="ri-error-warning-line me-1"></i>Dikkat Edilmesi Gerekenler</span>
+                                    <p class="text-muted mb-0 fs-11">Veriler bir önceki işlem gününe aittir (T+1). Aracı kurum = müşteri toplamı, kurumun kendi yatırımı değil. Tek bir kurumun verisine dayanarak karar vermeyin — birden fazla kurumun aynı hissede net alıcı olması daha güçlü sinyaldir.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hisse Bazlı AKD Tablosu -->
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header align-items-center d-flex">
-                    <h4 class="card-title mb-0 flex-grow-1">Hisse Bazli Dagilim</h4>
-                    <div class="flex-shrink-0">
-                        <span class="badge bg-primary-subtle text-primary" th:text="${stockCount} + ' Hisse'">0 Hisse</span>
+                    <h4 class="card-title mb-0 flex-grow-1">Hisse Bazlı Dağılım</h4>
+                    <div class="flex-shrink-0 d-flex align-items-center gap-3">
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="katilimFilter">
+                            <label class="form-check-label" for="katilimFilter">
+                                <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.7rem">K</span> Katılım
+                            </label>
+                        </div>
+                        <span class="badge bg-primary-subtle text-primary" id="stockCountBadge" th:text="${stockCount} + ' Hisse'">0 Hisse</span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -169,10 +250,10 @@
                                 <tr>
                                     <th scope="col" style="width:50px">#</th>
                                     <th scope="col" class="sortable" data-sort="code">Hisse</th>
-                                    <th scope="col" class="sortable text-end" data-sort="buyVolume">Alis Hacmi</th>
-                                    <th scope="col" class="sortable text-end" data-sort="buyPercentage">Alis %</th>
-                                    <th scope="col" class="sortable text-end" data-sort="sellVolume">Satis Hacmi</th>
-                                    <th scope="col" class="sortable text-end" data-sort="sellPercentage">Satis %</th>
+                                    <th scope="col" class="sortable text-end" data-sort="buyVolume">Alış Hacmi</th>
+                                    <th scope="col" class="sortable text-end" data-sort="buyPercentage">Alış %</th>
+                                    <th scope="col" class="sortable text-end" data-sort="sellVolume">Satış Hacmi</th>
+                                    <th scope="col" class="sortable text-end" data-sort="sellPercentage">Satış %</th>
                                     <th scope="col" class="sortable text-end" data-sort="netVolume">Net Hacim</th>
                                     <th scope="col" class="sortable text-end" data-sort="netPercentage">Net %</th>
                                     <th scope="col" class="sortable text-end" data-sort="totalVolume">Toplam Hacim</th>
@@ -196,6 +277,10 @@
                                             </div>
                                             <a th:href="@{/stock/detail/{code}(code=${stock.code})}"
                                                class="fw-medium text-body" th:text="${stock.code}">THYAO</a>
+                                            <span th:if="${katilimCodes != null and katilimCodes.contains(stock.code)}"
+                                                  class="badge bg-success bg-opacity-25 text-success ms-1 katilim-badge"
+                                                  style="font-size:0.65rem;padding:1px 4px;"
+                                                  title="Katılım Endeksi">K</span>
                                         </div>
                                     </td>
                                     <td class="text-end volume-cell" th:attr="data-value=${stock.buyVolume}" th:text="${stock.buyVolume}">0</td>
@@ -236,7 +321,28 @@
 (function() {
     'use strict';
 
-    // Hacim formatlama (Turkce: Bin, Milyon, Milyar, Trilyon)
+    // Katılım filtresi
+    var katilimFilter = document.getElementById('katilimFilter');
+    var stockCountBadge = document.getElementById('stockCountBadge');
+    if (katilimFilter) {
+        katilimFilter.addEventListener('change', function() {
+            var rows = document.querySelectorAll('#akdDetailTable tbody tr');
+            var visible = 0;
+            rows.forEach(function(row) {
+                var hasK = row.querySelector('.katilim-badge') !== null;
+                if (katilimFilter.checked && !hasK) {
+                    row.style.display = 'none';
+                } else {
+                    row.style.display = '';
+                    visible++;
+                    row.cells[0].textContent = visible;
+                }
+            });
+            if (stockCountBadge) stockCountBadge.textContent = visible + ' Hisse';
+        });
+    }
+
+    // Hacim formatlama (Türkçe: Bin, Milyon, Milyar, Trilyon)
     function formatVolume(value) {
         var v = Math.abs(value);
         var sign = value < 0 ? '-' : '';

@@ -91,6 +91,81 @@
         </div>
     </div>
 
+    <!-- Bilgi Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-warning border-opacity-25">
+                <a class="text-warning fw-medium" data-bs-toggle="collapse" href="#takasAnalizInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Takas Analizi Nedir? Bu Sayfayı Nasıl Okumalıyız?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="takasAnalizInfoCollapse">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-exchange-funds-line text-primary fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Takas Analizi Nedir?</h6>
+                                    <p class="text-muted mb-0 fs-12">Takasbank'ta saklanan tüm hisselerin <strong>kurum bazında dağılımını</strong> gösterir. Hangi aracı kurumda ne kadar hisse saklanıyor? Bu veri, kurumsal yatırımcıların ve bireysel yatırımcıların piyasadaki ağırlığını anlamak için kullanılır.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-money-dollar-circle-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Güncel Değer</h6>
+                                    <p class="text-muted mb-0 fs-12">Her aracı kurumda saklanan hisselerin <strong>toplam piyasa değerini</strong> (TL) gösterir. Büyük değerli kurumlar = büyük müşteri tabanı veya büyük kurumsal yatırımcılar. İlk 10 kurum genelde toplam saklama değerinin %80'inden fazlasını oluşturur.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-arrow-up-down-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Haftalık Değişim</h6>
+                                    <p class="text-muted mb-0 fs-12">Son bir haftada kurumun saklama değerindeki <strong>yüzde değişimi</strong> gösterir. <span class="text-success">Yeşil (+)</span> = kurumdaki saklama arttı (yeni hisse alımı veya fiyat artışı). <span class="text-danger">Kırmızı (-)</span> = saklama azaldı (satış veya fiyat düşüşü).</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-pie-chart-line text-info fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Piyasa Payı %</h6>
+                                    <p class="text-muted mb-0 fs-12">Kurumun toplam Takasbank saklama değeri içindeki <strong>yüzdesel payını</strong> gösterir. Progress bar görsel olarak büyüklüğü temsil eder. En büyük 3-5 kurum genelde piyasanın yarısından fazlasını kontrol eder.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-top pt-2">
+                        <h6 class="mb-2 fs-13">Takas Verilerini Nasıl Değerlendirmeli?</h6>
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-success-subtle bg-opacity-10">
+                                    <span class="badge bg-success-subtle text-success mb-1"><i class="ri-search-eye-line me-1"></i>Yabancı Kurum Takibi</span>
+                                    <p class="text-muted mb-0 fs-11">Yabancı aracı kurumlardaki (Citibank, JP Morgan, BNP Paribas vb.) saklama değerinin artması <strong>uluslararası yatırımcı ilgisini</strong> gösterir. Yabancı girişi genelde orta-uzun vadede pozitif sinyal olarak yorumlanır.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-warning-subtle bg-opacity-10">
+                                    <span class="badge bg-warning-subtle text-warning mb-1"><i class="ri-line-chart-line me-1"></i>Haftalık Değişim Yorumu</span>
+                                    <p class="text-muted mb-0 fs-11">Haftalık değişim hem <strong>yeni alım/satım</strong> hem de <strong>fiyat değişimlerini</strong> yansıtır. Bir kurumun saklaması artmış ama piyasa düşmüşse, o kurum aktif olarak hisse topluyor demektir — bu güçlü bir sinyal olabilir.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border rounded p-2 bg-info-subtle bg-opacity-10">
+                                    <span class="badge bg-info-subtle text-info mb-1"><i class="ri-calendar-check-line me-1"></i>Veri Güncelliği</span>
+                                    <p class="text-muted mb-0 fs-11">Takas verileri <strong>haftalık olarak</strong> güncellenir (Cuma seans sonrası). Gün içi değişimleri yansıtmaz. Uzun vadeli trend takibi için uygundur. Kısa vadeli alım/satım kararları için AKD verisi (günlük) daha uygundur.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Ana Kart: Takas Dağılımı Tablosu -->
     <div class="row">
         <div class="col-lg-12">

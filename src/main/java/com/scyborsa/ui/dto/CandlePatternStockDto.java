@@ -1,5 +1,6 @@
 package com.scyborsa.ui.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -41,4 +42,8 @@ public class CandlePatternStockDto {
 
     /** Gunluk acilis fiyati (TL). */
     private Double open;
+
+    /** Katılım Endeksi üyesi mi. */
+    @JsonProperty("katilim")
+    private boolean katilim;
 }

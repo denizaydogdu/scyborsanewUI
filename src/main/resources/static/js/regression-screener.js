@@ -85,7 +85,20 @@
         btnRcReset = document.getElementById('btnRcReset');
         btnRcStrong = document.getElementById('btnRcStrong');
 
-        // Egim butonlari
+        // Katılım filtre checkbox
+        rcKatilimFilter = document.getElementById('rcKatilimFilter');
+        if (rcKatilimFilter) {
+            rcKatilimFilter.addEventListener('change', function() {
+                if (allStocks.length > 0) {
+                    applyFilters();
+                    sortData();
+                    currentPage = 1;
+                    renderResults();
+                }
+            });
+        }
+
+        // Eğim butonları
         var slopeBtns = document.querySelectorAll('.rc-slope-btn');
         for (var i = 0; i < slopeBtns.length; i++) {
             (function(btn) {
@@ -225,15 +238,20 @@
 
     /* ========== Filtreleme ========== */
 
+    var rcKatilimFilter = null;
+
     function applyFilters() {
+        var katilimOnly = rcKatilimFilter && rcKatilimFilter.checked;
         filteredStocks = [];
         for (var i = 0; i < allStocks.length; i++) {
             var stock = allStocks[i];
-            // Egim filtresi (OR — bos = bypass)
+            // Katılım filtresi
+            if (katilimOnly && !stock.katilim) continue;
+            // Eğim filtresi (OR -- boş = bypass)
             var slopeOk = selectedSlopes.size === 0 || selectedSlopes.has(stock.slope);
-            // Pozisyon filtresi (OR — bos = bypass)
+            // Pozisyon filtresi (OR -- boş = bypass)
             var posOk = selectedPositions.size === 0 || selectedPositions.has(stock.position);
-            // Trend gucu filtresi (AND)
+            // Trend gücü filtresi (AND)
             var trendOk = !strongTrendOnly || (stock.r2 != null && stock.r2 >= 0.7);
             if (slopeOk && posOk && trendOk) {
                 filteredStocks.push(stock);

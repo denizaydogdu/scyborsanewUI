@@ -47,7 +47,11 @@ public class HalkaArzUiController {
         List<HalkaArzUiDto> tumHalkaArzlar;
         List<HalkaArzUiDto> aktifler;
         try {
-            tumHalkaArzlar = halkaArzUiService.getHalkaArzlar();
+            tumHalkaArzlar = halkaArzUiService.getHalkaArzlar().stream()
+                    .filter(h -> h.getBaslik() != null && !"false".equalsIgnoreCase(h.getBaslik()))
+                    .filter(h -> h.getHalkaArzFiyati() != null || h.getIlkIslemTarihi() != null
+                            || h.getTalepToplamaBaslangicTarihi() != null)
+                    .collect(java.util.stream.Collectors.toList());
         } catch (Exception e) {
             log.warn("[HALKA-ARZ-UI] Halka arz verileri alınamadı: {}", e.getMessage());
             tumHalkaArzlar = Collections.emptyList();
@@ -85,11 +89,12 @@ public class HalkaArzUiController {
                 .filter(h -> !aktifKodlar.contains(h.getHisseSenediKodu()))
                 .collect(java.util.stream.Collectors.toList());
 
-        // KPI: toplam = aktif + geçmiş (tab'lardaki sayıların toplamı)
-        int gecmisSayisi = tumHalkaArzlar.size();
-        int toplam = aktifSayisi + gecmisSayisi;
+        // KPI: toplam = tüm benzersiz halka arz sayısı (çift sayım yok)
+        int gecmisSayisi = gecmisler.size();
+        int toplam = tumHalkaArzlar.size();
 
         model.addAttribute("tumHalkaArzlar", tumHalkaArzlar);
+        model.addAttribute("gecmisler", gecmisler);
         model.addAttribute("aktifler", aktifler);
         model.addAttribute("aktifSayisi", aktifSayisi);
         model.addAttribute("son30Gun", son30Gun);

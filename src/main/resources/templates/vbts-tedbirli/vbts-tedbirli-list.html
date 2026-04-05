@@ -150,8 +150,16 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="card-title mb-0 flex-grow-1">VBTS Tedbirli Hisseler</h5>
-                    <span class="badge bg-danger fs-12" th:text="${toplam} + ' Tedbir'"
-                          th:if="${toplam != null and toplam > 0}">0 Tedbir</span>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="katilimFilter">
+                            <label class="form-check-label" for="katilimFilter">
+                                <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.7rem">K</span> Katılım
+                            </label>
+                        </div>
+                        <span class="badge bg-danger fs-12" id="tedbirCountBadge" th:text="${toplam} + ' Tedbir'"
+                              th:if="${toplam != null and toplam > 0}">0 Tedbir</span>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive" th:if="${tedbirler != null and !#lists.isEmpty(tedbirler)}">
@@ -183,6 +191,10 @@
                                         <a th:href="@{/stock/detail/{id}(id=${tedbir.hisseSenediKodu})}"
                                            class="fw-semibold text-primary"
                                            th:text="${tedbir.hisseSenediKodu}">GARAN</a>
+                                        <span th:if="${katilimCodes != null and katilimCodes.contains(tedbir.hisseSenediKodu)}"
+                                              class="badge bg-success bg-opacity-25 text-success ms-1 katilim-badge"
+                                              style="font-size:0.65rem;padding:1px 4px;"
+                                              title="Katılım Endeksi">K</span>
                                     </div>
                                 </td>
                                 <td>
@@ -221,7 +233,28 @@
 </section>
 
 <th:block layout:fragment="pagejs">
-    <!-- Server-side render, JS gerekmez -->
+    <script>
+    (function() {
+        var katilimFilter = document.getElementById('katilimFilter');
+        var badge = document.getElementById('tedbirCountBadge');
+        if (!katilimFilter) return;
+        katilimFilter.addEventListener('change', function() {
+            var rows = document.querySelectorAll('table.table tbody tr');
+            var visible = 0;
+            rows.forEach(function(row) {
+                var hasK = row.querySelector('.katilim-badge') !== null;
+                if (katilimFilter.checked && !hasK) {
+                    row.style.display = 'none';
+                } else {
+                    row.style.display = '';
+                    visible++;
+                    row.cells[0].textContent = visible;
+                }
+            });
+            if (badge) badge.textContent = visible + ' Tedbir';
+        });
+    })();
+    </script>
 </th:block>
 </body>
 

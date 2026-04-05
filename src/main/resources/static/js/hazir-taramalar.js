@@ -35,8 +35,18 @@
     var paginationInfo = document.getElementById('paginationInfo');
     var paginationNav = document.getElementById('paginationNav');
 
-    // ── Baslangic ─────────────────────────────────────────
+    // ── Katılım Filtre ─────────────────────────────────────
+    var teknikKatilimFilter = null;
+
+    // ── Başlangıç ─────────────────────────────────────────
     function init() {
+        teknikKatilimFilter = document.getElementById('teknikKatilimFilter');
+        if (teknikKatilimFilter) {
+            teknikKatilimFilter.addEventListener('change', function() {
+                currentPage = 1;
+                renderTable();
+            });
+        }
         bindEvents();
     }
 
@@ -105,7 +115,7 @@
     function scanStrategy() {
         var strategy = strategySelect ? strategySelect.value : '';
         if (!strategy) {
-            showError('Lutfen bir strateji seciniz.');
+            showError('Lütfen bir strateji seçiniz.');
             return;
         }
 
@@ -132,7 +142,7 @@
             .catch(function (err) {
                 clearTimeout(timeoutId);
                 if (loadingSpinner) loadingSpinner.style.display = 'none';
-                showError('Tarama sirasinda bir hata olustu: ' + err.message);
+                showError('Tarama sırasında bir hata oluştu: ' + err.message);
                 if (initialState) initialState.style.display = '';
             });
     }
@@ -144,9 +154,9 @@
         // Baslik guncelle
         if (resultsTitle) {
             if (data && data.strategyDisplayName) {
-                resultsTitle.textContent = data.strategyDisplayName + ' Sonuclari';
+                resultsTitle.textContent = data.strategyDisplayName + ' Sonuçları';
             } else {
-                resultsTitle.textContent = 'Tarama Sonuclari';
+                resultsTitle.textContent = 'Tarama Sonuçları';
             }
         }
 
@@ -170,8 +180,12 @@
 
     // ── Tablo Render ──────────────────────────────────────
     function renderTable() {
-        // Sirala
+        // Katılım filtresi uygula
         var sorted = allStocks.slice();
+        if (teknikKatilimFilter && teknikKatilimFilter.checked) {
+            sorted = sorted.filter(function(s) { return s.katilim; });
+        }
+        // Sırala
         sortStocks(sorted);
 
         // Sayfalama dilimi
