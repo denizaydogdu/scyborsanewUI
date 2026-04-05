@@ -322,6 +322,17 @@
         link.appendChild(codeSpan);
         div.appendChild(link);
 
+        // Katılım K badge
+        var kCodes = window.KATILIM_CODES_SET || {};
+        if (kCodes[code]) {
+            var kBadge = document.createElement('span');
+            kBadge.className = 'badge bg-success bg-opacity-25 text-success katilim-badge';
+            kBadge.style.cssText = 'font-size:0.5rem;padding:1px 3px;margin-left:2px';
+            kBadge.title = 'Katılım';
+            kBadge.textContent = 'K';
+            div.appendChild(kBadge);
+        }
+
         // Spacer (flex-grow ile saga itme)
         var spacer = document.createElement('span');
         spacer.style.flex = '1';

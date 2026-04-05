@@ -1804,12 +1804,31 @@
 
 				var iconWrap = document.createElement('div');
 				iconWrap.className = 'flex-shrink-0 me-3';
-				var badge = document.createElement('span');
-				badge.className = 'badge ' + badgeClass + ' p-2';
-				var calIcon = document.createElement('i');
-				calIcon.className = iconClass + ' fs-16';
-				badge.appendChild(calIcon);
-				iconWrap.appendChild(badge);
+				var logos = window.STOCK_LOGOS || {};
+				var logoid = logos[d.stockCode];
+				if (logoid) {
+					var logoImg = document.createElement('img');
+					logoImg.src = '/img/stock-logos/' + logoid;
+					logoImg.alt = d.stockCode || '';
+					logoImg.className = 'rounded-circle';
+					logoImg.style.cssText = 'width:32px;height:32px;object-fit:contain';
+					logoImg.onerror = function() {
+						this.style.display = 'none';
+						this.nextElementSibling.style.display = 'flex';
+					};
+					iconWrap.appendChild(logoImg);
+					var logoFb = document.createElement('div');
+					logoFb.className = 'avatar-title rounded-circle fw-semibold bg-light';
+					logoFb.style.cssText = 'width:32px;height:32px;font-size:0.55rem;color:#495057;border:1.5px solid #ced4da;display:none';
+					logoFb.textContent = (d.stockCode || '??').substring(0, 3);
+					iconWrap.appendChild(logoFb);
+				} else {
+					var fb = document.createElement('div');
+					fb.className = 'avatar-title rounded-circle fw-semibold bg-light';
+					fb.style.cssText = 'width:32px;height:32px;font-size:0.55rem;color:#495057;border:1.5px solid #ced4da';
+					fb.textContent = (d.stockCode || '??').substring(0, 3);
+					iconWrap.appendChild(fb);
+				}
 
 				var body = document.createElement('div');
 				body.className = 'flex-grow-1';
@@ -1932,6 +1951,7 @@
 			window.initialSentimentData = /*[[${sentiment}]]*/ {};
 			window.initialIndexData = /*[[${indexPerformances}]]*/ [];
 			window.initialGlobalMarkets = /*[[${globalMarkets}]]*/ [];
+			window.STOCK_LOGOS = /*[[${stockLogos}]]*/ {};
 		</script>
 		<script th:src="@{/js/market-hours.js}"></script>
 		<script th:src="@{/assets/js/pages/dashboard-crypto.init.js}"></script>

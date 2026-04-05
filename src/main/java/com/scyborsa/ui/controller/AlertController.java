@@ -2,6 +2,8 @@ package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.alert.PriceAlertDto;
 import com.scyborsa.ui.service.AlertService;
+import com.scyborsa.ui.service.Bist100Service;
+import com.scyborsa.ui.service.KatilimEndeksiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,12 @@ public class AlertController {
     /** Alarm islemlerini yapan servis. */
     private final AlertService alertService;
 
+    /** Hisse logo verilerini saglayan servis. */
+    private final Bist100Service bist100Service;
+
+    /** Katilim endeksi kontrol servisi. */
+    private final KatilimEndeksiService katilimEndeksiService;
+
     /**
      * Alarm listesi sayfasini goruntular.
      *
@@ -51,6 +59,16 @@ public class AlertController {
             log.warn("[ALERT-UI] Alarm listesi yuklenemedi: {}", e.getMessage());
             model.addAttribute("alerts", Collections.emptyList());
         }
+
+        // Logo haritasi ve katilim endeksi
+        try {
+            model.addAttribute("stockLogos", bist100Service.getStockLogos());
+        } catch (Exception e) {
+            log.warn("[ALERT-UI] Logo haritasi alinamadi: {}", e.getMessage());
+            model.addAttribute("stockLogos", Collections.emptyMap());
+        }
+        model.addAttribute("katilimCodes", katilimEndeksiService.getKatilimCodes());
+
         return "alert/alarm-list";
     }
 

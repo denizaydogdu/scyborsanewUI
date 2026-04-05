@@ -2,6 +2,7 @@ package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.SectorStockDto;
 import com.scyborsa.ui.dto.SectorSummaryDto;
+import com.scyborsa.ui.service.KatilimEndeksiService;
 import com.scyborsa.ui.service.SectorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Sektor sayfasi controller'i.
@@ -33,6 +37,9 @@ public class SectorController {
     /** Sektor verilerini saglayan servis. */
     private final SectorService sectorService;
 
+    /** Katılım endeksi kontrol servisi. */
+    private final KatilimEndeksiService katilimEndeksiService;
+
     /**
      * Sektor listeleme sayfasini goruntular.
      *
@@ -45,7 +52,25 @@ public class SectorController {
     @GetMapping("/sektorler")
     public String sectorList(Model model) {
         List<SectorSummaryDto> sectors = sectorService.getSectorSummaries();
+        Set<String> katilimCodes = katilimEndeksiService.getKatilimCodes();
+
+        // Her sektör için katılım hisse sayısını hesapla
+        Map<String, Integer> katilimCountMap = new HashMap<>();
+        for (SectorSummaryDto sector : sectors) {
+            try {
+                List<SectorStockDto> stocks = sectorService.getSectorStocks(sector.getSlug());
+                int count = (int) stocks.stream()
+                        .filter(s -> s.getTicker() != null && katilimCodes.contains(s.getTicker()))
+                        .count();
+                katilimCountMap.put(sector.getSlug(), count);
+            } catch (Exception e) {
+                katilimCountMap.put(sector.getSlug(), 0);
+            }
+        }
+
         model.addAttribute("sectors", sectors);
+        model.addAttribute("katilimCodes", katilimCodes);
+        model.addAttribute("katilimCountMap", katilimCountMap);
         return "sector/sector-list";
     }
 
@@ -86,6 +111,7 @@ public class SectorController {
         model.addAttribute("sectorSlug", safeSlug);
         model.addAttribute("stocks", stocks);
         model.addAttribute("sectorInfo", sectorInfo);
+        model.addAttribute("katilimCodes", katilimEndeksiService.getKatilimCodes());
         return "sector/sector-detail";
     }
 }

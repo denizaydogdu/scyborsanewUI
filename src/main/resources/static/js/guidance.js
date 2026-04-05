@@ -11,8 +11,19 @@
     var PAGE_SIZE = 20;
     var currentPage = 1;
 
+    // Katılım set
+    var katilimSet = {};
+    var kCodes = window.KATILIM_CODES || [];
+    if (Array.isArray(kCodes)) {
+        kCodes.forEach(function(c) { katilimSet[c] = true; });
+    } else if (typeof kCodes === 'object') {
+        Object.keys(kCodes).forEach(function(c) { katilimSet[c] = true; });
+    }
+    function isKatilim(code) { return code && katilimSet[code] === true; }
+
     var searchInput = document.getElementById('searchInput');
     var yearFilter = document.getElementById('yearFilter');
+    var katilimFilter = document.getElementById('katilimFilter');
     var tbody = document.getElementById('guidanceTableBody');
     var paginationUl = document.getElementById('paginationUl');
 
@@ -21,8 +32,12 @@
     function getFiltered() {
         var search = (searchInput.value || '').trim().toUpperCase();
         var year = yearFilter.value ? parseInt(yearFilter.value) : null;
+        var katilimOnly = katilimFilter ? katilimFilter.checked : false;
 
         return data.filter(function(item) {
+            if (katilimOnly && !isKatilim(item.hisseSenediKodu)) {
+                return false;
+            }
             if (search && (!item.hisseSenediKodu || item.hisseSenediKodu.toUpperCase().indexOf(search) === -1)) {
                 return false;
             }
@@ -86,6 +101,16 @@
         link.className = 'fw-semibold text-primary';
         link.textContent = code || '-';
         wrapper.appendChild(link);
+
+        // Katılım K badge
+        if (isKatilim(code)) {
+            var kBadge = document.createElement('span');
+            kBadge.className = 'badge bg-success bg-opacity-25 text-success ms-1 katilim-badge';
+            kBadge.style.cssText = 'font-size:0.65rem;padding:1px 4px';
+            kBadge.title = 'Katılım Endeksi';
+            kBadge.textContent = 'K';
+            wrapper.appendChild(kBadge);
+        }
 
         td.appendChild(wrapper);
         return td;
@@ -426,6 +451,13 @@
         render();
     });
 
-    // Ilk render
+    if (katilimFilter) {
+        katilimFilter.addEventListener('change', function() {
+            currentPage = 1;
+            render();
+        });
+    }
+
+    // İlk render
     render();
 })();

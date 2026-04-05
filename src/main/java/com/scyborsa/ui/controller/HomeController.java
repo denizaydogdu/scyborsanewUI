@@ -184,6 +184,13 @@ public class HomeController {
                 .collect(Collectors.toList());
         model.addAttribute("acigaSatisTop5", acigaSatisTop5);
 
+        // Hisse logoları (dashboard haber/temettü kartları için)
+        try {
+            model.addAttribute("stockLogos", bist100Service.getStockLogos());
+        } catch (Exception e) {
+            model.addAttribute("stockLogos", java.util.Collections.emptyMap());
+        }
+
         return "index";
     }
 

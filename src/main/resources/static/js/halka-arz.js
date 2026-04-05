@@ -13,6 +13,16 @@
 
     var data = window.halkaArzData || [];
 
+    // Katılım set
+    var katilimSet = {};
+    var kCodes = window.KATILIM_CODES || [];
+    if (Array.isArray(kCodes)) {
+        kCodes.forEach(function(c) { katilimSet[c] = true; });
+    } else if (typeof kCodes === 'object') {
+        Object.keys(kCodes).forEach(function(c) { katilimSet[c] = true; });
+    }
+    function isKatilim(code) { return code && katilimSet[code] === true; }
+
     var searchInput = document.getElementById('gecmisSearchInput');
     var tableBody = document.getElementById('gecmisTableBody');
     var pagination = document.getElementById('gecmisPagination');
@@ -44,8 +54,25 @@
         });
     });
 
+    var halkaArzKatilimFilter = document.getElementById('halkaArzKatilimFilter');
+    if (halkaArzKatilimFilter) {
+        halkaArzKatilimFilter.addEventListener('change', function() {
+            currentPage = 1;
+            render();
+            // Aktif tab kartları da filtrele
+            document.querySelectorAll('#aktifPanel .col-lg-6').forEach(function(col) {
+                var hasK = col.querySelector('.katilim-badge') !== null;
+                col.style.display = (halkaArzKatilimFilter.checked && !hasK) ? 'none' : '';
+            });
+        });
+    }
+
     function getFilteredData() {
         var filtered = data;
+        // Katılım filtresi
+        if (halkaArzKatilimFilter && halkaArzKatilimFilter.checked) {
+            filtered = filtered.filter(function(d) { return isKatilim(d.hisseSenediKodu); });
+        }
         if (searchTerm) {
             filtered = filtered.filter(function (d) {
                 var code = d.hisseSenediKodu ? d.hisseSenediKodu.toUpperCase() : '';
@@ -194,6 +221,14 @@
                 link.className = 'fw-semibold text-primary';
                 link.textContent = d.hisseSenediKodu;
                 wrapper.appendChild(link);
+                if (isKatilim(d.hisseSenediKodu)) {
+                    var kBadge = document.createElement('span');
+                    kBadge.className = 'badge bg-success bg-opacity-25 text-success ms-1 katilim-badge';
+                    kBadge.style.cssText = 'font-size:0.65rem;padding:1px 4px';
+                    kBadge.title = 'Katılım Endeksi';
+                    kBadge.textContent = 'K';
+                    wrapper.appendChild(kBadge);
+                }
                 td1.appendChild(wrapper);
             } else {
                 td1.textContent = '-';

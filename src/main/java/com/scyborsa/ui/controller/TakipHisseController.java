@@ -1,6 +1,7 @@
 package com.scyborsa.ui.controller;
 
 import com.scyborsa.ui.dto.TakipHisseDto;
+import com.scyborsa.ui.service.KatilimEndeksiService;
 import com.scyborsa.ui.service.TakipHisseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,9 @@ public class TakipHisseController {
     /** Takip hissesi verilerini saglayan servis. */
     private final TakipHisseService takipHisseService;
 
+    /** Katılım Endeksi hisse kodlarını sağlayan servis. */
+    private final KatilimEndeksiService katilimEndeksiService;
+
     /**
      * Takip hisseleri listesi sayfasini goruntular.
      *
@@ -52,6 +56,7 @@ public class TakipHisseController {
         log.info("[TAKIP-HISSE-UI] Takip hisseleri listesi yuklendi [count={}]", takipHisseleri.size());
 
         model.addAttribute("takipHisseleri", takipHisseleri);
+        model.addAttribute("katilimCodes", katilimEndeksiService.getKatilimCodes());
 
         return "takip-hisseleri/takip-hisseleri-list";
     }

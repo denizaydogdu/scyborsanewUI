@@ -3,6 +3,7 @@ package com.scyborsa.ui.controller;
 import com.scyborsa.ui.dto.HalkaArzUiDto;
 import com.scyborsa.ui.service.Bist100Service;
 import com.scyborsa.ui.service.HalkaArzUiService;
+import com.scyborsa.ui.service.KatilimEndeksiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -33,6 +34,7 @@ public class HalkaArzUiController {
 
     /** Hisse logo haritası için servis. */
     private final Bist100Service bist100Service;
+    private final KatilimEndeksiService katilimEndeksiService;
 
     /**
      * Halka arz takvimi sayfasını görüntüler.
@@ -100,12 +102,13 @@ public class HalkaArzUiController {
         model.addAttribute("son30Gun", son30Gun);
         model.addAttribute("toplam", toplam);
 
-        // Hisse logoları
+        // Hisse logoları + Katılım
         try {
             model.addAttribute("stockLogos", bist100Service.getStockLogos());
         } catch (Exception e) {
             model.addAttribute("stockLogos", java.util.Collections.emptyMap());
         }
+        model.addAttribute("katilimCodes", katilimEndeksiService.getKatilimCodes());
 
         return "halka-arz/halka-arz-list";
     }

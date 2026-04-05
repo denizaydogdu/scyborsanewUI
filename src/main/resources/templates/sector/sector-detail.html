@@ -26,7 +26,14 @@
                             ▲ %3,08
                         </span>
                         <span th:if="${sectorInfo != null}" class="badge bg-soft-info text-info ms-2 fs-12"
+                              id="stockCountBadge"
                               th:text="${sectorInfo.stockCount + ' hisse'}">5 hisse</span>
+                        <div class="form-check form-switch ms-auto mb-0">
+                            <input class="form-check-input" type="checkbox" id="katilimFilter">
+                            <label class="form-check-label" for="katilimFilter">
+                                <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.7rem">K</span> Katılım
+                            </label>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -109,6 +116,27 @@
                 cell.textContent = (vol / 1e3).toFixed(1) + ' Bin';
             }
         });
+
+        // Katılım filtresi
+        var katilimFilter = document.getElementById('katilimFilter');
+        var stockCountBadge = document.getElementById('stockCountBadge');
+        if (katilimFilter) {
+            katilimFilter.addEventListener('change', function() {
+                var rows = document.querySelectorAll('table tbody tr');
+                var visible = 0;
+                rows.forEach(function(row) {
+                    var hasK = row.querySelector('.badge.bg-success') !== null;
+                    if (katilimFilter.checked && !hasK) {
+                        row.style.display = 'none';
+                    } else {
+                        row.style.display = '';
+                        visible++;
+                        row.cells[0].textContent = visible;
+                    }
+                });
+                if (stockCountBadge) stockCountBadge.textContent = visible + ' hisse';
+            });
+        }
 
         // Seans saatlerine gore adaptif sayfa yenileme
         (function() {

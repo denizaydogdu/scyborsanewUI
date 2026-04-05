@@ -144,6 +144,14 @@
      */
     function bindEvents() {
         // Arama
+        var katilimFilter = document.getElementById('katilimFilter');
+        if (katilimFilter) {
+            katilimFilter.addEventListener('change', function() {
+                currentPage = 1;
+                applyFilters();
+            });
+        }
+
         var searchInput = document.getElementById('searchInput');
         if (searchInput) {
             searchInput.addEventListener('keyup', function () {
@@ -202,12 +210,17 @@
         var consVal = document.getElementById('filterCons').value;
         var pdddVal = document.getElementById('filterPddd').value;
         var fkVal = document.getElementById('filterFk').value;
+        var katilimEl = document.getElementById('katilimFilter');
+        var katilimOnly = katilimEl ? katilimEl.checked : false;
 
         var allData = window.RAPOR_DATA || [];
         filteredData = [];
 
         for (var i = 0; i < allData.length; i++) {
             var r = allData[i];
+
+            // Katılım filtresi
+            if (katilimOnly && !r.katilim) continue;
 
             // Arama filtresi
             if (searchVal && (!r.symbol || r.symbol.toUpperCase().indexOf(searchVal) === -1)) continue;

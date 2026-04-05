@@ -3,6 +3,7 @@ package com.scyborsa.ui.controller;
 import com.scyborsa.ui.dto.GuidanceUiDto;
 import com.scyborsa.ui.service.Bist100Service;
 import com.scyborsa.ui.service.GuidanceUiService;
+import com.scyborsa.ui.service.KatilimEndeksiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -43,6 +44,9 @@ public class GuidanceUiController {
 
     /** Hisse logoid haritasi icin BIST servis bagimliligi. */
     private final Bist100Service bist100Service;
+
+    /** Katılım endeksi kontrol servisi. */
+    private final KatilimEndeksiService katilimEndeksiService;
 
     /**
      * Sirket beklentileri listesi sayfasini goruntuler.
@@ -88,6 +92,7 @@ public class GuidanceUiController {
         model.addAttribute("toplamSirket", toplamSirket);
         model.addAttribute("yillar", yillar);
         model.addAttribute("stockLogos", stockLogos);
+        model.addAttribute("katilimCodes", katilimEndeksiService.getKatilimCodes());
 
         return "guidance/guidance-list";
     }

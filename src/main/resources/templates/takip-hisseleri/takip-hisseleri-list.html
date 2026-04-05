@@ -92,6 +92,70 @@
         </div>
     </div>
 
+    <!-- Bilgi Kartı -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-primary border-opacity-25">
+                <a class="text-primary fw-medium" data-bs-toggle="collapse" href="#takipInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>SCY Takip Hisseleri Nedir? Nasıl Kullanılır?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="takipInfoCollapse">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-bar-chart-box-line text-primary fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">SCY Takip Hisseleri Nedir?</h6>
+                                    <p class="text-muted mb-0 fs-12">SCY analiz ekibinin önerdiği hisselerdir. Teknik ve temel analize dayalı olarak seçilir. Her hisse için giriş fiyatı, hedef fiyat ve zarar durdur seviyeleri belirlenir. Bu sayfadaki hisseler SCY ekibinin görüşüdür, <strong>yatırım tavsiyesi değildir</strong>.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-timer-flash-line text-info fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Kısa Vade (0-2 Hafta)</h6>
+                                    <p class="text-muted mb-0 fs-12">Teknik analize dayalı, kısa süreli fiyat hareketlerinden faydalanma stratejisi. Gün içi veya birkaç günlük işlemler için uygundur. Stop-loss (zarar durdur) seviyeleri sıkıdır. Hızlı karar ve disiplin gerektirir.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-calendar-event-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Orta Vade (2-8 Hafta)</h6>
+                                    <p class="text-muted mb-0 fs-12">Hem teknik hem temel analize dayalı. Swing trading yaklaşımı — birkaç haftalık trendlerden yararlanma. Hedef fiyat genelde %10-30 getiri hedefler. Stop-loss daha geniştir.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-funds-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Uzun Vade (2+ Ay)</h6>
+                                    <p class="text-muted mb-0 fs-12">Temel analize ağırlıklı. Şirketin büyüme potansiyeli, bilanço gücü ve sektör trendlerine bakılır. Sabır gerektirir, kısa vadeli dalgalanmalara takılınmaz. Hedef fiyat genelde %30+ getiri hedefler.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="my-2 opacity-25">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <p class="text-muted mb-0 fs-12"><i class="ri-crosshair-2-line text-primary me-1"></i><strong>Giriş/Hedef/Zarar Durdur:</strong> Giriş fiyatı = önerilen alış seviyesi. Hedef fiyat = beklenen kâr seviyesi. Zarar durdur = kayıp sınırlandırma seviyesi. <strong>HER ZAMAN zarar durdur kullanın.</strong></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="text-muted mb-0 fs-12"><i class="ri-calculator-line text-warning me-1"></i><strong>Maliyet Fiyatı:</strong> Giriş fiyatından sonra maliyet ortalamanız değişmişse bu alanı güncelleyin. Gerçek kâr/zarar maliyet fiyatına göre hesaplanır.</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="text-muted mb-0 fs-12"><i class="ri-alarm-warning-line text-danger me-1"></i><strong>Uyarı:</strong> Bu hisseler SCY ekibinin analiz ve görüşlerine dayanır. Yatırım tavsiyesi niteliği taşımaz. Kendi araştırmanızı yapın, risk yönetiminizi ihmal etmeyin.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Ana Kart: Takip Hisseleri Tablosu -->
     <div class="row">
         <div class="col-12">
@@ -115,6 +179,15 @@
                                 <span class="badge bg-warning-subtle text-warning me-1">Orta Vade</span> Aylık hedef
                                 <span class="mx-1">•</span>
                                 <span class="badge bg-primary-subtle text-primary me-1">Uzun Vade</span> 3 Aylık hedef
+                            </div>
+                        </div>
+                        <!-- Katılım Filtre -->
+                        <div class="col-auto d-flex align-items-center">
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" id="katilimFilter">
+                                <label class="form-check-label text-nowrap" for="katilimFilter">
+                                    <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.7rem">K</span> Katılım
+                                </label>
                             </div>
                         </div>
                         <!-- Sağ: Arama -->
@@ -213,6 +286,7 @@
 <th:block layout:fragment="pagejs">
     <script th:inline="javascript">
         window.takipData = /*[[${takipHisseleri}]]*/ [];
+        window.katilimCodes = /*[[${katilimCodes}]]*/ [];
     </script>
     <script th:src="@{/js/takip-hisseleri.js}"></script>
 </th:block>

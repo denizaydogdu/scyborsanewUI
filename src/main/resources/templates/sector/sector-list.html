@@ -13,8 +13,30 @@
 <section layout:fragment="content">
     <div th:replace="~{partials/page-title :: page-title('Sektörler', 'Piyasa')}"></div>
 
-    <div class="row row-cols-xxl-4 row-cols-lg-3 row-cols-md-2 row-cols-1 g-3">
-        <div class="col" th:each="sector, iterStat : ${sectors}">
+    <!-- Katılım Filtresi -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="d-flex align-items-center gap-3">
+                <div class="search-box flex-grow-1">
+                    <input type="text" class="form-control" id="sektorSearchInput"
+                           placeholder="Sektör adı ile ara..." autocomplete="off">
+                    <i class="ri-search-line search-icon"></i>
+                </div>
+                <div class="form-check form-switch flex-shrink-0">
+                    <input class="form-check-input" type="checkbox" id="katilimSektorFilter">
+                    <label class="form-check-label text-nowrap" for="katilimSektorFilter">
+                        <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.7rem">K</span>
+                        Katılım Hissesi Olan Sektörler
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-cols-xxl-4 row-cols-lg-3 row-cols-md-2 row-cols-1 g-3" id="sektorGrid">
+        <div class="col sektor-card" th:each="sector, iterStat : ${sectors}"
+             th:data-name="${sector.displayName}"
+             th:data-slug="${sector.slug}">
             <a th:href="@{'/sector/' + ${sector.slug}}" class="text-decoration-none">
                 <div class="card card-animate mb-0 h-100">
                     <div class="card-body">
@@ -26,7 +48,8 @@
                             </div>
                             <div class="flex-grow-1 overflow-hidden">
                                 <h5 class="card-title mb-1 text-truncate" th:text="${sector.displayName}">Sektor</h5>
-                                <span class="badge bg-soft-info text-info" th:text="${sector.stockCount + ' hisse'}">0 hisse</span>
+                                <span class="badge bg-soft-info text-info sektor-stock-count" th:text="${sector.stockCount + ' hisse'}">0 hisse</span>
+                                <span class="badge bg-success bg-opacity-25 text-success ms-1 sektor-katilim-badge" style="font-size:0.6rem;padding:1px 4px;display:none" title="Katılım hisseleri içerir">K</span>
                             </div>
                             <div class="flex-shrink-0 ms-2"
                                  th:with="absVal=${sector.avgChangePercent >= 0 ? sector.avgChangePercent : -sector.avgChangePercent}">
@@ -58,6 +81,75 @@
 </section>
 
 <th:block layout:fragment="pagejs">
+    <script th:inline="javascript">
+        var SEKTOR_DATA = /*[[${sectors}]]*/ [];
+        var KATILIM_CODES = /*[[${katilimCodes}]]*/ [];
+        var KATILIM_COUNT_MAP = /*[[${katilimCountMap}]]*/ {};
+    </script>
+    <script>
+    (function() {
+        // Katılım set oluştur
+        var kSet = {};
+        var kCodes = window.KATILIM_CODES || [];
+        if (Array.isArray(kCodes)) {
+            kCodes.forEach(function(c) { kSet[c] = true; });
+        } else if (typeof kCodes === 'object') {
+            Object.keys(kCodes).forEach(function(c) { kSet[c] = true; });
+        }
+
+        // Her sektör kartına has-katilim ve katılım sayısı set et
+        var countMap = window.KATILIM_COUNT_MAP || {};
+
+        document.querySelectorAll('.sektor-card').forEach(function(card) {
+            var slug = card.getAttribute('data-slug');
+            var count = countMap[slug] || 0;
+            if (count > 0) {
+                card.setAttribute('data-has-katilim', 'true');
+                card.setAttribute('data-katilim-count', count);
+            }
+        });
+
+        // Arama filtresi
+        var searchInput = document.getElementById('sektorSearchInput');
+        var katilimFilter = document.getElementById('katilimSektorFilter');
+
+        function filterCards() {
+            var query = searchInput ? searchInput.value.trim().toLocaleLowerCase('tr') : '';
+            var onlyKatilim = katilimFilter ? katilimFilter.checked : false;
+            document.querySelectorAll('.sektor-card').forEach(function(card) {
+                var name = (card.getAttribute('data-name') || '').toLocaleLowerCase('tr');
+                var hasK = card.getAttribute('data-has-katilim') === 'true';
+                var kCount = parseInt(card.getAttribute('data-katilim-count') || '0');
+                var matchSearch = !query || name.indexOf(query) > -1;
+                var matchKatilim = !onlyKatilim || hasK;
+                card.style.display = (matchSearch && matchKatilim) ? '' : 'none';
+
+                // K badge göster/gizle
+                var kBadge = card.querySelector('.sektor-katilim-badge');
+                if (kBadge) kBadge.style.display = hasK ? '' : 'none';
+
+                // Katılım aktifken hisse sayısı badge'ini katılım sayısıyla değiştir
+                var countBadge = card.querySelector('.sektor-stock-count');
+                if (countBadge) {
+                    if (onlyKatilim && hasK) {
+                        countBadge.setAttribute('data-original', countBadge.getAttribute('data-original') || countBadge.textContent);
+                        countBadge.textContent = kCount + ' katılım hissesi';
+                        countBadge.className = 'badge bg-success-subtle text-success sektor-stock-count';
+                    } else {
+                        var original = countBadge.getAttribute('data-original');
+                        if (original) {
+                            countBadge.textContent = original;
+                            countBadge.className = 'badge bg-soft-info text-info sektor-stock-count';
+                        }
+                    }
+                }
+            });
+        }
+
+        if (searchInput) searchInput.addEventListener('input', filterCards);
+        if (katilimFilter) katilimFilter.addEventListener('change', filterCards);
+    })();
+    </script>
 </th:block>
 </body>
 

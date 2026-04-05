@@ -60,8 +60,8 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <ul class="nav nav-tabs-custom card-header-tabs" role="tablist">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <ul class="nav nav-tabs-custom card-header-tabs flex-grow-1" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link fs-14 fw-semibold" id="tab-future" data-bs-toggle="tab" href="#panel-future" role="tab" aria-selected="false">
                                 <i class="ri-calendar-event-line me-1"></i>Gelecek
@@ -81,6 +81,13 @@
                             </a>
                         </li>
                     </ul>
+                    <div class="form-check form-switch ms-3 flex-shrink-0">
+                        <input class="form-check-input" type="checkbox" id="marketKatilimFilter">
+                        <label class="form-check-label fs-13" for="marketKatilimFilter">
+                            <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.65rem;padding:2px 4px">K</span>
+                            Katılım
+                        </label>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="tab-content">
@@ -422,6 +429,19 @@
         function setText(id, val) {
             var el = document.getElementById(id);
             if (el) el.textContent = val;
+        }
+
+        // Katılım filtresi
+        var marketFilterCb = document.getElementById('marketKatilimFilter');
+        if (marketFilterCb) {
+            marketFilterCb.addEventListener('change', function() {
+                var active = this.checked;
+                document.querySelectorAll('#tbody-future tr, #tbody-today tr, #tbody-past tr').forEach(function(tr) {
+                    if (!active) { tr.style.display = ''; return; }
+                    var hasKatilim = tr.querySelector('.badge.bg-success');
+                    tr.style.display = hasKatilim ? '' : 'none';
+                });
+            });
         }
 
         // 60 saniyede bir otomatik yenile

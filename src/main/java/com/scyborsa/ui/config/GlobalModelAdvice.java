@@ -1,11 +1,15 @@
 package com.scyborsa.ui.config;
 
+import com.scyborsa.ui.service.KatilimEndeksiService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
+
+import java.util.Set;
 
 /**
  * Tum sayfalara ortak model attribute'lari ekleyen global advice.
@@ -15,7 +19,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  * model attribute olarak saglar.</p>
  */
 @ControllerAdvice
+@RequiredArgsConstructor
 public class GlobalModelAdvice {
+
+    private final KatilimEndeksiService katilimEndeksiService;
 
     @Value("${api.public-url:${api.base-url}}")
     private String apiBaseUrl;
@@ -55,6 +62,16 @@ public class GlobalModelAdvice {
      *
      * @return kullanici email adresi veya bos string
      */
+    /**
+     * Katılım endeksi kodlarını model'e ekler (tüm sayfalar).
+     *
+     * @return katılım endeksi hisse kodları seti
+     */
+    @ModelAttribute("globalKatilimCodes")
+    public Set<String> globalKatilimCodes() {
+        return katilimEndeksiService.getKatilimCodes();
+    }
+
     @ModelAttribute("userEmail")
     public String userEmail() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

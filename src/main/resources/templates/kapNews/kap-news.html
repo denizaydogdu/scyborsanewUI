@@ -59,8 +59,15 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="card-title mb-0">Canlı KAP Haberleri</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="kapKatilimFilter">
+                        <label class="form-check-label fs-13" for="kapKatilimFilter">
+                            <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.65rem;padding:2px 4px">K</span>
+                            Katılım
+                        </label>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -247,6 +254,19 @@
                 return wrapper;
             }
         })();
+
+        // Katılım filtresi
+        var kapFilterCb = document.getElementById('kapKatilimFilter');
+        if (kapFilterCb) {
+            kapFilterCb.addEventListener('change', function() {
+                var active = this.checked;
+                document.querySelectorAll('table tbody tr').forEach(function(tr) {
+                    if (!active) { tr.style.display = ''; return; }
+                    var hasKatilim = tr.querySelector('.badge.bg-success');
+                    tr.style.display = hasKatilim ? '' : 'none';
+                });
+            });
+        }
 
         // 60 saniyede bir sayfa otomatik yenilenir
         setInterval(function() {

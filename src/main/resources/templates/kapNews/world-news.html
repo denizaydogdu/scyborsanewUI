@@ -60,8 +60,8 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <ul class="nav nav-tabs-custom card-header-tabs" role="tablist">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <ul class="nav nav-tabs-custom card-header-tabs flex-grow-1" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link fs-14 fw-semibold" id="tab-future" data-bs-toggle="tab" href="#panel-future" role="tab" aria-selected="false">
                                 <i class="ri-calendar-event-line me-1"></i>Gelecek
@@ -81,6 +81,13 @@
                             </a>
                         </li>
                     </ul>
+                    <div class="form-check form-switch ms-3 flex-shrink-0">
+                        <input class="form-check-input" type="checkbox" id="worldKatilimFilter">
+                        <label class="form-check-label fs-13" for="worldKatilimFilter">
+                            <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.65rem;padding:2px 4px">K</span>
+                            Katılım
+                        </label>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="tab-content">
@@ -158,6 +165,8 @@
     <!-- SSR veri -->
     <script th:inline="javascript">
         var NEWS_ITEMS = /*[[${(worldNewsResponse != null && worldNewsResponse.items != null) ? worldNewsResponse.items : {}}]]*/ [];
+        var LOGO_MAP = /*[[${logoMap}]]*/ {};
+        var KATILIM_SET = /*[[${katilimCodes}]]*/ [];
     </script>
 </section>
 
@@ -165,6 +174,13 @@
     <script>
     (function() {
         var items = window.NEWS_ITEMS || [];
+        var logoMap = window.LOGO_MAP || {};
+        var katilimSet = {};
+        if (Array.isArray(window.KATILIM_SET)) {
+            window.KATILIM_SET.forEach(function(c) { katilimSet[c] = true; });
+        } else if (window.KATILIM_SET && typeof window.KATILIM_SET === 'object') {
+            Object.keys(window.KATILIM_SET).forEach(function(c) { katilimSet[c] = true; });
+        }
 
         var now = new Date();
         var turkeyOffset = 3 * 60;
@@ -341,16 +357,34 @@
             wrapper.className = 'd-inline-flex align-items-center me-1 mb-1';
             var avatarContainer = document.createElement('div');
             avatarContainer.className = 'flex-shrink-0 avatar-xs me-1';
+            var logoid = logoMap[code];
+            if (logoid) {
+                var img = document.createElement('img');
+                img.src = '/img/stock-logos/' + logoid;
+                img.alt = code;
+                img.className = 'avatar-xs rounded-circle';
+                img.onerror = function() { this.style.display = 'none'; this.nextElementSibling.style.display = 'flex'; };
+                avatarContainer.appendChild(img);
+            }
             var fallback = document.createElement('div');
             fallback.className = 'avatar-title rounded-circle fw-semibold bg-light';
-            fallback.style.cssText = 'color:#495057;border:1.5px solid #ced4da;font-size:0.5rem';
+            fallback.style.cssText = 'color:#495057;border:1.5px solid #ced4da;font-size:0.5rem' + (logoid ? ';display:none' : '');
             fallback.textContent = code.length > 3 ? code.substring(0, 3) : code;
             avatarContainer.appendChild(fallback);
             wrapper.appendChild(avatarContainer);
-            var label = document.createElement('span');
-            label.className = 'fw-semibold text-primary fs-13';
-            label.textContent = code;
-            wrapper.appendChild(label);
+            var link = document.createElement('a');
+            link.href = '/stock/detail/' + encodeURIComponent(code);
+            link.className = 'fw-semibold text-primary fs-13';
+            link.textContent = code;
+            wrapper.appendChild(link);
+            if (katilimSet[code]) {
+                var badge = document.createElement('span');
+                badge.className = 'badge bg-success bg-opacity-25 text-success ms-1';
+                badge.style.cssText = 'font-size:0.6rem;padding:1px 3px';
+                badge.title = 'Katılım Endeksi';
+                badge.textContent = 'K';
+                wrapper.appendChild(badge);
+            }
             return wrapper;
         }
 
@@ -375,6 +409,19 @@
         function setText(id, val) {
             var el = document.getElementById(id);
             if (el) el.textContent = val;
+        }
+
+        // Katılım filtresi
+        var worldFilterCb = document.getElementById('worldKatilimFilter');
+        if (worldFilterCb) {
+            worldFilterCb.addEventListener('change', function() {
+                var active = this.checked;
+                document.querySelectorAll('#tbody-future tr, #tbody-today tr, #tbody-past tr').forEach(function(tr) {
+                    if (!active) { tr.style.display = ''; return; }
+                    var hasKatilim = tr.querySelector('.badge.bg-success');
+                    tr.style.display = hasKatilim ? '' : 'none';
+                });
+            });
         }
 
         setInterval(function() { window.location.reload(); }, 60000);

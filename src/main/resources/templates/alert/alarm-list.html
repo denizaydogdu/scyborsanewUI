@@ -118,12 +118,86 @@
         </div>
     </div>
 
+    <!-- Bilgi Karti -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card card-body border-primary border-opacity-25">
+                <a class="text-primary fw-medium" data-bs-toggle="collapse" href="#alarmInfoCollapse" role="button" aria-expanded="true">
+                    <i class="ri-information-line me-1"></i>Fiyat Alarmı Nedir? Nasıl Kullanılır?
+                    <i class="ri-arrow-down-s-line float-end fs-16"></i>
+                </a>
+                <div class="collapse show mt-3" id="alarmInfoCollapse">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-alarm-line text-primary fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Fiyat Alarmı Nedir?</h6>
+                                    <p class="text-muted mb-0 fs-12">Belirlediğiniz fiyat seviyesine hisse ulaştığında anında bildirim alırsınız. Yükseliş alarmı (fiyat hedefe ulaştığında) veya düşüş alarmı (fiyat desteğe geldiğinde) kurabilirsiniz. Alarm tetiklendiğinde üst menüdeki zil simgesinden bildirim gelir.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-add-circle-line text-success fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Nasıl Alarm Kurulur?</h6>
+                                    <p class="text-muted mb-0 fs-12">Hisse detay sayfasından "Alarm Kur" butonuna tıklayın. Yön seçin (Üstüne Çıkarsa / Altına Düşerse), hedef fiyatı girin. Alarm aktif olduğunda fiyat anlık takip edilir. Kullanıcı başına en fazla 20 alarm tanımlanabilir.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-checkbox-circle-line text-warning fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Alarm Durumları</h6>
+                                    <p class="text-muted mb-0 fs-12"><strong>AKTİF:</strong> Fiyat izleniyor, henüz tetiklenmedi. <strong>TETİKLENDİ:</strong> Hedef fiyata ulaşıldı, bildirim gönderildi. <strong>İPTAL:</strong> Kullanıcı tarafından iptal edildi.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0"><i class="ri-lightbulb-line text-info fs-20 me-2"></i></div>
+                                <div>
+                                    <h6 class="mb-1">Nasıl Kullanmalı?</h6>
+                                    <p class="text-muted mb-0 fs-12">Destek seviyelerine "altına düşerse" alarmı kurun (düşüş uyarısı). Direnç seviyelerine "üstüne çıkarsa" alarmı kurun (kırılma fırsatı). Zarar durdur seviyelerinize alarm koyarak risk yönetimi yapın.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <i class="ri-wifi-line text-success fs-16 me-2 mt-1"></i>
+                                <p class="text-muted mb-0 fs-12"><strong>Canlı Takip:</strong> Alarmlar seans boyunca WebSocket ile anlık takip edilir. Seans dışında 30 saniyelik batch kontrol yapılır.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <i class="ri-error-warning-line text-danger fs-16 me-2 mt-1"></i>
+                                <p class="text-muted mb-0 fs-12"><strong>Uyarı:</strong> Alarm tetiklendiğinde hissenin fiyatı hedefin biraz üstünde/altında olabilir — piyasa hızlı hareket edebilir.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Alarm Tablosu -->
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Fiyat Alarmları</h5>
+                <div class="card-header d-flex align-items-center">
+                    <h5 class="card-title mb-0 flex-grow-1">Fiyat Alarmları</h5>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="katilimFilter">
+                            <label class="form-check-label" for="katilimFilter">
+                                <span class="badge bg-success bg-opacity-25 text-success" style="font-size:0.7rem">K</span> Katılım
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -146,9 +220,24 @@
                                 <tr th:each="alert : ${alerts}" th:id="'alert-row-' + ${alert.id}"
                                     th:style="${alert.status != 'ACTIVE'} ? 'opacity: 0.5;' : ''">
                                     <td>
-                                        <a th:href="@{'/stock/detail/' + ${alert.stockCode}}" class="fw-medium">
-                                            <span th:text="${alert.stockCode}">THYAO</span>
-                                        </a>
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 avatar-xs me-2" th:with="logoid=${stockLogos != null ? stockLogos[alert.stockCode] : null}">
+                                                <img th:if="${logoid != null and !logoid.isEmpty()}"
+                                                     th:src="'/img/stock-logos/' + ${logoid}"
+                                                     th:alt="${alert.stockCode}"
+                                                     class="avatar-xs rounded-circle"
+                                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+                                                <div th:style="'background:transparent;color:#495057;border:1.5px solid #ced4da;font-size:0.55rem' + (${logoid != null and !logoid.isEmpty()} ? ';display:none' : '')"
+                                                     class="avatar-title rounded-circle fw-semibold"
+                                                     th:text="${alert.stockCode != null ? (alert.stockCode.length() > 4 ? alert.stockCode.substring(0, 4) : alert.stockCode) : '?'}">THYAO</div>
+                                            </div>
+                                            <a th:href="@{'/stock/detail/' + ${alert.stockCode}}" class="fw-semibold text-primary"
+                                               th:text="${alert.stockCode}">THYAO</a>
+                                            <span th:if="${katilimCodes != null and katilimCodes.contains(alert.stockCode)}"
+                                                  class="badge bg-success bg-opacity-25 text-success ms-1 katilim-badge"
+                                                  style="font-size:0.65rem;padding:1px 4px;"
+                                                  title="Katılım Endeksi">K</span>
+                                        </div>
                                     </td>
                                     <td>
                                         <span th:if="${alert.direction == 'ABOVE'}" class="badge bg-success-subtle text-success">
@@ -403,6 +492,21 @@
                         errorEl.textContent = 'Alarm güncellenirken hata oluştu: ' + err.message;
                         errorEl.classList.remove('d-none');
                         saveBtn.disabled = false;
+                    });
+                });
+            }
+            // ========== Katılım Endeksi Filtre ==========
+            var katilimFilter = document.getElementById('katilimFilter');
+            if (katilimFilter) {
+                katilimFilter.addEventListener('change', function() {
+                    var rows = document.querySelectorAll('table.table tbody tr[id^="alert-row-"]');
+                    rows.forEach(function(row) {
+                        var hasK = row.querySelector('.katilim-badge') !== null;
+                        if (katilimFilter.checked && !hasK) {
+                            row.style.display = 'none';
+                        } else {
+                            row.style.display = '';
+                        }
                     });
                 });
             }

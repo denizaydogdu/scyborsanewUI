@@ -101,6 +101,8 @@ public class KapNewsController {
         log.info("[WORLD-NEWS-UI] Sayfa erisimi");
         KapNewsResponseDto worldNewsResponse = kapNewsService.getWorldNews();
         model.addAttribute("worldNewsResponse", worldNewsResponse);
+        model.addAttribute("logoMap", bist100Service.getStockLogos());
+        model.addAttribute("katilimCodes", katilimEndeksiService.getKatilimCodes());
         return "kapNews/world-news";
     }
 

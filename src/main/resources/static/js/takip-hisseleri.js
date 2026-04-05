@@ -30,11 +30,22 @@
         'UZUN_VADE': 'bg-primary-subtle text-primary'
     };
 
+    // ── Katılım Endeksi Set ─────────────────────────────────
+    var katilimSet = {};
+    var kCodes = window.katilimCodes || [];
+    if (Array.isArray(kCodes)) {
+        kCodes.forEach(function(c) { katilimSet[c] = true; });
+    } else if (typeof kCodes === 'object') {
+        Object.keys(kCodes).forEach(function(c) { katilimSet[c] = true; });
+    }
+    function isKatilim(code) { return code && katilimSet[code] === true; }
+
     // ── Durum ─────────────────────────────────────────────
     var allData = [];
     var filteredData = [];
     var currentVade = 'ALL';
     var currentSearch = '';
+    var currentKatilim = false;
     var currentPage = 1;
     var sortCol = null;
     var sortAscending = true;
@@ -47,6 +58,9 @@
     var tableContainer = document.getElementById('tableContainer');
     var paginationNav = document.getElementById('paginationNav');
     var paginationInfo = document.getElementById('paginationInfo');
+
+    // ── Katılım Checkbox ──────────────────────────────────
+    var katilimCheckbox = document.getElementById('katilimFilter');
 
     // ── KPI Referanslari ──────────────────────────────────
     var kpiTotal = document.getElementById('kpi-total');
@@ -90,6 +104,15 @@
             });
         }
 
+        // Katılım filtre
+        if (katilimCheckbox) {
+            katilimCheckbox.addEventListener('change', function () {
+                currentKatilim = katilimCheckbox.checked;
+                currentPage = 1;
+                applyFilters();
+            });
+        }
+
         // Kolon siralama
         var sortHeaders = document.querySelectorAll('#takipTable th.sortable');
         sortHeaders.forEach(function (th) {
@@ -128,6 +151,13 @@
         if (currentVade !== 'ALL') {
             result = result.filter(function (t) {
                 return t.vade === currentVade;
+            });
+        }
+
+        // Katılım filtre
+        if (currentKatilim) {
+            result = result.filter(function (t) {
+                return isKatilim(t.hisseKodu);
             });
         }
 
@@ -277,6 +307,17 @@
         stockLink.textContent = item.hisseKodu || '-';
         stockLink.className = 'fw-semibold text-primary';
         stockCode.appendChild(stockLink);
+
+        // Katılım K badge
+        if (isKatilim(item.hisseKodu)) {
+            var kBadge = document.createElement('span');
+            kBadge.className = 'badge bg-success bg-opacity-25 text-success ms-1 katilim-badge';
+            kBadge.style.cssText = 'font-size:0.65rem;padding:1px 4px;';
+            kBadge.title = 'Katılım Endeksi';
+            kBadge.textContent = 'K';
+            stockCode.appendChild(kBadge);
+        }
+
         stockInfo.appendChild(stockCode);
 
         if (item.hisseAdi) {
